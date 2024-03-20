@@ -10,12 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
-final readonly class PasswordController
+final readonly class UpdatePasswordController
 {
     /**
      * Update the user's password.
      */
-    public function update(Request $request): RedirectResponse
+    public function __invoke(Request $request): RedirectResponse
     {
         $user = $request->user();
         assert($user instanceof User);
