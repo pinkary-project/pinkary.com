@@ -1,0 +1,27 @@
+@import 'highlight.js/styles/tomorrow-night-blue.css';
+
+[x-cloak] {
+  display: none;
+}
+
+:not(.answer) > pre {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.answer > pre {
+    padding-top: 1rem;
+}
+
+.hover\:darken-gradient:hover {
+    filter: saturate(2.5);
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+

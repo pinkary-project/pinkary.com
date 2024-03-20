@@ -1,0 +1,85 @@
+{
+    "name": "pinkary-project/pinkary.com",
+    "type": "project",
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^11.0.7",
+        "laravel/pennant": "^1.7",
+        "laravel/pulse": "^1.0@beta",
+        "laravel/tinker": "^2.9.0",
+        "livewire/livewire": "^3.4.9",
+        "scrivo/highlight.php": "^9.18.1.10",
+        "spatie/laravel-mailcoach-mailer": "^1.2.0"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23.1",
+        "larastan/larastan": "^2.9.2",
+        "laravel/pint": "dev-feat/blade",
+        "mockery/mockery": "^1.6.10",
+        "nunomaduro/collision": "^8.1.1",
+        "pestphp/pest": "^2.34.4",
+        "pestphp/pest-plugin-laravel": "^2.3.0",
+        "pestphp/pest-plugin-type-coverage": "^2.8.1",
+        "rector/rector": "^1.0.3",
+        "spatie/laravel-ignition": "^2.4.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --ansi"
+        ],
+        "lint": "pint",
+        "refactor": "rector",
+        "test:lint": "pint --test",
+        "test:refactor": "rector --dry-run",
+        "test:types": "phpstan analyse",
+        "test:type-coverage": "pest --type-coverage --min=100",
+        "test:unit": "pest --parallel --coverage --min=100",
+        "test": [
+            "@test:lint",
+            "@test:refactor",
+            "@test:types",
+            "@test:type-coverage",
+            "@test:unit"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,5 @@
+Check this:
+<pre><code class="p-4 rounded-lg hljs plaintext text-xs" style="background-color: #23262E">echo "Hello, World!";</code></pre>
+
+and this:
+<pre><code class="p-4 rounded-lg hljs php text-xs" style="background-color: #23262E"><span class="hljs-keyword">echo</span> <span class="hljs-string">"Hello, World!"</span>;</code></pre>

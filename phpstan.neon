@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    checkMissingIterableValueType: true
+
+    level: max
+
+    paths:
+        - app
+        - config
+        - bootstrap
+        - database/factories
+        - routes
