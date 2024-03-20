@@ -4,6 +4,8 @@
 
 ------
 
+> Early Access Telegram group: **[t.me/+Yv9CUTC1q29lNzg8 »](t.me/+Yv9CUTC1q29lNzg8)**.
+
 **Welcome to Pinkary's early access!** Pinkary is a landing page for all your links and a place to connect with like-minded individuals without the noise.
 
 Initially, it was created to help people share their links in a more organized way. In just 15 hours, we went from `composer create-project` to production, and after 24 hours, we reached over 1,000 users.
