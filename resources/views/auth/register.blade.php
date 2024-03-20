@@ -1,4 +1,8 @@
 <x-guest-layout>
+    @section('head')
+        <script async src="https://www.google.com/recaptcha/api.js"></script>
+    @endsection
+
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
