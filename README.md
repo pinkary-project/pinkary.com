@@ -132,6 +132,14 @@ composer test
 
 Pull requests that don't pass the test suite will not be merged. So, as suggested on the [Installation](#installation) section, be sure to run the test suite before pushing your branch.
 
+## Production
+
+Pinkary is hosted on [DigitalOcean](https://www.digitalocean.com) and uses [Laravel Forge](https://forge.laravel.com) to manage the server and deployments. The server is running on Ubuntu 22.04 (LTS) x64 and is a 2 vCPUs 2GB / 25GB Disk droplet.
+
+The only service we use is [Mailcoach](https://mailcoach.app) to manage the send emails. Besides that, SQLite is used as database driver, queue driver, and cache driver.
+
+Server backups are done daily by Digital Ocean.
+
 ---
 
 **The code is still private**, but we are planning to open-source it soon under the **[GNU Affero General Public License](LICENSE.md)**. In the meantime, feel free to ask any questions in the [Telegram group](https://t.me/+Yv9CUTC1q29lNzg8) or on [Twitter](https://twitter.com/PinkaryProject).
