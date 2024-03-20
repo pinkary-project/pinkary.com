@@ -31,7 +31,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: json, dom, curl, libxml, mbstring, zip
           tools: composer:v2
-          coverage: none
+          coverage: xdebug
 
       - name: Set up Node & NPM
         uses: actions/setup-node@v2
