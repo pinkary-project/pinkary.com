@@ -39,7 +39,13 @@ git checkout -b feat/your-feature # or fix/your-fix
 
 > **Don't push directly to the `main` branch**. Instead, create a new branch and push it to your branch.
 
-Next, install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
+Set up the project in one go or follow the steps listed below:
+
+```bash
+composer setup
+```
+
+Install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
 
 ```bash
 composer install

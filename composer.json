@@ -64,6 +64,19 @@
             "@test:types",
             "@test:type-coverage",
             "@test:unit"
+        ],
+        "setup": [
+            "@composer install",
+            "npm install",
+            "cp .env.example .env",
+            "@php artisan key:generate",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate",
+            "@php artisan storage:link",
+            "# <info>Setup is done!</info>",
+            "# <comment>Run <options=bold>`npm run dev`</> in a <bg=yellow;options=bold>separate terminal</>, to build the assets in watch mode</comment>",
+            "# <comment>Run <options=bold>`php artisan queue:work`</> in a <bg=yellow;options=bold>separate terminal</>, to run the queue worker</comment>",
+            "# <comment>Finally, start the development server: <options=bold>`php artisan serve`</></comment>"
         ]
     },
     "extra": {
