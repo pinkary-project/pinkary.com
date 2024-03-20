@@ -18,10 +18,11 @@ Over time, we've managed to add more features, such as home, explore, questions,
 
 ## Installation
 
-Pinkary is a regular Laravel application. You can install it using the following commands:
+Pinkary is a regular Laravel application; you can contribute to it following the steps below.
+
+First, clone the repository and create a new branch:
 
 ```bash
-# Fork the project, clone it, and create a new branch
 git clone https://github.com/pinkary-project/pinkary.com.git
 
 cd pinkary.com
