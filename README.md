@@ -16,9 +16,8 @@ The source code still shows some signs of the rush; that's why we think **it's i
 
 Over time, we've managed to add more features, such as home, explore, questions, likes, and more. We've also improved the design, added tests, and improved the overall quality of the code. There is still a lot to do, but most importantly, there is a huge opportunity to make this a **community-driven project**.
 
-- Sponsor us on **[GitHub »](https://github.com/sponsors/nunomaduro)**
+- Early Access Telegram group: **[t.me/+Yv9CUTC1q29lNzg8 »](https://t.me/+Yv9CUTC1q29lNzg8)**
 - Follow us on X at **[@PinkaryProject »](https://twitter.com/PinkaryProject)**
-- Join us on **[t.me/+Yv9CUTC1q29lNzg8 »](https://t.me/+Yv9CUTC1q29lNzg8)**
 - Wish to contribute? Here is how:
 
 ## Installation
