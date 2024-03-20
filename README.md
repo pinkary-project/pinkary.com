@@ -1,9 +1,5 @@
 <p align="center">
     <img src="https://pinkary.com/img/logo.svg" width="600" alt="PEST">
-    <p align="center">
-        <a href="https://github.com/pinkary-project/pinkary.com/actions"><img alt="GitHub Workflow Status (master)" src="https://img.shields.io/github/actions/workflow/status/pinkary-project/pinkary.com/tests.yml?branch=main&label=Tests"></a>
-        <a href="https://packagist.org/packages/pinkary-project/pinkary.com"><img alt="License" src="https://img.shields.io/packagist/l/pinkary-project/pinkary.com"></a>
-    </p>
 </p>
 
 ------
