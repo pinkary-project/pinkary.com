@@ -4,7 +4,7 @@
 
 ------
 
-> Early Access Telegram group: **[t.me/+Yv9CUTC1q29lNzg8 »](t.me/+Yv9CUTC1q29lNzg8)**.
+> Early Access Telegram group: **[t.me/+Yv9CUTC1q29lNzg8 »](https://t.me/+Yv9CUTC1q29lNzg8)**.
 
 **Welcome to Pinkary's early access!** Pinkary is a landing page for all your links and a place to connect with like-minded individuals without the noise.
 
