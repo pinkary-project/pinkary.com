@@ -27,7 +27,7 @@ Pinkary is a regular Laravel application. You can install it using the following
 
 ```bash
 # Fork the project, clone it, and create a new branch
-git clone git@github.com:<your-username>/pinkary.com.git pinkary.com
+git clone git@github.com:your-username/pinkary.com.git pinkary.com
 
 cd pinkary.com
 
@@ -98,7 +98,7 @@ git commit -am "Your commit message"
 git push
 ```
 
-Visit [github.com/<your-username>/pinkary.com](https://github.com/<your-username>/pinkary.com) and create a pull request.
+Visit [github.com/your-username/pinkary.com](https://github.com/your-username/pinkary.com) and create a pull request.
 
 ---
 
