@@ -162,3 +162,19 @@ test('unlike auth', function () {
 
     $component->assertRedirect(route('login'));
 });
+
+test('render updates', function () {
+    $question = Question::factory()->create([
+        'content' => '',
+        'answer' => 'Hello World Update',
+    ]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertSee([
+        $question->content,
+        $question->answer,
+    ]);
+});
