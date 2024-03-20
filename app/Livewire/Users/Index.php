@@ -38,8 +38,8 @@ final class Index extends Component
      */
     private function usersByQuery(): Collection
     {
-        return User::where('name', 'like', "%{$this->query}%")
-            ->orWhere('username', 'like', "%{$this->query}%")
+        return User::query()
+            ->whereAny(['name', 'username'], 'like', "%{$this->query}%")
             ->withCount('questionsReceived')
             ->orderBy('questions_received_count', 'desc')->limit(10)->get();
     }
