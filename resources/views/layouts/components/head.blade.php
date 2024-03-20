@@ -42,7 +42,7 @@
 
         $toMeta = fn (string $string) => strip_tags(str_replace('</br>', '. ', str_replace('</br></br>', '</br>', $string)));
 
-        $content = $toMeta($question->content);
+        $content = $toMeta($question->content ?? '');
         $answer = $question->answer ? $toMeta($question->answer) : null;
     @endphp
 

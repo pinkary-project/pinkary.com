@@ -4,7 +4,7 @@
             <textarea
                 wire:model="answer"
                 class="h-24 w-full rounded-lg border-transparent bg-gray-950 px-1 text-white focus:border-transparent focus:outline-0 focus:ring-0"
-                placeholder="I have news about..."
+                placeholder="Share an update..."
                 rows="3"
                 required
             ></textarea>

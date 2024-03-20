@@ -12,7 +12,7 @@ test('render', function () {
 
     $component = Livewire::actingAs($user)->test(Create::class);
 
-    $component->assertStatus(200)->assertSee('I have news about...');
+    $component->assertStatus(200)->assertSee('Share an update...');
 });
 
 test('store', function () {

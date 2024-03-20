@@ -6,7 +6,11 @@
             <div class="px-2 md:px-0 lg:px-0 xl:px-0">
                 <div class="mt-3 border-t border-gray-800"></div>
 
-                <livewire:questions.create :toId="$user->id" />
+                @if (auth()->user()->is($user))
+                    <livewire:updates.create />
+                @else
+                    <livewire:questions.create :toId="$user->id" />
+                @endif
                 <livewire:questions.index :userId="$user->id" />
             </div>
         </div>
