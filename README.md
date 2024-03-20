@@ -132,6 +132,19 @@ composer test
 
 Pull requests that don't pass the test suite will not be merged. So, as suggested on the [Installation](#installation) section, be sure to run the test suite before pushing your branch.
 
+## Architecture
+
+- **Console**: Contains all the commands used by the application. There are 4 application commands at the moment, and they are all meant to be used by [Laravel Scheduler](https://laravel.com/docs/11.x/scheduling):
+
+    - `SendDailyEmails`: Sends the daily emails to the users.
+    - `SendWeeklyEmails`: Sends the weekly emails to the users.
+    - `PerformDailyMaintenance`: Performs the daily maintenance tasks.
+    - `DeleteNonVerifiedUsers`: Deletes the non-verified users.
+
+- **Contracts**: Contains all the interfaces used by the application. This is a way to decouple the code, typically in services, from the implementation:
+
+... (to be continued)
+
 ## Production
 
 Pinkary is hosted on [DigitalOcean](https://www.digitalocean.com) and uses [Laravel Forge](https://forge.laravel.com) to manage the server and deployments. The server is running on Ubuntu 22.04 (LTS) x64 and is a 2 vCPUs 2GB / 25GB Disk droplet.
