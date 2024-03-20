@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::view('home', 'home')->name('home');
     Route::view('explore', 'explore')->name('explore');
     Route::view('notifications', 'notifications.index')->name('notifications.index');
+    Route::view('updates', 'updates')->name('updates.create');
 });
 
 Route::middleware('auth')->group(function () {

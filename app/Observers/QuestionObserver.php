@@ -15,6 +15,12 @@ final readonly class QuestionObserver
      */
     public function created(Question $question): void
     {
+        // If the content is empty, it's an update
+        // shared by the user.
+        if (empty($question->content)) {
+            return;
+        }
+
         $user = User::find($question->to_id);
 
         assert($user instanceof User);

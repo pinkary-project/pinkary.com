@@ -1,47 +1,49 @@
 <article class="block">
-    <div>
-        @if ($question->anonymously)
-            <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
-                    <span>?</span>
-                </div>
-
-                <p class="font-medium">Anonymously</p>
-            </div>
-        @else
-            <a
-                href="{{ route('profile.show', ['user' => $question->from->username]) }}"
-                class="flex items-center gap-3 px-4"
-                wire:navigate
-            >
-                <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
-                    <img
-                        src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
-                        alt="{{ $question->from->username }}"
-                        class="h-10 w-10 rounded-full"
-                    />
-                </figure>
-                <div class="overflow-hidden text-sm">
-                    <div class="flex">
-                        <p class="truncate font-medium text-slate-50">
-                            {{ $question->from->name }}
-                        </p>
-                        @if ($question->from->is_verified)
-                            <svg aria-label="Verified" class="text-{{ $question->from->right_color }} ml-1 mt-0.5 flex-shrink-0 fill-current saturate-200" height="15" role="img" viewBox="0 0 40 40" width="18"><title>Verified</title><path d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill-rule="evenodd" ></path></svg>
-                        @endif
+    @if (! empty($question->content))
+        <div>
+            @if ($question->anonymously)
+                <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
+                    <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
+                        <span>?</span>
                     </div>
 
-                    <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
-                        {{ '@'.$question->from->username }}
-                    </p>
+                    <p class="font-medium">Anonymously</p>
                 </div>
-            </a>
-        @endif
+            @else
+                <a
+                    href="{{ route('profile.show', ['user' => $question->from->username]) }}"
+                    class="flex items-center gap-3 px-4"
+                    wire:navigate
+                >
+                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
+                        <img
+                            src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
+                            alt="{{ $question->from->username }}"
+                            class="h-10 w-10 rounded-full"
+                        />
+                    </figure>
+                    <div class="overflow-hidden text-sm">
+                        <div class="flex">
+                            <p class="truncate font-medium text-slate-50">
+                                {{ $question->from->name }}
+                            </p>
+                            @if ($question->from->is_verified)
+                                <svg aria-label="Verified" class="text-{{ $question->from->right_color }} ml-1 mt-0.5 flex-shrink-0 fill-current saturate-200" height="15" role="img" viewBox="0 0 40 40" width="18"><title>Verified</title><path d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" fill-rule="evenodd" ></path></svg>
+                            @endif
+                        </div>
 
-        <p class="mb-4 mt-3 px-4 text-slate-200">
-            {!! $question->content !!}
-        </p>
-    </div>
+                        <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
+                            {{ '@'.$question->from->username }}
+                        </p>
+                    </div>
+                </a>
+            @endif
+
+            <p class="mb-4 mt-3 px-4 text-slate-200">
+                {!! $question->content !!}
+            </p>
+        </div>
+    @endif
 
     @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
