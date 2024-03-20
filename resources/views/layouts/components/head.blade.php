@@ -109,6 +109,4 @@
     <script src="https://cdn.usefathom.com/script.js" data-site="FPVCPLWU" defer></script>
 @endif
 
-@if (request()->routeIs('register'))
-    <script async src="https://www.google.com/recaptcha/api.js"></script>
-@endif
+@yield('head')
