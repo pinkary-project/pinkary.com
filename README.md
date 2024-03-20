@@ -116,7 +116,7 @@ You run these tools individually using the following commands:
 ```bash
 # Lint the code using Pint
 composer lint
-compsoer test:lint
+composer test:lint
 
 # Refactor the code using Rector
 composer refactor
