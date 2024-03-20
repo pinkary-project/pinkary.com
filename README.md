@@ -18,9 +18,14 @@ Over time, we've managed to add more features, such as home, explore, questions,
 
 ## Installation
 
-Pinkary is a regular Laravel application; you can contribute to it following the steps below.
+Pinkary is a regular Laravel application; it's build on top of Laravel 11 and uses Livewire / Tailwind CSS for the frontend. If you are familiar with Laravel, you should feel right at home.
 
-First, clone the repository and create a new branch:
+In terms of local development, you can use the following requirements:
+
+- PHP 8.3 - with SQLite, GD, and other common extensions.
+- Node.js 16 or more recent.
+
+If you have these requirements, you can start by cloning the repository and installing the dependencies:
 
 ```bash
 git clone https://github.com/pinkary-project/pinkary.com.git
@@ -98,8 +103,35 @@ git push
 
 Visit [github.com/pinkary-project/pinkary.com/pulls](https://github.com/pinkary-project/pinkary.com/pulls) and create a pull request.
 
+## Tooling
+
+Pinkary uses a few tools to ensure the code quality and consistency. Of course, [Pest](https://pestphp.com) is the testing framework of choice, and we also use [PHPStan](https://phpstan.org) for static analysis.  Pest's type coverage is at 100%, and the test suite is also at 100% coverage.
+
+In terms of code style, we use [Laravel Pint](https://laravel.com/docs/11.x/pint) to ensure the code is consistent and follows the Laravel conventions. We also use [Rector](https://getrector.org) to ensure the code is up to date with the latest PHP version.
+
+You run these tools individually using the following commands:
+
+```bash
+# Lint the code using Pint
+composer lint
+compsoer test:lint
+
+# Refactor the code using Rector
+composer refactor
+composer test:refactor
+
+# Run PHPStan
+composer test:types
+
+# Run the test suite
+composer test:unit
+
+# Run all the tools
+composer test
+```
+
+Pull requests that don't pass the test suite will not be merged. So, as suggested on the [Installation](#installation) section, be sure to run the test suite before pushing your branch.
+
 ---
 
-This project's code is still private and will be open-sourced soon. **Do not share it with anyone yet**.
-
-Pinkary is an open-source project licensed under the **[GNU Affero General Public License](LICENSE.md)**.
+**The code is still private**, but we are planning to open-source it soon under the **[GNU Affero General Public License](LICENSE.md)**. In the meantime, feel free to ask any questions in the [Telegram group](https://t.me/+Yv9CUTC1q29lNzg8) or on [Twitter](https://twitter.com/PinkaryProject).
