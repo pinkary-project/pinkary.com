@@ -67,18 +67,3 @@ jobs:
 
       - name: Tests
         run: composer test
-
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.FORGE_SSH_PRIVATE_KEY }}
-
-      - name: Require Forge CLI
-        run: composer global require laravel/forge-cli
-
-      - name: Deploy Site
-        run: |
-          forge server:switch pinkary-web-1
-          forge deploy pinkary.com
-        env:
-          FORGE_API_TOKEN: ${{ secrets.FORGE_API_TOKEN }}
