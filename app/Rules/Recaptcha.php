@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Rules;
 
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\IpUtils;
 
-final readonly class Recaptcha
+final readonly class Recaptcha implements ValidationRule
 {
     /**
      * The recaptcha URL.
@@ -15,12 +17,26 @@ final readonly class Recaptcha
     private const string URL = 'https://www.google.com/recaptcha/api/siteverify';
 
     /**
-     * Create a new recaptcha instance.
+     * Create a new rule instance.
      */
-    public function __construct(
-        private string $secret,
-    ) {
+    public function __construct(private ?string $ip)
+    {
         //
+    }
+
+    /**
+     * Run the validation rule.
+     *
+     * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     */
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        assert(is_string($value));
+        assert(is_string($this->ip));
+
+        if (! $this->verify($this->ip, $value)) {
+            $fail(__('The recaptcha response was invalid.'));
+        }
     }
 
     /**
@@ -29,7 +45,7 @@ final readonly class Recaptcha
     public function verify(string $ipAddress, string $response): bool
     {
         $payload = [
-            'secret' => $this->secret,
+            'secret' => config()->string('services.recaptcha.secret'),
             'response' => $response,
             'remoteip' => IpUtils::anonymize($ipAddress),
         ];
