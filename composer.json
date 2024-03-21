@@ -16,6 +16,7 @@
         "larastan/larastan": "^2.9.2",
         "laravel/pint": "dev-feat/blade",
         "mockery/mockery": "^1.6.11",
+        "laravel/sail": "^1.29",
         "nunomaduro/collision": "^8.1.1",
         "pestphp/pest": "^2.34.4",
         "pestphp/pest-plugin-laravel": "^2.3.0",
