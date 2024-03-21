@@ -15,7 +15,7 @@ test('render', function () {
         'userId' => $user->id,
     ]);
 
-    $component->assertStatus(200);
+    $component->assertOk();
 });
 
 test('render with wrong user id', function () {

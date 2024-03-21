@@ -17,7 +17,7 @@ test('auth', function () {
     $response = $this->actingAs($user)
         ->get(route('home'));
 
-    $response->assertStatus(200)
+    $response->assertOk()
         ->assertSee('Home')
         ->assertSeeLivewire(Home::class);
 });

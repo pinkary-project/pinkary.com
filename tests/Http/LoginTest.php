@@ -7,7 +7,7 @@ use App\Models\User;
 test('guest', function () {
     $response = $this->get('/login');
 
-    $response->assertStatus(200)
+    $response->assertOk()
         ->assertSee('Log In');
 });
 
