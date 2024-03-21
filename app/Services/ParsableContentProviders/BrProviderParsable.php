@@ -13,6 +13,6 @@ final readonly class BrProviderParsable implements ParsableContentProvider
      */
     public function parse(string $content): string
     {
-        return (string) preg_replace('/\n/', '</br>', $content);
+        return (string) preg_replace('/\n/', '<br>', $content);
     }
 }

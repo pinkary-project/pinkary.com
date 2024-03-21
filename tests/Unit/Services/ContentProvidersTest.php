@@ -2,6 +2,21 @@
 
 declare(strict_types=1);
 
+test('brs', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\BrProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => "Check this:\nHello, World!",
+        'parsed' => 'Check this:<br>Hello, World!',
+    ],
+    [
+        'content' => "Check this:\n\nHello, World!\n",
+        'parsed' => 'Check this:<br><br>Hello, World!<br>',
+    ],
+]);
+
 test('links', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
