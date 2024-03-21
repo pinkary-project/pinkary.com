@@ -52,7 +52,10 @@ final class Index extends Component
                 ->where('is_reported', false)
                 ->when(! $user->is($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
                     $query->whereNotNull('answer');
-                })->orderByDesc('updated_at')->simplePaginate($this->perPage),
+                })
+                ->orderByDesc('pinned')
+                ->orderByDesc('updated_at')
+                ->simplePaginate($this->perPage),
         ]);
     }
 
@@ -62,9 +65,10 @@ final class Index extends Component
     #[On('question.created')]
     #[On('question.updated')]
     #[On('question.reported')]
+    #[On('question.pinned')]
+    #[On('question.unpinned')]
     public function refresh(): void
     {
-        //
     }
 
     /**
