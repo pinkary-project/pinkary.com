@@ -65,8 +65,6 @@ final class Index extends Component
     #[On('question.created')]
     #[On('question.updated')]
     #[On('question.reported')]
-    #[On('question.pinned')]
-    #[On('question.unpinned')]
     public function refresh(): void
     {
     }
