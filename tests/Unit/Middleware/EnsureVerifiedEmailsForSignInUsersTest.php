@@ -13,7 +13,7 @@ test('guest', function () {
 
     $response = $this->get('/test');
 
-    $response->assertStatus(200);
+    $response->assertOk();
 });
 
 test('auth with verified email', function () {
@@ -26,7 +26,7 @@ test('auth with verified email', function () {
 
     $response = $this->actingAs($user)->get('/test');
 
-    $response->assertStatus(200);
+    $response->assertOk();
 });
 
 test('auth without verified email', function () {

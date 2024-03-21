@@ -11,5 +11,5 @@ it('renders', function () {
 
     $component = Livewire::test(WelcomeUsersAvatars::class);
 
-    $component->assertStatus(200);
+    $component->assertOk();
 });

@@ -16,7 +16,7 @@ test('guest', function () {
         'question' => $question->id,
     ]));
 
-    $response->assertStatus(200)->assertSee([
+    $response->assertOk()->assertSee([
         $question->content,
         'This is the answer',
     ]);
@@ -76,7 +76,7 @@ test('question without answer is not visible for other users', function () {
         'question' => $question->id,
     ]));
 
-    $response->assertStatus(200)
+    $response->assertOk()
         ->assertSee($question->content);
 });
 

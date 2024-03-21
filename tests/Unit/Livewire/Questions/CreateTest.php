@@ -15,7 +15,7 @@ test('render', function () {
         'toId' => $userB->id,
     ]);
 
-    $component->assertStatus(200)->assertSee('Ask a question...');
+    $component->assertOk()->assertSee('Ask a question...');
 });
 
 test('refreshes when link settings changes', function () {
