@@ -41,7 +41,7 @@
                                     @if ($user->is_verified)
                                         <x-icons.verified
                                             :color="$user->right_color"
-                                            class="ml-1 mt-0.5 flex-shrink-0"
+                                            class="ml-1 mt-0.5 flex-shrink-0 h-4 w-4"
                                         />
                                     @endif
                                 </div>
