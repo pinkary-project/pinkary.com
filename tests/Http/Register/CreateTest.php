@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
@@ -12,6 +13,12 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+    Http::fake([
+        'https://www.google.com/recaptcha/api/siteverify' => Http::response([
+            'success' => true,
+        ]),
+    ]);
+
     $response = $this->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -19,6 +26,7 @@ test('new users can register', function () {
         'password' => 'm@9v_.*.XCN',
         'password_confirmation' => 'm@9v_.*.XCN',
         'timezone' => 'UTC',
+        'g-recaptcha-response' => 'valid',
     ]);
 
     $this->assertAuthenticated();

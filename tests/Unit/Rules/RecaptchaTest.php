@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Services\Recaptcha;
+use App\Rules\Recaptcha;
 use Illuminate\Support\Facades\Http;
 
 it('verifies the recaptcha response', function () {
-    $recaptcha = new Recaptcha('secret');
+    $rule = new Recaptcha('127.0.0.1');
 
     $response = Http::fake([
         'https://www.google.com/recaptcha/api/siteverify' => Http::response([
@@ -14,11 +14,15 @@ it('verifies the recaptcha response', function () {
         ]),
     ]);
 
-    expect($recaptcha->verify('127.0.0.1', 'response'))->toBeTrue();
+    $fail = fn (string $errorMessage) => $this->fail($errorMessage);
+
+    $rule->validate('g-recaptcha-response', 'valid', $fail);
+
+    expect(true)->toBeTrue();
 });
 
 it('does not verify the recaptcha response', function () {
-    $recaptcha = new Recaptcha('secret');
+    $rule = new Recaptcha('127.0.0.1');
 
     $response = Http::fake([
         'https://www.google.com/recaptcha/api/siteverify' => Http::response([
@@ -26,5 +30,9 @@ it('does not verify the recaptcha response', function () {
         ]),
     ]);
 
-    expect($recaptcha->verify('127.0.0.1', 'response'))->toBeFalse();
-});
+    $fail = fn (string $errorMessage) => $this->fail($errorMessage);
+
+    $rule->validate('g-recaptcha-response', 'valid', $fail);
+
+    expect(true)->toBeFalse();
+})->fails();
