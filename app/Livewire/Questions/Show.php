@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -28,8 +29,6 @@ final class Show extends Component
      * Refresh the component.
      */
     #[On('question.updated')]
-    #[On('question.pinned')]
-    #[On('question.unpinned')]
     public function refresh(): void
     {
         //
@@ -101,14 +100,17 @@ final class Show extends Component
             return;
         }
 
+        $user = auth()->user();
+        assert($user instanceof User);
+
         $question = Question::findOrFail($this->questionId);
 
         $this->authorize('update', $question);
 
-        Question::query()->update(['pinned' => false]);
+        $user->pinnedQuestion()->update(['pinned' => false]);
         $question->update(['pinned' => true]);
 
-        $this->dispatch('question.pinned');
+        $this->dispatch('question.updated');
     }
 
     /**
@@ -128,7 +130,7 @@ final class Show extends Component
 
         $question->update(['pinned' => false]);
 
-        $this->dispatch('question.unpinned');
+        $this->dispatch('question.updated');
     }
 
     /**
