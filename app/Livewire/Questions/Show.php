@@ -103,10 +103,10 @@ final class Show extends Component
 
         $question = Question::findOrFail($this->questionId);
 
-        $this->authorize('pin', $question);
+        $this->authorize('update', $question);
 
-        $question->pinned = true;
-        $question->save();
+        Question::query()->update(['pinned' => false]);
+        $question->update(['pinned' => true]);
 
         $this->dispatch('question.pinned');
     }
@@ -126,8 +126,7 @@ final class Show extends Component
 
         $this->authorize('update', $question);
 
-        $question->pinned = false;
-        $question->save();
+        $question->update(['pinned' => false]);
 
         $this->dispatch('question.unpinned');
     }
