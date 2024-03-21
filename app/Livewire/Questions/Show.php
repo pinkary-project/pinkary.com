@@ -28,6 +28,8 @@ final class Show extends Component
      * Refresh the component.
      */
     #[On('question.updated')]
+    #[On('question.pinned')]
+    #[On('question.unpinned')]
     public function refresh(): void
     {
         //
@@ -86,6 +88,48 @@ final class Show extends Component
         $question->likes()->firstOrCreate([
             'user_id' => auth()->id(),
         ]);
+    }
+
+    /**
+     * Pin a question.
+     */
+    public function pin(): void
+    {
+        if (! auth()->check()) {
+            redirect()->route('login');
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $this->authorize('pin', $question);
+
+        $question->pinned = true;
+        $question->save();
+
+        $this->dispatch('question.pinned');
+    }
+
+    /**
+     * Unpin a pinned question.
+     */
+    public function unpin(): void
+    {
+        if (! auth()->check()) {
+            redirect()->route('login');
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $this->authorize('update', $question);
+
+        $question->pinned = false;
+        $question->save();
+
+        $this->dispatch('question.unpinned');
     }
 
     /**
