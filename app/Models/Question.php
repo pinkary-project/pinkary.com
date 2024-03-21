@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property string $id
  * @property int $from_id
  * @property int $to_id
+ * @property bool $pinned
  * @property string $content
  * @property bool $anonymously
  * @property string|null $answer
@@ -68,6 +69,7 @@ final class Question extends Model
             'answered_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'pinned' => 'bool',
         ];
     }
 
@@ -99,5 +101,10 @@ final class Question extends Model
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function pinned(): bool
+    {
+        return $this->pinned;
     }
 }
