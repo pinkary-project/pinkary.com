@@ -84,7 +84,7 @@ final class Index extends Component
         return view('livewire.links.index', [
             'user' => $user,
             'questionsReceivedCount' => $user->questionsReceived()->where('answer', '!=', null)->count(),
-            'links' => $user->links()->get()->sortBy(function (Link $link) use ($sort): int {
+            'links' => $user->links->sortBy(function (Link $link) use ($sort): int {
                 if (($index = array_search($link->id, $sort)) === false) {
                     return 1_000_000 + $link->id;
                 }
