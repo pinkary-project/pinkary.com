@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
@@ -37,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
+ * @property-read Question $pinnedQuestion
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  */
@@ -82,6 +84,15 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function questionsReceived(): HasMany
     {
         return $this->hasMany(Question::class, 'to_id');
+    }
+
+    /**
+     * @return HasOne<Question>
+     */
+    public function pinnedQuestion(): HasOne
+    {
+        return $this->hasOne(Question::class, 'to_id')
+            ->where('pinned', true);
     }
 
     /**
