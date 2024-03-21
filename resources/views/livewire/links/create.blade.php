@@ -26,7 +26,7 @@
                 class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
                 type="submit"
             >
-                {{ __('Send') }}
+                {{ __('Create') }}
             </x-primary-colorless-button>
             <button
                 @click="showLinksForm = false"
