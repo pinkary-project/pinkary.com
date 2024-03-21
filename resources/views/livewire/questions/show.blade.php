@@ -43,24 +43,26 @@
                 </a>
             @endif
 
-        @if(auth()->check())
-            @if(! $question->pinned && auth()->user()->can('pin', $question))
-                <button
+            @if (auth()->check())
+                @if (! $question->pinned && auth()->user()->can('pin', $question))
+                    <button
                         wire:click="pin"
-                        class="group flex px-2 space-x-2 items-center transition-colors hover:text-slate-400 focus:outline-none text-slate-50">
-                    <x-icons.pin class="text-slate-50 h-4 w-4 group-hover:text-slate-400"/>
-                    <span class="group-hover:text-slate-400">Pin</span>
-                </button>
-            @elseif ($question->pinned)
-                <button class="group flex px-2 space-x-2 items-center transition-colors hover:text-slate-400 focus:outline-none text-slate-50"
-                        wire:click="unpin">
-                    <x-icons.pin class="text-slate-50 h-4 w-4 group-hover:text-slate-400"/>
-                    <span class="group-hover:text-slate-400">Unpin</span>
-                </button>
+                        class="group flex items-center space-x-2 px-2 text-slate-50 transition-colors hover:text-slate-400 focus:outline-none"
+                    >
+                        <x-icons.pin class="h-4 w-4 text-slate-50 group-hover:text-slate-400" />
+                        <span class="group-hover:text-slate-400">Pin</span>
+                    </button>
+                @elseif ($question->pinned)
+                    <button
+                        class="group flex items-center space-x-2 px-2 text-slate-50 transition-colors hover:text-slate-400 focus:outline-none"
+                        wire:click="unpin"
+                    >
+                        <x-icons.pin class="h-4 w-4 text-slate-50 group-hover:text-slate-400" />
+                        <span class="group-hover:text-slate-400">Unpin</span>
+                    </button>
+                @endif
             @endif
-        @endif
-
-    </div>
+        </div>
 
         <p class="mb-4 mt-3 px-4 text-slate-200">
             {!! $question->content !!}
