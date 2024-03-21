@@ -102,9 +102,4 @@ final class Question extends Model
     {
         return $this->hasMany(Like::class);
     }
-
-    public function pinned(): bool
-    {
-        return $this->pinned;
-    }
 }
