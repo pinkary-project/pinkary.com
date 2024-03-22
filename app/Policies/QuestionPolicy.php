@@ -37,6 +37,9 @@ final readonly class QuestionPolicy
         return $user->id === $question->to_id;
     }
 
+    /**
+     * Determine whether the user can pin the question.
+     */
     public function pin(User $user, Question $question): bool
     {
         return $user->id === $question->to_id
