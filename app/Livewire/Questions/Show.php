@@ -28,6 +28,7 @@ final class Show extends Component
     /**
      * Whether the pinned label should be displayed or not.
      */
+    #[Locked]
     public bool $pinnable = false;
 
     /**
