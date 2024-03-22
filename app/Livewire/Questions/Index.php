@@ -54,7 +54,7 @@ final class Index extends Component
                     $query->whereNotNull('answer');
                 })
                 ->orderByDesc('pinned')
-                ->orderByDesc('updated_at')
+                ->orderByDesc('answered_at')
                 ->simplePaginate($this->perPage),
         ]);
     }
