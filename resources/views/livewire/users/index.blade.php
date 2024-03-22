@@ -23,10 +23,10 @@
                     <li>
                         <a
                             href="{{ route('profile.show', ['user' => $user->username]) }}"
-                            class="flex items-center gap-3 rounded-2xl border border-slate-900 bg-gray-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900"
+                            class="group flex items-center gap-3 rounded-2xl border border-slate-900 bg-gray-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900"
                             wire:navigate
                         >
-                            <figure class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-slate-800 transition-opacity hover:opacity-90">
+                            <figure class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
                                 <img
                                     class="h-12 w-12 rounded-full"
                                     src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
@@ -45,7 +45,7 @@
                                         />
                                     @endif
                                 </div>
-                                <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
+                                <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
                                     {{ '@'.$user->username }}
                                 </p>
                             </div>
