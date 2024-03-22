@@ -31,7 +31,7 @@
                                     @if ($question->from->is_verified)
                                         <x-icons.verified
                                             :color="$question->from->right_color"
-                                            class="ml-1 mt-1 h-4 w-4"
+                                            class="ml-1 mt-0.5 h-4 w-4"
                                         />
                                     @endif
                                 </div>

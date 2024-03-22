@@ -29,10 +29,7 @@
                                 {{ $question->from->name }}
                             </p>
                             @if ($question->from->is_verified)
-                                <x-icons.verified
-                                    :color="$question->from->right_color"
-                                    class="ml-1 mt-0.5 h-4 w-4 flex-shrink-0"
-                                />
+                                <x-icons.verified :color="$question->from->right_color" class="ml-1 mt-0.5 h-4 w-4" />
                             @endif
                         </div>
 
@@ -76,10 +73,7 @@
                                 {{ $question->to->name }}
                             </p>
                             @if ($question->to->is_verified)
-                                <x-icons.verified
-                                    :color="$question->to->right_color"
-                                    class="ml-1 mt-0.5 h-4 w-4 flex-shrink-0"
-                                />
+                                <x-icons.verified :color="$question->to->right_color" class="ml-1 mt-0.5 h-4 w-4" />
                             @endif
                         </div>
 
