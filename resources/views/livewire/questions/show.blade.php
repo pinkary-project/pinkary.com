@@ -1,45 +1,54 @@
 <article class="block">
     <div>
-        @if ($question->anonymously)
-            <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
-                    <span>?</span>
-                </div>
-
-                <p class="font-medium">Anonymously</p>
-            </div>
-        @else
-            <a
-                href="{{ route('profile.show', ['user' => $question->from->username]) }}"
-                class="flex items-center gap-3 px-4"
-                wire:navigate
-            >
-                <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
-                    <img
-                        src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
-                        alt="{{ $question->from->username }}"
-                        class="h-10 w-10 rounded-full"
-                    />
-                </figure>
-                <div class="overflow-hidden text-sm">
-                    <div class="flex">
-                        <p class="truncate font-medium text-slate-50">
-                            {{ $question->from->name }}
-                        </p>
-                        @if ($question->from->is_verified)
-                            <x-icons.verified
-                                :color="$question->from->right_color"
-                                class="ml-1 mt-0.5 h-4 w-4 flex-shrink-0"
-                            />
-                        @endif
+        <div class="flex justify-between">
+            @if ($question->anonymously)
+                <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
+                    <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
+                        <span>?</span>
                     </div>
 
-                    <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
-                        {{ '@'.$question->from->username }}
-                    </p>
+                    <p class="font-medium">Anonymously</p>
                 </div>
-            </a>
-        @endif
+            @else
+                <a
+                    href="{{ route('profile.show', ['user' => $question->from->username]) }}"
+                    class="flex items-center gap-3 px-4"
+                    wire:navigate
+                >
+                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
+                        <img
+                            src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
+                            alt="{{ $question->from->username }}"
+                            class="h-10 w-10 rounded-full"
+                        />
+                    </figure>
+
+                    <div class="overflow-hidden text-sm">
+                        <div class="flex">
+                            <p class="truncate font-medium text-slate-50">
+                                {{ $question->from->name }}
+                            </p>
+                            @if ($question->from->is_verified)
+                                <x-icons.verified
+                                    :color="$question->from->right_color"
+                                    class="ml-1 mt-0.5 h-4 w-4 flex-shrink-0"
+                                />
+                            @endif
+                        </div>
+
+                        <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
+                            {{ '@'.$question->from->username }}
+                        </p>
+                    </div>
+                </a>
+            @endif
+            @if ($question->pinned)
+                <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
+                    <x-icons.pin class="h-4 w-4 text-slate-400" />
+                    <span class="text-slate-400">Pinned</span>
+                </div>
+            @endif
+        </div>
 
         <p class="mb-4 mt-3 px-4 text-slate-200">
             {!! $question->content !!}
@@ -48,36 +57,61 @@
 
     @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
-            <a
-                href="{{ route('profile.show', ['user' => $question->to->username]) }}"
-                class="flex items-center gap-3"
-                wire:navigate
-            >
-                <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
-                    <img
-                        src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
-                        alt="{{ $question->to->username }}"
-                        class="h-10 w-10 rounded-full"
-                    />
-                </figure>
-                <div class="overflow-hidden text-sm">
-                    <div class="items flex">
-                        <p class="truncate font-medium text-slate-50">
-                            {{ $question->to->name }}
-                        </p>
-                        @if ($question->to->is_verified)
-                            <x-icons.verified
-                                :color="$question->to->right_color"
-                                class="ml-1 mt-0.5 h-4 w-4 flex-shrink-0"
-                            />
-                        @endif
-                    </div>
+            <div class="flex justify-between">
+                <a
+                    href="{{ route('profile.show', ['user' => $question->to->username]) }}"
+                    class="flex items-center gap-3"
+                    wire:navigate
+                >
+                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
+                        <img
+                            src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
+                            alt="{{ $question->to->username }}"
+                            class="h-10 w-10 rounded-full"
+                        />
+                    </figure>
+                    <div class="overflow-hidden text-sm">
+                        <div class="items flex">
+                            <p class="truncate font-medium text-slate-50">
+                                {{ $question->to->name }}
+                            </p>
+                            @if ($question->to->is_verified)
+                                <x-icons.verified
+                                    :color="$question->to->right_color"
+                                    class="ml-1 mt-0.5 h-4 w-4 flex-shrink-0"
+                                />
+                            @endif
+                        </div>
 
-                    <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
-                        {{ '@'.$question->to->username }}
-                    </p>
-                </div>
-            </a>
+                        <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
+                            {{ '@'.$question->to->username }}
+                        </p>
+                    </div>
+                </a>
+                @if (auth()->check() && auth()->user()->can('update', $question))
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none">
+                                <x-icons.ellipsis-horizontal class="h-6 w-6" />
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            @if (! $question->pinned && auth()->user()->can('pin', $question))
+                                <x-dropdown-button wire:click="pin" class="flex items-center gap-1.5">
+                                    <x-icons.pin class="h-4 w-4 text-slate-50 group-hover:text-slate-400" />
+                                    <span class="group-hover:text-slate-400">Pin</span>
+                                </x-dropdown-button>
+                            @elseif ($question->pinned)
+                                <x-dropdown-button wire:click="unpin" class="flex items-center gap-1.5">
+                                    <x-icons.pin class="h-4 w-4" />
+                                    <span>Unpin</span>
+                                </x-dropdown-button>
+                            @endif
+                        </x-slot>
+                    </x-dropdown>
+                @endif
+            </div>
 
             <p class="mt-3 text-slate-200">
                 {!! $question->answer !!}

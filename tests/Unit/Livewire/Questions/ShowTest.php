@@ -162,3 +162,77 @@ test('unlike auth', function () {
 
     $component->assertRedirect(route('login'));
 });
+
+test('pin', function () {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create(['to_id' => $user->id]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('pin');
+
+    expect($question->refresh()->pinned)->toBe(true);
+});
+
+test('pin auth', function () {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('pin');
+
+    $component->assertRedirect(route('login'));
+});
+
+test('unpin', function () {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'pinned' => true,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('unpin');
+
+    expect($question->refresh()->pinned)->toBe(false);
+});
+
+test('unpin auth', function () {
+    $question = Question::factory()->create([
+        'pinned' => true,
+    ]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('unpin');
+
+    $component->assertRedirect(route('login'));
+});
+
+test('only show pin/unpin buttons to the user who received the question', function () {
+    $user = User::factory()->create();
+    $visitor = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'pinned' => true,
+    ]);
+
+    $component = Livewire::actingAs($visitor)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertDontSee('Pin');
+    $component->assertDontSee('Unpin');
+});

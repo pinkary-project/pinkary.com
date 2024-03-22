@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -86,6 +87,50 @@ final class Show extends Component
         $question->likes()->firstOrCreate([
             'user_id' => auth()->id(),
         ]);
+    }
+
+    /**
+     * Pin a question.
+     */
+    public function pin(): void
+    {
+        if (! auth()->check()) {
+            redirect()->route('login');
+
+            return;
+        }
+
+        $user = auth()->user();
+        assert($user instanceof User);
+
+        $question = Question::findOrFail($this->questionId);
+
+        $this->authorize('update', $question);
+
+        $user->pinnedQuestion()->update(['pinned' => false]);
+        $question->update(['pinned' => true]);
+
+        $this->dispatch('question.updated');
+    }
+
+    /**
+     * Unpin a pinned question.
+     */
+    public function unpin(): void
+    {
+        if (! auth()->check()) {
+            redirect()->route('login');
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $this->authorize('update', $question);
+
+        $question->update(['pinned' => false]);
+
+        $this->dispatch('question.updated');
     }
 
     /**

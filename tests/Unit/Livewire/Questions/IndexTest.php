@@ -142,3 +142,23 @@ test('load more', function () {
 
     $component->assertSet('perPage', 100);
 });
+
+test('pinned question is displayed at the top', function () {
+    $user = User::factory()->create();
+
+    $pinnedQuestion = Question::factory()->create([
+        'pinned' => true,
+        'to_id' => $user->id,
+    ]);
+
+    $otherQuestions = Question::factory()->count(10)->create(['to_id' => $user->id]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->assertSeeInOrder([
+        $pinnedQuestion->content,
+        ...$otherQuestions->slice(0, 4)->map->content->toArray(),
+    ]);
+});

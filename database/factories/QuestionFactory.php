@@ -29,6 +29,7 @@ final class QuestionFactory extends Factory
             'anonymously' => $this->faker->boolean,
             'answer' => $this->faker->sentence,
             'answered_at' => $this->faker->dateTime,
+            'pinned' => false,
         ];
     }
 }
