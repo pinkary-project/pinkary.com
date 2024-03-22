@@ -219,3 +219,20 @@ test('unpin auth', function () {
 
     $component->assertRedirect(route('login'));
 });
+
+test('only show pin/unpin buttons to the user who received the question', function () {
+    $user = User::factory()->create();
+    $visitor = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'pinned' => true,
+    ]);
+
+    $component = Livewire::actingAs($visitor)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertDontSee('Pin');
+    $component->assertDontSee('Unpin');
+});
