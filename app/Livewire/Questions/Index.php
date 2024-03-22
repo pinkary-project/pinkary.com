@@ -30,6 +30,11 @@ final class Index extends Component
     public int $perPage = 5;
 
     /**
+     * Whether the pinned label should be displayed or not.
+     */
+    public bool $pinnable = false;
+
+    /**
      * Load more questions.
      */
     public function loadMore(): void
