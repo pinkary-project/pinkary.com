@@ -166,11 +166,15 @@ test('unlike auth', function () {
 test('pin', function () {
     $user = User::factory()->create();
 
-    $question = Question::factory()->create(['to_id' => $user->id]);
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+    ]);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
         'questionId' => $question->id,
     ]);
+
+    $component->assertSee('Pin');
 
     $component->call('pin');
 
@@ -184,9 +188,31 @@ test('pin auth', function () {
         'questionId' => $question->id,
     ]);
 
+    $component->assertDontSee('Pin');
+
     $component->call('pin');
 
     $component->assertRedirect(route('login'));
+});
+
+test('pin no answer', function () {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'answer' => null,
+        'answered_at' => null,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertDontSee('Pin');
+
+    $component->call('pin');
+
+    $component->assertForbidden();
 });
 
 test('unpin', function () {
@@ -200,6 +226,8 @@ test('unpin', function () {
     $component = Livewire::actingAs($user)->test(Show::class, [
         'questionId' => $question->id,
     ]);
+
+    $component->assertSee('Unpin');
 
     $component->call('unpin');
 
@@ -215,12 +243,14 @@ test('unpin auth', function () {
         'questionId' => $question->id,
     ]);
 
+    $component->assertDontSee('Unpin');
+
     $component->call('unpin');
 
     $component->assertRedirect(route('login'));
 });
 
-test('only show pin/unpin buttons to the user who received the question', function () {
+test('unpin visitor', function () {
     $user = User::factory()->create();
     $visitor = User::factory()->create();
 
@@ -233,6 +263,9 @@ test('only show pin/unpin buttons to the user who received the question', functi
         'questionId' => $question->id,
     ]);
 
-    $component->assertDontSee('Pin');
     $component->assertDontSee('Unpin');
+
+    $component->call('unpin');
+
+    $component->assertForbidden();
 });
