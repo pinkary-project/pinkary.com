@@ -9,7 +9,7 @@
         <div class="items center flex justify-center">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
             @if ($user->is_verified)
-                <x-icons.verified :color="$user->right_color" class="ml-1 mt-2 h-4 w-4" />
+                <x-icons.verified :color="$user->right_color" class="ml-1.5 mt-0.5 h-6 w-6" />
             @endif
         </div>
 
