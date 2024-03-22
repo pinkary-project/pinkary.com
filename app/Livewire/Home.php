@@ -35,7 +35,7 @@ final class Home extends Component
         return view('livewire.home', [
             'questions' => Question::where('answer', '!=', null)
                 ->where('is_reported', false)
-                ->orderByDesc('updated_at')
+                ->orderByDesc('answered_at')
                 ->simplePaginate($this->perPage),
         ]);
     }
