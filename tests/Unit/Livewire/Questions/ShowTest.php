@@ -269,3 +269,20 @@ test('unpin visitor', function () {
 
     $component->assertForbidden();
 });
+
+test('display pinned label only on profile.show route', function () {
+    $user = User::factory()->create();
+
+    Question::factory()->create([
+        'to_id' => $user->id,
+        'pinned' => true,
+    ]);
+
+    $response = $this->actingAs($user)->get(route('profile.show', $user));
+
+    $response->assertSee('Pinned');
+
+    $response = $this->actingAs($user)->get(route('home'));
+
+    $response->assertDontSee('Pinned');
+});
