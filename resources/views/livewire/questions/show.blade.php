@@ -12,10 +12,10 @@
             @else
                 <a
                     href="{{ route('profile.show', ['user' => $question->from->username]) }}"
-                    class="flex items-center gap-3 px-4"
+                    class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
-                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
+                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
                             alt="{{ $question->from->username }}"
@@ -36,7 +36,7 @@
                             @endif
                         </div>
 
-                        <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
+                        <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
                             {{ '@'.$question->from->username }}
                         </p>
                     </div>
@@ -60,10 +60,10 @@
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['user' => $question->to->username]) }}"
-                    class="flex items-center gap-3"
+                    class="group flex items-center gap-3"
                     wire:navigate
                 >
-                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity hover:opacity-90">
+                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
@@ -83,7 +83,7 @@
                             @endif
                         </div>
 
-                        <p class="truncate text-slate-500 transition-colors hover:text-slate-400">
+                        <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
                             {{ '@'.$question->to->username }}
                         </p>
                     </div>
@@ -99,8 +99,8 @@
                         <x-slot name="content">
                             @if (! $question->pinned && auth()->user()->can('pin', $question))
                                 <x-dropdown-button wire:click="pin" class="flex items-center gap-1.5">
-                                    <x-icons.pin class="h-4 w-4 text-slate-50 group-hover:text-slate-400" />
-                                    <span class="group-hover:text-slate-400">Pin</span>
+                                    <x-icons.pin class="h-4 w-4 text-slate-50" />
+                                    <span>Pin</span>
                                 </x-dropdown-button>
                             @elseif ($question->pinned)
                                 <x-dropdown-button wire:click="unpin" class="flex items-center gap-1.5">
@@ -165,9 +165,9 @@
                                             ])
                                         }}'
                                     })"
-                        class="text-slate-500 transition-colors hover:underline focus:outline-none"
+                        class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        <x-icons.paper-airplane class="h-4 w-4 transition-colors hover:text-slate-400" />
+                        <x-icons.paper-airplane class="h-4 w-4" />
                     </button>
                     <button
                         x-cloak
@@ -180,9 +180,9 @@
                             ])
                         }}')"
                         type="button"
-                        class="text-slate-500 transition-colors hover:underline focus:outline-none"
+                        class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        <x-icons.paper-airplane class="h-4 w-4 transition-colors hover:text-slate-400" />
+                        <x-icons.paper-airplane class="h-4 w-4" />
                     </button>
                 </div>
             </div>
