@@ -5,7 +5,7 @@
                 <div class="mb-1">
                     <textarea
                         wire:model="answer"
-                        class="h-24 w-full border-none border-transparent bg-gray-950 text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        class="h-24 w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
                         placeholder="Write your answer..."
                         rows="3"
                     ></textarea>
