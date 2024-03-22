@@ -26,6 +26,12 @@ final class Show extends Component
     public bool $inIndex = false;
 
     /**
+     * Whether the pinned label should be displayed or not.
+     */
+    #[Locked]
+    public bool $pinnable = false;
+
+    /**
      * Refresh the component.
      */
     #[On('question.updated')]

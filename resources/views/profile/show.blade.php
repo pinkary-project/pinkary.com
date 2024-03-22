@@ -7,7 +7,7 @@
                 <div class="mt-3 border-t border-gray-800"></div>
 
                 <livewire:questions.create :toId="$user->id" />
-                <livewire:questions.index :userId="$user->id" />
+                <livewire:questions.index :userId="$user->id" :pinnable="true" />
             </div>
         </div>
     </div>
