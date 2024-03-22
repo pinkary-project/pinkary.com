@@ -50,7 +50,7 @@ final readonly class ProfileController
 
         $user->save();
 
-        dispatch(new DownloadUserAvatar($user));
+        DownloadUserAvatar::dispatch($user)->afterCommit();
 
         session()->flash('flash-message', 'Profile updated.');
 
