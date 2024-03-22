@@ -1,12 +1,5 @@
 <article class="block">
     <div>
-        @if ($question->pinned)
-            <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                <x-icons.pin class="h-4 w-4 text-slate-400" />
-                <span class="text-slate-400">Pinned</span>
-            </div>
-        @endif
-
         <div class="flex justify-between">
             @if ($question->anonymously)
                 <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
@@ -48,6 +41,12 @@
                         </p>
                     </div>
                 </a>
+            @endif
+            @if ($question->pinned)
+                <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
+                    <x-icons.pin class="h-4 w-4 text-slate-400" />
+                    <span class="text-slate-400">Pinned</span>
+                </div>
             @endif
         </div>
 
