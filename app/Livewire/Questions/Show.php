@@ -105,7 +105,7 @@ final class Show extends Component
 
         $question = Question::findOrFail($this->questionId);
 
-        $this->authorize('update', $question);
+        $this->authorize('pin', $question);
 
         $user->pinnedQuestion()->update(['pinned' => false]);
         $question->update(['pinned' => true]);
