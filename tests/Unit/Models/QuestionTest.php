@@ -20,6 +20,7 @@ test('to array', function () {
         'is_reported',
         'created_at',
         'updated_at',
+        'pinned',
     ]);
 });
 
