@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="-mt-10 flex min-h-screen flex-col items-center justify-center sm:mx-2">
-                    <div class="w-full max-w-md overflow-hidden rounded-lg py-10 shadow-md">
+                    <div class="w-full max-w-md rounded-lg py-10 shadow-md">
                         {{ $slot }}
                     </div>
                 </div>
