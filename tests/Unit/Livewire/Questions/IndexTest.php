@@ -151,7 +151,7 @@ test('pinned question is displayed at the top', function () {
         'to_id' => $user->id,
     ]);
 
-    $otherQuestions = Question::factory()->count(10)->create(['to_id' => $user->id]);
+    $otherQuestions = Question::factory()->count(10)->create(['to_id' => $user->id, 'answered_at' => now()]);
 
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
