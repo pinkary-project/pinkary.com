@@ -5,9 +5,9 @@
                 <div class="mb-1">
                     <textarea
                         wire:model="answer"
-                        class="h-[8.5rem] w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        class="{{ Request::routeIs('questions.show') ? 'h-[8.5rem]' : 'h-24' }} w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        rows="{{ Request::routeIs('questions.show') ? 5 : 3 }}"
                         placeholder="Write your answer..."
-                        rows="5"
                     ></textarea>
                     @error('answer')
                         <x-input-error :messages="$message" class="mt-2" />
