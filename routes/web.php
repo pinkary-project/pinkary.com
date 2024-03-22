@@ -7,8 +7,6 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/backlog', 'https://suggest.gg/pinkary')->name('backlog');
-
 Route::view('/', 'welcome')->name('welcome');
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
