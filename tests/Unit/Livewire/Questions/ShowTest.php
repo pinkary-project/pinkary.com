@@ -286,3 +286,26 @@ test('display pinned label only on profile.show route', function () {
 
     $response->assertDontSee('Pinned');
 });
+
+test('pinnable', function () {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'pinned' => true,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'pinnable' => false,
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertDontSee('Pinned');
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'pinnable' => true,
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertSee('Pinned');
+});
