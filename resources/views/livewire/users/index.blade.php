@@ -39,7 +39,10 @@
                                         {{ $user->name }}
                                     </p>
                                     @if ($user->is_verified)
-                                        <x-icons.verified :color="$user->right_color" class="ml-1 mt-0.5 h-4 w-4" />
+                                        <x-icons.verified
+                                            :color="$user->right_color"
+                                            class="ml-1 mt-0.5 h-3.5 w-3.5"
+                                        />
                                     @endif
                                 </div>
                                 <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
