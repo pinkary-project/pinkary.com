@@ -113,8 +113,8 @@ final class Show extends Component
 
         $this->authorize('pin', $question);
 
-        $user->pinnedQuestion()->update(['pinned' => false]);
-        $question->update(['pinned' => true]);
+        Question::withoutTimestamps(fn () => $user->pinnedQuestion()->update(['pinned' => false]));
+        Question::withoutTimestamps(fn () => $question->update(['pinned' => true]));
 
         $this->dispatch('question.updated');
     }
@@ -134,7 +134,7 @@ final class Show extends Component
 
         $this->authorize('update', $question);
 
-        $question->update(['pinned' => false]);
+        Question::withoutTimestamps(fn () => $question->update(['pinned' => false]));
 
         $this->dispatch('question.updated');
     }

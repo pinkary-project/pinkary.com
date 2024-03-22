@@ -6,6 +6,7 @@ namespace App\Livewire\Questions;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -55,9 +56,11 @@ final class Index extends Component
             'questions' => $user
                 ->questionsReceived()
                 ->where('is_reported', false)
-                ->whereNotNull('answer')
+                ->when(! $user->is($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
+                    $query->whereNotNull('answer');
+                })
                 ->orderByDesc('pinned')
-                ->orderByDesc('answered_at')
+                ->orderByDesc('updated_at')
                 ->simplePaginate($this->perPage),
         ]);
     }
