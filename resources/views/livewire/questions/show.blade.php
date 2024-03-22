@@ -99,7 +99,7 @@
 
                         <x-slot name="content">
                             @if (! $question->pinned && auth()->user()->can('pin', $question))
-                                <x-dropdown-button wire:click="pin">
+                                <x-dropdown-button wire:click="pin" class="flex items-center gap-1.5">
                                     <x-icons.pin class="h-4 w-4 text-slate-50 group-hover:text-slate-400" />
                                     <span class="group-hover:text-slate-400">Pin</span>
                                 </x-dropdown-button>
