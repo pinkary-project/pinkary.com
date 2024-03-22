@@ -43,8 +43,8 @@
                 </a>
             @endif
 
-            @if (auth()->check())
-                @if (! $question->pinned && auth()->user()->can('update', $question))
+            @if (auth()->check() && auth()->user()->can('update', $question))
+                @if (! $question->pinned)
                     <button
                         wire:click="pin"
                         class="group flex items-center space-x-2 px-2 text-slate-50 transition-colors hover:text-slate-400 focus:outline-none"
