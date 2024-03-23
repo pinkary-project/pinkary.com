@@ -84,3 +84,25 @@ test('is refreshable', function () {
 
     $this->expectNotToPerformAssertions();
 });
+
+test('user can see qr download link', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->assertSee(route('qr-code.download'));
+});
+
+test('guest or random user cannot see qr download link', function () {
+    $qrUser = User::factory()->create();
+
+    $randomUser = User::factory()->create();
+
+    $component = Livewire::actingAs($randomUser)->test(Index::class, [
+        'userId' => $qrUser->id,
+    ]);
+
+    $component->assertDontSee(route('qr-code.download'));
+});
