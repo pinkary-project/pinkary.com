@@ -78,7 +78,9 @@
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none">
+                        <button
+                            class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
+                        >
                             <x-icons.bars class="h-6 w-6" />
                         </button>
                     </x-slot>
