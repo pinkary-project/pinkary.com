@@ -18,10 +18,13 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             function (array $matches): string {
                 $url = preg_match('/^https?:\/\//', $matches[0]) ? $matches[0] : 'https://'.$matches[0];
                 $humanUrl = (string) preg_replace('/^https?:\/\//', '', $matches[0]);
+                $isMail = preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $humanUrl);
 
                 if (mb_substr($humanUrl, -1) === '/') {
                     $humanUrl = mb_substr($humanUrl, 0, -1);
                 }
+
+                $url = $isMail ? 'mailto:'.$humanUrl : $url;
 
                 return '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
             },
