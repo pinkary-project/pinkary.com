@@ -1,5 +1,15 @@
 <div>
-    <div class="bg-gradient-to-r p-5 text-center text-white">
+    <div class="relative bg-gradient-to-r p-5 text-center text-white">
+        @if (auth()->user()?->is($user))
+            <div class="absolute right-0 top-0">
+                <a href="{{ route('qr-code.download') }}" class="flex rounded-lg p-1 hover:bg-gray-800" download>
+                    <span class="sr-only">Download QR Code</span>
+
+                    <x-icons.qr-code class="size-6 shrink-0" />
+                </a>
+            </div>
+        @endif
+
         <img
             src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
             alt="{{ $user->username }}"
