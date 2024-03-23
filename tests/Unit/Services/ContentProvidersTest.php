@@ -66,3 +66,13 @@ test('code', function (string $content) {
             EOL,
     ],
 ]);
+
+test('mention', function (string $content) {
+    $provider = new App\Services\ParsableContentProviders\MentionProviderParsable();
+
+    expect($provider->parse($content))->toMatchSnapshot();
+})->with([
+    ['content' => 'Hi @nunomaduro'],
+    ['content' => '@nunomaduro hi'],
+    ['content' => '@w31r4_-NAME'],
+]);

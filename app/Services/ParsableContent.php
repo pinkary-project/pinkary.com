@@ -8,6 +8,7 @@ use App\Contracts\ParsableContentProvider;
 use App\Services\ParsableContentProviders\BrProviderParsable;
 use App\Services\ParsableContentProviders\CodeProviderParsable;
 use App\Services\ParsableContentProviders\LinkProviderParsable;
+use App\Services\ParsableContentProviders\MentionProviderParsable;
 use App\Services\ParsableContentProviders\StripProviderParsable;
 
 final readonly class ParsableContent
@@ -22,6 +23,7 @@ final readonly class ParsableContent
         CodeProviderParsable::class,
         BrProviderParsable::class,
         LinkProviderParsable::class,
+        MentionProviderParsable::class,
     ])
     {
         //
