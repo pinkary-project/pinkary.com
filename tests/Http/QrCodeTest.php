@@ -27,5 +27,5 @@ test('user can download qr code', function () {
         ->assertOk()
         ->assertStreamedContent($qrCode->toHtml())
         ->assertHeader('content-type', 'image/png')
-        ->assertDownload('qr-code.png');
+        ->assertDownload('pinkary_'.$user->username.'.png');
 });

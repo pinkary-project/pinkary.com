@@ -11,10 +11,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class QrCodeController
 {
+    /**
+     * Generate a QR code for the user.
+     */
     public function __invoke(Request $request): StreamedResponse
     {
         $user = $request->user();
-
         assert($user instanceof User);
 
         $qrCode = QrCode::size(512)
@@ -30,7 +32,8 @@ final class QrCodeController
                 /** @var string $qrCode */
                 echo $qrCode;
             },
-            'qr-code.png',
-            ['Content-Type' => 'image/png']);
+            'pinkary_'.$user->username.'.png',
+            ['Content-Type' => 'image/png']
+        );
     }
 }
