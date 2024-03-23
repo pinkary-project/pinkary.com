@@ -26,7 +26,7 @@ final class QrCodeController
             ->generate(route('profile.show', $user));
 
         return response()->streamDownload(
-            function () use ($qrCode) {
+            function () use ($qrCode): void {
                 /** @var string $qrCode */
                 echo $qrCode;
             },
