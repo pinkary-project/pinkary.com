@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/qr-code', QrCodeController::class)->name('qr-code.download');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
