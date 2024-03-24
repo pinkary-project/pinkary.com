@@ -32,6 +32,7 @@ test('updated', function () {
     $question->update(['answer' => 'answer']);
 
     expect($question->fresh()->to->notifications->count())->toBe(0);
+    expect($question->fresh()->from->notifications->count())->toBe(1);
 });
 
 test('deleted', function () {
