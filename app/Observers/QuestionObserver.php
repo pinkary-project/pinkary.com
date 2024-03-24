@@ -6,6 +6,7 @@ namespace App\Observers;
 
 use App\Models\Question;
 use App\Models\User;
+use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
 
 final readonly class QuestionObserver
@@ -30,6 +31,16 @@ final readonly class QuestionObserver
         if ($question->is_reported || $question->answer !== null) {
             $question->to->notifications->where('data.question_id', $question->id)->each->delete();
         }
+
+        if ($question->isDirty('answer') === false) {
+            return;
+        }
+
+        if ($question->from->id === $question->to->id) {
+            return;
+        }
+
+        $question->from->notify(new QuestionAnswered($question));
     }
 
     /**
@@ -38,5 +49,6 @@ final readonly class QuestionObserver
     public function deleted(Question $question): void
     {
         $question->to->notifications->where('data.question_id', $question->id)->each->delete();
+        $question->from->notifications->where('data.question_id', $question->id)->each->delete();
     }
 }

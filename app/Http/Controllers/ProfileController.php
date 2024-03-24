@@ -9,7 +9,6 @@ use App\Jobs\DownloadUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 final readonly class ProfileController
@@ -69,17 +68,9 @@ final readonly class ProfileController
         $user = $request->user();
         assert($user instanceof User);
 
-        if ($user->avatar) {
-            Storage::disk('public')->delete(
-                str_replace('storage/', '', $user->avatar)
-            );
-        }
-
-        assert($user instanceof User);
-
         auth()->logout();
 
-        $user->delete();
+        $user->purge();
 
         session()->invalidate();
         session()->regenerateToken();

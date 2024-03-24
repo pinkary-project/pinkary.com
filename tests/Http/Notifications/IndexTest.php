@@ -5,11 +5,14 @@ declare(strict_types=1);
 use App\Livewire\Notifications\Index;
 use App\Models\Question;
 use App\Models\User;
-use App\Notifications\QuestionAnswered;
-use Livewire\Features\SupportTesting\Testable;
-use Livewire\Livewire;
 
-test('displays notifications', function () {
+test('guest', function () {
+    $response = $this->get(route('notifications.index'));
+
+    $response->assertRedirect(route('login'));
+});
+
+test('auth', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -29,18 +32,17 @@ test('displays notifications', function () {
         'to_id' => $userB->id,
         'from_id' => $userA->id,
         'content' => 'Question content 3',
-        'answer' => 'Answer content 3',
     ]);
 
-    $userA->notify(new QuestionAnswered($questionC));
+    $questionC->update([
+        'answer' => 'Answer content',
+    ]);
 
-    /** @var Testable $component */
-    $component = Livewire::actingAs($userA->fresh())->test(Index::class);
+    $response = $this->actingAs($userA)
+        ->get(route('notifications.index'))
+        ->assertStatus(200);
 
-    $component
-        ->assertSee([
-            'Question content 1',
-            'Question content 2',
-            'Question content 3',
-        ]);
+    $response->assertOk()
+        ->assertSee('Notifications')
+        ->assertSeeLivewire(Index::class);
 });

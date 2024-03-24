@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
@@ -27,7 +28,10 @@ Route::prefix('/@{user:username}')->group(function () {
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::view('home', 'home')->name('home');
     Route::view('explore', 'explore')->name('explore');
-    Route::view('notifications', 'notifications.index')->name('notifications.index');
+
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/{notification}', [NotificationController::class, 'show'])
+        ->name('notifications.show');
 });
 
 Route::middleware('auth')->group(function () {

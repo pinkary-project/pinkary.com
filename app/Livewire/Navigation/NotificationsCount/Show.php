@@ -33,7 +33,7 @@ final class Show extends Component
         assert($user instanceof User);
 
         return view('livewire.navigation.notifications-count.show', [
-            'count' => $user->notifications->count(),
+            'count' => $user->notifications()->count(),
         ]);
     }
 }

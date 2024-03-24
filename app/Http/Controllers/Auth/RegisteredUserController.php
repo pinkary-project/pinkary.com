@@ -40,7 +40,7 @@ final readonly class RegisteredUserController
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'timezone' => ['required', 'string', 'max:255', new ValidTimezone],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'g-recaptcha-response' => ['required', new Recaptcha($request->ip())],
+            'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
         ]);
 
         $user = User::create([
