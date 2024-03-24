@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
@@ -22,6 +23,9 @@ Route::prefix('/@{user:username}')->group(function () {
     Route::get('questions/{question}', [QuestionController::class, 'show'])
         ->name('questions.show')
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+
+    Route::get('notifications/{notification}', [NotificationController::class, 'update'])
+        ->name('notifications.show');
 });
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
