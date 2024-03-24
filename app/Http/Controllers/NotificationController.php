@@ -28,9 +28,11 @@ final class NotificationController
         $user = auth()->user();
         assert($user instanceof User);
 
-        $notification->markAsRead();
-
         $question = Question::findOrFail($notification->data['question_id']);
+
+        if ($question->answer !== null) {
+            $notification->delete();
+        }
 
         return redirect()->route('questions.show', [
             'user' => $user->username,

@@ -33,10 +33,11 @@ test('auth', function () {
         'to_id' => $userB->id,
         'from_id' => $userA->id,
         'content' => 'Question content 3',
-        'answer' => 'Answer content 3',
     ]);
 
-    $userA->notify(new QuestionAnswered($questionA));
+    $questionC->update([
+        'answer' => 'Answer content',
+    ]);
 
     $response = $this->actingAs($userA)
         ->get(route('notifications.index'))

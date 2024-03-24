@@ -32,7 +32,7 @@ final readonly class QuestionObserver
             $question->to->notifications->where('data.question_id', $question->id)->each->delete();
         }
 
-        if ($question->isDirty('answer')) {
+        if ($question->isDirty('answer') && $question->from->id !== $question->to->id) {
             $question->from->notify(new QuestionAnswered($question));
         }
     }
@@ -43,5 +43,6 @@ final readonly class QuestionObserver
     public function deleted(Question $question): void
     {
         $question->to->notifications->where('data.question_id', $question->id)->each->delete();
+        $question->from->notifications->where('data.question_id', $question->id)->each->delete();
     }
 }

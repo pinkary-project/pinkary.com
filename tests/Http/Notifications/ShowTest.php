@@ -17,7 +17,7 @@ test('guest', function () {
     $response->assertRedirect(route('login'));
 });
 
-test('mark notification as read', function () {
+test('notifications about answers are deleted', function () {
     $question = Question::factory()->create();
 
     $question->update(['answer' => 'Question answer']);
@@ -32,5 +32,24 @@ test('mark notification as read', function () {
         ]));
 
     $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->from->username]);
-    expect($notification->fresh()->read_at)->not->toBe(null);
+    expect($notification->fresh())->toBeNull();
+});
+
+test('notifications about questions are not deleted', function () {
+    $question = Question::factory()->create([
+        'answer' => null,
+    ]);
+
+    expect($question->to->notifications()->count())->toBe(1);
+
+    $notification = $question->to->notifications()->first();
+
+    /** @var Illuminate\Testing\TestResponse $response */
+    $response = $this->actingAs($question->to)
+        ->get(route('notifications.show', [
+            'notification' => $notification,
+        ]));
+
+    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->to->username]);
+    expect($notification->fresh())->not->toBeNull();
 });
