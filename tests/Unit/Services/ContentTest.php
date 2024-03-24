@@ -9,3 +9,19 @@ test('link', function () {
 
     expect($provider->parse($content))->toBe('Sure, here is the link: <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>. Let me know if you have any questions.');
 });
+
+test('mention', function () {
+    $content = '@nunomaduro, let me know if you have any questions. Thanks @xiCO2k.';
+
+    $provider = new App\Services\ParsableContent();
+
+    expect($provider->parse($content))->toBe('<a href="/@nunomaduro" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@nunomaduro</a>, let me know if you have any questions. Thanks <a href="/@xiCO2k" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@xiCO2k</a>.');
+});
+
+it('ignores mention inside <a>', function () {
+    $content = 'https://pinkary.com/@nunomaduro';
+
+    $provider = new App\Services\ParsableContent();
+
+    expect($provider->parse($content))->toBe('<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://pinkary.com/@nunomaduro">pinkary.com/@nunomaduro</a>');
+});
