@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Livewire\Notifications\Index;
 use App\Models\Question;
 use App\Models\User;
-use App\Notifications\QuestionAnswered;
 
 test('guest', function () {
     $response = $this->get(route('notifications.index'));

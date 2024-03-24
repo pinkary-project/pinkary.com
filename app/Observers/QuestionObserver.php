@@ -32,9 +32,15 @@ final readonly class QuestionObserver
             $question->to->notifications->where('data.question_id', $question->id)->each->delete();
         }
 
-        if ($question->isDirty('answer') && $question->from->id !== $question->to->id) {
-            $question->from->notify(new QuestionAnswered($question));
+        if ($question->isDirty('answer') === false) {
+            return;
         }
+
+        if ($question->from->id === $question->to->id) {
+            return;
+        }
+
+        $question->from->notify(new QuestionAnswered($question));
     }
 
     /**

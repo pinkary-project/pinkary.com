@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Console\Commands\SendWeeklyEmailsCommand;
-use App\Mail\PendingNotifications;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 

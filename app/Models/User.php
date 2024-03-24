@@ -181,6 +181,20 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Purge the user's account.
+     */
+    public function purge(): void
+    {
+        if ($this->avatar) {
+            Storage::disk('public')->delete(
+                str_replace('storage/', '', $this->avatar)
+            );
+        }
+
+        $this->delete();
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -195,19 +209,5 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'settings' => 'array',
         ];
-    }
-
-    /**
-     * Purge the user's account.
-     */
-    public function purge()
-    {
-        if ($this->avatar) {
-            Storage::disk('public')->delete(
-                str_replace('storage/', '', $this->avatar)
-            );
-        }
-
-        $this->delete();
     }
 }

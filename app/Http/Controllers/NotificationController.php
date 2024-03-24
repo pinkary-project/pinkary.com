@@ -29,6 +29,7 @@ final class NotificationController
         assert($user instanceof User);
 
         $question = Question::findOrFail($notification->data['question_id']);
+        assert($question instanceof Question);
 
         if ($question->answer !== null) {
             $notification->delete();
