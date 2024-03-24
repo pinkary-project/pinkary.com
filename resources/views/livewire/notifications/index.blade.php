@@ -1,12 +1,12 @@
 <div>
-    @foreach ($user->notifications as $notification)
+    @foreach ($notifications as $notification)
         @php
             $question = \App\Models\Question::find($notification->data['question_id']);
         @endphp
 
         <div class="hover:bg-gray-800">
             <a
-                href="{{ route('questions.show', ['user' => $question->to->username, 'question' => $question->id]) }}"
+                href="{{ route('notifications.show', ['user' => $question->to->username, 'notification' => $notification->id]) }}"
                 wire:navigate
             >
                 <div class="rounded-lg px-2 py-4">
