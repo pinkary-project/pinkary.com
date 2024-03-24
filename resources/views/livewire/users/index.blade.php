@@ -1,4 +1,4 @@
-<div class="mb-12 w-full px-2 text-slate-200" x-init="$refs.searchInput.focus()">
+<div class="mb-12 w-full px-2 text-slate-200">
     <div class="mb-8 w-full max-w-md">
         <div class="relative flex items-center py-1">
             <svg
@@ -16,11 +16,13 @@
                 ></path>
             </svg>
             <input
+                x-data="{ focusInput: {{ $focusInput }} }"
+                x-ref="searchInput"
+                x-init="if (focusInput) $refs.searchInput.focus()"
                 wire:model.live.debounce.500ms="query"
                 class="w-full rounded-2xl border border-slate-900 bg-gray-950 py-3 pl-14 pr-4 transition-all placeholder:text-slate-500"
                 type="text"
                 name="q"
-                x-ref="searchInput"
                 placeholder="Search for users..."
             />
         </div>
