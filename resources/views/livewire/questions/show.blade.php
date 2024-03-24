@@ -3,7 +3,8 @@
         <div class="flex justify-between">
             @if ($question->anonymously)
                 <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                    <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
+                    <div
+                        class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
                         <span>?</span>
                     </div>
 
@@ -44,15 +45,15 @@
             @endif
             @if ($question->pinned && $pinnable)
                 <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                    <x-icons.pin class="h-4 w-4 text-slate-400" />
+                    <x-icons.pin class="h-4 w-4 text-slate-400"/>
                     <span class="text-slate-400">Pinned</span>
                 </div>
             @endif
         </div>
 
-        <p class="mb-4 mt-3 px-4 text-slate-200">
+        <div class="mb-4 mt-3 px-4 text-slate-200 question">
             {!! $question->content !!}
-        </p>
+        </div>
     </div>
 
     @if ($question->answer)
@@ -95,12 +96,12 @@
                         <x-slot name="content">
                             @if (! $question->pinned && auth()->user()->can('pin', $question))
                                 <x-dropdown-button wire:click="pin" class="flex items-center gap-1.5">
-                                    <x-icons.pin class="h-4 w-4 text-slate-50" />
+                                    <x-icons.pin class="h-4 w-4 text-slate-50"/>
                                     <span>Pin</span>
                                 </x-dropdown-button>
                             @elseif ($question->pinned)
                                 <x-dropdown-button wire:click="unpin" class="flex items-center gap-1.5">
-                                    <x-icons.pin class="h-4 w-4" />
+                                    <x-icons.pin class="h-4 w-4"/>
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
@@ -119,9 +120,9 @@
                 @endif
             </div>
 
-            <p class="mt-3 break-words text-slate-200">
+            <div class="answer mt-3 break-words text-slate-200">
                 {!! $question->answer !!}
-            </p>
+            </div>
 
             @php
                 $likeExists = $question
@@ -141,9 +142,9 @@
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($question->likes()->where('user_id', auth()->id())->exists())
-                            <x-icons.heart-solid class="h-4 w-4" />
+                            <x-icons.heart-solid class="h-4 w-4"/>
                         @else
-                            <x-icons.heart class="h-4 w-4" />
+                            <x-icons.heart class="h-4 w-4"/>
                         @endif
 
                         <p class="ml-1">
@@ -174,7 +175,7 @@
                                     })"
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        <x-icons.paper-airplane class="h-4 w-4" />
+                        <x-icons.paper-airplane class="h-4 w-4"/>
                     </button>
                     <button
                         x-cloak
@@ -195,6 +196,6 @@
             </div>
         </div>
     @elseif (auth()->user()?->is($user))
-        <livewire:questions.edit :questionId="$question->id" :key="$question->id" />
+        <livewire:questions.edit :questionId="$question->id" :key="$question->id"/>
     @endif
 </article>
