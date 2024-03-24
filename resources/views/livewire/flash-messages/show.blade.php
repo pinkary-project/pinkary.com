@@ -1,5 +1,5 @@
 <div x-data>
-    <div id="flashMessageWrapper" class="fixed right-4 top-4 w-64 space-y-2"></div>
+    <div id="flashMessageWrapper" class="fixed right-4 top-4 w-64 space-y-2 -z-10"></div>
 
     @if (session('flash-message'))
         <div
