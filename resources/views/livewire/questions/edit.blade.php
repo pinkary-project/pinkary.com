@@ -5,8 +5,8 @@
                 <div class="mb-1">
                     <textarea
                         wire:model="answer"
-                        class="{{ Request::routeIs('questions.show') ? 'h-[8.5rem]' : 'h-24' }} w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
-                        rows="{{ Request::routeIs('questions.show') ? 5 : 3 }}"
+                        class="{{ $isQuestionShowRoute ? 'h-[8.5rem]' : 'h-24' }} w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        rows="{{ $isQuestionShowRoute ? 5 : 3 }}"
                         placeholder="Write your answer..."
                     ></textarea>
                     @error('answer')

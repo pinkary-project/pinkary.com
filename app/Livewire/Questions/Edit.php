@@ -19,6 +19,12 @@ final class Edit extends Component
     public string $questionId;
 
     /**
+     * Whether the question show route is active or not.
+     */
+    #[Locked]
+    public bool $isQuestionShowRoute;
+
+    /**
      * The component's answer.
      */
     public string $answer = '';
@@ -72,6 +78,14 @@ final class Edit extends Component
         $this->dispatch('notification.created', 'Question ignored.');
 
         $this->dispatch('question.destroy', questionId: $this->questionId);
+    }
+
+    /**
+     * Mount the component.
+     */
+    public function mount(): void
+    {
+        $this->isQuestionShowRoute = request()->routeIs('questions.show');
     }
 
     /**
