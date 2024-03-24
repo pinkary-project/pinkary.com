@@ -7142,12 +7142,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "2f093ca2e5b72a4249bbc56dcfd5f7aa8b46687e"
+                "reference": "5a889e35d5e6a8292edc03f9b1f74debfecd2800"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/2f093ca2e5b72a4249bbc56dcfd5f7aa8b46687e",
-                "reference": "2f093ca2e5b72a4249bbc56dcfd5f7aa8b46687e",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/5a889e35d5e6a8292edc03f9b1f74debfecd2800",
+                "reference": "5a889e35d5e6a8292edc03f9b1f74debfecd2800",
                 "shasum": ""
             },
             "require": {
@@ -7200,7 +7200,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2024-03-23T22:15:33+00:00"
+            "time": "2024-03-24T00:35:43+00:00"
         },
         {
             "name": "laravel/sail",
