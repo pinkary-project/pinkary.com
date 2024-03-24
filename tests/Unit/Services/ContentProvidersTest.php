@@ -27,6 +27,14 @@ test('links', function (string $content, string $parsed) {
         'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/">example.com</a>',
     ],
     [
+        'content' => 'https://example.media/',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.media/">example.media</a>',
+    ],
+    [
+        'content' => 'https://example.co.uk/',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.co.uk/">example.co.uk</a>',
+    ],
+    [
         'content' => 'Hello https://example.com',
         'parsed' => 'Hello <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>',
     ],
