@@ -23,15 +23,15 @@ Route::prefix('/@{user:username}')->group(function () {
     Route::get('questions/{question}', [QuestionController::class, 'show'])
         ->name('questions.show')
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
-
-    Route::get('notifications/{notification}', [NotificationController::class, 'update'])
-        ->name('notifications.show');
 });
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::view('home', 'home')->name('home');
     Route::view('explore', 'explore')->name('explore');
-    Route::view('notifications', 'notifications.index')->name('notifications.index');
+
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/{notification}', [NotificationController::class, 'show'])
+        ->name('notifications.show');
 });
 
 Route::middleware('auth')->group(function () {

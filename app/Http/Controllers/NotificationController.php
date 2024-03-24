@@ -8,18 +8,32 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Notifications\DatabaseNotification;
-use Livewire\Features\SupportRedirects\Redirector;
+use Illuminate\View\View;
 
 final class NotificationController
 {
-    public function update(User $user, DatabaseNotification $notification, Question $question): RedirectResponse|Redirector
+    /**
+     * Display all notifications.
+     */
+    public function index(): View
     {
+        return view('notifications.index');
+    }
+
+    /**
+     * Display the given notification.
+     */
+    public function show(DatabaseNotification $notification): RedirectResponse
+    {
+        $user = auth()->user();
+        assert($user instanceof User);
+
         $notification->markAsRead();
 
         $question = Question::findOrFail($notification->data['question_id']);
 
         return redirect()->route('questions.show', [
-            'user' => $user,
+            'user' => $user->username,
             'question' => $question,
         ]);
     }
