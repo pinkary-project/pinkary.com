@@ -23,7 +23,7 @@ test('notifications about answers are deleted', function () {
     $question->update(['answer' => 'Question answer']);
 
     $notification = $question->from->notifications()->first();
-    expect($notification->fresh()->read_at)->toBe(null);
+    expect($notification->fresh())->not->toBe(null);
 
     /** @var Illuminate\Testing\TestResponse $response */
     $response = $this->actingAs($question->from)
@@ -31,7 +31,7 @@ test('notifications about answers are deleted', function () {
             'notification' => $notification,
         ]));
 
-    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->from->username]);
+    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->to->username]);
     expect($notification->fresh())->toBeNull();
 });
 

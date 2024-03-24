@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property string $avatar
@@ -194,5 +195,19 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'settings' => 'array',
         ];
+    }
+
+    /**
+     * Purge the user's account.
+     */
+    public function purge()
+    {
+        if ($this->avatar) {
+            Storage::disk('public')->delete(
+                str_replace('storage/', '', $this->avatar)
+            );
+        }
+
+        $this->delete();
     }
 }

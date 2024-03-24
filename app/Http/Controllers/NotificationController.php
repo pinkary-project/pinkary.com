@@ -35,7 +35,7 @@ final class NotificationController
         }
 
         return redirect()->route('questions.show', [
-            'user' => $user->username,
+            'user' => $question->to->username,
             'question' => $question,
         ]);
     }

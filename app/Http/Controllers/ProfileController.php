@@ -69,17 +69,9 @@ final readonly class ProfileController
         $user = $request->user();
         assert($user instanceof User);
 
-        if ($user->avatar) {
-            Storage::disk('public')->delete(
-                str_replace('storage/', '', $user->avatar)
-            );
-        }
-
-        assert($user instanceof User);
-
         auth()->logout();
 
-        $user->delete();
+        $user->purge();
 
         session()->invalidate();
         session()->regenerateToken();

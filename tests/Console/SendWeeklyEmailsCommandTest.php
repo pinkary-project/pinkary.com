@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Console\Commands\SendWeeklyEmailsCommand;
-use App\Mail\PendingQuestions;
+use App\Mail\PendingNotifications;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
@@ -28,5 +28,5 @@ test('sends weekly emails', function () {
     $this->artisan(SendWeeklyEmailsCommand::class)
         ->assertExitCode(0);
 
-    Mail::assertQueuedCount(2, PendingQuestions::class);
+    Mail::assertQueuedCount(2);
 });

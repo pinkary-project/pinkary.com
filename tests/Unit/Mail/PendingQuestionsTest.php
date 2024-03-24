@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Mail\PendingQuestions;
+use App\Mail\PendingNotifications;
 use App\Models\Question;
 use App\Models\User;
 
@@ -13,7 +13,7 @@ test('envelope', function () {
         'to_id' => $user->id,
     ]);
 
-    $mail = new PendingQuestions($user);
+    $mail = new PendingNotifications($user);
 
     $envelope = $mail->envelope();
 
@@ -24,7 +24,7 @@ test('envelope', function () {
 test('content', function () {
     $user = User::factory()->create();
 
-    $mail = new PendingQuestions($user);
+    $mail = new PendingNotifications($user);
 
     foreach ([
         '# Hello, '.$user->name.'!',
