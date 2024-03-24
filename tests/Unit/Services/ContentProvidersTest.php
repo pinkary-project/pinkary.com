@@ -75,4 +75,9 @@ test('mention', function (string $content) {
     ['content' => 'Hi @nunomaduro'],
     ['content' => '@nunomaduro hi'],
     ['content' => '@w31r4_-NAME'],
+    ['content' => '@nunomaduro.'],
+    ['content' => '@nunomaduro,'],
+    ['content' => '@nunomaduro!'],
+    ['content' => '@nunomaduro?'],
+    ['content' => '@nunomaduro/'],
 ]);

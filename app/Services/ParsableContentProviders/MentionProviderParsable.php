@@ -13,6 +13,12 @@ final readonly class MentionProviderParsable implements ParsableContentProvider
      */
     public function parse(string $content): string
     {
-        return (string) preg_replace('/@([a-zA-Z0-9_-]+)/', '<a href="@$1" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@$1</a>', $content);
+        return (string) preg_replace_callback(
+            '/(<a\s+[^>]*>.*?<\/a>)|@([^\s,.?!\/@<]+)/i',
+            fn (array $matches): string => $matches[1] !== ''
+                ? $matches[1]
+                : '<a href="/@'.$matches[2].'" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@'.$matches[2].'</a>',
+            $content
+        );
     }
 }
