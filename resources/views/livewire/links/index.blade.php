@@ -72,7 +72,7 @@
                 >
                     @foreach ($links as $link)
                         <li
-                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient mx-2 flex bg-gradient-to-r"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient mx-2 flex bg-gradient-to-r group"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
                         >
@@ -80,7 +80,7 @@
                                 x-sortable-handle
                                 class="flex w-10 cursor-move items-center justify-center text-gray-300 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                                <x-icons.sortable-handle />
+                                <x-icons.sortable-handle class="size-3 opacity-0 group-hover:opacity-100" />
                             </div>
 
                             <x-links.list-item :$user :$link />
@@ -91,7 +91,7 @@
                                         type="submit"
                                         class="flex w-10 justify-center text-gray-300 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     >
-                                        <x-icons.trash x-bind:class="{ 'invisible': isDragging }" />
+                                        <x-icons.trash  class="size-3 group-hover:opacity-100 opacity-0" x-bind:class="{ 'invisible': isDragging }"/>
                                     </button>
                                 </form>
                             </div>
