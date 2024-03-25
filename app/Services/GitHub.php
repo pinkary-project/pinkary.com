@@ -24,8 +24,6 @@ final readonly class GitHub
      */
     public function isSponsoringUs(string $username): bool
     {
-        $username = 'chunterb';
-
         $response = Http::withHeaders([
             'Accept' => 'application/vnd.github.v3+json',
             'Authorization' => 'token '.$this->personalAccessToken,
