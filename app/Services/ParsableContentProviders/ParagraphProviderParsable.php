@@ -15,11 +15,13 @@ final readonly class ParagraphProviderParsable implements ParsableContentProvide
     {
         return (string) preg_replace_callback(
             '/(.*?)(?:\n|$)/s',
-            function ($matches) {
-                $isNotCodeBlock = ! preg_match('/^<pre><code.*?<\/code><\/pre>$/', $matches[1]);
-                $isNotEmpty = ! empty(trim($matches[1]));
+            function (array $matches): string {
+                $isCodeBlock = preg_match('/^<pre><code.*?<\/code><\/pre>$/', $matches[1]);
+                $isEmpty = empty($matches[1]);
 
-                return $isNotEmpty && $isNotCodeBlock ? "<p>{$matches[1]}</p>" : $matches[1];
+                return $isCodeBlock || $isEmpty
+                    ? $matches[1]
+                    : '<p>'.$matches[1].'</p>';
             },
             $content);
     }
