@@ -9,19 +9,8 @@ const shareProfile = () => ({
     },
 
     share(options) {
-        if (navigator.share) {
-            navigator.share(options)
-        } else {
-            this.$clipboard(options.url)
-
-            this.$notify('Copied to clipboard.', {
-                wrapperId: 'notificationWrapper',
-                templateId: 'notificationAlert',
-                autoClose: 3000,
-                autoRemove: 4000
-            });
-        }
+        navigator.share(options)
     }
 })
 
-export { shareProfile}
+export { shareProfile }

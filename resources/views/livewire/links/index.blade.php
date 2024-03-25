@@ -1,10 +1,32 @@
 <div>
     <div class="relative bg-gradient-to-r p-5 text-center text-white">
         @if (auth()->user()?->is($user))
-            <div class="absolute right-0 top-0">
+            <div class="absolute right-0 top-0 flex space-x-1.5">
+                <button
+                    x-data="shareProfile"
+                    x-show="isVisible"
+                    @click="
+                                    share({
+                                        url: '{{ route('profile.show', ['user' => request()->route('user')->username]) }}'
+                                    })
+                                "
+                    type="button"
+                    class="duration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
+                >
+                    <x-icons.share class="h-6 w-6" />
+                </button>
+                <button
+                    x-data="copyUrl"
+                    x-show="isVisible"
+                    @click="copyToClipboard('{{ route('profile.show', ['user' => request()->route('user')->username]) }}')"
+                    type="button"
+                    class="duration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
+                >
+                    <x-icons.link class="h-6 w-6" />
+                </button>
                 <a
                     href="{{ route('qr-code.download') }}"
-                    class="diration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
+                    class="duration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
                     download
                 >
                     <span class="sr-only">Download QR Code</span>
