@@ -18,8 +18,6 @@ final readonly class VerifiedController
         $user = request()->user();
         assert($user instanceof User);
 
-        $isVerified = $user->is_verified;
-
         dispatch_sync(new SyncVerifiedUser($user));
 
         $user = $user->fresh();

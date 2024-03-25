@@ -11,17 +11,14 @@
         @endphp
 
         <div class="hover:bg-gray-800">
-            <a
-                href="{{ route('notifications.show', ['notification' => $notification->id]) }}"
-                wire:navigate
-            >
+            <a href="{{ route('notifications.show', ['notification' => $notification->id]) }}" wire:navigate>
                 <div class="rounded-lg px-2 py-4">
-
                     @if ($question->from->is(auth()->user()) && $question->answer !== null)
                         <div class="items center flex">
                             <div>
                                 <p class="pt-3 text-gray-400">
-                                    {{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:
+                                    {{ $question->to->name }} answered your
+                                    {{ $question->anonymously ? 'anonymous' : '' }} question:
                                 </p>
                             </div>
                         </div>
