@@ -30,7 +30,6 @@
                 class="mt-1 block w-full"
                 :value="old('name', $user->name)"
                 required
-                autofocus
                 autocomplete="name"
             />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
@@ -45,7 +44,6 @@
                 class="mt-1 block w-full"
                 :value="old('username', $user->username)"
                 required
-                autofocus
                 autocomplete="username"
             />
             <x-input-error class="mt-2" :messages="$errors->get('username')" />

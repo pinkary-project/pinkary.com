@@ -14,6 +14,12 @@
 
             <div class="p-4 shadow sm:rounded-lg sm:p-8">
                 <div class="max-w-xl">
+                    @include('profile.partials.verified-form')
+                </div>
+            </div>
+
+            <div class="p-4 shadow sm:rounded-lg sm:p-8">
+                <div class="max-w-xl">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
