@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
+ * @property string|null $github_username
  * @property string $left_color
  * @property array<int, string> $links_sort
  * @property string $link_shape
@@ -192,6 +193,18 @@ final class User extends Authenticatable implements MustVerifyEmail
         }
 
         $this->delete();
+    }
+
+    /**
+     * Get the user's "is_verified" attribute.
+     */
+    public function getIsVerifiedAttribute(bool $isVerified): bool
+    {
+        if (collect(config()->array('sponsors.github_usernames'))->contains($this->username)) {
+            return true;
+        }
+
+        return $isVerified;
     }
 
     /**

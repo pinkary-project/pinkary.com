@@ -6,6 +6,7 @@
         "laravel/framework": "^11.0.8",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
+        "laravel/socialite": "^5.12.1",
         "laravel/tinker": "^2.9.0",
         "livewire/livewire": "^3.4.9",
         "scrivo/highlight.php": "^9.18.1.10",

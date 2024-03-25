@@ -22,5 +22,37 @@ test('to array', function () {
         'is_verified',
         'timezone',
         'mail_preference_time',
+        'github_username',
     ]);
+});
+
+test('is verified', function () {
+    $user = User::factory()->create([
+        'is_verified' => true,
+        'username' => 'test',
+    ]);
+
+    expect($user->is_verified)->toBeTrue();
+});
+
+test('is verified because in list of fixed sponsors', function () {
+    $user = User::factory()->create([
+        'is_verified' => false,
+        'username' => 'test',
+    ]);
+
+    config()->set('sponsors.github_usernames', ['test']);
+
+    expect($user->is_verified)->toBeTrue();
+});
+
+test('is not verified because not in sponsors', function () {
+    $user = User::factory()->create([
+        'is_verified' => false,
+        'username' => 'test',
+    ]);
+
+    config()->set('sponsors.github_usernames', ['test2']);
+
+    expect($user->is_verified)->toBeFalse();
 });

@@ -37,4 +37,14 @@ return [
         'key' => env('RECAPTCHA_SITE_KEY'),
         'secret' => env('RECAPTCHA_SITE_SECRET'),
     ],
+
+    'github' => [
+        // personal
+        'token' => env('GITHUB_PERSONAL_ACCESS_TOKEN'),
+
+        // app
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
+        'redirect' => env('GITHUB_REDIRECT_URI'),
+    ],
 ];
