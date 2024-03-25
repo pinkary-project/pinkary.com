@@ -33,7 +33,7 @@ test('update', function () {
 
     $component->call('update');
 
-    expect($this->question->fresh()->answer)->toBe('Hello World');
+    expect($this->question->fresh()->answer)->toBe('<p>Hello World</p>');
 });
 
 test('update auth', function () {

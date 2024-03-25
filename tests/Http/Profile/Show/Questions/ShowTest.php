@@ -19,7 +19,7 @@ test('guest', function () {
     $response->assertOk()->assertSee([
         $question->content,
         'This is the answer',
-    ]);
+    ], false);
 
     $response->assertSeeLivewire(Show::class);
 });
@@ -39,7 +39,7 @@ test('auth', function () {
     $response->assertSee([
         $question->content,
         'This is the answer',
-    ]);
+    ], false);
 
     $response->assertSeeLivewire(Show::class);
 });
@@ -77,7 +77,7 @@ test('question without answer is not visible for other users', function () {
     ]));
 
     $response->assertOk()
-        ->assertSee($question->content);
+        ->assertSee($question->content, false);
 });
 
 test('question is not visible for other usernames on the url', function () {

@@ -20,7 +20,7 @@ test('render', function () {
     $component->assertSee([
         $question->content,
         $question->answer,
-    ]);
+    ], false);
 });
 
 test('refresh', function () {
