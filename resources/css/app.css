@@ -15,6 +15,12 @@
         margin-bottom: 1.25em;
     }
 
+    .question > pre,
+    .answer > pre {
+        margin-top: 1.25em;
+        margin-bottom: 1.25em;
+    }
+
     .hover\:darken-gradient:hover {
         filter: saturate(2.5);
     }
