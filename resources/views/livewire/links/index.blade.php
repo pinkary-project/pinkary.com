@@ -1,6 +1,6 @@
 <div>
     <div class="relative bg-gradient-to-r p-5 text-center text-white">
-        <div class="absolute right-0 top-0 flex space-x-1.5">
+        <div class="absolute right-4 sm:right-0 top-0 flex space-x-1.5">
             <button
                 x-data="shareProfile"
                 x-show="isVisible"
