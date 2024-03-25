@@ -1,18 +1,40 @@
 <div>
     <div class="relative bg-gradient-to-r p-5 text-center text-white">
-        @if (auth()->user()?->is($user))
-            <div class="absolute right-0 top-0">
+        <div class="absolute right-0 top-0 flex space-x-1.5">
+            <button
+                x-data="shareProfile"
+                x-show="isVisible"
+                @click="
+                                    share({
+                                        url: '{{ route('profile.show', ['user' => request()->route('user')->username]) }}'
+                                    })
+                                "
+                type="button"
+                class="duration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
+            >
+                <x-icons.share class="h-6 w-6"/>
+            </button>
+            <button
+                x-data="copyUrl"
+                x-show="isVisible"
+                @click="copyToClipboard('{{ route('profile.show', ['user' => request()->route('user')->username]) }}')"
+                type="button"
+                class="duration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
+            >
+                <x-icons.link class="h-6 w-6"/>
+            </button>
+            @if (auth()->user()?->is($user))
                 <a
                     href="{{ route('qr-code.download') }}"
-                    class="diration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
+                    class="duration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
                     download
                 >
                     <span class="sr-only">Download QR Code</span>
 
-                    <x-icons.qr-code class="size-6 shrink-0" />
+                    <x-icons.qr-code class="size-6 shrink-0"/>
                 </a>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <img
             src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
@@ -23,7 +45,7 @@
         <div class="items center flex justify-center items-center">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
             @if ($user->is_verified)
-                <x-icons.verified :color="$user->right_color" class="ml-1.5 h-6 w-6" />
+                <x-icons.verified :color="$user->right_color" class="ml-1.5 h-6 w-6"/>
             @endif
         </div>
 
@@ -80,10 +102,10 @@
                                 x-sortable-handle
                                 class="flex w-10 cursor-move items-center justify-center text-gray-300 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                                <x-icons.sortable-handle class="size-3 opacity-0 group-hover:opacity-100" />
+                                <x-icons.sortable-handle class="size-3 opacity-0 group-hover:opacity-100"/>
                             </div>
 
-                            <x-links.list-item :$user :$link />
+                            <x-links.list-item :$user :$link/>
 
                             <div class="flex items-center justify-center">
                                 <form wire:submit="destroy({{ $link->id }})">
@@ -91,7 +113,8 @@
                                         type="submit"
                                         class="flex w-10 justify-center text-gray-300 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     >
-                                        <x-icons.trash  class="size-3 group-hover:opacity-100 opacity-0" x-bind:class="{ 'invisible': isDragging }"/>
+                                        <x-icons.trash class="size-3 group-hover:opacity-100 opacity-0"
+                                                       x-bind:class="{ 'invisible': isDragging }"/>
                                     </button>
                                 </form>
                             </div>
@@ -102,8 +125,9 @@
                 <div class="space-y-3">
                     {{-- Just listing links --}}
                     @foreach ($links as $link)
-                        <div class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient mx-2 flex bg-gradient-to-r">
-                            <x-links.list-item :$user :$link />
+                        <div
+                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient mx-2 flex bg-gradient-to-r">
+                            <x-links.list-item :$user :$link/>
                         </div>
                     @endforeach
                 </div>
@@ -125,14 +149,14 @@
                         @click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
                         class="bg-{{ $user->left_color }} {{ $user->link_shape }} hover:darken-gradient flex w-full basis-4/5 items-center justify-center px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
                     >
-                        <x-icons.plus class="mr-2 h-6 w-6" />
+                        <x-icons.plus class="mr-2 h-6 w-6"/>
                         Add New Link
                     </button>
                     <button
                         @click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
                         class="{{ $user->gradient }} hover:darken-gradient {{ $user->link_shape }} flex w-full basis-1/5 items-center justify-center bg-gradient-to-r px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
                     >
-                        <x-icons.cog class="h-6 w-6" />
+                        <x-icons.cog class="h-6 w-6"/>
                     </button>
                 </div>
 
@@ -147,7 +171,7 @@
                     class="mx-2 mt-4"
                     x-cloak
                 >
-                    <livewire:links.create :userId="$user->id" />
+                    <livewire:links.create :userId="$user->id"/>
                 </div>
 
                 <div
@@ -161,7 +185,7 @@
                     class="mx-2 mt-4"
                     x-cloak
                 >
-                    <livewire:link-settings.edit />
+                    <livewire:link-settings.edit/>
                 </div>
             </div>
         </div>

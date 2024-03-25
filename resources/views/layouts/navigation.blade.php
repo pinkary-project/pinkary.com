@@ -3,35 +3,6 @@
         <div class="flex h-16 justify-between">
             <div class="flex"></div>
             <div class="flex items-center" x-data>
-                @if (request()->routeIs('profile.show'))
-                    <div>
-                        <div class="mr-2 flex items-baseline space-x-4 py-2">
-                            <button
-                                x-data="shareProfile"
-                                x-show="isVisible"
-                                @click="
-                                    share({
-                                        url: '{{ route('profile.show', ['user' => request()->route('user')->username]) }}'
-                                    })
-                                "
-                                type="button"
-                                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
-                            >
-                                <x-icons.share class="h-6 w-6" />
-                            </button>
-                            <button
-                                x-data="copyUrl"
-                                x-show="isVisible"
-                                @click="copyToClipboard('{{ route('profile.show', ['user' => request()->route('user')->username]) }}')"
-                                type="button"
-                                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
-                            >
-                                <x-icons.link class="h-6 w-6" />
-                            </button>
-                        </div>
-                    </div>
-                @endif
-
                 @auth
                     <a href="{{ route('home') }}" class="mr-2" wire:navigate>
                         <button
