@@ -3,8 +3,7 @@
         <div class="m-auto w-full px-6 py-6 sm:w-3/4 xl:w-1/2">
             <div class="flex items-center bg-white from-gray-700/50 via-transparent px-6 py-4 shadow-2xl shadow-gray-500/20 focus:outline focus:outline-2 focus:outline-red-500">
                 <div class="relative flex h-3 w-3">
-                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75">
-                    </span>
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
                     <span class="relative inline-flex h-3 w-3 rounded-full bg-green-400"></span>
                 </div>
 

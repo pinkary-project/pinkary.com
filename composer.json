@@ -6,15 +6,17 @@
         "laravel/framework": "^11.0.8",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
+        "laravel/socialite": "^5.12.1",
         "laravel/tinker": "^2.9.0",
         "livewire/livewire": "^3.4.9",
         "scrivo/highlight.php": "^9.18.1.10",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-mailcoach-mailer": "^1.2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
         "larastan/larastan": "^2.9.2",
-        "laravel/pint": "dev-feat/blade",
+        "laravel/pint": "^1.14.0",
         "mockery/mockery": "^1.6.11",
         "laravel/sail": "^1.29.1",
         "nunomaduro/collision": "^8.1.1",

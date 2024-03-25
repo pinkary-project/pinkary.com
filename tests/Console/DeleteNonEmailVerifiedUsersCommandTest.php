@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Console\Commands\DeleteNonVerifiedUsersCommand;
+use App\Console\Commands\DeleteNonEmailVerifiedUsersCommand;
 use App\Models\User;
 
 test('deletes non-verified users', function () {
@@ -18,7 +18,7 @@ test('deletes non-verified users', function () {
         'email_verified_at' => null,
     ]);
 
-    $this->artisan(DeleteNonVerifiedUsersCommand::class)
+    $this->artisan(DeleteNonEmailVerifiedUsersCommand::class)
         ->assertExitCode(0);
 
     expect(User::count())->toBe(2);

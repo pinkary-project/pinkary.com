@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property string $avatar
@@ -25,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
+ * @property string|null $github_username
  * @property string $left_color
  * @property array<int, string> $links_sort
  * @property string $link_shape
@@ -177,6 +179,32 @@ final class User extends Authenticatable implements MustVerifyEmail
         assert(is_string($gradient));
 
         return $gradient;
+    }
+
+    /**
+     * Purge the user's account.
+     */
+    public function purge(): void
+    {
+        if ($this->avatar) {
+            Storage::disk('public')->delete(
+                str_replace('storage/', '', $this->avatar)
+            );
+        }
+
+        $this->delete();
+    }
+
+    /**
+     * Get the user's "is_verified" attribute.
+     */
+    public function getIsVerifiedAttribute(bool $isVerified): bool
+    {
+        if (collect(config()->array('sponsors.github_usernames'))->contains($this->username)) {
+            return true;
+        }
+
+        return $isVerified;
     }
 
     /**

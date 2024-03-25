@@ -1,44 +1,37 @@
 <div>
-    @foreach ($user->notifications as $notification)
+    @foreach ($notifications as $notification)
         @php
             $question = \App\Models\Question::find($notification->data['question_id']);
+
+            if ($question === null) {
+                $notification->delete();
+
+                continue;
+            }
         @endphp
 
         <div class="hover:bg-gray-800">
-            <a
-                href="{{ route('questions.show', ['user' => $question->to->username, 'question' => $question->id]) }}"
-                wire:navigate
-            >
+            <a href="{{ route('notifications.show', ['notification' => $notification->id]) }}" wire:navigate>
                 <div class="rounded-lg px-2 py-4">
-                    @if ($question->anonymously)
+                    @if ($question->from->is(auth()->user()) && $question->answer !== null)
                         <div class="items center flex">
                             <div>
-                                <p class="pt-3 text-gray-400">Anonymously</p>
+                                <p class="pt-3 text-gray-400">
+                                    {{ $question->to->name }} answered your
+                                    {{ $question->anonymously ? 'anonymous' : '' }} question:
+                                </p>
                             </div>
                         </div>
                     @else
                         <div class="items center flex">
-                            <img
-                                src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
-                                alt="{{ $question->from->username }}"
-                                class="h-12 w-12 rounded-full"
-                            />
-                            <div class="ml-2">
-                                <div class="items flex">
-                                    <p class="text-gray-400">
-                                        {{ $question->from->name }}
-                                    </p>
-                                    @if ($question->from->is_verified)
-                                        <x-icons.verified
-                                            :color="$question->from->right_color"
-                                            class="ml-1 mt-0.5 h-3.5 w-3.5"
-                                        />
+                            <div>
+                                <p class="pt-3 text-gray-400">
+                                    @if ($question->anonymously)
+                                        Someone asked you anonymously:
+                                    @else
+                                        {{ $question->from->name }} asked you:
                                     @endif
-                                </div>
-
-                                <div class="text-gray-600 hover:underline">
-                                    {{ '@'.$question->from->username }}
-                                </div>
+                                </p>
                             </div>
                         </div>
                     @endif

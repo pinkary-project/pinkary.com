@@ -11,7 +11,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-final class PendingQuestions extends Mailable
+final class PendingNotifications extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,10 +29,10 @@ final class PendingQuestions extends Mailable
      */
     public function envelope(): Envelope
     {
-        $unreadNotificationsCount = $this->user->notifications()->count();
+        $notificationsCount = $this->user->notifications()->count();
 
         return new Envelope(
-            subject: '🌸 Pinkary: You Have '.$unreadNotificationsCount.' Pending '.str('Question')->plural($unreadNotificationsCount).'! - '.now()->format('F j, Y'),
+            subject: '🌸 Pinkary: You Have '.$notificationsCount.' '.str('Notification')->plural($notificationsCount).'! - '.now()->format('F j, Y'),
         );
     }
 
@@ -42,7 +42,7 @@ final class PendingQuestions extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.pending-questions',
+            markdown: 'mail.pending-notifications',
             with: [
                 'date' => now()->format('Y-m-d'),
                 'user' => $this->user,

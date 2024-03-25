@@ -1,15 +1,29 @@
 <div>
-    <div class="bg-gradient-to-r p-5 text-center text-white">
+    <div class="relative bg-gradient-to-r p-5 text-center text-white">
+        @if (auth()->user()?->is($user))
+            <div class="absolute right-0 top-0">
+                <a
+                    href="{{ route('qr-code.download') }}"
+                    class="diration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
+                    download
+                >
+                    <span class="sr-only">Download QR Code</span>
+
+                    <x-icons.qr-code class="size-6 shrink-0" />
+                </a>
+            </div>
+        @endif
+
         <img
             src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
             alt="{{ $user->username }}"
             class="mx-auto h-24 w-24 rounded-full"
         />
 
-        <div class="items center flex justify-center">
+        <div class="items center flex justify-center items-center">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
             @if ($user->is_verified)
-                <x-icons.verified :color="$user->right_color" class="ml-1.5 mt-0.5 h-6 w-6" />
+                <x-icons.verified :color="$user->right_color" class="ml-1.5 h-6 w-6" />
             @endif
         </div>
 

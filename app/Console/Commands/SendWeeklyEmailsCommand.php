@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Mail\PendingQuestions;
+use App\Mail\PendingNotifications;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -32,6 +32,6 @@ final class SendWeeklyEmailsCommand extends Command
     {
         User::where('mail_preference_time', 'weekly')
             ->whereHas('notifications')
-            ->each(fn (User $user) => Mail::to($user)->queue(new PendingQuestions($user)));
+            ->each(fn (User $user) => Mail::to($user)->queue(new PendingNotifications($user)));
     }
 }

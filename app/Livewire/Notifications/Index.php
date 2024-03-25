@@ -21,6 +21,7 @@ final class Index extends Component
 
         return view('livewire.notifications.index', [
             'user' => $user,
+            'notifications' => $user->notifications()->get(),
         ]);
     }
 }
