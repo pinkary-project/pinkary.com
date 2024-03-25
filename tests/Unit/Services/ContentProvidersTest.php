@@ -116,3 +116,18 @@ test('mention', function (string $content) {
     ['content' => '@nunomaduro?'],
     ['content' => '@nunomaduro/'],
 ]);
+
+test('paragraph', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\ParagraphProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'Hello, World!',
+        'parsed' => '<p>Hello, World!</p>',
+    ],
+    [
+        'content' => "Hello, World!\n\nCheck this!",
+        'parsed' => '<p>Hello, World!</p><p>Check this!</p>',
+    ],
+]);
