@@ -20,10 +20,10 @@
             class="mx-auto h-24 w-24 rounded-full"
         />
 
-        <div class="items center flex justify-center">
+        <div class="items center flex justify-center items-center">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
             @if ($user->is_verified)
-                <x-icons.verified :color="$user->right_color" class="ml-1.5 mt-0.5 h-6 w-6" />
+                <x-icons.verified :color="$user->right_color" class="ml-1.5 h-6 w-6" />
             @endif
         </div>
 
