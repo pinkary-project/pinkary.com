@@ -6,7 +6,7 @@
                 x-show="isVisible"
                 @click="
                                     share({
-                                        url: '{{ route('profile.show', ['user' => request()->route('user')->username]) }}'
+                                        url: '{{ route('profile.show', ['user' => $user->username]) }}'
                                     })
                                 "
                 type="button"
@@ -17,7 +17,7 @@
             <button
                 x-data="copyUrl"
                 x-show="isVisible"
-                @click="copyToClipboard('{{ route('profile.show', ['user' => request()->route('user')->username]) }}')"
+                @click="copyToClipboard('{{ route('profile.show', ['user' => $user->username]) }}')"
                 type="button"
                 class="duration-150 flex rounded-lg bg-gray-900 p-1 text-gray-300 transition ease-in-out hover:bg-gray-800 hover:text-white"
             >
