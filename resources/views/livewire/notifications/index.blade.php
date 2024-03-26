@@ -1,7 +1,7 @@
 <div class="mb-20 flex flex-col gap-2">
     @foreach ($notifications as $notification)
         @php
-            $question = \App\Models\Question::find($notification->data['question_id']);
+            $question = Question::find($notification->data['question_id']);
 
             if ($question === null) {
                 $notification->delete();
@@ -45,9 +45,9 @@
                     @endif
                 @endif
 
-                <p class="mt-2 text-slate-200">
+                <div class="question mt-2 text-slate-200">
                     {!! $question->content !!}
-                </p>
+                </div>
             </div>
         </a>
     @endforeach
