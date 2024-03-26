@@ -10,8 +10,6 @@
 
             <div class="overflow-hidden sm:rounded-lg">
                 <div class="p-6 sm:px-20">
-                    <div class="text-2xl">Terms of Service</div>
-
                     <div class="mt-6 text-gray-500">
                         <div class="mx-auto max-w-4xl text-sm text-gray-500">
                             <h1 class="my-4 text-center text-3xl font-bold">Terms of Service</h1>
