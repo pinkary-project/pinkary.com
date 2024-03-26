@@ -5,10 +5,7 @@
                 <h2 class="text-lg font-medium text-gray-400">
                     {{ $user->is_verified ? __('Manage Verified Badge') : __('Get Verified') }}
                 </h2>
-                <x-icons.verified
-                    :color="$user->is_verified ? $user->right_color : 'gray'"
-                    class="ml-1.5 mt-0.5 h-6 w-6"
-                />
+                <x-icons.verified :color="$user->is_verified ? $user->right_color : 'gray'" class="ml-1.5 mt-0.5 h-6 w-6" />
             </div>
         </h2>
 

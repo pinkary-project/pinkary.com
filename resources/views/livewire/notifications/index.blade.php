@@ -17,8 +17,7 @@
                         <div class="items center flex">
                             <div>
                                 <p class="pt-3 text-gray-400">
-                                    {{ $question->to->name }} answered your
-                                    {{ $question->anonymously ? 'anonymous' : '' }} question:
+                                    {{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:
                                 </p>
                             </div>
                         </div>

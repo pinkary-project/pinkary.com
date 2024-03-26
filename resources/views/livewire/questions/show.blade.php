@@ -29,10 +29,7 @@
                                 {{ $question->from->name }}
                             </p>
                             @if ($question->from->is_verified)
-                                <x-icons.verified
-                                    :color="$question->from->right_color"
-                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
-                                />
+                                <x-icons.verified :color="$question->from->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
                             @endif
                         </div>
 
@@ -58,11 +55,7 @@
     @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
-                <a
-                    href="{{ route('profile.show', ['user' => $question->to->username]) }}"
-                    class="group flex items-center gap-3"
-                    wire:navigate
-                >
+                <a href="{{ route('profile.show', ['user' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
                     <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
@@ -76,10 +69,7 @@
                                 {{ $question->to->name }}
                             </p>
                             @if ($question->to->is_verified)
-                                <x-icons.verified
-                                    :color="$question->to->right_color"
-                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
-                                />
+                                <x-icons.verified :color="$question->to->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
                             @endif
                         </div>
 

@@ -10,9 +10,7 @@
                 <div class="ml-6">
                     <h2 class="text-xl font-semibold text-gray-900">All Systems Operational</h2>
 
-                    <p class="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                        All systems are operational. No outages to report.
-                    </p>
+                    <p class="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">All systems are operational. No outages to report.</p>
                 </div>
             </div>
         </div>

@@ -15,10 +15,7 @@
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <div class="items center ml-2 flex gap-4">
-                        <x-primary-colorless-button
-                            class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
-                            type="submit"
-                        >
+                        <x-primary-colorless-button class="text-{{ $user->left_color }} border-{{ $user->left_color }}" type="submit">
                             {{ __('Send') }}
                         </x-primary-colorless-button>
 

@@ -9,11 +9,7 @@
                 stroke="currentColor"
                 class="absolute left-5 h-5 w-5"
             >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                ></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"></path>
             </svg>
             <input
                 x-data="{ focusInput: {{ $focusInput }} }"
@@ -55,10 +51,7 @@
                                         {{ $user->name }}
                                     </p>
                                     @if ($user->is_verified)
-                                        <x-icons.verified
-                                            :color="$user->right_color"
-                                            class="ml-1 mt-0.5 h-3.5 w-3.5"
-                                        />
+                                        <x-icons.verified :color="$user->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
                                     @endif
                                 </div>
                                 <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">

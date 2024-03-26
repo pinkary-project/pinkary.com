@@ -53,36 +53,20 @@
     />
     <meta property="og:type" content="profile" data-rh="true" />
     <meta property="profile:username" content="{{ $question->to->username }}" data-rh="true" />
-    <meta
-        property="og:image"
-        content="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
-        data-rh="true"
-    />
+    <meta property="og:image" content="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}" data-rh="true" />
 
     @if ($answer)
         <title>{{ $question->to->name }}: "{{ $answer }}" / Pinkary</title>
         <meta property="og:title" content='{{ $question->to->name }}: "{{ $answer }}" / Pinkary' data-rh="true" />
     @else
         <title>{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials.</title>
-        <meta
-            property="og:title"
-            content="{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials."
-            data-rh="true"
-        />
+        <meta property="og:title" content="{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials." data-rh="true" />
     @endif
 @else
     <title>{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials.</title>
     <meta property="og:type" content="website" data-rh="true" />
-    <meta
-        property="og:title"
-        content="{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials."
-        data-rh="true"
-    />
-    <meta
-        property="og:description"
-        content="{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials."
-        data-rh="true"
-    />
+    <meta property="og:title" content="{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials." data-rh="true" />
+    <meta property="og:description" content="{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials." data-rh="true" />
     <meta property="og:image" content="https://pinkary.com/img/logo-mid.png" data-rh="true" />
 @endif
 

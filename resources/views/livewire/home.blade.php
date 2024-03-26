@@ -26,9 +26,7 @@
                 x-init="observe"
             ></div>
         @elseif ($perPage > 10)
-            <div class="text-center text-slate-400">
-                There are no more questions to load, or you have scrolled too far.
-            </div>
+            <div class="text-center text-slate-400">There are no more questions to load, or you have scrolled too far.</div>
         @endif
     </section>
 </div>

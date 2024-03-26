@@ -13,11 +13,7 @@
                         </button>
                     </a>
 
-                    <a
-                        href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
-                        class="mr-2"
-                        wire:navigate
-                    >
+                    <a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
                             class="{{ request()->fullUrlIs(route('profile.show', ['user' => auth()->user()->username])) ? 'bg-gray-800 text-gray-50' : 'bg-gray-800 text-gray-400 hover:text-gray-50' }} inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"

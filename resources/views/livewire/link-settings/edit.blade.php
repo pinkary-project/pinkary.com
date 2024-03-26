@@ -16,10 +16,7 @@
                                 class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} h-4 w-4 border-gray-300"
                             />
 
-                            <label
-                                for="{{ strtolower($shape) }}"
-                                class="ml-3 block text-sm font-medium leading-6 text-gray-500"
-                            >
+                            <label for="{{ strtolower($shape) }}" class="ml-3 block text-sm font-medium leading-6 text-gray-500">
                                 {{ $label }}
                             </label>
                         </div>
@@ -59,10 +56,7 @@
                                 for="{{ $gradient }}"
                                 class="{{ $gradient }} from-indigo-400_ to-blue-500_ relative block w-full cursor-pointer rounded-lg border bg-white bg-gradient-to-r px-6 py-4 shadow-sm focus:outline-none sm:flex sm:justify-between"
                             >
-                                <span
-                                    class="border-pink-600__ pointer-events-none absolute -inset-px rounded-lg border-2"
-                                    aria-hidden="true"
-                                ></span>
+                                <span class="border-pink-600__ pointer-events-none absolute -inset-px rounded-lg border-2" aria-hidden="true"></span>
                             </label>
                         </div>
                     @endforeach
@@ -75,10 +69,7 @@
         </div>
 
         <div class="mt-6 flex items-center gap-4">
-            <x-primary-colorless-button
-                class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
-                type="submit"
-            >
+            <x-primary-colorless-button class="text-{{ $user->left_color }} border-{{ $user->left_color }}" type="submit">
                 {{ __('Save') }}
             </x-primary-colorless-button>
             <button
