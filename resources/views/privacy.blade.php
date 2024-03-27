@@ -2,7 +2,7 @@
     <div>
         <div class="mx-auto mb-8 max-w-7xl sm:px-6 lg:px-8">
             <div class="sm:p-2">
-                <a href="{{ route('welcome') }}" class="flex text-gray-400 hover:underline" wire:navigate>
+                <a href="{{ route('welcome') }}" class="flex text-slate-400 hover:underline" wire:navigate>
                     <x-icons.chevron-left class="h-6 w-6" />
                     <span>Back</span>
                 </a>
@@ -10,8 +10,8 @@
 
             <div class="overflow-hidden sm:rounded-lg">
                 <div class="p-6 sm:px-20">
-                    <div class="mt-6 text-gray-500">
-                        <div class="mx-auto max-w-4xl text-sm text-gray-500">
+                    <div class="mt-6 text-slate-500">
+                        <div class="mx-auto max-w-4xl text-sm text-slate-500">
                             <h1 class="my-4 text-center text-3xl font-bold">Privacy Policy</h1>
                             <p><strong>Last Updated: 19 Feb 2024</strong></p>
 

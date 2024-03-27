@@ -81,7 +81,7 @@
                 @if (auth()->check() && auth()->user()->can('update', $question))
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none">
+                            <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
                                 <x-icons.ellipsis-horizontal class="h-6 w-6" />
                             </button>
                         </x-slot>

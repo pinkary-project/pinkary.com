@@ -78,7 +78,7 @@
 
         <div class="mt-4 flex items-center justify-end">
             <a
-                class="rounded-md text-sm text-gray-500 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                class="rounded-md text-sm text-slate-500 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 href="{{ route('login') }}"
                 wire:navigate
             >

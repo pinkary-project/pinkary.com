@@ -10,13 +10,13 @@
             }
         @endphp
 
-        <div class="hover:bg-gray-800">
+        <div class="hover:bg-slate-800">
             <a href="{{ route('notifications.show', ['notification' => $notification->id]) }}" wire:navigate>
                 <div class="rounded-lg px-2 py-4">
                     @if ($question->from->is(auth()->user()) && $question->answer !== null)
                         <div class="items center flex">
                             <div>
-                                <p class="pt-3 text-gray-400">
+                                <p class="pt-3 text-slate-400">
                                     {{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:
                                 </p>
                             </div>
@@ -24,7 +24,7 @@
                     @else
                         <div class="items center flex">
                             <div>
-                                <p class="pt-3 text-gray-400">
+                                <p class="pt-3 text-slate-400">
                                     @if ($question->anonymously)
                                         Someone asked you anonymously:
                                     @else
@@ -35,7 +35,7 @@
                         </div>
                     @endif
 
-                    <p class="mt-2 text-gray-200">
+                    <p class="mt-2 text-slate-200">
                         {!! $question->content !!}
                     </p>
                 </div>
@@ -43,13 +43,13 @@
         </div>
 
         @if (! $loop->last)
-            <div class="border-t border-gray-800"></div>
+            <div class="border-t border-slate-800"></div>
         @endif
     @endforeach
 
     @if ($user->notifications->count() === 0)
         <div class="rounded-lg">
-            <p class="text-gray-400">No pending questions.</p>
+            <p class="text-slate-400">No pending questions.</p>
         </div>
     @endif
 </div>

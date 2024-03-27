@@ -1,7 +1,7 @@
-<div class="flex items-center justify-center space-x-3 border-t border-gray-800 px-2 py-2">
-    <a href="{{ route('terms') }}" class="text-xs text-gray-600" wire:navigaten>Terms</a>
-    <a href="{{ route('privacy') }}" class="text-xs text-gray-600" wire:navigate>Privacy Policy</a>
-    <a href="{{ route('support') }}" class="text-xs text-gray-600" wire:navigate>Support</a>
-    <a href="/status" class="text-xs text-gray-600" wire:navigate>Status</a>
-    <span class="text-xs text-gray-600">© {{ date('Y') }} {{ config('app.name') }}</span>
+<div class="text-slate-600 text-xs flex items-center justify-center space-x-6 border-t border-slate-800 px-2 py-4">
+    <span class="text-xs text-slate-600">© {{ date('Y') }} {{ config('app.name') }}</span>
+    <a href="{{ route('terms') }}" class="hover:underline" wire:navigaten>Terms</a>
+    <a href="{{ route('privacy') }}" class="hover:underline" wire:navigate>Privacy Policy</a>
+    <a href="{{ route('support') }}" class="hover:underline" wire:navigate>Support</a>
+    <a href="/status" class="hover:underline" wire:navigate>Status</a>
 </div>

@@ -1,15 +1,15 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-400">
-            <div class="items flex">
-                <h2 class="text-lg font-medium text-gray-400">
+        <h2 class="text-lg font-medium text-slate-400">
+            <div class="items flex items-center space-x-3">
+                <h2 class="text-lg font-medium text-slate-400">
                     {{ $user->is_verified ? __('Manage Verified Badge') : __('Get Verified') }}
                 </h2>
-                <x-icons.verified :color="$user->is_verified ? $user->right_color : 'gray'" class="ml-1.5 mt-0.5 h-6 w-6" />
+                <x-icons.verified :color="$user->is_verified ? $user->right_color : 'gray'" class="size-6" />
             </div>
         </h2>
 
-        <div class="mt-2 text-sm text-gray-500">
+        <div class="mt-2 text-sm text-slate-500">
             <span>Current status:</span>
 
             <span class="font-semibold">
@@ -26,11 +26,11 @@
 
             @if ($user->is_verified === false)
                 @if ($user->github_username === null)
-                    <span class="text-sm text-gray-500">
+                    <span class="text-sm text-slate-500">
                         {{ __('Get verified to show others that you are a trusted user. To get started, connect your GitHub account.') }}
                     </span>
                 @else
-                    <span class="text-sm text-gray-500">
+                    <span class="text-sm text-slate-500">
                         {{ __('As the next step, sponsor Pinkary (via its creator, Nuno Maduro) with at least $9/month to get verified.') }}
                     </span>
                 @endif

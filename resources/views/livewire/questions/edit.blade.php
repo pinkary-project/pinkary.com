@@ -1,4 +1,4 @@
-<div class="border-l border-gray-900">
+<div class="border-l border-slate-900">
     <form wire:submit="update">
         <div class="mt-4 flex items-center justify-between">
             <div class="w-full">
@@ -22,7 +22,7 @@
                         <button
                             wire:click.prevent="destroy"
                             wire:confirm="Are you sure you want to ignore this question?"
-                            class="text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             Ignore
                         </button>
@@ -31,7 +31,7 @@
                             <button
                                 wire:click.prevent="report"
                                 wire:confirm="Are you sure you want to report this question?"
-                                class="text-gray-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                class="text-slate-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Report
                             </button>

@@ -2,7 +2,7 @@
 
 <select
     {{ $disabled ? 'disabled' : '' }}
-    {!! $attributes->merge(['class' => 'text-white caret-white focus:border-gray-500 bg-gray-800 focus:ring-gray-500 rounded-sm shadow-sm']) !!}
+    {!! $attributes->merge(['class' => 'text-white caret-white focus:border-pink-500 border-slate-800 bg-slate-900/50 backdrop-blur-sm focus:ring-slate-900 rounded-lg shadow-sm']) !!}
 >
     @foreach ($options as $value => $label)
         <option value="{{ $value }}" {{ $value == $attributes->get('value') ? 'selected' : '' }}>
