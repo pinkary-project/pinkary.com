@@ -19,7 +19,7 @@ Route::view('/status', 'status')->name('status');
 
 Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
-Route::prefix('/@{user:username}')->group(function () {
+Route::prefix('/@{username}')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])
         ->name('profile.show')
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);

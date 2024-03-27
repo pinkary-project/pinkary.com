@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -17,6 +20,10 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->configureModels();
         $this->configurePasswordValidation();
+
+        Route::bind('username', function (string $username): User {
+            return User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail();
+        });
     }
 
     /**
