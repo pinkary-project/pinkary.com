@@ -6,7 +6,7 @@
                 <x-input-error :messages="$message" class="my-2" />
             @enderror
         </div>
-        <div class="flex items-center justify-between gap-4 mt-4">
+        <div class="mt-4 flex items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <x-primary-button class="text-{{ $user->left_color }} border-{{ $user->left_color }}" type="submit">
                     {{ __('Send') }}

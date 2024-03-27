@@ -15,6 +15,6 @@
     @endif
 
     <template id="flashMessageTemplate">
-        <div role="alert" class="mt-12 bg-pink-500 rounded-lg px-4 py-3 text-white">{notificationText}</div>
+        <div role="alert" class="mt-12 rounded-lg bg-pink-500 px-4 py-3 text-white">{notificationText}</div>
     </template>
 </div>

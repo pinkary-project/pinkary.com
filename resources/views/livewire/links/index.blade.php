@@ -7,7 +7,7 @@
                 x-show="isVisible"
                 @click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
                 type="button"
-                class="flex items-center justify-center size-10 rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
                 <x-icons.share class="size-5" />
             </button>
@@ -17,14 +17,14 @@
                 x-show="isVisible"
                 @click="copyToClipboard('{{ route('profile.show', ['username' => $user->username]) }}')"
                 type="button"
-                class="flex items-center justify-center size-10 rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
                 <x-icons.link class="size-5" />
             </button>
             @if (auth()->user()?->is($user))
                 <a
                     href="{{ route('qr-code.download') }}"
-                    class="flex items-center justify-center size-10 rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     download
                 >
                     <span class="sr-only">Download QR Code</span>
@@ -37,7 +37,7 @@
         <img
             src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
             alt="{{ $user->username }}"
-            class="mx-auto size-24 rounded-full mb-3"
+            class="mx-auto mb-3 size-24 rounded-full"
         />
 
         <div class="items center flex items-center justify-center">
@@ -142,7 +142,7 @@
                 <div class="flex gap-2">
                     <button
                         @click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
-                        class="bg-{{ $user->left_color }} {{ $user->link_shape }} hover:darken-gradient flex w-full basis-4/5 items-center justify-center px-4 py-2 font-bold text-sm text-white transition duration-300 ease-in-out"
+                        class="bg-{{ $user->left_color }} {{ $user->link_shape }} hover:darken-gradient flex w-full basis-4/5 items-center justify-center px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
                     >
                         <x-icons.plus class="mr-1.5 size-5" />
                         Add New Link

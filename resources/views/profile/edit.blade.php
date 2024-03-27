@@ -4,7 +4,7 @@
             <div class="px-4 sm:px-8">
                 <a
                     href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                    class="flex text-slate-400 hover:underline items-center space-x-1"
+                    class="flex items-center space-x-1 text-slate-400 hover:underline"
                     wire:navigate
                 >
                     <x-icons.chevron-left class="size-5" />
