@@ -27,7 +27,7 @@ final class QrCodeController
             ->size(512)
             ->format('png')
             ->backgroundColor(3, 7, 18, 100)
-            ->color(237, 163, 192, 100)
+            ->color(236, 72, 153, 100)
             ->merge('/public/img/ico.png')
             ->errorCorrection('M')
             ->generate(route('profile.show', $user));
