@@ -1,13 +1,13 @@
 <div>
     <div class="relative bg-gradient-to-r p-5 text-center text-white">
-        <div class="absolute left-0 top-6 flex space-x-1.5">
+        <div class="absolute left-0 top-6 flex">
             <button
                 x-cloak
                 x-data="shareProfile"
                 x-show="isVisible"
                 @click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
                 type="button"
-                class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
                 <x-icons.share class="size-5" />
             </button>
@@ -17,7 +17,7 @@
                 x-show="isVisible"
                 @click="copyToClipboard('{{ route('profile.show', ['username' => $user->username]) }}')"
                 type="button"
-                class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
                 <x-icons.link class="size-5" />
             </button>

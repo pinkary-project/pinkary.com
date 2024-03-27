@@ -1,4 +1,4 @@
-<div class="mb-12 w-full px-2 text-slate-200">
+<div class="mb-12 w-full text-slate-200">
     <div class="mb-8 w-full max-w-md">
         <div class="relative flex items-center py-1">
             <svg
