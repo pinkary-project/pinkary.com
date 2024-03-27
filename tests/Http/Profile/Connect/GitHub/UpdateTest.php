@@ -20,6 +20,8 @@ test('connect github', function () {
 
     $response = $this->actingAs($user)->get(route('profile.connect.github.update'));
 
+    $this->withoutExceptionHandling();
+
     $response->assertStatus(302);
     $response->assertRedirect(route('profile.edit'));
 
