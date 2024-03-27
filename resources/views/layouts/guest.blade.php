@@ -8,14 +8,18 @@
 
         <div class="flex min-h-screen flex-col">
             <main class="flex-grow">
-                <div class="fixed right-0">
+                <div class="fixed right-0 z-50">
                     @if (! request()->routeIs('welcome'))
                         @include('layouts.navigation')
                     @endif
                 </div>
 
-                <div class="-mt-10 flex min-h-screen flex-col items-center justify-center sm:mx-2">
-                    <div class="w-full max-w-md rounded-lg px-4 py-10 shadow-md sm:px-0">
+                <div>
+                    <a href="{{ route('welcome') }}" wire:navigate class="flex justify-center mt-20">
+                        <x-pinkary-logo class="z-10 w-48" />
+                    </a>
+
+                    <div class="w-full max-w-md px-4 py-10 sm:px-0 mx-auto">
                         {{ $slot }}
                     </div>
                 </div>

@@ -1,26 +1,16 @@
 <x-app-layout>
-    <div class="mx-auto mb-8 max-w-7xl sm:px-6 lg:px-8">
-        <div class="sm:p-2">
-            <a href="{{ route('welcome') }}" class="flex text-slate-400 hover:underline">
-                <x-icons.chevron-left class="h-6 w-6" />
-                <span>Back</span>
-            </a>
-        </div>
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 my-16">
+        <a href="{{ route('welcome') }}" class="-mt-10 mb-12 flex items-center text-slate-400 hover:underline" wire:navigate>
+            <x-icons.chevron-left class="size-4" />
+            <span>Back</span>
+        </a>
 
-        <div class="overflow-hidden sm:rounded-lg">
-            <div class="p-6 sm:px-20">
-                <div class="mt-6 text-slate-500">
-                    <div class="mx-auto max-w-4xl text-sm text-slate-500">
-                        <h1 class="my-4 text-center text-3xl font-bold">Support</h1>
-                        <p><strong>Last Updated: 02 March 2024</strong></p>
+        <div class="mt-6">
+            <div class="mx-auto max-w-4xl prose prose-slate prose-invert">
+                <h1>Support</h1>
+                <p><strong>Last Updated: 02 March 2024</strong></p>
 
-                        <p class="mt-4">
-                            If you have any questions or need help, please feel free to contact us at
-                            <a href="mailto:team@pinkary.com">team@pinkary.com</a>
-                            .
-                        </p>
-                    </div>
-                </div>
+                <p>If you have any questions or need help, please feel free to contact us at <a href="mailto:team@pinkary.com">team@pinkary.com</a>.</p>
             </div>
         </div>
     </div>

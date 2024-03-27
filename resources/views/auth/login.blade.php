@@ -34,14 +34,14 @@
             </label>
         </div>
 
-        <div class="mt-4 flex items-center justify-end">
+        <div class="mt-4 flex items-center justify-end space-x-3.5">
             @if (Route::has('password.request'))
-                <a class="text-sm hover:underline" href="{{ route('password.request') }}" wire:navigate>
+                <a class="text-sm underline hover:no-underline text-slate-200" href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button>
                 {{ __('Log In') }}
             </x-primary-button>
         </div>
@@ -49,11 +49,10 @@
 
     <x-section-border />
 
-    <div class="mt-4 flex items-center justify-center text-sm">
-        <a href="{{ route('register') }}" class="hover:underline" wire:navigate>
-            <span class="ml-2">
-                {{ __('Don\'t have an account? Sign up here.') }}
-            </span>
+    <div class="mt-4 text-center text-sm text-slate-500">
+        Don't have an account?
+        <a href="{{ route('register') }}" class="underline hover:no-underline text-slate-200" wire:navigate>
+            {{ __('Sign up here') }}
         </a>
     </div>
 </x-guest-layout>
