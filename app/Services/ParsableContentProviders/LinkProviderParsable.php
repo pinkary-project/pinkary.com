@@ -14,7 +14,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     public function parse(string $content): string
     {
         return (string) preg_replace_callback(
-            '/((https?:\/\/)?[\w\-._@:%\+~#=]{1,256}(\.[a-z]{2,})+\b(\/[\w\-._@:%\+~#=\/]*)?)/i',
+            '/((https?:\/\/)?[\w\-._@:%\+~#=]{1,256}(\.[a-z]{2,})+\b(\/[\w\-._@:%\+~#=\/]*)?)(?<!\.)/i',
             function (array $matches): string {
                 $url = preg_match('/^https?:\/\//', $matches[0]) ? $matches[0] : 'https://'.$matches[0];
                 $humanUrl = (string) preg_replace('/^https?:\/\//', '', $matches[0]);

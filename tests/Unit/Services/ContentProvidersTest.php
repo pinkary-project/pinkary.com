@@ -46,6 +46,10 @@ test('links', function (string $content, string $parsed) {
         'content' => 'Hello https://example.com, how are you? https://example.com',
         'parsed' => 'Hello <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>, how are you? <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>',
     ],
+    [
+        'content' => 'You can check in this link: https://example.com. Or you can check in this other link: https://example.media.',
+        'parsed' => 'You can check in this link: <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>. Or you can check in this other link: <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.media">example.media</a>.',
+    ],
 ]);
 
 test('links with mail', function (string $content, string $parsed) {
