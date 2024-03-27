@@ -1,6 +1,6 @@
 <x-welcome-layout>
-    <div class="absolute -top-48 -z-10 h-[30vw] w-[30vw] -rotate-45 rounded-full bg-gradient-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl"></div>
-    <nav class="sticky top-0 z-20 flex w-full justify-end gap-2 border-b border-slate-200 border-opacity-20 bg-gray-950/20 p-4 backdrop-blur-md">
+    <div class="absolute -top-48 -z-10 size-[400px] lg:size-[500px] -rotate-45 rounded-full bg-gradient-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl"></div>
+    <nav class="sticky top-0 z-20 flex w-full justify-end gap-2 border-b border-slate-200/10 bg-slate-950/20 p-4 backdrop-blur-md shadow-2xl">
         @auth
             <a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
                 <x-primary-button>Your Profile</x-primary-button>
@@ -34,9 +34,9 @@
         </h2>
 
         <section class="mt-28 w-full max-w-2xl">
-            <div class="grid w-full gap-2 md:grid-cols-2">
+            <div class="grid w-full gap-4 md:grid-cols-2">
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 transition-colors md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-950">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
                         <x-icons.bolt class="h-5 w-5" />
                     </div>
 
@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-950">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
                         <x-icons.link class="h-5 w-5" />
                     </div>
 
@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-950">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
                         <x-icons.chat-bubble class="h-5 w-5" />
                     </div>
 
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-950">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
                         <x-icons.globe class="h-5 w-5" />
                     </div>
 
@@ -130,8 +130,7 @@
 
             <h2 class="text-center">
                 Pinkary is now open-source! You can get early access by
-                <a href="https://github.com/sponsors/nunomaduro" target="_blank" class="underline">sponsoring the project on GitHub</a>
-                .
+                <a href="https://github.com/sponsors/nunomaduro" target="_blank" class="underline hover:no-underline">sponsoring the project on GitHub</a>.
             </h2>
         </div>
 
@@ -142,7 +141,7 @@
                 </h3>
             @else
                 <h3 class="mb-4 w-full max-w-2xl text-center text-4xl font-light" style="font-stretch: 120%">
-                    <a href="{{ route('register') }}" wire:navigate class="underline">Join</a>
+                    <a href="{{ route('register') }}" wire:navigate class="underline hover:no-underline">Join</a>
                     this growing community!
                 </h3>
             @endauth

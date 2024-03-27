@@ -1,5 +1,5 @@
 <nav>
-    <div class="mx-auto px-4">
+    <div class="mx-auto px-4 fixed top-0 right-0 z-50">
         <div class="flex h-16 justify-between">
             <div class="flex"></div>
             <div class="flex items-center" x-data>
@@ -7,7 +7,7 @@
                     <a href="{{ route('home') }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('home') ? 'bg-gray-800 text-gray-50' : 'bg-gray-800 text-gray-400 hover:text-gray-50' }} inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
+                            class="{{ request()->routeIs('home') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} bg-slate-900 inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-icons.home class="h-6 w-6" />
                         </button>
@@ -16,7 +16,7 @@
                     <a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->fullUrlIs(route('profile.show', ['user' => auth()->user()->username])) ? 'bg-gray-800 text-gray-50' : 'bg-gray-800 text-gray-400 hover:text-gray-50' }} inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
+                            class="{{ request()->fullUrlIs(route('profile.show', ['user' => auth()->user()->username])) ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} bg-slate-900 inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-icons.user class="h-6 w-6" />
                         </button>
@@ -25,7 +25,7 @@
                     <a href="{{ route('explore') }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('explore') ? 'bg-gray-800 text-gray-50' : 'bg-gray-800 text-gray-400 hover:text-gray-50' }} inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
+                            class="{{ request()->routeIs('explore') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} bg-slate-900 inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-icons.magnifying-glass class="h-6 w-6" />
                         </button>
@@ -34,7 +34,7 @@
                     <a href="{{ route('notifications.index') }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('notifications.index') ? 'bg-gray-800 text-gray-50' : 'bg-gray-800 text-gray-400 hover:text-gray-50' }} inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
+                            class="{{ request()->routeIs('notifications.index') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} bg-slate-900 inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-icons.bell class="h-6 w-6" />
 
@@ -45,10 +45,8 @@
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-sm font-medium leading-4 text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none"
-                        >
-                            <x-icons.bars class="h-6 w-6" />
+                        <button class="text-slate-500 hover:text-slate-100 bg-slate-900 inline-flex items-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none">
+                            <x-icons.bars class="size-6" />
                         </button>
                     </x-slot>
 
@@ -61,13 +59,7 @@
                             <form method="POST" action="{{ route('logout') }}" x-data>
                                 @csrf
 
-                                <a
-                                    class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-900"
-                                    onclick="event.preventDefault();
-                                                    this.closest('form').submit();"
-                                >
-                                    {{ __('Log Out') }}
-                                </a>
+                                <x-dropdown-button onclick="event.preventDefault();this.closest('form').submit();">{{ __('Log Out') }}</x-dropdown-button>
                             </form>
                         @else
                             <x-dropdown-link :href="route('welcome')">

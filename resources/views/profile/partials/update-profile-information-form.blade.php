@@ -4,11 +4,11 @@
 
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-400">
+        <h2 class="text-lg font-medium text-slate-400">
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-500">
+        <p class="mt-1 text-sm text-slate-500">
             {{ __("Update your account's profile information and email address.") }}
         </p>
     </header>
@@ -64,12 +64,12 @@
 
             @if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
-                    <p class="mt-2 text-sm text-gray-500">
+                    <p class="mt-2 text-sm text-slate-500">
                         {{ __('Your email address is unverified.') }}
 
                         <button
                             form="send-verification"
-                            class="rounded-md text-sm text-gray-500 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            class="rounded-md text-sm text-slate-500 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             {{ __('Click here to re-send the verification email.') }}
                         </button>

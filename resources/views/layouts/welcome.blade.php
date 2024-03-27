@@ -3,7 +3,7 @@
     <head>
         @include('layouts.components.head')
     </head>
-    <body class="bg-gray-950 font-sans text-gray-50 antialiased">
+    <body class="bg-slate-950 font-sans text-slate-50 antialiased bg-repeat bg-center" style="background-image:url({{ asset('/img/dots.svg') }})">
         <livewire:flash-messages.show />
 
         <div class="flex min-h-screen flex-col font-welcome">
@@ -14,7 +14,7 @@
                     @endif
                 </div>
 
-                <div class="flex min-h-screen flex-col items-center justify-center sm:mx-2">
+                <div class="flex min-h-screen flex-col items-center justify-center">
                     {{ $slot }}
                 </div>
             </main>

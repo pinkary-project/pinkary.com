@@ -21,7 +21,7 @@
             <button
                 @click="showLinksForm = false"
                 type="button"
-                class="text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
                 Cancel
             </button>

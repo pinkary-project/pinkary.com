@@ -1,8 +1,8 @@
 <div>
     <form wire:submit="update">
         <div class="mt-12">
-            <label class="text-base font-semibold text-gray-500">Link Shape</label>
-            <p class="text-sm text-gray-500">In what shape do you want to present your links?</p>
+            <label class="text-base font-semibold text-slate-500">Link Shape</label>
+            <p class="text-sm text-slate-500">In what shape do you want to present your links?</p>
             <fieldset class="mt-4">
                 <legend class="sr-only">Shape for links</legend>
                 <div class="space-y-4">
@@ -13,10 +13,10 @@
                                 wire:model="link_shape"
                                 type="radio"
                                 value="{{ $shape }}"
-                                class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} h-4 w-4 border-gray-300"
+                                class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} h-4 w-4 border-slate-300"
                             />
 
-                            <label for="{{ strtolower($shape) }}" class="ml-3 block text-sm font-medium leading-6 text-gray-500">
+                            <label for="{{ strtolower($shape) }}" class="ml-3 block text-sm font-medium leading-6 text-slate-500">
                                 {{ $label }}
                             </label>
                         </div>
@@ -30,8 +30,8 @@
         </div>
 
         <div class="mt-12">
-            <label class="text-base font-semibold text-gray-500">Link Color</label>
-            <p class="text-sm text-gray-500">What color are you choosing for your links?</p>
+            <label class="text-base font-semibold text-slate-500">Link Color</label>
+            <p class="text-sm text-slate-500">What color are you choosing for your links?</p>
             <fieldset class="mt-4">
                 <legend class="sr-only">Link color</legend>
                 <div class="space-y-4">
@@ -45,7 +45,7 @@
                               ] as $gradient)
                         <div class="flex justify-between">
                             <input
-                                class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} mr-3 mt-2 border-gray-300"
+                                class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} mr-3 mt-2 border-slate-300"
                                 type="radio"
                                 wire:model="gradient"
                                 name="gradient"
@@ -75,7 +75,7 @@
             <button
                 @click="showSettingsForm = false"
                 type="button"
-                class="text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
                 Cancel
             </button>
