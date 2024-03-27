@@ -13,6 +13,34 @@ use Illuminate\Contracts\Validation\ValidationRule;
 final class ValidTimezone implements ValidationRule
 {
     /**
+     * Get the list of unsupported timezones in PHP.
+     *
+     * @var array<int, string>
+     */
+    private static array $unsupportedTimezones = [
+        'Pacific/Johnston',
+        'America/Santa_Isabel',
+        'America/Shiprock',
+        'America/Yellowknife',
+        'America/Rainy_River',
+        'America/Montreal',
+        'America/Nipigon',
+        'America/Pangnirtung',
+        'America/Thunder_Bay',
+        'America/Godthab',
+        'Europe/Kiev',
+        'Europe/Uzhgorod',
+        'Europe/Zaporozhye',
+        'Asia/Rangoon',
+        'Asia/Chongqing',
+        'Asia/Harbin',
+        'Asia/Kashgar',
+        'Australia/Currie',
+        'Antarctica/South_Pole',
+        'Pacific/Enderbury',
+    ];
+
+    /**
      * Get the list of countries.
      *
      * @return array<string, string>
@@ -27,7 +55,8 @@ final class ValidTimezone implements ValidationRule
 
         $allTimezones = DateTimeZone::listIdentifiers();
 
-        foreach ($allTimezones as $zone) {
+        foreach (array_merge($allTimezones, self::$unsupportedTimezones) as $zone) {
+
             $offset = (new DateTimeImmutable('now', new DateTimeZone($zone)))->format('P');
             $timezones[$zone] = $zone === 'UTC' ? 'UTC (UTC+00:00)' : str($zone)->replace('_', ' ')->explode('/')->last().' (UTC'.$offset.')';
         }
