@@ -2469,16 +2469,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.2.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "6bfea14bb0792e85f2e1ff0919487c88419c5883"
+                "reference": "b4272c2e78d30f9085b079aedb692b2da879b313"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/6bfea14bb0792e85f2e1ff0919487c88419c5883",
-                "reference": "6bfea14bb0792e85f2e1ff0919487c88419c5883",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/b4272c2e78d30f9085b079aedb692b2da879b313",
+                "reference": "b4272c2e78d30f9085b079aedb692b2da879b313",
                 "shasum": ""
             },
             "require": {
@@ -2571,7 +2571,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-27T18:14:36+00:00"
+            "time": "2024-03-27T21:37:24+00:00"
         },
         {
             "name": "nette/schema",
