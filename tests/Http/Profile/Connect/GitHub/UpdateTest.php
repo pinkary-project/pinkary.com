@@ -14,11 +14,11 @@ test('guest', function () {
 });
 
 test('connect github', function () {
+    Http::fake();
+
     $user = User::factory()->create();
     expect($user->github_username)->toBeNull();
     Socialite::shouldReceive('driver->user->getNickname')->andReturn('test');
-
-    $this->withoutExceptionHandling();
 
     $response = $this->actingAs($user)->get(route('profile.connect.github.update'));
 
@@ -99,8 +99,6 @@ test('connect to github may get you verified if you are sponsoring us', function
             ],
         ]),
     ]);
-
-    $this->withoutExceptionHandling();
 
     $response = $this->actingAs($user)->get(route('profile.connect.github.update'));
 
