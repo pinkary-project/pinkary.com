@@ -32,7 +32,7 @@ test('new users can register', function () {
     $this->assertAuthenticated();
 
     $response->assertRedirect(route('profile.show', [
-        'user' => User::first()->username,
+        'username' => User::first()->username,
     ], absolute: false));
 });
 

@@ -2,7 +2,7 @@
     <div class="absolute -top-48 -z-10 size-[400px] lg:size-[500px] -rotate-45 rounded-full bg-gradient-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl"></div>
     <nav class="sticky top-0 z-20 flex w-full justify-end gap-2 border-b border-slate-200/10 bg-slate-950/20 p-4 backdrop-blur-md shadow-2xl">
         @auth
-            <a href="{{ route('profile.show', ['user' => auth()->user()->username]) }}" wire:navigate>
+            <a href="{{ route('profile.show', ['username' => auth()->user()->username]) }}" wire:navigate>
                 <x-primary-button>Your Profile</x-primary-button>
             </a>
         @else

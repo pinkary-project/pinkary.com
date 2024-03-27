@@ -20,7 +20,7 @@ final readonly class EmailVerificationNotificationController
 
         if ($user->hasVerifiedEmail()) {
             return redirect()->intended(route('profile.show', [
-                'user' => $user->username,
+                'username' => $user->username,
             ], absolute: false));
         }
 

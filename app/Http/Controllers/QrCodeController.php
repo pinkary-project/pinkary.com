@@ -30,7 +30,9 @@ final class QrCodeController
             ->color(236, 72, 153, 100)
             ->merge('/public/img/ico.png')
             ->errorCorrection('M')
-            ->generate(route('profile.show', $user));
+            ->generate(route('profile.show', [
+                'username' => $user->username,
+            ]));
 
         return response()->streamDownload(
             function () use ($qrCode): void {

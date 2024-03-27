@@ -72,7 +72,7 @@ test('redirect to profile', function () {
 
     $component->dispatch('question.reported');
 
-    $component->assertRedirect(route('profile.show', ['user' => $question->to->username]));
+    $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
 });
 
 test('destroy', function () {
@@ -88,7 +88,7 @@ test('destroy', function () {
 
     expect($question->fresh())->toBeNull();
 
-    $component->assertRedirect(route('profile.show', ['user' => $question->to->username]));
+    $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
 });
 
 test('destroy auth', function () {
@@ -278,7 +278,9 @@ test('display pinned label only on profile.show route', function () {
         'pinned' => true,
     ]);
 
-    $response = $this->actingAs($user)->get(route('profile.show', $user));
+    $response = $this->actingAs($user)->get(route('profile.show', [
+        'username' => $user->username,
+    ]));
 
     $response->assertSee('Pinned');
 

@@ -24,7 +24,7 @@ final readonly class VerifyEmailController
 
             return redirect()
                 ->intended(route('profile.show', [
-                    'user' => $user->username,
+                    'username' => $user->username,
                 ], absolute: false));
         }
 
@@ -35,7 +35,7 @@ final readonly class VerifyEmailController
         }
 
         return to_route('profile.show', [
-            'user' => $user->username,
+            'username' => $user->username,
         ]);
     }
 }

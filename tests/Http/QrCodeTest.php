@@ -19,7 +19,9 @@ test('user can download qr code', function () {
         ->color(236, 72, 153, 100)
         ->merge('/public/img/ico.png')
         ->errorCorrection('M')
-        ->generate(route('profile.show', $user));
+        ->generate(route('profile.show', [
+            'username' => $user->username,
+        ]));
 
     $response = $this->actingAs($user)->get(route('qr-code.download'));
 

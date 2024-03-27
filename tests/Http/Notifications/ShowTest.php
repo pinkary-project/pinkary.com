@@ -10,7 +10,7 @@ test('guest', function () {
     ]);
 
     $response = $this->get(route('notifications.show', [
-        'user' => $question->from->username,
+        'username' => $question->from->username,
         'notification' => $question->to->notifications()->first(),
     ]));
 
@@ -31,7 +31,7 @@ test('notifications about answers are deleted', function () {
             'notification' => $notification,
         ]));
 
-    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->to->username]);
+    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'username' => $question->to->username]);
     expect($notification->fresh())->toBeNull();
 });
 
@@ -50,6 +50,6 @@ test('notifications about questions are not deleted', function () {
             'notification' => $notification,
         ]));
 
-    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->to->username]);
+    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'username' => $question->to->username]);
     expect($notification->fresh())->not->toBeNull();
 });

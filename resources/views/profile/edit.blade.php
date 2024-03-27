@@ -3,7 +3,7 @@
         <div class="mx-auto max-w-2xl space-y-6 sm:px-6 lg:px-8">
             <div class="px-4 sm:px-8">
                 <a
-                    href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
+                    href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
                     class="flex text-slate-400 hover:underline items-center space-x-1"
                     wire:navigate
                 >
