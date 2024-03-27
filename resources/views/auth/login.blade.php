@@ -36,7 +36,7 @@
 
         <div class="mt-4 flex items-center justify-end space-x-3.5">
             @if (Route::has('password.request'))
-                <a class="text-sm underline hover:no-underline text-slate-200" href="{{ route('password.request') }}" wire:navigate>
+                <a class="text-sm text-slate-200 underline hover:no-underline" href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
@@ -51,7 +51,7 @@
 
     <div class="mt-4 text-center text-sm text-slate-500">
         Don't have an account?
-        <a href="{{ route('register') }}" class="underline hover:no-underline text-slate-200" wire:navigate>
+        <a href="{{ route('register') }}" class="text-slate-200 underline hover:no-underline" wire:navigate>
             {{ __('Sign up here') }}
         </a>
     </div>

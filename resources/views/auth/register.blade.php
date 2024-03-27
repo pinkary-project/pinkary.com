@@ -76,7 +76,7 @@
             <x-input-error :messages="'The reCAPTCHA is required.'" class="mt-2" />
         @endif
 
-        <div class="mt-4 flex items-center justify-end text-sm space-x-3.5">
+        <div class="mt-4 flex items-center justify-end space-x-3.5 text-sm">
             <div>
                 <span class="text-slate-500">Already have an account?</span>
 

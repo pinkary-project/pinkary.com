@@ -24,16 +24,17 @@
             </a>
 
             <div
-                class="mt-5 rounded-full bg-pink-500 bg-opacity-90 px-3 py-1.5 text-sm font-medium font-mona uppercase text-slate-900"
+                class="mt-5 rounded-full bg-pink-500 bg-opacity-90 px-3 py-1.5 font-mona text-sm font-medium uppercase text-slate-900"
                 style="font-stretch: 120%"
             >
                 One link. All your socials.
             </div>
         </section>
 
-        <h2 class="mt-12 max-w-4xl text-center text-3xl font-light md:text-4xl font-mona" style="font-stretch: 120%">
+        <h2 class="mt-12 max-w-4xl text-center font-mona text-3xl font-light md:text-4xl" style="font-stretch: 120%">
             Create a landing page for all your links and connect with like-minded people
-            <span class="text-pink-500">without the noise</span>.
+            <span class="text-pink-500">without the noise</span>
+            .
         </h2>
 
         <section class="mt-28 w-full max-w-2xl">
@@ -142,7 +143,7 @@
 
         <section class="mb-16 mt-40 flex flex-col items-center gap-8">
             @auth
-                <h3 class="mb-4 w-full max-w-2xl text-center text-3xl font-light md:text-4xl font-mona" style="font-stretch: 120%">
+                <h3 class="mb-4 w-full max-w-2xl text-center font-mona text-3xl font-light md:text-4xl" style="font-stretch: 120%">
                     Thank you for being part of this community!
                 </h3>
             @else
