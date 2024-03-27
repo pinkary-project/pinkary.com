@@ -14,7 +14,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -223,14 +222,5 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'settings' => 'array',
         ];
-    }
-
-    /**
-     * @param string $value
-     * @param string $field
-     */
-    public function resolveRouteBinding($value, $field = null): User|null
-    {
-        return $this->where(DB::raw("LOWER(username)"), strtolower($value))->firstOrFail();
     }
 }
