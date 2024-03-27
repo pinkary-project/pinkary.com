@@ -18,9 +18,9 @@ test('connect github', function () {
     expect($user->github_username)->toBeNull();
     Socialite::shouldReceive('driver->user->getNickname')->andReturn('test');
 
-    $response = $this->actingAs($user)->get(route('profile.connect.github.update'));
-
     $this->withoutExceptionHandling();
+
+    $response = $this->actingAs($user)->get(route('profile.connect.github.update'));
 
     $response->assertStatus(302);
     $response->assertRedirect(route('profile.edit'));
