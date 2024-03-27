@@ -145,6 +145,7 @@
                     </time>
                     <span class="mx-1">•</span>
                     <button
+                        x-cloak
                         x-data="shareProfile"
                         x-show="isVisible"
                         @click="share({
