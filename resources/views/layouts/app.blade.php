@@ -13,7 +13,7 @@
                 @if (isset($title))
                     <div class="mb-12 mt-14 flex flex-col items-center">
                         <div class="w-full max-w-md px-2 sm:px-0">
-                            <h1 class="text-2xl font-medium text-slate-200 font-mona">
+                            <h1 class="font-mona text-2xl font-medium text-slate-200">
                                 {{ $title }}
                             </h1>
                         </div>

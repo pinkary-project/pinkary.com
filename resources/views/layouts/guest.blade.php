@@ -15,11 +15,11 @@
                 </div>
 
                 <div>
-                    <a href="{{ route('welcome') }}" wire:navigate class="flex justify-center mt-20">
+                    <a href="{{ route('welcome') }}" wire:navigate class="mt-20 flex justify-center">
                         <x-pinkary-logo class="z-10 w-48" />
                     </a>
 
-                    <div class="w-full max-w-md px-4 py-10 sm:px-0 mx-auto">
+                    <div class="mx-auto w-full max-w-md px-4 py-10 sm:px-0">
                         {{ $slot }}
                     </div>
                 </div>
