@@ -22,7 +22,7 @@ test('auth', function () {
 
 it('can show profile on username case-insensitive', function () {
     $username = $this->user->username;
-    $revertCasingUsername = strtolower($username) ^ strtoupper($username) ^ $username;
+    $revertCasingUsername = mb_strtolower($username) ^ mb_strtoupper($username) ^ $username;
     $response = $this->get(route('profile.show', ['username' => $revertCasingUsername]));
 
     $response->assertSee($this->user->name);

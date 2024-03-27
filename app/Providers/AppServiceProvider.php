@@ -21,9 +21,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->configurePasswordValidation();
 
-        Route::bind('username', function (string $username): User {
-            return User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail();
-        });
+        Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
     }
 
     /**
