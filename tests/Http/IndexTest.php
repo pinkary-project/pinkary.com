@@ -54,5 +54,5 @@ it('displays terms of service and privacy policy', function () {
         ->assertSee('Terms')
         ->assertSee('Privacy Policy')
         ->assertSee('Support')
-        ->assertSee('Status');
+        ->assertSee('Brand');
 });

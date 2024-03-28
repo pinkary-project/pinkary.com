@@ -11,9 +11,6 @@
                 <a href="{{ route('support') }}" class="text-sm leading-6 text-slate-400 hover:text-slate-200">Support</a>
             </div>
             <div class="pb-6">
-                <a href="/status" class="text-sm leading-6 text-slate-400 hover:text-slate-200">Status</a>
-            </div>
-            <div class="pb-6">
                 <a href="{{ route('brand.resources') }}" class="text-sm leading-6 text-slate-400 hover:text-slate-200">Brand</a>
             </div>
         </nav>
