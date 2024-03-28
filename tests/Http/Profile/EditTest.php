@@ -213,3 +213,22 @@ test('correct password must be provided to delete account', function () {
 
     $this->assertNotNull($user->fresh());
 });
+
+test("can not update user's name with blank characters", function (string $name) {
+    $user = User::factory()->state(['name' => 'Test User'])->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $name,
+        ]);
+
+    $response->assertSessionHasErrors(['name' => 'The name field cannot contain blank characters.']);
+
+    $this->assertSame('Test User', $user->name);
+})->with([
+    "\u{200E}",
+    "Test\u{200E}User",
+    "Test User \u{200E}",
+    "\u{200E}Test User",
+]);
