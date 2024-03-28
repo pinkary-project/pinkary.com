@@ -13,3 +13,13 @@ test('with blank characters', function () {
 
     expect(true)->toBeFalse();
 })->fails();
+
+test('without blank characters', function () {
+    $rule = new NoBlankCharacters;
+
+    $fail = fn (string $errorMessage) => $this->fail($errorMessage);
+
+    $rule->validate('name', 'foo', $fail);
+
+    expect(true)->toBeTrue();
+});
