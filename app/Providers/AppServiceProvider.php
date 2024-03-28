@@ -29,7 +29,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     private function configureModels(): void
     {
-        Model::shouldBeStrict(app()->isProduction());
+        Model::shouldBeStrict(! app()->isProduction());
         Model::unguard();
     }
 
