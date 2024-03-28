@@ -16,7 +16,7 @@ final class NoBlankCharacters implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (preg_match("/^(?=.*\u{200E}).*$/", $value)) {
+        if (preg_match("/\p{Cf}/u", $value)) {
             $fail('The :attribute field cannot contain blank characters.');
         }
     }
