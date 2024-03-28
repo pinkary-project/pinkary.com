@@ -29,8 +29,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     private function configureModels(): void
     {
-        Model::preventsLazyLoading();
-        // Model::shouldBeStrict();
+        Model::shouldBeStrict(! app()->isProduction());
         Model::unguard();
     }
 

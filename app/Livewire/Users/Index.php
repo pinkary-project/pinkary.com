@@ -56,10 +56,12 @@ final class Index extends Component
      */
     private function usersWithMostAnswers(): Collection
     {
-        return User::whereHas('links', function (Builder $query): void {
-            $query->where('url', 'like', '%twitter.com%')
-                ->orWhere('url', 'like', '%github.com%');
-        })
+        return User::query()
+            ->whereHas('links', function (Builder $query): void {
+                $query->where('url', 'like', '%twitter.com%')
+                    ->orWhere('url', 'like', '%github.com%');
+            })
+            ->with('links')
             ->withCount('questionsReceived')
             ->orderBy('questions_received_count', 'desc')
             ->limit(10)->get();
