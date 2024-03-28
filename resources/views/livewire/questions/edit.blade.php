@@ -11,7 +11,10 @@
                         }
                     }"
                 >
+                    <label for="{{'answer_question_'.$question->id}}" class="sr-only">Answer</label>
+
                     <textarea
+                        id="{{'answer_question_'.$question->id}}"
                         wire:model="answer"
                         x-ref="content"
                         x-model="content"
