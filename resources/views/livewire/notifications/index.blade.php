@@ -1,4 +1,4 @@
-<div>
+<div class="flex flex-col gap-2 mb-20">
     @foreach ($notifications as $notification)
         @php
             $question = \App\Models\Question::find($notification->data['question_id']);
@@ -10,41 +10,48 @@
             }
         @endphp
 
-        <div class="hover:bg-slate-800">
-            <a href="{{ route('notifications.show', ['notification' => $notification->id]) }}" wire:navigate>
-                <div class="rounded-lg px-2 py-4">
-                    @if ($question->from->is(auth()->user()) && $question->answer !== null)
-                        <div class="items center flex">
-                            <div>
-                                <p class="pt-3 text-slate-400">
-                                    {{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:
-                                </p>
+        <a href="{{ route('notifications.show', ['notification' => $notification->id]) }}" wire:navigate>
+            <div class="p-4 overflow-hidden transition-colors border rounded-2xl hover:bg-slate-900 group border-slate-900 bg-slate-950 bg-opacity-80">
+                @if ($question->from->is(auth()->user()) && $question->answer !== null)
+                    <div class="flex items-center gap-3 text-sm text-slate-500">
+                        <figure class="flex-shrink-0 w-10 h-10 transition-opacity rounded-full bg-slate-800 group-hover:opacity-90">
+                            <img
+                                src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
+                                alt="{{ $question->to->username }}"
+                                class="w-10 h-10 rounded-full"
+                            />
+                        </figure>
+                        <p>
+                            {{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:
+                        </p>
+                    </div>
+                @else
+                    @if ($question->anonymously)
+                        <div class="flex items-center gap-3 text-sm text-slate-500">
+                            <div class="flex items-center justify-center flex-shrink-0 w-10 h-10 border border-dashed rounded-full border-1 border-slate-400">
+                                <span>?</span>
                             </div>
+                            <p>Someone asked you anonymously:</p>
                         </div>
                     @else
-                        <div class="items center flex">
-                            <div>
-                                <p class="pt-3 text-slate-400">
-                                    @if ($question->anonymously)
-                                        Someone asked you anonymously:
-                                    @else
-                                        {{ $question->from->name }} asked you:
-                                    @endif
-                                </p>
-                            </div>
+                        <div class="flex items-center gap-3 text-sm text-slate-500">
+                            <figure class="flex-shrink-0 w-10 h-10 transition-opacity rounded-full bg-slate-800 group-hover:opacity-90">
+                                <img
+                                    src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
+                                    alt="{{ $question->from->username }}"
+                                    class="w-10 h-10 rounded-full"
+                                />
+                            </figure>
+                            <p>{{ $question->from->name }} asked you:</p>
                         </div>
                     @endif
+                @endif
 
-                    <p class="mt-2 text-slate-200">
-                        {!! $question->content !!}
-                    </p>
-                </div>
-            </a>
-        </div>
-
-        @if (! $loop->last)
-            <div class="border-t border-slate-800"></div>
-        @endif
+                <p class="mt-2 text-slate-200">
+                    {!! $question->content !!}
+                </p>
+            </div>
+        </a>
     @endforeach
 
     @if ($user->notifications->count() === 0)
