@@ -21,7 +21,7 @@ final readonly class EmailVerificationPromptController
 
         return $user->hasVerifiedEmail()
                     ? redirect()->intended(route('profile.show', [
-                        'user' => $user->username,
+                        'username' => $user->username,
                     ], absolute: false)) : view('auth.verify-email');
     }
 }

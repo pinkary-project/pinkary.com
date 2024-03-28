@@ -1,4 +1,4 @@
-<div class="mb-12 w-full px-2 text-slate-200">
+<div class="mb-12 w-full text-slate-200">
     <div class="mb-8 w-full max-w-md">
         <div class="relative flex items-center py-1">
             <svg
@@ -7,19 +7,19 @@
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="absolute left-5 h-5 w-5"
+                class="absolute left-5 z-50 size-5"
             >
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"></path>
             </svg>
-            <input
+
+            <x-text-input
                 x-data="{ focusInput: {{ $focusInput }} }"
                 x-ref="searchInput"
                 x-init="if (focusInput) $refs.searchInput.focus()"
                 wire:model.live.debounce.500ms="query"
-                class="w-full rounded-2xl border border-slate-900 bg-gray-950 py-3 pl-14 pr-4 transition-all placeholder:text-slate-500"
-                type="text"
                 name="q"
                 placeholder="Search for users..."
+                class="w-full !rounded-2xl !bg-slate-950 !bg-opacity-80 py-3 pl-14"
             />
         </div>
     </div>
@@ -34,8 +34,8 @@
                 @foreach ($users as $user)
                     <li>
                         <a
-                            href="{{ route('profile.show', ['user' => $user->username]) }}"
-                            class="group flex items-center gap-3 rounded-2xl border border-slate-900 bg-gray-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900"
+                            href="{{ route('profile.show', ['username' => $user->username]) }}"
+                            class="group flex items-center gap-3 rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900"
                             wire:navigate
                         >
                             <figure class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
@@ -46,12 +46,12 @@
                                 />
                             </figure>
                             <div class="flex flex-col overflow-hidden text-sm">
-                                <div class="flex">
+                                <div class="flex items-center space-x-2">
                                     <p class="truncate font-medium">
                                         {{ $user->name }}
                                     </p>
                                     @if ($user->is_verified)
-                                        <x-icons.verified :color="$user->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
+                                        <x-icons.verified :color="$user->right_color" class="size-4" />
                                     @endif
                                 </div>
                                 <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">

@@ -1,14 +1,9 @@
 <x-app-layout>
     <div class="flex flex-col items-center justify-center py-10">
-        <div class="w-full max-w-md overflow-hidden rounded-lg shadow-md">
+        <div class="w-full max-w-md overflow-hidden rounded-lg px-4 shadow-md md:px-0">
             <livewire:links.index :userId="$user->id" />
-
-            <div class="px-2 md:px-0 lg:px-0 xl:px-0">
-                <div class="mt-3 border-t border-gray-800"></div>
-
-                <livewire:questions.create :toId="$user->id" />
-                <livewire:questions.index :userId="$user->id" :pinnable="true" />
-            </div>
+            <livewire:questions.create :toId="$user->id" />
+            <livewire:questions.index :userId="$user->id" :pinnable="true" />
         </div>
     </div>
 </x-app-layout>

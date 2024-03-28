@@ -1,13 +1,13 @@
 <x-app-layout>
     <div class="py-12">
-        <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-            <div class="sm:p-2">
+        <div class="mx-auto max-w-2xl space-y-6 sm:px-6 lg:px-8">
+            <div class="px-4 sm:px-8">
                 <a
-                    href="{{ route('profile.show', ['user' => auth()->user()->username]) }}"
-                    class="flex text-gray-400 hover:underline"
+                    href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
+                    class="flex items-center space-x-1 text-slate-400 hover:underline"
                     wire:navigate
                 >
-                    <x-icons.chevron-left class="h-6 w-6" />
+                    <x-icons.chevron-left class="size-5" />
                     <span>Back</span>
                 </a>
             </div>

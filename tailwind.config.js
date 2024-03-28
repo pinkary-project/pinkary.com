@@ -1,5 +1,4 @@
 import defaultTheme from "tailwindcss/defaultTheme";
-import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -13,8 +12,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Figtree", ...defaultTheme.fontFamily.sans],
-                welcome: ["Mona Sans", ...defaultTheme.fontFamily.sans],
+                mona: ["Mona Sans", ...defaultTheme.fontFamily.sans],
             },
         },
     },
@@ -86,5 +84,5 @@ export default {
         'text-blue-600',
     ],
 
-    plugins: [forms],
+    plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 };

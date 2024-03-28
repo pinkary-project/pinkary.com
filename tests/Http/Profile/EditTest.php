@@ -68,7 +68,7 @@ test('username can be updated to uppercase', function () {
 
     $response->assertSessionHasNoErrors();
 
-    $this->get('/@testuser')->assertNotFound();
+    $this->get('/@testuser')->assertOk();
     $this->get('/@TESTUSER')->assertOk();
 });
 
@@ -98,7 +98,7 @@ test('can not update to an existing username using uppercase', function () {
         ]);
 
     $this->get('/@testuser')->assertOk();
-    $this->get('/@TESTUSER')->assertNotFound();
+    $this->get('/@TESTUSER')->assertOk();
 });
 
 test('email verification status is unchanged when the email address is unchanged', function () {

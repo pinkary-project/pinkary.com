@@ -3,7 +3,7 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "laravel/framework": "^11.0.8",
+        "laravel/framework": "^11.1.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
         "laravel/socialite": "^5.12.1",
@@ -16,7 +16,7 @@
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
         "larastan/larastan": "^2.9.2",
-        "laravel/pint": "^1.14.0",
+        "laravel/pint": "^1.15.0",
         "mockery/mockery": "^1.6.11",
         "laravel/sail": "^1.29.1",
         "nunomaduro/collision": "^8.1.1",

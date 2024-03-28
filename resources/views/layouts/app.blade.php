@@ -3,7 +3,7 @@
     <head>
         @include('layouts.components.head')
     </head>
-    <body class="bg-gray-950 font-sans antialiased">
+    <body class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased" style="background-image: url({{ asset('/img/dots.svg') }})">
         <livewire:flash-messages.show />
 
         <div class="flex min-h-screen flex-col">
@@ -12,8 +12,8 @@
 
                 @if (isset($title))
                     <div class="mb-12 mt-14 flex flex-col items-center">
-                        <div class="w-full max-w-md px-2">
-                            <h1 class="text-2xl font-medium text-slate-200">
+                        <div class="w-full max-w-md px-2 sm:px-0">
+                            <h1 class="font-mona text-2xl font-medium text-slate-200">
                                 {{ $title }}
                             </h1>
                         </div>

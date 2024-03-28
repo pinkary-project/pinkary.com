@@ -46,12 +46,19 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-interaction --no-progress --ansi
 
+      - name: Get NPM cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
       - name: Cache dependencies
-        id: cache
+        id: npm-cache
         uses: actions/cache@v4
         with:
-          path: ./node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'

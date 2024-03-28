@@ -33,7 +33,7 @@ final readonly class AuthenticatedSessionController
         assert($user instanceof User);
 
         return redirect()->intended(route('profile.show', [
-            'user' => $user->username,
+            'username' => $user->username,
         ], absolute: false));
     }
 

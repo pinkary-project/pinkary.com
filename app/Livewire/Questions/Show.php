@@ -60,7 +60,7 @@ final class Show extends Component
     {
         $question = Question::findOrFail($this->questionId);
 
-        $this->redirect(route('profile.show', ['user' => $question->to->username]));
+        $this->redirect(route('profile.show', ['username' => $question->to->username]));
     }
 
     /**
@@ -74,7 +74,7 @@ final class Show extends Component
 
         $question->delete();
 
-        $this->redirect(route('profile.show', ['user' => $question->to->username]));
+        $this->redirect(route('profile.show', ['username' => $question->to->username]));
     }
 
     /**

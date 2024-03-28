@@ -11,7 +11,7 @@
                 </div>
             @else
                 <a
-                    href="{{ route('profile.show', ['user' => $question->from->username]) }}"
+                    href="{{ route('profile.show', ['username' => $question->from->username]) }}"
                     class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
@@ -55,7 +55,7 @@
     @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
-                <a href="{{ route('profile.show', ['user' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
+                <a href="{{ route('profile.show', ['username' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
                     <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
@@ -81,7 +81,7 @@
                 @if (auth()->check() && auth()->user()->can('update', $question))
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-gray-400 transition duration-150 ease-in-out hover:text-gray-50 focus:outline-none">
+                            <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
                                 <x-icons.ellipsis-horizontal class="h-6 w-6" />
                             </button>
                         </x-slot>
@@ -145,12 +145,13 @@
                     </time>
                     <span class="mx-1">•</span>
                     <button
+                        x-cloak
                         x-data="shareProfile"
                         x-show="isVisible"
                         @click="share({
                                         url: '{{
                                             route('questions.show', [
-                                                'user' => $question->to->username,
+                                                'username' => $question->to->username,
                                                 'question' => $question,
                                             ])
                                         }}'
@@ -165,7 +166,7 @@
                         x-show="isVisible"
                         @click="copyToClipboard('{{
                             route('questions.show', [
-                                'user' => $question->to->username,
+                                'username' => $question->to->username,
                                 'question' => $question,
                             ])
                         }}')"

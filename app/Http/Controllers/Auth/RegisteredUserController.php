@@ -58,7 +58,7 @@ final readonly class RegisteredUserController
         dispatch(new DownloadUserAvatar($user));
 
         return redirect(route('profile.show', [
-            'user' => $user->username,
+            'username' => $user->username,
         ], absolute: false));
     }
 }

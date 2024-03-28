@@ -16,11 +16,11 @@ Route::view('/home', 'home')->name('home');
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/support', 'support')->name('support');
-Route::view('/status', 'status')->name('status');
+Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
 
 Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
-Route::prefix('/@{user:username}')->group(function () {
+Route::prefix('/@{username}')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])
         ->name('profile.show')
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);

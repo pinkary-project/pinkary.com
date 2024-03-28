@@ -76,16 +76,20 @@
             <x-input-error :messages="'The reCAPTCHA is required.'" class="mt-2" />
         @endif
 
-        <div class="mt-4 flex items-center justify-end">
-            <a
-                class="rounded-md text-sm text-gray-500 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                href="{{ route('login') }}"
-                wire:navigate
-            >
-                {{ __('Already have an account? Sign in here.') }}
-            </a>
+        <div class="mt-4 flex items-center justify-end space-x-3.5 text-sm">
+            <div>
+                <span class="text-slate-500">Already have an account?</span>
 
-            <x-primary-button class="ms-4">
+                <a
+                    class="rounded-md text-sm text-slate-200 underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+                    href="{{ route('login') }}"
+                    wire:navigate
+                >
+                    {{ __(' Sign in here') }}
+                </a>
+            </div>
+
+            <x-primary-button>
                 {{ __('Register') }}
             </x-primary-button>
         </div>
