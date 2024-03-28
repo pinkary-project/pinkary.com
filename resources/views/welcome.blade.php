@@ -9,7 +9,7 @@
             </a>
         @else
             <a href="{{ route('home') }}" wire:navigate>
-                <x-primary-colorless-button>View questions</x-primary-colorless-button>
+                <x-primary-colorless-button>Home</x-primary-colorless-button>
             </a>
             <a href="{{ route('login') }}" wire:navigate>
                 <x-primary-button>Log In</x-primary-button>
