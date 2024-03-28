@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth\Requests;
 
 use App\Models\User;
+use App\Rules\NoBlankCharacters;
 use App\Rules\Username;
 use App\Rules\ValidTimezone;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -25,7 +26,7 @@ final class ProfileUpdateRequest extends FormRequest
         assert($user instanceof User);
 
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', new NoBlankCharacters],
             'username' => ['required', 'string', 'min:4', 'max:50', Rule::unique(User::class)->ignore($user->id), new Username($user)],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'timezone' => ['required', 'string', 'max:255', new ValidTimezone],

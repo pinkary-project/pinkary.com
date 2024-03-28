@@ -257,3 +257,22 @@ test('unique constraint validation is case insensitive', function (string $exist
     ['testuser', ' TESTUSER'],
     ['aaaaa', 'aaaaA'],
 ]);
+
+test("user's name cannot contain blank characters", function (string $name) {
+    $response = $this->from('/register')->post('/register', [
+        'name' => $name,
+        'username' => 'testuser',
+        'email' => 'test@laravel.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'timezone' => 'UTC',
+    ]);
+
+    $response->assertRedirect('/register')
+        ->assertSessionHasErrors(['name' => 'The name field cannot contain blank characters.']);
+})->with([
+    "\u{200E}",
+    "Test\u{200E}User",
+    "Test User \u{200E}",
+    "\u{200E}Test User",
+]);
