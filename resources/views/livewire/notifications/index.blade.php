@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2 mb-20">
     @foreach ($notifications as $notification)
         @php
             $question = \App\Models\Question::find($notification->data['question_id']);
@@ -26,33 +26,25 @@
                         </p>
                     </div>
                 @else
-                    <div class="flex items center">
-                        <div>
-                                @if ($question->anonymously)
-                                    <div class="flex items-center gap-3 text-sm text-slate-500">
-                                        <div class="flex items-center justify-center flex-shrink-0 w-10 h-10 border border-dashed rounded-full border-1 border-slate-400">
-                                            <span>?</span>
-                                        </div>
-
-                                        <p>Someone asked you anonymously:</p>
-                                    </div>
-                                @else
-                                    <div class="flex items-center gap-3 text-sm text-slate-500">
-                                        <figure class="flex-shrink-0 w-10 h-10 transition-opacity rounded-full bg-slate-800 group-hover:opacity-90">
-                                            <img
-                                                src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
-                                                alt="{{ $question->from->username }}"
-                                                class="w-10 h-10 rounded-full"
-                                            />
-                                        </figure>
-                                        <p>
-                                            {{ $question->from->name }} asked you:
-                                        </p>
-                                    </div>
-
-                                @endif
+                    @if ($question->anonymously)
+                        <div class="flex items-center gap-3 text-sm text-slate-500">
+                            <div class="flex items-center justify-center flex-shrink-0 w-10 h-10 border border-dashed rounded-full border-1 border-slate-400">
+                                <span>?</span>
+                            </div>
+                            <p>Someone asked you anonymously:</p>
                         </div>
-                    </div>
+                    @else
+                        <div class="flex items-center gap-3 text-sm text-slate-500">
+                            <figure class="flex-shrink-0 w-10 h-10 transition-opacity rounded-full bg-slate-800 group-hover:opacity-90">
+                                <img
+                                    src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
+                                    alt="{{ $question->from->username }}"
+                                    class="w-10 h-10 rounded-full"
+                                />
+                            </figure>
+                            <p>{{ $question->from->name }} asked you:</p>
+                        </div>
+                    @endif
                 @endif
 
                 <p class="mt-2 text-slate-200">
