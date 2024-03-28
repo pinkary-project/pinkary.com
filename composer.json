@@ -3,7 +3,7 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "laravel/framework": "^11.1.0",
+        "laravel/framework": "^11.1.1",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
         "laravel/socialite": "^5.12.1",
@@ -20,7 +20,7 @@
         "mockery/mockery": "^1.6.11",
         "laravel/sail": "^1.29.1",
         "nunomaduro/collision": "^8.1.1",
-        "pestphp/pest": "^2.34.5",
+        "pestphp/pest": "^2.34.6",
         "pestphp/pest-plugin-laravel": "^2.3.0",
         "pestphp/pest-plugin-type-coverage": "^2.8.1",
         "rector/rector": "^1.0.3",
