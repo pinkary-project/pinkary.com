@@ -8,6 +8,9 @@
                 <x-primary-button>Your Profile</x-primary-button>
             </a>
         @else
+            <a href="{{ route('home') }}" wire:navigate>
+                <x-primary-colorless-button>View questions</x-primary-colorless-button>
+            </a>
             <a href="{{ route('login') }}" wire:navigate>
                 <x-primary-button>Log In</x-primary-button>
             </a>
