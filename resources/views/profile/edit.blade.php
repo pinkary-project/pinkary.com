@@ -1,5 +1,6 @@
 <x-app-layout>
-    <div class="py-12">
+    @persist('scrollbar')
+    <div class="py-12" wire:scroll>
         <div class="mx-auto max-w-2xl space-y-6 sm:px-6 lg:px-8">
             <div class="px-4 sm:px-8">
                 <a
@@ -7,7 +8,7 @@
                     class="flex items-center space-x-1 text-slate-400 hover:underline"
                     wire:navigate
                 >
-                    <x-icons.chevron-left class="size-5" />
+                    <x-icons.chevron-left class="size-5"/>
                     <span>Back</span>
                 </a>
             </div>
@@ -30,6 +31,13 @@
                 </div>
             </div>
 
+
+            <div class="p-4 shadow sm:rounded-lg sm:p-8">
+                <div class="max-w-xl">
+                    @include('profile.partials.update-account-settings-form')
+                </div>
+            </div>
+
             <div class="p-4 shadow sm:rounded-lg sm:p-8">
                 <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
@@ -37,4 +45,5 @@
             </div>
         </div>
     </div>
+    @endpersist
 </x-app-layout>
