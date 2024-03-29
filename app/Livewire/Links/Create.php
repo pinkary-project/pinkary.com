@@ -48,7 +48,7 @@ final class Create extends Component
         }
 
         if(!$this->isLinkActive($this->url)) {
-            $this->addError('url', 'The link appears to be broken. Please verify the URL or try again.');
+            $this->addError('url', 'The link appears to be broken.');
 
             return;
         }
