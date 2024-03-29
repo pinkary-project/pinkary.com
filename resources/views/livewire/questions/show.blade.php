@@ -103,7 +103,7 @@
                 @endif
             </div>
 
-            <p class="mt-3 text-slate-200">
+            <p class="mt-3 text-slate-200 overflow-x-auto">
                 {!! $question->answer !!}
             </p>
 
