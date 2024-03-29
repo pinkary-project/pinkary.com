@@ -6,6 +6,7 @@ namespace App\Livewire\Links;
 
 use App\Jobs\DownloadUserAvatar;
 use App\Models\User;
+use App\Rules\ValidUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -49,7 +50,7 @@ final class Create extends Component
 
         $validated = $this->validate([
             'description' => 'required|max:100',
-            'url' => 'required|max:100|url|starts_with:https',
+            'url' => ['required', 'max:100', 'url', 'starts_with:https', new ValidUrl()],
         ]);
 
         $user->links()->create($validated);
