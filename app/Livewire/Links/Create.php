@@ -6,8 +6,8 @@ namespace App\Livewire\Links;
 
 use App\Jobs\DownloadUserAvatar;
 use App\Models\User;
+use App\Rules\ActiveUrl;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -32,7 +32,7 @@ final class Create extends Component
         $user = $request->user();
         assert($user instanceof User);
 
-        if ($user->links()->count() >= 10 && !$user->is_verified) {
+        if ($user->links()->count() >= 10 && ! $user->is_verified) {
             $this->addError('url', 'You can only have 10 links at a time.');
 
             return;
@@ -44,19 +44,13 @@ final class Create extends Component
             return;
         }
 
-        if (!Str::startsWith($this->url, ['http://', 'https://'])) {
+        if (! Str::startsWith($this->url, ['http://', 'https://'])) {
             $this->url = "https://{$this->url}";
-        }
-
-        if(!$this->isLinkActive($this->url)) {
-            $this->addError('url', 'The link appears to be broken.');
-
-            return;
         }
 
         $validated = $this->validate([
             'description' => 'required|max:100',
-            'url' => 'required|max:100|url|starts_with:https',
+            'url' => ['required', 'max:100', 'url', 'starts_with:https', new ActiveUrl()],
         ]);
 
         $user->links()->create($validated);
@@ -68,20 +62,6 @@ final class Create extends Component
 
         $this->dispatch('link.created');
         $this->dispatch('notification.created', 'Link created.');
-    }
-
-    /**
-     * Check if the given link is active.
-     */
-    private function isLinkActive($url): bool
-    {
-        try {
-            $response = Http::head($url);
-            return $response->successful();
-        } catch (\Exception $e) {
-            // Handle the exception, log it if necessary, and return false
-            return false;
-        }
     }
 
     /**
