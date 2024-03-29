@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Livewire\Questions\Edit;
 use App\Models\Question;
 use App\Models\User;
-use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
 beforeEach(function () {

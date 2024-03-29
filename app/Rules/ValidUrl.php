@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use Closure;
-use Exception;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
-final class ActiveUrl implements ValidationRule
+final class ValidUrl implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -20,23 +20,14 @@ final class ActiveUrl implements ValidationRule
     {
         assert(is_string($value));
 
-        if (! $this->isLinkActive($value)) {
-            $fail(__('The link appears to be broken.'));
+        try {
+            $failed = Http::timeout(3)->get($value)->failed();
+        } catch (ConnectionException) {
+            $failed = true;
         }
 
-    }
-
-    /**
-     * Check if the link is active.
-     */
-    public function isLinkActive(string $url): bool
-    {
-        try {
-            $response = Http::head($url);
-
-            return $response->successful();
-        } catch (Exception $e) {
-            return false;
+        if ($failed) {
+            $fail(__('The :attribute should be a valid URL.'));
         }
     }
 }
