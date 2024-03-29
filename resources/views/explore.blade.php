@@ -2,7 +2,7 @@
     <x-slot name="title">Explore</x-slot>
 
     <div class="flex flex-col items-center justify-center">
-        <div class="w-full max-w-md overflow-hidden rounded-lg shadow-md">
+        <div class="w-full max-w-md overflow-hidden rounded-lg shadow-md min-h-screen">
             <livewire:users.index focus-input="true" />
         </div>
     </div>
