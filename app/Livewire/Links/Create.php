@@ -7,6 +7,7 @@ namespace App\Livewire\Links;
 use App\Jobs\DownloadUserAvatar;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -74,12 +75,13 @@ final class Create extends Component
      */
     private function isLinkActive($url): bool
     {
-        $file_headers = @get_headers($url);
-        if (!$file_headers || $file_headers[0] == "HTTP/1.1 404 Not Found") {
+        try {
+            $response = Http::head($url);
+            return $response->successful();
+        } catch (\Exception $e) {
+            // Handle the exception, log it if necessary, and return false
             return false;
-        } 
-
-        return true;
+        }
     }
 
     /**
