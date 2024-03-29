@@ -11,6 +11,9 @@
             <a href="{{ route('home') }}" wire:navigate>
                 <x-primary-colorless-button>Home</x-primary-colorless-button>
             </a>
+            <a href="{{ route('explore') }}" wire:navigate>
+                <x-primary-colorless-button>Explore</x-primary-colorless-button>
+            </a>
             <a href="{{ route('login') }}" wire:navigate>
                 <x-primary-button>Log In</x-primary-button>
             </a>
