@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $link_shape
  * @property string $mail_preference_time
  * @property string $name
+ * @property string $questions_preference
  * @property string $right_color
  * @property array<string, string>|null $settings
  * @property string $timezone
@@ -205,6 +206,20 @@ final class User extends Authenticatable implements MustVerifyEmail
         }
 
         return $isVerified;
+    }
+
+    /**
+     * Get the user's "questions_preference" attribute.
+     */
+    public function getQuestionsPreferenceAttribute(): string
+    {
+        $settings = $this->settings ?: [];
+
+        $questionsPreference = data_get($settings, 'questions_preference', 'anonymously');
+
+        assert(is_string($questionsPreference));
+
+        return $questionsPreference;
     }
 
     /**

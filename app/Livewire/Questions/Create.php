@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
-use App\Models\Question;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
@@ -30,6 +29,19 @@ final class Create extends Component
      * The component's anonymously state.
      */
     public bool $anonymously = true;
+
+    /**
+     * Mount the component.
+     */
+    public function mount(Request $request): void
+    {
+        if (auth()->check()) {
+            $user = $request->user();
+            assert($user instanceof User);
+
+            $this->anonymously = $user->questions_preference === 'anonymously';
+        }
+    }
 
     /**
      * Refresh the component.
