@@ -148,3 +148,22 @@ test('max 30 questions per day', function () {
         'content' => 'You can only send 30 questions per day.',
     ]);
 });
+
+test('cannot store with blank characters', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    expect(App\Models\Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', "\u{200E}");
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'content' => 'The content field cannot contain blank characters.',
+    ]);
+});
