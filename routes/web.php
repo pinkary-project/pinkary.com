@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\AccountController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Profile\AccountController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
 use App\Http\Controllers\Profile\VerifiedController;
 use App\Http\Controllers\ProfileController;
