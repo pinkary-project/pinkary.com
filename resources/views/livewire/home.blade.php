@@ -1,5 +1,5 @@
 <div>
-    <section class="mb-12 space-y-10">
+    <section class="mb-12 space-y-10 min-h-screen">
         @forelse ($questions as $question)
             <livewire:questions.show :questionId="$question->id" :key="'question-' . $question->id" :inIndex="true" />
         @empty
