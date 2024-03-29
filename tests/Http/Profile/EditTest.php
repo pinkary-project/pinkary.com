@@ -227,3 +227,34 @@ test("can not update user's name with blank characters", function () {
 
     $this->assertSame('Test User', $user->name);
 });
+
+test('user can set their questions preference', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->put('/account', [
+            'questions_preference' => 'public',
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    $this->assertSame('public', $user->refresh()->questions_preference);
+});
+
+test('user can not set their questions preference to an invalid value', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->put('/account', [
+            'questions_preference' => 'invalid',
+        ]);
+
+    $response
+        ->assertSessionHasErrors(['questions_preference' => 'The selected questions preference is invalid.']);
+
+    $this->assertSame('anonymously', $user->refresh()->questions_preference);
+});
