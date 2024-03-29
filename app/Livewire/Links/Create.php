@@ -31,7 +31,7 @@ final class Create extends Component
         $user = $request->user();
         assert($user instanceof User);
 
-        if ($user->links()->count() >= 10 && ! $user->is_verified) {
+        if ($user->links()->count() >= 10 && !$user->is_verified) {
             $this->addError('url', 'You can only have 10 links at a time.');
 
             return;
@@ -43,8 +43,14 @@ final class Create extends Component
             return;
         }
 
-        if (! Str::startsWith($this->url, ['http://', 'https://'])) {
+        if (!Str::startsWith($this->url, ['http://', 'https://'])) {
             $this->url = "https://{$this->url}";
+        }
+
+        if(!$this->isLinkActive($this->url)) {
+            $this->addError('url', 'The link appears to be broken. Please verify the URL or try again.');
+
+            return;
         }
 
         $validated = $this->validate([
@@ -61,6 +67,19 @@ final class Create extends Component
 
         $this->dispatch('link.created');
         $this->dispatch('notification.created', 'Link created.');
+    }
+
+    /**
+     * Check if the given link is active.
+     */
+    private function isLinkActive($url): bool
+    {
+        $file_headers = @get_headers($url);
+        if (!$file_headers || $file_headers[0] == "HTTP/1.1 404 Not Found") {
+            return false;
+        } 
+
+        return true;
     }
 
     /**
