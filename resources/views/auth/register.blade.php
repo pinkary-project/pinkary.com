@@ -95,3 +95,10 @@
         </div>
     </form>
 </x-guest-layout>
+
+<script>
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (document.querySelector(`#timezone option[value='${browserTimezone}']`)) {
+        document.getElementById("timezone").value = browserTimezone;
+    }
+</script>
