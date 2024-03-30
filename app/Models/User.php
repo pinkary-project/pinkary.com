@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
+ * @property bool $anonymously_preference
  * @property string $avatar
  * @property string $avatar_url
  * @property string|null $bio
@@ -32,7 +33,6 @@ use Illuminate\Support\Facades\Storage;
  * @property string $link_shape
  * @property string $mail_preference_time
  * @property string $name
- * @property string $questions_preference
  * @property string $right_color
  * @property array<string, string>|null $settings
  * @property string $timezone
@@ -209,20 +209,6 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get the user's "questions_preference" attribute.
-     */
-    public function getQuestionsPreferenceAttribute(): string
-    {
-        $settings = $this->settings ?: [];
-
-        $questionsPreference = data_get($settings, 'questions_preference', 'anonymously');
-
-        assert(is_string($questionsPreference));
-
-        return $questionsPreference;
-    }
-
-    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -236,6 +222,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'is_verified' => 'boolean',
             'password' => 'hashed',
             'settings' => 'array',
+            'anonymously_preference' => 'boolean',
         ];
     }
 }
