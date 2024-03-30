@@ -38,7 +38,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/qr-code', QrCodeController::class)->name('qr-code.download');
+    Route::get('/qr-code', QrCodeController::class)->name('qr-code.image');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

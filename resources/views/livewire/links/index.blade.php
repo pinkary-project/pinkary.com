@@ -22,15 +22,15 @@
                 <x-icons.link class="size-5" />
             </button>
             @if (auth()->user()?->is($user))
-                <a
-                    href="{{ route('qr-code.download') }}"
+                <button
                     class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
-                    download
+                    x-on:click.prevent="$dispatch('open-modal', 'show-qr-code')"
                 >
-                    <span class="sr-only">Download QR Code</span>
+                    <span class="sr-only">See QR Code</span>
 
                     <x-icons.qr-code class="size-5" />
-                </a>
+                </button>
+                <x-modal-qr-code />
             @endif
         </div>
 

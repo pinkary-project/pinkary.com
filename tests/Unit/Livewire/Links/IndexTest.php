@@ -92,7 +92,7 @@ test('user can see qr download link', function () {
         'userId' => $user->id,
     ]);
 
-    $component->assertSee(route('qr-code.download'));
+    $component->assertSee(route('qr-code.image'));
 });
 
 test('guest or random user cannot see qr download link', function () {
@@ -104,5 +104,5 @@ test('guest or random user cannot see qr download link', function () {
         'userId' => $qrUser->id,
     ]);
 
-    $component->assertDontSee(route('qr-code.download'));
+    $component->assertDontSee(route('qr-code.image'));
 });
