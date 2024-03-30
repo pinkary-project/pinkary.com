@@ -167,3 +167,63 @@ test('cannot store with blank characters', function () {
         'content' => 'The content field cannot contain blank characters.',
     ]);
 });
+
+test('store with user questions_preference set to public', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    $userA->update(['settings->questions_preference' => 'public']);
+
+    expect(App\Models\Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', 'Hello World');
+
+    $component->call('store');
+    $component->assertSet('content', '');
+    $component->assertSet('anonymous', false);
+
+    $component->assertDispatched('notification.created', 'Question sent.');
+    $component->assertDispatched('question.created');
+
+    $question = App\Models\Question::first();
+
+    expect($question->from_id)->toBe($userA->id)
+        ->and($question->to_id)->toBe($userB->id)
+        ->and($question->content)->toBe('Hello World')
+        ->and($question->anonymously)->toBeFalse();
+});
+
+test('store with user questions_preference set to anonymously', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    $userA->update(['settings->questions_preference' => 'anonymously']);
+
+    expect(App\Models\Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', 'Hello World');
+
+    $component->call('store');
+    $component->assertSet('content', '');
+    $component->assertSet('anonymous', false);
+
+    $component->assertDispatched('notification.created', 'Question sent.');
+    $component->assertDispatched('question.created');
+
+    $question = App\Models\Question::first();
+
+    expect($question->from_id)->toBe($userA->id)
+        ->and($question->to_id)->toBe($userB->id)
+        ->and($question->content)->toBe('Hello World')
+        ->and($question->anonymously)->toBeTrue();
+});
