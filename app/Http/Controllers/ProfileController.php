@@ -41,14 +41,7 @@ final readonly class ProfileController
         $user = $request->user();
         assert($user instanceof User);
 
-        $user->fill($request->except('settings', '_token', '_method'));
-
-        $settings = $user->settings ?? [];
-
-        assert(is_string($request->input('settings.questions_preference', 'anonymously')));
-        $settings['questions_preference'] = $request->input('settings.questions_preference', 'anonymously');
-
-        $user->settings = $settings;
+        $user->fill($request->validated());
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

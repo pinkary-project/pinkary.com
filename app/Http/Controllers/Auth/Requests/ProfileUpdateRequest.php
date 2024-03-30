@@ -37,8 +37,7 @@ final class ProfileUpdateRequest extends FormRequest
             'timezone' => ['required', 'string', 'max:255', new ValidTimezone],
             'mail_preference_time' => ['required', 'string', 'max:255', 'in:daily,weekly,never'],
             'bio' => ['nullable', 'string', 'max:255'],
-            'settings' => ['array'],
-            'settings.questions_preference' => ['required', 'string', 'in:anonymously,public'],
+            'anonymously_preference' => ['required', 'boolean'],
         ];
     }
 }
