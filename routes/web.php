@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Profile\AccountController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
 use App\Http\Controllers\Profile\VerifiedController;
 use App\Http\Controllers\ProfileController;
@@ -44,8 +43,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::put('/account', AccountController::class)->name('account.update');
 
     Route::prefix('/profile/connect/github')->group(function () {
         Route::get('/', [GitHubController::class, 'index'])
