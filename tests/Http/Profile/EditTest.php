@@ -37,6 +37,9 @@ test('profile information can be updated', function () {
             'email' => 'test@example.com',
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
+            'settings' => [
+                'questions_preference' => 'anonymously',
+            ],
         ]);
 
     $response
@@ -64,6 +67,9 @@ test('username can be updated to uppercase', function () {
             'email' => $user->email,
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
+            'settings' => [
+                'questions_preference' => 'public',
+            ],
         ]);
 
     $response->assertSessionHasNoErrors();
@@ -89,6 +95,9 @@ test('can not update to an existing username using uppercase', function () {
             'email' => $user->email,
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
+            'settings' => [
+                'questions_preference' => 'public',
+            ],
         ]);
 
     $response
@@ -112,6 +121,9 @@ test('email verification status is unchanged when the email address is unchanged
             'email' => $user->email,
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
+            'settings' => [
+                'questions_preference' => 'anonymously',
+            ],
         ]);
 
     $response
@@ -228,33 +240,25 @@ test("can not update user's name with blank characters", function () {
     $this->assertSame('Test User', $user->name);
 });
 
-test('user can set their questions preference', function () {
+test('settings is set to public', function () {
     $user = User::factory()->create();
 
     $response = $this
         ->actingAs($user)
-        ->put('/account', [
-            'questions_preference' => 'public',
+        ->patch('/profile', [
+            'name' => 'Test User',
+            'username' => 'testuser',
+            'email' => $user->email,
+            'timezone' => 'UTC',
+            'mail_preference_time' => 'daily',
+            'settings' => [
+                'questions_preference' => 'public',
+            ],
         ]);
 
     $response
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    $this->assertSame('public', $user->refresh()->questions_preference);
-});
-
-test('user can not set their questions preference to an invalid value', function () {
-    $user = User::factory()->create();
-
-    $response = $this
-        ->actingAs($user)
-        ->put('/account', [
-            'questions_preference' => 'invalid',
-        ]);
-
-    $response
-        ->assertSessionHasErrors(['questions_preference' => 'The selected questions preference is invalid.']);
-
-    $this->assertSame('anonymously', $user->refresh()->questions_preference);
+    expect($user->refresh()->settings['questions_preference'])->toBe('public');
 });
