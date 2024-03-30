@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->boolean('anonymously_preference')->default(false)->after('settings');
+            $table->boolean('anonymously_preference')->default(true)->after('settings');
         });
     }
 };
