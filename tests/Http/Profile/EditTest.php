@@ -37,9 +37,7 @@ test('profile information can be updated', function () {
             'email' => 'test@example.com',
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
-            'settings' => [
-                'questions_preference' => 'anonymously',
-            ],
+            'anonymously_preference' => false,
         ]);
 
     $response
@@ -52,6 +50,7 @@ test('profile information can be updated', function () {
     $this->assertSame('test@example.com', $user->email);
     $this->assertSame('testuser', $user->username);
     $this->assertNull($user->email_verified_at);
+    $this->assertSame(false, $user->anonymously_preference);
 });
 
 test('username can be updated to uppercase', function () {
@@ -67,9 +66,7 @@ test('username can be updated to uppercase', function () {
             'email' => $user->email,
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
-            'settings' => [
-                'questions_preference' => 'public',
-            ],
+            'anonymously_preference' => false,
         ]);
 
     $response->assertSessionHasNoErrors();
@@ -95,9 +92,7 @@ test('can not update to an existing username using uppercase', function () {
             'email' => $user->email,
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
-            'settings' => [
-                'questions_preference' => 'public',
-            ],
+            'anonymously_preference' => true,
         ]);
 
     $response
@@ -121,9 +116,7 @@ test('email verification status is unchanged when the email address is unchanged
             'email' => $user->email,
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
-            'settings' => [
-                'questions_preference' => 'anonymously',
-            ],
+            'anonymously_preference' => false,
         ]);
 
     $response
@@ -251,14 +244,12 @@ test('settings is set to public', function () {
             'email' => $user->email,
             'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
-            'settings' => [
-                'questions_preference' => 'public',
-            ],
+            'anonymously_preference' => false,
         ]);
 
     $response
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    expect($user->refresh()->settings['questions_preference'])->toBe('public');
+    expect($user->refresh()->anonymously_preference)->toBeFalse();
 });

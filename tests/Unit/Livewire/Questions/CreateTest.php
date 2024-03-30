@@ -172,7 +172,7 @@ test('store with user questions_preference set to public', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
-    $userA->update(['settings->questions_preference' => 'public']);
+    $userA->update(['anonymously_preference' => false]);
 
     expect(App\Models\Question::count())->toBe(0);
 
@@ -202,7 +202,7 @@ test('store with user questions_preference set to anonymously', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
-    $userA->update(['settings->questions_preference' => 'anonymously']);
+    $userA->update(['anonymously_preference' => true]);
 
     expect(App\Models\Question::count())->toBe(0);
 

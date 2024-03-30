@@ -277,7 +277,7 @@ test("user's name cannot contain blank characters", function (string $name) {
     "\u{200E}Test User",
 ]);
 
-test('questions_preference fallback to anonymously', function () {
+test('anonymously_preference is set to true', function () {
     $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser1',
@@ -287,5 +287,5 @@ test('questions_preference fallback to anonymously', function () {
         'timezone' => 'UTC',
     ]);
 
-    expect(User::first()->questions_preference)->toBe('anonymously');
+    expect(User::first()->anonymously_preference)->toBeTrue();
 });
