@@ -96,9 +96,9 @@
                         >
                             <div
                                 x-sortable-handle
-                                class="flex w-10 cursor-move items-center justify-center text-slate-300 hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                class="flex w-11 cursor-move items-center justify-center text-slate-300 focus:outline-none opacity-50 hover:opacity-100"
                             >
-                                <x-icons.sortable-handle class="size-5 opacity-0 group-hover:opacity-100" />
+                                <x-icons.sortable-handle class="size-6" />
                             </div>
 
                             <x-links.list-item :$user :$link />
@@ -108,9 +108,9 @@
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
                                         type="submit"
-                                        class="flex w-10 justify-center text-slate-300 hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                        class="flex w-10 justify-center text-slate-300 focus:outline-none opacity-50 hover:opacity-100"
                                     >
-                                        <x-icons.trash class="size-5 opacity-0 group-hover:opacity-100" x-bind:class="{ 'invisible': isDragging }" />
+                                        <x-icons.trash class="size-5" x-bind:class="{ 'invisible': isDragging }" />
                                     </button>
                                 </form>
                             </div>
@@ -121,7 +121,7 @@
                 <div class="space-y-3">
                     {{-- Just listing links --}}
                     @foreach ($links as $link)
-                        <div class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient mx-2 flex bg-gradient-to-r">
+                        <div class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r">
                             <x-links.list-item :$user :$link />
                         </div>
                     @endforeach
