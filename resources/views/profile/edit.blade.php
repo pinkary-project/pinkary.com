@@ -7,7 +7,7 @@
                     class="flex items-center space-x-1 text-slate-400 hover:underline"
                     wire:navigate
                 >
-                    <x-icons.chevron-left class="size-5"/>
+                    <x-icons.chevron-left class="size-5" />
                     <span>Back</span>
                 </a>
             </div>
