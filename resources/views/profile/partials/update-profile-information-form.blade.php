@@ -1,5 +1,5 @@
 @php
-    use App\Rules\ValidTimezone;use Illuminate\Contracts\Auth\MustVerifyEmail;
+    use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
 
 <section>
@@ -22,7 +22,7 @@
         @method('patch')
 
         <div>
-            <x-input-label for="name" :value="__('Name')"/>
+            <x-input-label for="name" :value="__('Name')" />
             <x-text-input
                 id="name"
                 name="name"
@@ -32,11 +32,11 @@
                 required
                 autocomplete="name"
             />
-            <x-input-error class="mt-2" :messages="$errors->get('name')"/>
+            <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label for="username" :value="__('Username')"/>
+            <x-input-label for="username" :value="__('Username')" />
             <x-text-input
                 id="username"
                 name="username"
@@ -46,11 +46,11 @@
                 required
                 autocomplete="username"
             />
-            <x-input-error class="mt-2" :messages="$errors->get('username')"/>
+            <x-input-error class="mt-2" :messages="$errors->get('username')" />
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Email')"/>
+            <x-input-label for="email" :value="__('Email')" />
             <x-text-input
                 id="email"
                 name="email"
@@ -60,7 +60,7 @@
                 required
                 autocomplete="username"
             />
-            <x-input-error class="mt-2" :messages="$errors->get('email')"/>
+            <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
@@ -79,28 +79,27 @@
         </div>
 
         <div>
-            <x-input-label for="bio" :value="__('Bio')"/>
-            <x-text-input id="bio" name="bio" type="text" class="mt-1 block w-full" :value="old('bio', $user->bio)"
-                          required autocomplete="bio"/>
-            <x-input-error class="mt-2" :messages="$errors->get('bio')"/>
+            <x-input-label for="bio" :value="__('Bio')" />
+            <x-text-input id="bio" name="bio" type="text" class="mt-1 block w-full" :value="old('bio', $user->bio)" required autocomplete="bio" />
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
 
         <div>
-            <x-input-label for="timezone" :value="__('Timezone')"/>
+            <x-input-label for="timezone" :value="__('Timezone')" />
             <x-select-input
                 id="timezone"
                 name="timezone"
                 class="mt-1 block w-full"
-                :options="ValidTimezone::timezones()"
+                :options="\App\Rules\ValidTimezone::timezones()"
                 :value="old('timezone', $user->timezone)"
                 required
                 autocomplete="timezone"
             />
-            <x-input-error class="mt-2" :messages="$errors->get('timezone')"/>
+            <x-input-error class="mt-2" :messages="$errors->get('timezone')" />
         </div>
 
         <div>
-            <x-input-label for="mail_preference_time" :value="__('Mail Preference Time')"/>
+            <x-input-label for="mail_preference_time" :value="__('Mail Preference Time')" />
             <x-select-input
                 id="mail_preference_time"
                 name="mail_preference_time"
@@ -110,20 +109,20 @@
                 required
                 autocomplete="mail_preference_time"
             />
-            <x-input-error class="mt-2" :messages="$errors->get('mail_preference_time')"/>
+            <x-input-error class="mt-2" :messages="$errors->get('mail_preference_time')" />
         </div>
 
         <div>
-            <x-input-label for="anonymously_preference" :value="__('Questions Preference')"/>
+            <x-input-label for="questions_preference" :value="__('Questions Preference')" />
             <x-select-input
-                id="anonymously_preference"
-                name="anonymously_preference"
+                id="questions_preference"
+                name="settings[questions_preference]"
                 class="mt-1 block w-full"
-                :options="[true => 'Anonymously', false => 'Public']"
-                :value="old('anonymously_preference', $user->anonymously_preference)"
+                :options="['anonymously' => 'Anonymously', 'public' => 'Public']"
+                :value="old('settings.questions_preference', $user->questions_preference)"
                 required
             />
-            <x-input-error class="mt-2" :messages="$errors->get('anonymously_preference')"/>
+            <x-input-error class="mt-2" :messages="$errors->get('settings.questions_preference')" />
         </div>
 
         <div class="flex items-center gap-4">
