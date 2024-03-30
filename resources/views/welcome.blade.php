@@ -9,10 +9,16 @@
             </a>
         @else
             <a href="{{ route('home') }}" wire:navigate>
-                <x-primary-colorless-button>Home</x-primary-colorless-button>
+                <x-primary-colorless-button class="flex gap-2 justify-center items-center">
+                    <x-icons.home class="h-4 w-4" />
+                    <span class="sr-only sm:not-sr-only">Home</span>
+                </x-primary-colorless-button>
             </a>
             <a href="{{ route('explore') }}" wire:navigate>
-                <x-primary-colorless-button>Explore</x-primary-colorless-button>
+                <x-primary-colorless-button class="flex gap-2 justify-center items-center">
+                    <x-icons.magnifying-glass class="h-4 w-4" />
+                    <span class="sr-only sm:not-sr-only">Explore</span>
+                </x-primary-colorless-button>
             </a>
             <a href="{{ route('login') }}" wire:navigate>
                 <x-primary-button>Log In</x-primary-button>
