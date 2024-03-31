@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
-use App\Models\Question;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
@@ -32,6 +31,19 @@ final class Create extends Component
     public bool $anonymously = true;
 
     /**
+     * Mount the component.
+     */
+    public function mount(Request $request): void
+    {
+        if (auth()->check()) {
+            $user = $request->user();
+            assert($user instanceof User);
+
+            $this->anonymously = $user->prefers_anonymous_questions;
+        }
+    }
+
+    /**
      * Refresh the component.
      */
     #[On('link-settings.updated')]
@@ -52,7 +64,6 @@ final class Create extends Component
         }
 
         $user = $request->user();
-
         assert($user instanceof User);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {

@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
+ * @property bool $prefers_anonymous_questions
  * @property string $avatar
  * @property string $avatar_url
  * @property string|null $bio
@@ -221,6 +222,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'is_verified' => 'boolean',
             'password' => 'hashed',
             'settings' => 'array',
+            'prefers_anonymous_questions' => 'boolean',
         ];
     }
 }

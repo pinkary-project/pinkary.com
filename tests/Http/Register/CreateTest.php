@@ -19,7 +19,7 @@ test('new users can register', function () {
         ]),
     ]);
 
-    $response = $this->post('/register', [
+    $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
         'email' => 'test@example.com',
@@ -276,3 +276,16 @@ test("user's name cannot contain blank characters", function (string $name) {
     "Test User \u{200E}",
     "\u{200E}Test User",
 ]);
+
+test('anonymously preference is set to true by default', function () {
+    $this->from('/register')->post('/register', [
+        'name' => 'Test User',
+        'username' => 'testuser1',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'timezone' => 'UTC',
+    ]);
+
+    expect(User::first()->prefers_anonymous_questions)->toBeTrue();
+});
