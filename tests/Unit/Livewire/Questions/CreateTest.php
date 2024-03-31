@@ -194,7 +194,7 @@ test('store with user questions_preference set to public', function () {
 
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)
-        ->and($question->content)->toBe('Hello World')
+        ->and($question->content)->toBe('<p>Hello World</p>')
         ->and($question->anonymously)->toBeFalse();
 });
 
@@ -255,6 +255,6 @@ test('anonymous set back to user\'s preference after sending a question', functi
 
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)
-        ->and($question->content)->toBe('Hello World')
+        ->and($question->content)->toBe('<p>Hello World</p>')
         ->and($question->anonymously)->toBeTrue();
 });
