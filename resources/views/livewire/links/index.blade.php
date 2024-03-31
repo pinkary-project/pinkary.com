@@ -96,7 +96,7 @@
                         >
                             <div
                                 x-sortable-handle
-                                class="flex w-11 cursor-move items-center justify-center text-slate-300 focus:outline-none opacity-50 hover:opacity-100"
+                                class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
                                 <x-icons.sortable-handle class="size-6" />
                             </div>
@@ -108,7 +108,7 @@
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
                                         type="submit"
-                                        class="flex w-10 justify-center text-slate-300 focus:outline-none opacity-50 hover:opacity-100"
+                                        class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
                                         <x-icons.trash class="size-5" x-bind:class="{ 'invisible': isDragging }" />
                                     </button>
