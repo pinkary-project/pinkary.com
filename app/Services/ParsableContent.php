@@ -19,12 +19,12 @@ final readonly class ParsableContent
      * @param  array<int, class-string<ParsableContentProvider>>  $providers
      */
     public function __construct(private array $providers = [
-            StripProviderParsable::class,
-            CodeProviderParsable::class,
-            ParagraphProviderParsable::class,
-            LinkProviderParsable::class,
-            MentionProviderParsable::class,
-        ]) 
+        StripProviderParsable::class,
+        CodeProviderParsable::class,
+        ParagraphProviderParsable::class,
+        LinkProviderParsable::class,
+        MentionProviderParsable::class,
+    ])
     {
         //
     }
