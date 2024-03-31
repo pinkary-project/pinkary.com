@@ -39,7 +39,7 @@ final class Create extends Component
             $user = $request->user();
             assert($user instanceof User);
 
-            $this->anonymously = $user->anonymously_preference;
+            $this->anonymously = $user->prefers_anonymous_questions;
         }
     }
 

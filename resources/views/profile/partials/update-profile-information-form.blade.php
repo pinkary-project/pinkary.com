@@ -113,16 +113,16 @@
         </div>
 
         <div>
-            <x-input-label for="anonymously_preference" :value="__('Questions Preference')" />
+            <x-input-label for="prefers_anonymous_questions" :value="__('Questions Preference')" />
             <x-select-input
-                id="anonymously_preference"
-                name="anonymously_preference"
+                id="prefers_anonymous_questions"
+                name="prefers_anonymous_questions"
                 class="mt-1 block w-full"
                 :options="[true => 'Anonymously', false => 'Publicly']"
-                :value="old('anonymously_preference', $user->anonymously_preference)"
+                :value="old('prefers_anonymous_questions', $user->prefers_anonymous_questions)"
                 required
             />
-            <x-input-error class="mt-2" :messages="$errors->get('anonymously_preference')" />
+            <x-input-error class="mt-2" :messages="$errors->get('prefers_anonymous_questions')" />
         </div>
 
         <div class="flex items-center gap-4">

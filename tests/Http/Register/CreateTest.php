@@ -287,5 +287,5 @@ test('anonymously preference is set to true by default', function () {
         'timezone' => 'UTC',
     ]);
 
-    expect(User::first()->anonymously_preference)->toBeTrue();
+    expect(User::first()->prefers_anonymous_questions)->toBeTrue();
 });
