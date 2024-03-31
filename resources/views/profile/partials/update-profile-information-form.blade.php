@@ -113,7 +113,7 @@
         </div>
 
         <div>
-            <x-input-label for="prefers_anonymous_questions" :value="__('Questions Preference')" />
+            <x-input-label for="prefers_anonymous_questions" :value="__('How would you like to do questions by default?')" />
             <x-select-input
                 id="prefers_anonymous_questions"
                 name="prefers_anonymous_questions"
