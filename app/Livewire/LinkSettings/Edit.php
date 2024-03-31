@@ -56,10 +56,7 @@ final class Edit extends Component
             ],
         ]);
 
-        $user->update([
-            'settings->link_shape' => $validated['link_shape'],
-            'settings->gradient' => $validated['gradient'],
-        ]);
+        $user->update(['settings' => $validated]);
 
         $this->dispatch('link-settings.updated');
         $this->dispatch('notification.created', 'Link settings updated.');

@@ -19,7 +19,7 @@ test('new users can register', function () {
         ]),
     ]);
 
-    $response = $this->post('/register', [
+    $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
         'email' => 'test@example.com',
@@ -277,7 +277,7 @@ test("user's name cannot contain blank characters", function (string $name) {
     "\u{200E}Test User",
 ]);
 
-test('anonymously_preference is set to true', function () {
+test('anonymously preference is set to true by default', function () {
     $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser1',

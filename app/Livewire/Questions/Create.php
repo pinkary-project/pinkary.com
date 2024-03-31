@@ -64,7 +64,6 @@ final class Create extends Component
         }
 
         $user = $request->user();
-
         assert($user instanceof User);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {

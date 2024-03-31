@@ -50,7 +50,7 @@ test('profile information can be updated', function () {
     $this->assertSame('test@example.com', $user->email);
     $this->assertSame('testuser', $user->username);
     $this->assertNull($user->email_verified_at);
-    $this->assertSame(false, $user->anonymously_preference);
+    $this->assertFalse($user->anonymously_preference);
 });
 
 test('username can be updated to uppercase', function () {

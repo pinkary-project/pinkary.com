@@ -118,7 +118,7 @@
                 id="anonymously_preference"
                 name="anonymously_preference"
                 class="mt-1 block w-full"
-                :options="[true => 'Anonymously', false => 'Public']"
+                :options="[true => 'Anonymously', false => 'Publicly']"
                 :value="old('anonymously_preference', $user->anonymously_preference)"
                 required
             />
