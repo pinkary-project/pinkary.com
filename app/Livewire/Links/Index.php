@@ -48,8 +48,7 @@ final class Index extends Component
      */
     public function destroy(int $linkId): void
     {
-        $user = auth()->user();
-        type($user)->as(User::class);
+        $user = type(auth()->user())->as(User::class);
 
         $link = Link::findOrFail($linkId);
 

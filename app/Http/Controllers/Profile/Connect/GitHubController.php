@@ -32,8 +32,7 @@ final readonly class GitHubController
     {
         $githubUser = Socialite::driver('github')->user();
 
-        $user = $request->user();
-        type($user)->as(User::class);
+        $user = type($request->user())->as(User::class);
 
         try {
             $validated = Validator::validate([
@@ -57,8 +56,7 @@ final readonly class GitHubController
 
         dispatch_sync(new SyncVerifiedUser($user));
 
-        $user = $user->fresh();
-        type($user)->as(User::class);
+        $user = type($user->fresh())->as(User::class);
 
         $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
