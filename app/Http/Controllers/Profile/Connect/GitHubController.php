@@ -20,7 +20,7 @@ final readonly class GitHubController
     public function index(): RedirectResponse
     {
         $response = Socialite::driver('github')->redirect();
-        assert($response instanceof RedirectResponse);
+        type($response)->as(RedirectResponse::class);
 
         return $response;
     }
@@ -33,7 +33,7 @@ final readonly class GitHubController
         $githubUser = Socialite::driver('github')->user();
 
         $user = $request->user();
-        assert($user instanceof User);
+        type($user)->as(User::class);
 
         try {
             $validated = Validator::validate([
@@ -58,7 +58,7 @@ final readonly class GitHubController
         dispatch_sync(new SyncVerifiedUser($user));
 
         $user = $user->fresh();
-        assert($user instanceof User);
+        type($user)->as(User::class);
 
         $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
@@ -73,7 +73,7 @@ final readonly class GitHubController
     public function destroy(Request $request): RedirectResponse
     {
         $user = request()->user();
-        assert($user instanceof User);
+        $user = type($user)->as(User::class);
 
         $user->update(['github_username' => null]);
 

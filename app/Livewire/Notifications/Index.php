@@ -17,7 +17,7 @@ final class Index extends Component
     public function render(Request $request): View
     {
         $user = $request->user();
-        assert($user instanceof User);
+        $user = type($user)->as(User::class);
 
         return view('livewire.notifications.index', [
             'user' => $user,

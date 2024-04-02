@@ -18,7 +18,7 @@ final readonly class QuestionObserver
     {
         $user = User::find($question->to_id);
 
-        assert($user instanceof User);
+        $user = type($user)->as(User::class);
 
         $user->notify(new QuestionCreated($question));
     }

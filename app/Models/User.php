@@ -163,7 +163,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
         $linkShape = data_get($settings, 'link_shape', 'rounded-lg');
 
-        assert(is_string($linkShape));
+        type($linkShape)->asString();
 
         return $linkShape;
     }
@@ -177,7 +177,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
         $gradient = data_get($settings, 'gradient', 'from-blue-500 to-purple-600');
 
-        assert(is_string($gradient));
+        $gradient = type($gradient)->asString();
 
         return $gradient;
     }

@@ -37,7 +37,7 @@ final class Create extends Component
     {
         if (auth()->check()) {
             $user = $request->user();
-            assert($user instanceof User);
+            type($user)->as(User::class);
 
             $this->anonymously = $user->prefers_anonymous_questions;
         }
@@ -64,7 +64,7 @@ final class Create extends Component
         }
 
         $user = $request->user();
-        assert($user instanceof User);
+        $user = type($user)->as(User::class);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');

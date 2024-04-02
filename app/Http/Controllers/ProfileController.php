@@ -66,7 +66,7 @@ final readonly class ProfileController
         ]);
 
         $user = $request->user();
-        type($user)->as(User::class);
+        $user = type($user)->as(User::class);
 
         auth()->logout();
 

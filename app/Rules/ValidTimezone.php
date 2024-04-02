@@ -453,7 +453,7 @@ final class ValidTimezone implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        assert(is_string($value));
+        $value = type($value)->asString();
 
         if (! array_key_exists($value, self::$timezones)) {
             $fail(__('The :attribute must be a valid timezone.'));

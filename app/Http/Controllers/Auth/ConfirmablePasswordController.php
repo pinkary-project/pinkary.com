@@ -27,7 +27,7 @@ final readonly class ConfirmablePasswordController
     public function store(Request $request): RedirectResponse
     {
         $user = $request->user();
-        type($user)->as(User::class);
+        $user = type($user)->as(User::class);
 
         if (! Auth::guard('web')->validate([
             'email' => $user->email,

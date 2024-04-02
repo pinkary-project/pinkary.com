@@ -29,7 +29,7 @@ final class Index extends Component
     public function storeSort(array $sort): void
     {
         $user = auth()->user();
-        assert($user instanceof User);
+        $user = type($user)->as(User::class);
 
         $sort = collect($sort)
             ->map(fn (string $linkId): ?int => $user->links->contains($linkId) ? ((int) $linkId) : null)
@@ -50,7 +50,7 @@ final class Index extends Component
     public function destroy(int $linkId): void
     {
         $user = auth()->user();
-        assert($user instanceof User);
+        type($user)->as(User::class);
 
         $link = Link::findOrFail($linkId);
 

@@ -107,7 +107,7 @@ final class Show extends Component
         }
 
         $user = auth()->user();
-        assert($user instanceof User);
+        $user = type($user)->as(User::class);
 
         $question = Question::findOrFail($this->questionId);
 
