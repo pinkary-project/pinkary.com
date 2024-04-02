@@ -7,7 +7,7 @@
             <x-text-input
                 id="email"
                 class="mt-1 block w-full"
-                type="email"
+                type="text"
                 name="email"
                 :value="old('email')"
                 required
