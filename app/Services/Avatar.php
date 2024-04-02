@@ -40,8 +40,7 @@ final readonly class Avatar
 
         foreach ($this->links as $link) {
             foreach ($providers as $provider) {
-                $provider = new $provider();
-                $provider = type($provider)->as(AvatarProvider::class);
+                $provider = type(new $provider())->as(AvatarProvider::class);
 
                 if ($provider->applicable($link)) {
                     $fallback = $provider->getUrl($link);
