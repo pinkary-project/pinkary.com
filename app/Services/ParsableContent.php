@@ -36,8 +36,7 @@ final readonly class ParsableContent
     {
         return (string) collect($this->providers)
             ->reduce(function (string $parsed, string $provider): string {
-                $provider = new $provider();
-                assert($provider instanceof ParsableContentProvider);
+                $provider = type(new $provider())->as(ParsableContentProvider::class);
 
                 return $provider->parse($parsed);
             }, $content);

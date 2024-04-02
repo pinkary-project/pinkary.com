@@ -38,8 +38,7 @@ final readonly class ProfileController
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         $user->fill($request->validated());
 
@@ -65,8 +64,7 @@ final readonly class ProfileController
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         auth()->logout();
 

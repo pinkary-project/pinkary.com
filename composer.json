@@ -3,6 +3,7 @@
     "type": "project",
     "require": {
         "php": "^8.3",
+        "another-library/type-guard": "dev-main",
         "laravel/framework": "^11.1.1",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",

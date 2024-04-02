@@ -28,8 +28,7 @@ final class Create extends Component
      */
     public function store(Request $request): void
     {
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         if ($user->links()->count() >= 10 && ! $user->is_verified) {
             $this->addError('url', 'You can only have 10 links at a time.');

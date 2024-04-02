@@ -25,11 +25,9 @@ final class NotificationController
      */
     public function show(DatabaseNotification $notification): RedirectResponse
     {
-        $user = auth()->user();
-        assert($user instanceof User);
+        type(auth()->user())->as(User::class);
 
-        $question = Question::findOrFail($notification->data['question_id']);
-        assert($question instanceof Question);
+        $question = type(Question::findOrFail($notification->data['question_id']))->as(Question::class);
 
         if ($question->answer !== null) {
             $notification->delete();
