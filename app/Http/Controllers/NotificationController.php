@@ -29,7 +29,7 @@ final class NotificationController
         $user = type($user)->as(User::class);
 
         $question = Question::findOrFail($notification->data['question_id']);
-        type($question)->as(Question::class);
+        $question = type($question)->as(Question::class);
 
         if ($question->answer !== null) {
             $notification->delete();
