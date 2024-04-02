@@ -36,8 +36,7 @@ final class Create extends Component
     public function mount(Request $request): void
     {
         if (auth()->check()) {
-            $user = $request->user();
-            type($user)->as(User::class);
+            $user = type($request->user())->as(User::class);
 
             $this->anonymously = $user->prefers_anonymous_questions;
         }

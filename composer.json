@@ -25,7 +25,7 @@
         "pestphp/pest-plugin-laravel": "^2.3.0",
         "pestphp/pest-plugin-type-coverage": "^2.8.1",
         "rector/rector": "^1.0.3",
-        "spatie/laravel-ignition": "^2.5.0"
+        "spatie/laravel-ignition": "^2.5.1"
     },
     "autoload": {
         "psr-4": {

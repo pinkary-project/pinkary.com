@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c391ea6539f9b13b815adaa2983e395a",
+    "content-hash": "6da177d70a734fdc41094c5da5f9ef81",
     "packages": [
         {
             "name": "another-library/type-guard",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/another-library/type-guard.git",
-                "reference": "b7eb3ef7a55ea04b7d2277c79b15b57f5071719d"
+                "reference": "a2772800e5eefdfa1ebb847523c44cb00a82276b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/another-library/type-guard/zipball/b7eb3ef7a55ea04b7d2277c79b15b57f5071719d",
-                "reference": "b7eb3ef7a55ea04b7d2277c79b15b57f5071719d",
+                "url": "https://api.github.com/repos/another-library/type-guard/zipball/a2772800e5eefdfa1ebb847523c44cb00a82276b",
+                "reference": "a2772800e5eefdfa1ebb847523c44cb00a82276b",
                 "shasum": ""
             },
             "require": {
@@ -34,6 +34,9 @@
             "default-branch": true,
             "type": "library",
             "autoload": {
+                "files": [
+                    "src/Functions.php"
+                ],
                 "psr-4": {
                     "AnotherLibrary\\TypeGuard\\": "src/"
                 }
@@ -75,7 +78,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-03-31T09:58:54+00:00"
+            "time": "2024-04-02T13:37:16+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -10211,16 +10214,16 @@
         },
         {
             "name": "spatie/laravel-ignition",
-            "version": "2.5.0",
+            "version": "2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-ignition.git",
-                "reference": "e23f4e8ce6644dc3d68b9d8a0aed3beaca0d6ada"
+                "reference": "0c864b3cbd66ce67a2096c5f743e07ce8f1d6ab9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-ignition/zipball/e23f4e8ce6644dc3d68b9d8a0aed3beaca0d6ada",
-                "reference": "e23f4e8ce6644dc3d68b9d8a0aed3beaca0d6ada",
+                "url": "https://api.github.com/repos/spatie/laravel-ignition/zipball/0c864b3cbd66ce67a2096c5f743e07ce8f1d6ab9",
+                "reference": "0c864b3cbd66ce67a2096c5f743e07ce8f1d6ab9",
                 "shasum": ""
             },
             "require": {
@@ -10299,7 +10302,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-29T14:14:55+00:00"
+            "time": "2024-04-02T06:30:22+00:00"
         },
         {
             "name": "symfony/yaml",

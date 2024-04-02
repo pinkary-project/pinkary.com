@@ -27,8 +27,7 @@ final class Edit extends Component
      */
     public function mount(Request $request): void
     {
-        $user = $request->user();
-        type($user)->as(User::class);
+        $user = type($request->user())->as(User::class);
 
         $this->link_shape = $user->link_shape;
         $this->gradient = $user->gradient;

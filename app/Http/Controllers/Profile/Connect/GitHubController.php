@@ -19,9 +19,7 @@ final readonly class GitHubController
      */
     public function index(): RedirectResponse
     {
-        $response = type(Socialite::driver('github')->redirect())->as(RedirectResponse::class);
-
-        return $response;
+        return type(Socialite::driver('github')->redirect())->as(RedirectResponse::class);
     }
 
     /**
