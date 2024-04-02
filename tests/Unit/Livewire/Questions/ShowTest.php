@@ -284,7 +284,7 @@ test('display pinned label only on profile.show route', function () {
 
     $response->assertSee('Pinned');
 
-    $response = $this->actingAs($user)->get(route('home'));
+    $response = $this->actingAs($user)->get(route('feed'));
 
     $response->assertDontSee('Pinned');
 });

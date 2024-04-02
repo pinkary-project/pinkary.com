@@ -10,7 +10,7 @@ use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 
-final class Home extends Component
+final class Feed extends Component
 {
     use WithoutUrlPagination, WithPagination;
 
@@ -32,7 +32,7 @@ final class Home extends Component
      */
     public function render(): View
     {
-        return view('livewire.home', [
+        return view('livewire.feed', [
             'questions' => Question::where('answer', '!=', null)
                 ->where('is_reported', false)
                 ->orderByDesc('updated_at')
