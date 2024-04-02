@@ -4,8 +4,79 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad81df142f798f6e974dadb4c8109556",
+    "content-hash": "c391ea6539f9b13b815adaa2983e395a",
     "packages": [
+        {
+            "name": "another-library/type-guard",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/another-library/type-guard.git",
+                "reference": "b7eb3ef7a55ea04b7d2277c79b15b57f5071719d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/another-library/type-guard/zipball/b7eb3ef7a55ea04b7d2277c79b15b57f5071719d",
+                "reference": "b7eb3ef7a55ea04b7d2277c79b15b57f5071719d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.15.0",
+                "pestphp/pest": "^3.0.0",
+                "pestphp/pest-plugin-type-coverage": "3.x-dev",
+                "phpstan/phpstan": "^1.10.66",
+                "rector/rector": "^1.0.3",
+                "symfony/var-dumper": "^6.4.0|^7.0.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AnotherLibrary\\TypeGuard\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "Type Guard module is part of the Another Library, and allows you to narrow down the type of an variable to a more specific type.",
+            "keywords": [
+                "another-library",
+                "assert",
+                "narrow",
+                "php",
+                "type",
+                "type-guard"
+            ],
+            "support": {
+                "issues": "https://github.com/another-library/type-guard/issues",
+                "source": "https://github.com/another-library/type-guard/tree/main"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/paypalme/enunomaduro",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/nunomaduro",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2024-03-31T09:58:54+00:00"
+        },
         {
             "name": "bacon/bacon-qr-code",
             "version": "2.0.8",
@@ -10471,6 +10542,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "another-library/type-guard": 20,
         "laravel/pulse": 10
     },
     "prefer-stable": true,

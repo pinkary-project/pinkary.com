@@ -52,7 +52,7 @@ final readonly class NewPasswordController
             }
         );
 
-        assert(is_string($status));
+        type($status)->asString();
 
         if ($status === Password::PASSWORD_RESET) {
             session()->flash('flash-message', __($status));

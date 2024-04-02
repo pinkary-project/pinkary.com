@@ -17,7 +17,7 @@ final readonly class VerifyEmailController
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         $user = $request->user();
-        assert($user instanceof User);
+        type($user)->as(User::class);
 
         if ($user->hasVerifiedEmail()) {
             session()->flash('flash-message', 'Your email is already verified.');
