@@ -163,7 +163,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
         $linkShape = data_get($settings, 'link_shape', 'rounded-lg');
 
-        type($linkShape)->asString();
+        $linkShape = type($linkShape)->asString();
 
         return $linkShape;
     }
