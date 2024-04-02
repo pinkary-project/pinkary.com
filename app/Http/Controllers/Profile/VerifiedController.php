@@ -15,13 +15,11 @@ final readonly class VerifiedController
      */
     public function update(): RedirectResponse
     {
-        $user = request()->user();
-        $user = type($user)->as(User::class);
+        $user = type(request()->user())->as(User::class);
 
         dispatch_sync(new SyncVerifiedUser($user));
 
-        $user = $user->fresh();
-        $user = type($user)->as(User::class);
+        $user = type($user->fresh())->as(User::class);
 
         $user->is_verified
             ? session()->flash('flash-message', 'Your account has been verified.')

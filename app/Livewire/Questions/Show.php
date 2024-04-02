@@ -106,8 +106,7 @@ final class Show extends Component
             return;
         }
 
-        $user = auth()->user();
-        $user = type($user)->as(User::class);
+        $user = type(auth()->user())->as(User::class);
 
         $question = Question::findOrFail($this->questionId);
 

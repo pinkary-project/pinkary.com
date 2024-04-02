@@ -63,8 +63,7 @@ final class Create extends Component
             return;
         }
 
-        $user = $request->user();
-        $user = type($user)->as(User::class);
+        $user = type($request->user())->as(User::class);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');

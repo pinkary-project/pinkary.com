@@ -28,8 +28,7 @@ final class Index extends Component
      */
     public function storeSort(array $sort): void
     {
-        $user = auth()->user();
-        $user = type($user)->as(User::class);
+        $user = type(auth()->user())->as(User::class);
 
         $sort = collect($sort)
             ->map(fn (string $linkId): ?int => $user->links->contains($linkId) ? ((int) $linkId) : null)

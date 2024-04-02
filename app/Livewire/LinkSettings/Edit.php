@@ -39,8 +39,7 @@ final class Edit extends Component
      */
     public function update(Request $request): void
     {
-        $user = $request->user();
-        $user = type($user)->as(User::class);
+        $user = type($request->user())->as(User::class);
 
         $validated = $this->validate([
             'link_shape' => 'required|in:rounded-none,rounded-lg,rounded-full',

@@ -72,8 +72,7 @@ final readonly class GitHubController
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $user = request()->user();
-        $user = type($user)->as(User::class);
+        $user = type(request()->user())->as(User::class);
 
         $user->update(['github_username' => null]);
 

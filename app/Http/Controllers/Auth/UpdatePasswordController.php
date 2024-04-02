@@ -17,8 +17,7 @@ final readonly class UpdatePasswordController
      */
     public function __invoke(Request $request): RedirectResponse
     {
-        $user = $request->user();
-        $user = type($user)->as(User::class);
+        $user = type($request->user())->as(User::class);
 
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
