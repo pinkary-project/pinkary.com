@@ -11,11 +11,26 @@ test('guest', function () {
         ->assertSee('Log In');
 });
 
-test('users can authenticate', function () {
+test('users can authenticate using email', function () {
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
         'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+
+    $response->assertRedirect(route('profile.show', [
+        'username' => $user->username,
+    ], absolute: false));
+});
+
+test('users can authenticate using username', function () {
+    $user = User::factory()->create();
+
+    $response = $this->post('/login', [
+        'email' => $user->username,
         'password' => 'password',
     ]);
 
