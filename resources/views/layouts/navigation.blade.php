@@ -4,10 +4,10 @@
             <div class="flex"></div>
             <div class="flex items-center" x-data>
                 @auth
-                    <a href="{{ route('home') }}" class="mr-2" wire:navigate>
+                    <a href="{{ route('feed') }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('home') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('feed') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-icons.home class="h-6 w-6" />
                         </button>
@@ -67,7 +67,15 @@
                             </form>
                         @else
                             <x-dropdown-link :href="route('welcome')">
-                                {{ __('About') }}
+                                {{ __('Home') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('feed')" :class="request()->routeIs('feed') ? 'bg-slate-800' : ''">
+                                {{ __('Feed') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('explore')" :class="request()->routeIs('explore') ? 'bg-slate-800' : ''">
+                                {{ __('Explore') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link :href="route('login')">

@@ -12,7 +12,7 @@ use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('/home', 'home')->name('home');
+Route::view('/feed', 'feed')->name('feed');
 Route::view('explore', 'explore')->name('explore');
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
