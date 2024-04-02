@@ -39,7 +39,7 @@ final readonly class ProfileController
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        type($user)->as(User::class);
+        $user = type($user)->as(User::class);
 
         $user->fill($request->validated());
 
