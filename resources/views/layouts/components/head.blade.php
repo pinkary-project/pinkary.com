@@ -5,7 +5,6 @@
 <meta name="author" content="Pinkary" />
 <meta name="google" content="notranslate" data-rh="true" />
 <meta name="robots" content="index, follow" data-rh="true" />
-<meta name="description" content="{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials." data-rh="true" />
 <meta name="applicable-device" content="pc, mobile" data-rh="true" />
 <meta name="canonical" content="{{ url()->current() }}" data-rh="true" />
 <meta
