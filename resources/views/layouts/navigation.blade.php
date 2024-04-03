@@ -78,10 +78,6 @@
                                 {{ __('Explore') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('explore')">
-                                {{ __('Explore') }}
-                            </x-dropdown-link>
-
                             <x-dropdown-link :href="route('login')">
                                 {{ __('Log in') }}
                             </x-dropdown-link>
