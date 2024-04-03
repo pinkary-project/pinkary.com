@@ -77,7 +77,7 @@ final class Index extends Component
     }
 
     /**
-     * Destroy the given question.
+     * Ignore the given question.
      */
     #[On('question.ignore')]
     public function ignore(string $questionId): void
