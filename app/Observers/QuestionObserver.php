@@ -27,7 +27,7 @@ final readonly class QuestionObserver
      */
     public function updated(Question $question): void
     {
-        if ($question->is_reported || $question->answer !== null) {
+        if ($question->is_ignored || $question->is_reported || $question->answer !== null) {
             $question->to->notifications->where('data.question_id', $question->id)->each->delete();
         }
 
