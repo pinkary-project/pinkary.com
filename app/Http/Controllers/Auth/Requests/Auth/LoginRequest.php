@@ -30,7 +30,7 @@ final class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string'],
+            'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -45,10 +45,10 @@ final class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited();
 
         // Check if the login type is email or username
-        $login_type = filter_var($this->string('email')->value(), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $login_type = filter_var($this->string('username')->value(), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         $this->merge([
-            $login_type => $this->string('email'),
+            $login_type => $this->string('username'),
         ]);
 
         if (! Auth::attempt($this->only($login_type, 'password'), $this->boolean('remember'))) {
