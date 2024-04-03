@@ -30,9 +30,9 @@ final readonly class QuestionPolicy
     }
 
     /**
-     * Determine whether the user can delete the question.
+     * Determine whether the user can ignore the question.
      */
-    public function delete(User $user, Question $question): bool
+    public function ignore(User $user, Question $question): bool
     {
         return $user->id === $question->to_id;
     }
