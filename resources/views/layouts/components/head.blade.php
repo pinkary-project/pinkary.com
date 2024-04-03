@@ -1,7 +1,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="csrf-token" content="{{ csrf_token() }}" />
-<meta name="description" content="One Link. All Your Socials." />
 <meta name="author" content="Pinkary" />
 <meta name="google" content="notranslate" data-rh="true" />
 <meta name="robots" content="index, follow" data-rh="true" />
