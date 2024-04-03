@@ -15,7 +15,7 @@ test('users can authenticate using email', function () {
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
-        'email' => $user->email,
+        'username' => $user->email,
         'password' => 'password',
     ]);
 
@@ -30,7 +30,7 @@ test('users can authenticate using username', function () {
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
-        'email' => $user->username,
+        'username' => $user->username,
         'password' => 'password',
     ]);
 
@@ -46,15 +46,15 @@ test('users are rate limited', function () {
 
     for ($i = 0; $i < 5; $i++) {
         $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->email,
             'password' => 'wrong-password',
         ])->assertStatus(302)->assertSessionHasErrors([
-            'email' => 'These credentials do not match our records.',
+            'username' => 'These credentials do not match our records.',
         ]);
     }
 
     $this->post('/login', [
-        'email' => $user->email,
+        'username' => $user->email,
         'password' => 'wrong-password',
     ])->assertStatus(302)->assertSessionHasErrors([
         'email',
@@ -65,10 +65,10 @@ test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
     $this->post('/login', [
-        'email' => $user->email,
+        'username' => $user->email,
         'password' => 'wrong-password',
     ])->assertStatus(302)->assertSessionHasErrors([
-        'email' => 'These credentials do not match our records.',
+        'username' => 'These credentials do not match our records.',
     ]);
 
     $this->assertGuest();
