@@ -48,7 +48,7 @@ final class Show extends Component
     public function getListeners(): array
     {
         return $this->inIndex ? [] : [
-            'question.destroy' => 'destroy',
+            'question.ignore' => 'ignore',
             'question.reported' => 'redirectToProfile',
         ];
     }
@@ -64,15 +64,15 @@ final class Show extends Component
     }
 
     /**
-     * Destroy the question.
+     * Ignores the question.
      */
-    public function destroy(): void
+    public function ignore(): void
     {
         $question = Question::findOrFail($this->questionId);
 
-        $this->authorize('delete', $question);
+        $this->authorize('ignore', $question);
 
-        $question->delete();
+        $question->update(['is_ignored' => true]);
 
         $this->redirect(route('profile.show', ['username' => $question->to->username]));
     }

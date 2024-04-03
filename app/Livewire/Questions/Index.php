@@ -56,6 +56,7 @@ final class Index extends Component
             'questions' => $user
                 ->questionsReceived()
                 ->where('is_reported', false)
+                ->where('is_ignored', false)
                 ->when(! $user->is($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
                     $query->whereNotNull('answer');
                 })
@@ -78,15 +79,15 @@ final class Index extends Component
     /**
      * Destroy the given question.
      */
-    #[On('question.destroy')]
-    public function destroy(string $questionId): void
+    #[On('question.ignore')]
+    public function ignore(string $questionId): void
     {
         $question = Question::findOrFail($questionId);
 
-        $this->authorize('delete', $question);
+        $this->authorize('ignore', $question);
 
-        $question->delete();
+        $question->update(['is_ignored' => true]);
 
-        $this->dispatch('question.destroyed');
+        $this->dispatch('question.ignored');
     }
 }
