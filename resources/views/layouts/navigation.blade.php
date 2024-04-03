@@ -78,11 +78,11 @@
                                 {{ __('Explore') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('login')">
+                            <x-dropdown-link :href="route('login')" :class="request()->routeIs('login') ? 'bg-slate-800' : ''">
                                 {{ __('Log in') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('register')">
+                            <x-dropdown-link :href="route('register')" :class="request()->routeIs('register') ? 'bg-slate-800' : ''">
                                 {{ __('Register') }}
                             </x-dropdown-link>
                         @endauth
