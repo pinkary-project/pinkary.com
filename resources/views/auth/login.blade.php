@@ -3,7 +3,7 @@
         @csrf
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label for="email" :value="__('Email/Username')" />
             <x-text-input
                 id="email"
                 class="mt-1 block w-full"
