@@ -18,6 +18,7 @@ Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/support', 'support')->name('support');
 Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
+Route::view('/changelog', 'changelog')->name('changelog');
 
 Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
