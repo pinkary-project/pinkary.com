@@ -81,13 +81,15 @@
                 <strong class="font-bold ">{{ $user->followers_count }}</strong>
                 <span class="text-sm">Followers</span>
             </button>
-            <button class="flex flex-col items-center justify-center">
+            <button class="flex flex-col items-center justify-center"
+                    x-on:click.prevent="$dispatch('open-modal', 'following')">
                 <strong>{{ $user->following_count }}</strong>
                 <span class="text-sm">Following</span>
             </button>
         </div>
 
         <x-modal-followers :user="$user"/>
+        <x-modal-following :user="$user"/>
 
         <div class="mt-2 text-sm">
             <p class="text-slate-400">
