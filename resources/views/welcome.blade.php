@@ -8,6 +8,18 @@
                 <x-primary-button>Your Profile</x-primary-button>
             </a>
         @else
+            <a href="{{ route('feed') }}" wire:navigate>
+                <x-primary-colorless-button class="flex items-center justify-center gap-2">
+                    <x-icons.home class="h-4 w-4" />
+                    <span class="sr-only sm:not-sr-only">Feed</span>
+                </x-primary-colorless-button>
+            </a>
+            <a href="{{ route('explore') }}" wire:navigate>
+                <x-primary-colorless-button class="flex items-center justify-center gap-2">
+                    <x-icons.magnifying-glass class="h-4 w-4" />
+                    <span class="sr-only sm:not-sr-only">Explore</span>
+                </x-primary-colorless-button>
+            </a>
             <a href="{{ route('login') }}" wire:navigate>
                 <x-primary-button>Log In</x-primary-button>
             </a>

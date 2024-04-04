@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 
 test('can QR Code be downloaded only by authenticated users', function () {
-    $response = $this->get(route('qr-code.download'));
+    $response = $this->get(route('qr-code.image'));
 
     $response->assertRedirect(route('login'));
 });
@@ -23,7 +23,7 @@ test('user can download qr code', function () {
             'username' => $user->username,
         ]));
 
-    $response = $this->actingAs($user)->get(route('qr-code.download'));
+    $response = $this->actingAs($user)->get(route('qr-code.image'));
 
     $response
         ->assertOk()

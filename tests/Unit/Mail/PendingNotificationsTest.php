@@ -33,7 +33,7 @@ test('content', function () {
     foreach ([
         '# Hello, '.$user->name.'!',
         "We've noticed you have 1 notification. You can view notifications by clicking the button below.",
-        'If you no longer wish to receive these emails, you can change your "Mail Preference Time" in your [profile settings](https://pinkary.com/profile).',
+        'If you no longer wish to receive these emails, you can change your "Mail Preference Time" in your [profile settings]('.config('app.url').'/profile).',
     ] as $line) {
         $mail->assertSeeInText($line);
     }

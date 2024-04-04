@@ -10,18 +10,9 @@
 <a
     href="{{ $link->url }}"
     target="_blank"
-    @class([
-        'h-12 flex-1 items-center overflow-hidden px-4 font-bold transition duration-300 ease-in-out',
-        'justify-center' => ! $isUserProfileOwner,
-        'text-white',
-    ])
+    class="h-12 flex-1 items-center justify-center overflow-hidden px-4 font-bold text-white transition duration-300 ease-in-out"
 >
-    <div
-        @class([
-            'flex h-full items-center',
-            'justify-center' => ! $isUserProfileOwner,
-        ])
-    >
+    <div class="flex h-full items-center justify-center">
         <p class="truncate">
             {{ $link->description }}
         </p>

@@ -22,15 +22,15 @@
                 <x-icons.link class="size-5" />
             </button>
             @if (auth()->user()?->is($user))
-                <a
-                    href="{{ route('qr-code.download') }}"
+                <button
                     class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
-                    download
+                    x-on:click.prevent="$dispatch('open-modal', 'show-qr-code')"
                 >
-                    <span class="sr-only">Download QR Code</span>
+                    <span class="sr-only">See QR Code</span>
 
                     <x-icons.qr-code class="size-5" />
-                </a>
+                </button>
+                <x-modal-qr-code />
             @endif
         </div>
 
@@ -96,9 +96,9 @@
                         >
                             <div
                                 x-sortable-handle
-                                class="flex w-10 cursor-move items-center justify-center text-slate-300 hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
-                                <x-icons.sortable-handle class="size-5 opacity-0 group-hover:opacity-100" />
+                                <x-icons.sortable-handle class="size-6 opacity-0 group-hover:opacity-100" />
                             </div>
 
                             <x-links.list-item :$user :$link />
@@ -108,7 +108,7 @@
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
                                         type="submit"
-                                        class="flex w-10 justify-center text-slate-300 hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                        class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
                                         <x-icons.trash class="size-5 opacity-0 group-hover:opacity-100" x-bind:class="{ 'invisible': isDragging }" />
                                     </button>
@@ -121,7 +121,7 @@
                 <div class="space-y-3">
                     {{-- Just listing links --}}
                     @foreach ($links as $link)
-                        <div class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient mx-2 flex bg-gradient-to-r">
+                        <div class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r">
                             <x-links.list-item :$user :$link />
                         </div>
                     @endforeach

@@ -13,6 +13,8 @@ test('only authenticated users can confirm their password', function () {
 test('confirm password screen can be rendered', function () {
     $user = User::factory()->create();
 
+    $this->withoutExceptionHandling();
+
     $response = $this->actingAs($user)->get('/confirm-password');
 
     $response->assertOk();

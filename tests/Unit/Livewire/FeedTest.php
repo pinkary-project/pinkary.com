@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Home;
+use App\Livewire\Feed;
 use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
@@ -12,7 +12,7 @@ test('renders questions with answers', function () {
         'answer' => 'This is the answer',
     ]);
 
-    $component = Livewire::test(Home::class);
+    $component = Livewire::test(Feed::class);
 
     $component->assertSee('This is the answer')
         ->assertDontSee('There are no questions to show.');
@@ -23,7 +23,7 @@ test('do not renders questions without answers', function () {
         'answer' => null,
     ]);
 
-    $component = Livewire::test(Home::class);
+    $component = Livewire::test(Feed::class);
 
     $component->assertSee('There are no questions to show.');
 });
@@ -33,7 +33,7 @@ test('load more', function () {
 
     $questions = Question::factory(120)->create();
 
-    $component = Livewire::actingAs($user)->test(Home::class);
+    $component = Livewire::actingAs($user)->test(Feed::class);
 
     $component->call('loadMore');
     $component->assertSet('perPage', 10);

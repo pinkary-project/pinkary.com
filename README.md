@@ -12,7 +12,7 @@ Initially, it was created to help people share their links in a more organized w
 
 The source code still shows some signs of the rush; that's why we think **it's important to share it with you—so you can see how we've built it**, combining fast pace given the circumstances with the quality we always aim for.
 
-Over time, we've managed to add more features, such as home, explore, questions, likes, and more. We've also improved the design, added tests, and improved the overall quality of the code. There is still a lot to do, but most importantly, there is a huge opportunity to make this a **community-driven project**.
+Over time, we've managed to add more features, such as feed, explore, questions, likes, and more. We've also improved the design, added tests, and improved the overall quality of the code. There is still a lot to do, but most importantly, there is a huge opportunity to make this a **community-driven project**.
 
 - Early Access Telegram group: **[t.me/+Yv9CUTC1q29lNzg8 »](https://t.me/+Yv9CUTC1q29lNzg8)**
 - Follow us on X at **[@PinkaryProject »](https://twitter.com/PinkaryProject)**

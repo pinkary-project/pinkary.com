@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
-use App\Models\Question;
 use App\Models\User;
+use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -31,6 +31,18 @@ final class Create extends Component
     public bool $anonymously = true;
 
     /**
+     * Mount the component.
+     */
+    public function mount(Request $request): void
+    {
+        if (auth()->check()) {
+            $user = type($request->user())->as(User::class);
+
+            $this->anonymously = $user->prefers_anonymous_questions;
+        }
+    }
+
+    /**
      * Refresh the component.
      */
     #[On('link-settings.updated')]
@@ -50,9 +62,7 @@ final class Create extends Component
             return;
         }
 
-        $user = $request->user();
-
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');
@@ -69,7 +79,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean'],
-            'content' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string', 'max:255', new NoBlankCharacters],
         ]);
 
         $user->questionsSent()->create([

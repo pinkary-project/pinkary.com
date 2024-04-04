@@ -31,7 +31,7 @@ final readonly class Recaptcha implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        assert(is_string($value));
+        $value = type($value)->asString();
         assert(is_string($this->ip));
 
         if (! $this->verify($this->ip, $value)) {

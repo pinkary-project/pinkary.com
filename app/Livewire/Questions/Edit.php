@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Models\Question;
+use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -29,7 +30,7 @@ final class Edit extends Component
     public function update(): void
     {
         $this->validate([
-            'answer' => ['required', 'string', 'max:1000'],
+            'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
 
         $question = Question::findOrFail($this->questionId);

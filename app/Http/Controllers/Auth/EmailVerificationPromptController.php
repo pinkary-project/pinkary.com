@@ -16,8 +16,7 @@ final readonly class EmailVerificationPromptController
      */
     public function __invoke(Request $request): RedirectResponse|View
     {
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         return $user->hasVerifiedEmail()
                     ? redirect()->intended(route('profile.show', [

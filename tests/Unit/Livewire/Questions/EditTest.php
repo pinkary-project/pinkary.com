@@ -86,3 +86,19 @@ test('destroy', function () {
     $component->assertDispatched('notification.created', 'Question ignored.');
     $component->assertDispatched('question.destroy', questionId: $this->question->id);
 });
+
+test('cannot update with blank characters', function () {
+    $component = Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ]);
+
+    $this->actingAs(User::factory()->create());
+
+    $component->set('answer', "\u{200E}");
+
+    $component->call('update');
+
+    $component->assertHasErrors([
+        'answer' => 'The answer field cannot contain blank characters.',
+    ]);
+});
