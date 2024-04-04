@@ -75,6 +75,20 @@
             <a href="{{ route('profile.edit') }}" class="text-sm text-slate-500 hover:underline" wire:navigate>Tell people about yourself</a>
         @endif
 
+        <div class="flex justify-center items-center space-x-4">
+            <button class="flex flex-col items-center justify-center"
+                    x-on:click.prevent="$dispatch('open-modal', 'followers')">
+                <strong class="font-bold ">{{ $user->followers_count }}</strong>
+                <span class="text-sm">Followers</span>
+            </button>
+            <button class="flex flex-col items-center justify-center">
+                <strong>{{ $user->following_count }}</strong>
+                <span class="text-sm">Following</span>
+            </button>
+        </div>
+
+        <x-modal-followers :user="$user"/>
+
         <div class="mt-2 text-sm">
             <p class="text-slate-400">
                 <span>

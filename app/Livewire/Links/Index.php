@@ -94,7 +94,11 @@ final class Index extends Component
      */
     public function render(): View
     {
-        $user = User::with(['links'])->findOrFail($this->userId);
+        $user = User::query()
+            ->with(['links'])
+            ->withCount('followers')
+            ->withCount('following')
+            ->findOrFail($this->userId);
         $sort = $user->links_sort;
 
         return view('livewire.links.index', [

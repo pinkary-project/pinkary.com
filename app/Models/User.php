@@ -39,6 +39,8 @@ use Illuminate\Support\Facades\Storage;
  * @property string $timezone
  * @property Carbon $updated_at
  * @property string $username
+ * @property-read int $followers_count
+ * @property-read int $following_count
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
