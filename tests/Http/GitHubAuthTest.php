@@ -16,7 +16,25 @@ it('redirects to github', function (): void {
 
     $response->assertStatus(302);
     $response->assertRedirectContains('https://github.com/login/oauth/authorize');
-})->only();
+});
+
+it('validates if the GitHub username already exists', function () {
+    User::factory()->create([
+        'github_username' => 'test',
+    ]);
+
+    Socialite::shouldReceive('driver->user')->andReturn((new SocialiteUser())->map([
+        'nickname' => 'test',
+    ]));
+
+    $response = get(route('auth.github.callback'));
+
+    $response
+        ->assertStatus(302)
+        ->assertRedirect(route('login'));
+
+    expect(session('flash-message'))->toBe('This GitHub username is already connected to another account.');
+});
 
 it('can authenticate with GitHub', function (): void {
     freezeTime();
@@ -44,4 +62,4 @@ it('can authenticate with GitHub', function (): void {
         'name' => 'Test User',
         'username' => 'test',
     ]);
-})->only();
+});
