@@ -173,7 +173,7 @@
                         type="button"
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        <x-icons.paper-airplane class="h-4 w-4" />
+                        <x-icons.link class="size-4" />
                     </button>
                 </div>
             </div>
