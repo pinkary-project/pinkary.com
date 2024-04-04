@@ -259,9 +259,9 @@ test('unique constraint validation is case insensitive', function (string $exist
     ['aaaaa', 'aaaaA'],
 ]);
 
-test("user's name cannot contain blank characters", function (string $name) {
+test("user's name can contain blank characters", function (string $given, string $expected) {
     $response = $this->from('/register')->post('/register', [
-        'name' => $name,
+        'name' => $given,
         'username' => 'testuser',
         'email' => 'test@laravel.com',
         'password' => 'password',
@@ -269,13 +269,13 @@ test("user's name cannot contain blank characters", function (string $name) {
         'timezone' => 'UTC',
     ]);
 
-    $response->assertRedirect('/register')
-        ->assertSessionHasErrors(['name' => 'The name field cannot contain blank characters.']);
+    $user = User::where('email', 'test@laravel.com')->first();
+
+    expect($user->name)->toBe($expected);
 })->with([
-    "\u{200E}",
-    "Test\u{200E}User",
-    "Test User \u{200E}",
-    "\u{200E}Test User",
+    ["Test\u{200E}User", "Test\u{200E}User"],
+    ["Test User \u{200E}", 'Test User'],
+    ["Test \u{200E}\u{200E} User", "Test \u{200E}\u{200E} User"],
 ]);
 
 test('anonymously preference is set to true by default', function () {

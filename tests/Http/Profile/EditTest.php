@@ -228,7 +228,7 @@ test("can not update user's name with blank characters", function () {
             'name' => "\u{200E}",
         ]);
 
-    $response->assertSessionHasErrors(['name' => 'The name field cannot contain blank characters.']);
+    $response->assertSessionHasErrors(['name' => 'The name field is required.']);
 
     $this->assertSame('Test User', $user->name);
 });
