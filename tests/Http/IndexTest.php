@@ -94,9 +94,9 @@ it('displays the current version of the app', function () {
                     'releases' => [
                         'nodes' => [
                             [
-                                'tagName' => 'v1.0.0'
+                                'tagName' => 'v1.0.0',
                             ],
-                        ]
+                        ],
                     ],
                 ],
             ],
