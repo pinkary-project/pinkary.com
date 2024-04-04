@@ -28,6 +28,6 @@ final readonly class EnsureVerifiedEmailsForSignInUsers
             return $next($request);
         }
 
-        return redirect()->route('verification.notice');
+        return to_route('verification.notice');
     }
 }
