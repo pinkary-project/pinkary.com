@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exceptions\GitHubException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 final readonly class GitHub
@@ -94,6 +95,6 @@ final readonly class GitHub
         /** @var array<int, array{tagName: string}> $content */
         $content = $response->json('data.repository.releases.nodes');
 
-        return collect($content)->first()['tagName'];
+        return Arr::get(collect($content)->first(), 'tagName', '');
     }
 }
