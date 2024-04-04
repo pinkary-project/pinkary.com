@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 final readonly class UpdatePasswordController
@@ -20,7 +21,7 @@ final readonly class UpdatePasswordController
         $user = type($request->user())->as(User::class);
 
         $validated = $request->validateWithBag('updatePassword', [
-            'current_password' => ['required', 'current_password'],
+            'current_password' => [Rule::excludeIf(is_null($user->password)), 'current_password'],
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
