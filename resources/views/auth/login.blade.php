@@ -1,4 +1,15 @@
 <x-guest-layout>
+    <x-primary-colorless-button
+        as="a"
+        class="gap-x-2 w-full justify-center"
+        href="{{ route('auth.github.redirect') }}"
+    >
+        <x-icons.github class="size-6 text-white" />
+        {{ __('Continue with GitHub') }}
+    </x-primary-colorless-button>
+
+    <div class="my-8 text-center text-white">{{ __('or') }}</div>
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
