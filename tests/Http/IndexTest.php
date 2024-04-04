@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Process;
 
 it('guest', function () {
     $response = $this->get('/');
@@ -58,49 +58,11 @@ it('displays terms of service and privacy policy', function () {
         ->assertSee('Brand');
 });
 
-it('does not display the current version of the app if GitHub call fails', function () {
-    Http::fake([
-        'github.com/*' => Http::response([], 500),
-    ]);
-
-    $this->get('/')
-        ->assertOk()
-        ->assertDontSee('v1.0.0');
-});
-
-it('does not display the current version of the app if the response is empty', function () {
-    Http::fake([
-        'github.com/*' => Http::response([
-            'data' => [
-                'repository' => [
-                    'releases' => [
-                        'nodes' => [],
-                    ],
-                ],
-            ],
-        ]),
-    ]);
-
-    $this->get('/')
-        ->assertOk()
-        ->assertDontSee('v1.0.0');
-});
-
 it('displays the current version of the app', function () {
-    Http::fake([
-        'github.com/*' => Http::response([
-            'data' => [
-                'repository' => [
-                    'releases' => [
-                        'nodes' => [
-                            [
-                                'tagName' => 'v1.0.0',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ]),
+    Process::fake([
+        '*' => Process::result(
+            output: "v1.0.0\n",
+        ),
     ]);
 
     $this->get('/')
