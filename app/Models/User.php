@@ -45,6 +45,8 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Question $pinnedQuestion
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
+ * @property-read Collection<int, User> $following
+ * @property-read Collection<int, User> $followers
  */
 final class User extends Authenticatable implements MustVerifyEmail
 {
@@ -113,6 +115,11 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function following(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+    }
+
+    public function follows(User $user): bool
+    {
+        return $this->following->contains($user);
     }
 
     /**

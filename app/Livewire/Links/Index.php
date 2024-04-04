@@ -61,6 +61,24 @@ final class Index extends Component
         $this->dispatch('notification.created', 'Link deleted.');
     }
 
+    public function follow(int $userId): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        $user->following()->attach($userId);
+
+        $this->dispatch('user.followed');
+    }
+
+    public function unfollow(int $userId): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        $user->following()->detach($userId);
+
+        $this->dispatch('user.unfollowed');
+    }
+
     /**
      * Refresh the component.
      */
