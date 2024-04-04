@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exceptions\GitHubException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 final readonly class GitHub
@@ -57,5 +58,49 @@ final readonly class GitHub
         return collect($content)->filter(
             fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 9
         )->values()->isNotEmpty();
+    }
+
+    /**
+     * Get the current site version from latest release.
+     *
+     * @throw GitHubException
+     */
+    public function getSiteVersion(): string
+    {
+        $response = Http::withHeaders([
+            'Accept' => 'application/vnd.github.v3+json',
+            'Authorization' => 'token '.$this->personalAccessToken,
+        ])->post('https://api.github.com/graphql', [
+            'query' => <<<'GRAPHQL'
+                query {
+                  repository(owner:"pinkary-project", name:"pinkary.com") {
+                    releases(first:1) {
+                      nodes {
+                        tagName
+                      }
+                    }
+                  }
+                }
+            GRAPHQL,
+        ]);
+
+        if ($response->failed()) {
+            throw new GitHubException(sprintf(
+                'Failed to fetch the latest release. GitHub responded with status code %d and body: %s',
+                $response->status(),
+                $response->body()
+            ));
+        }
+
+        /** @var array<int, array{tagName: string}> $content */
+        $content = $response->json('data.repository.releases.nodes');
+
+        /** @var array<string, string> $release */
+        $release = collect($content)->first();
+
+        /** @var string $version */
+        $version = Arr::get($release, 'tagName', '');
+
+        return $version;
     }
 }

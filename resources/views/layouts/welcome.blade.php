@@ -19,7 +19,7 @@
                 </div>
             </main>
 
-            @include('components.footer')
+            <x-footer />
         </div>
         @livewireScriptConfig
     </body>
