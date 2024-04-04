@@ -83,7 +83,7 @@ final class Show extends Component
     public function like(): void
     {
         if (! auth()->check()) {
-            redirect()->route('login');
+            to_route('login');
 
             return;
         }
@@ -101,7 +101,7 @@ final class Show extends Component
     public function pin(): void
     {
         if (! auth()->check()) {
-            redirect()->route('login');
+            to_route('login');
 
             return;
         }
@@ -124,7 +124,7 @@ final class Show extends Component
     public function unpin(): void
     {
         if (! auth()->check()) {
-            redirect()->route('login');
+            to_route('login');
 
             return;
         }
@@ -144,7 +144,7 @@ final class Show extends Component
     public function unlike(): void
     {
         if (! auth()->check()) {
-            redirect()->route('login');
+            to_route('login');
 
             return;
         }

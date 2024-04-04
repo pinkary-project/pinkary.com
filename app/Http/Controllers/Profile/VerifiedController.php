@@ -25,6 +25,6 @@ final readonly class VerifiedController
             ? session()->flash('flash-message', 'Your account has been verified.')
             : session()->flash('flash-message', 'Your account is not verified yet.');
 
-        return redirect()->route('profile.edit');
+        return to_route('profile.edit');
     }
 }

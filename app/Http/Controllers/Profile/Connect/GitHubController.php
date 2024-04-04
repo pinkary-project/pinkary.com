@@ -43,10 +43,10 @@ final readonly class GitHubController
             if ($githubUser->getNickname() === $user->github_username) {
                 session()->flash('flash-message', 'The same GitHub account has been connected.');
 
-                return redirect()->route('profile.edit');
+                return to_route('profile.edit');
             }
 
-            return redirect()->route('profile.edit')->withErrors($e->errors(), 'verified');
+            return to_route('profile.edit')->withErrors($e->errors(), 'verified');
         }
 
         $user->update($validated);
@@ -59,7 +59,7 @@ final readonly class GitHubController
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
             : session()->flash('flash-message', 'Your GitHub account has been connected.');
 
-        return redirect()->route('profile.edit');
+        return to_route('profile.edit');
     }
 
     /**
@@ -75,6 +75,6 @@ final readonly class GitHubController
 
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 
-        return redirect()->route('profile.edit');
+        return to_route('profile.edit');
     }
 }
