@@ -18,7 +18,8 @@
                         wire:model="answer"
                         x-ref="content"
                         x-model="content"
-                        class="h-24 w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        x-autosize
+                        class="h-24 w-full border-none border-transparent bg-transparent text-white resize-none focus:border-transparent focus:outline-0 focus:ring-0"
                         placeholder="Write your answer..."
                         maxlength="1000"
                         rows="3"
