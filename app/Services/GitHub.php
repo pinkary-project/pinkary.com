@@ -71,7 +71,7 @@ final readonly class GitHub
             'Accept' => 'application/vnd.github.v3+json',
             'Authorization' => 'token '.$this->personalAccessToken,
         ])->post('https://api.github.com/graphql', [
-            'query' => <<<GRAPHQL
+            'query' => <<<'GRAPHQL'
                 query {
                   repository(owner:"pinkary-project", name:"pinkary.com") {
                     releases(first:1) {
@@ -95,6 +95,12 @@ final readonly class GitHub
         /** @var array<int, array{tagName: string}> $content */
         $content = $response->json('data.repository.releases.nodes');
 
-        return Arr::get(collect($content)->first(), 'tagName', '');
+        /** @var array<string, string> $release */
+        $release = collect($content)->first();
+
+        /** @var string $version */
+        $version = Arr::get($release, 'tagName', '');
+
+        return $version;
     }
 }
