@@ -98,6 +98,13 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
+                            <x-dropdown-button 
+                                wire:click="destroy" 
+                                wire:confirm="Are you sure you want to ignore this question?" 
+                                class="flex items-center gap-1.5">
+                                <x-icons.trash class="h-4 w-4" />
+                                <span>Delete</span>
+                            </x-dropdown-button>
                         </x-slot>
                     </x-dropdown>
                 @endif
