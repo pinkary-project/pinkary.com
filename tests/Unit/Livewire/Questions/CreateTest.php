@@ -54,7 +54,7 @@ test('store', function () {
 
     $component->call('store');
     $component->assertSet('content', '');
-    $component->assertSet('anonymous', false);
+    $component->assertSet('anonymously', true);
 
     $component->assertDispatched('notification.created', 'Question sent.');
     $component->assertDispatched('question.created');
@@ -185,7 +185,7 @@ test('store with user questions_preference set to public', function () {
 
     $component->call('store');
     $component->assertSet('content', '');
-    $component->assertSet('anonymous', false);
+    $component->assertSet('anonymously', false);
 
     $component->assertDispatched('notification.created', 'Question sent.');
     $component->assertDispatched('question.created');
@@ -215,7 +215,7 @@ test('store with user questions_preference set to anonymously', function () {
 
     $component->call('store');
     $component->assertSet('content', '');
-    $component->assertSet('anonymous', false);
+    $component->assertSet('anonymously', true);
 
     $component->assertDispatched('notification.created', 'Question sent.');
     $component->assertDispatched('question.created');
