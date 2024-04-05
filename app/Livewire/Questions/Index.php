@@ -55,8 +55,8 @@ final class Index extends Component
             'user' => $user,
             'questions' => $user
                 ->questionsReceived()
-                ->where('is_reported', false)
                 ->where('is_ignored', false)
+                ->where('is_reported', false)
                 ->when(! $user->is($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
                     $query->whereNotNull('answer');
                 })
