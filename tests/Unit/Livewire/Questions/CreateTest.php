@@ -227,3 +227,34 @@ test('store with user questions_preference set to anonymously', function () {
         ->and($question->content)->toBe('Hello World')
         ->and($question->anonymously)->toBeTrue();
 });
+
+test('anonymous set back to user\'s preference after sending a question', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    $userA->update(['prefers_anonymous_questions' => false]);
+
+    expect(App\Models\Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', 'Hello World');
+    $component->toggle('anonymously');
+
+    $component->call('store');
+    $component->assertSet('content', '');
+    $component->assertSet('anonymously', false);
+
+    $component->assertDispatched('notification.created', 'Question sent.');
+    $component->assertDispatched('question.created');
+
+    $question = App\Models\Question::first();
+
+    expect($question->from_id)->toBe($userA->id)
+        ->and($question->to_id)->toBe($userB->id)
+        ->and($question->content)->toBe('Hello World')
+        ->and($question->anonymously)->toBeTrue();
+});
