@@ -98,7 +98,7 @@
                                 x-sortable-handle
                                 class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
-                                <x-icons.sortable-handle class="size-6 opacity-0 group-hover:opacity-100" />
+                                <x-icons.sortable-handle class="size-6 opacity-100 sm:opacity-0 group-hover:opacity-100" />
                             </div>
 
                             <x-links.list-item :$user :$link />
@@ -110,7 +110,7 @@
                                         type="submit"
                                         class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
-                                        <x-icons.trash class="size-5 opacity-0 group-hover:opacity-100" x-bind:class="{ 'invisible': isDragging }" />
+                                        <x-icons.trash class="size-5 opacity-100 sm:opacity-0 group-hover:opacity-100" x-bind:class="{ 'invisible': isDragging }" />
                                     </button>
                                 </form>
                             </div>
