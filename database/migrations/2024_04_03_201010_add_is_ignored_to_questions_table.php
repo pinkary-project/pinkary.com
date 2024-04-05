@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('questions', function (Blueprint $table): void {
-            $table->boolean('is_ignored')->default(false);
+            $table->boolean('is_ignored')->default(false)->after('anonymously');
         });
     }
 };
