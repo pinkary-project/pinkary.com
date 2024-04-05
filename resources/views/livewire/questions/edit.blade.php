@@ -41,7 +41,7 @@
                         </x-primary-colorless-button>
 
                         <button
-                            wire:click.prevent="destroy"
+                            wire:click.prevent="ignore"
                             wire:confirm="Are you sure you want to ignore this question?"
                             class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
