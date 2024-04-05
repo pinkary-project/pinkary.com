@@ -14,7 +14,7 @@ final readonly class QuestionPolicy
      */
     public function view(?User $user, Question $question): bool
     {
-        if ($question->is_reported) {
+        if ($question->is_ignored || $question->is_reported) {
             return false;
         }
 
