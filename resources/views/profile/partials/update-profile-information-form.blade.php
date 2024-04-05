@@ -112,6 +112,19 @@
             <x-input-error class="mt-2" :messages="$errors->get('mail_preference_time')" />
         </div>
 
+        <div>
+            <x-input-label for="prefers_anonymous_questions" :value="__('How would you like to do questions by default?')" />
+            <x-select-input
+                id="prefers_anonymous_questions"
+                name="prefers_anonymous_questions"
+                class="mt-1 block w-full"
+                :options="[true => 'Anonymously', false => 'Publicly']"
+                :value="old('prefers_anonymous_questions', $user->prefers_anonymous_questions)"
+                required
+            />
+            <x-input-error class="mt-2" :messages="$errors->get('prefers_anonymous_questions')" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
         </div>

@@ -22,13 +22,12 @@ final readonly class EnsureVerifiedEmailsForSignInUsers
             return $next($request);
         }
 
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         if ($user->hasVerifiedEmail()) {
             return $next($request);
         }
 
-        return redirect()->route('verification.notice');
+        return to_route('verification.notice');
     }
 }

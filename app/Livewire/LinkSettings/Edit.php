@@ -27,8 +27,7 @@ final class Edit extends Component
      */
     public function mount(Request $request): void
     {
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         $this->link_shape = $user->link_shape;
         $this->gradient = $user->gradient;
@@ -39,19 +38,20 @@ final class Edit extends Component
      */
     public function update(Request $request): void
     {
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         $validated = $this->validate([
             'link_shape' => 'required|in:rounded-none,rounded-lg,rounded-full',
-            'gradient' => ['required', new In([
-                'from-blue-500 to-purple-600',
-                'from-blue-500 to-teal-700',
-                'from-red-500 to-orange-600',
-                'from-purple-500 to-pink-500',
-                'from-indigo-500 to-lime-700',
-                'from-yellow-600 to-blue-600',
-            ])],
+            'gradient' => [
+                'required', new In([
+                    'from-blue-500 to-purple-600',
+                    'from-blue-500 to-teal-700',
+                    'from-red-500 to-orange-600',
+                    'from-purple-500 to-pink-500',
+                    'from-indigo-500 to-lime-700',
+                    'from-yellow-600 to-blue-600',
+                ]),
+            ],
         ]);
 
         $user->update(['settings' => $validated]);

@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
+ * @property bool $prefers_anonymous_questions
  * @property string $avatar
  * @property string $avatar_url
  * @property string|null $bio
@@ -162,9 +163,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
         $linkShape = data_get($settings, 'link_shape', 'rounded-lg');
 
-        assert(is_string($linkShape));
-
-        return $linkShape;
+        return type($linkShape)->asString();
     }
 
     /**
@@ -176,9 +175,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
         $gradient = data_get($settings, 'gradient', 'from-blue-500 to-purple-600');
 
-        assert(is_string($gradient));
-
-        return $gradient;
+        return type($gradient)->asString();
     }
 
     /**
@@ -221,6 +218,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'is_verified' => 'boolean',
             'password' => 'hashed',
             'settings' => 'array',
+            'prefers_anonymous_questions' => 'boolean',
         ];
     }
 }

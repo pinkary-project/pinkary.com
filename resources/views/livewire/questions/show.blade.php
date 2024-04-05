@@ -103,7 +103,7 @@
                 @endif
             </div>
 
-            <p class="mt-3 text-slate-200 break-words">
+            <p class="mt-3 break-words text-slate-200">
                 {!! $question->answer !!}
             </p>
 
@@ -173,7 +173,7 @@
                         type="button"
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        <x-icons.paper-airplane class="h-4 w-4" />
+                        <x-icons.link class="size-4" />
                     </button>
                 </div>
             </div>

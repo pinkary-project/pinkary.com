@@ -32,8 +32,7 @@ final class PerformDatabaseBackupCommand extends Command
 
         File::copy(database_path('database.sqlite'), database_path('backups/'.$filename));
 
-        $glob = File::glob(database_path('backups/*.sql'));
-        assert(is_array($glob));
+        $glob = type(File::glob(database_path('backups/*.sql')))->asArray();
 
         collect($glob)->sort()->reverse()->slice(20)->each(
             fn (string $backup): bool => File::delete($backup),

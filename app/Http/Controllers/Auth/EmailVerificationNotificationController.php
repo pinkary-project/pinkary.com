@@ -15,8 +15,7 @@ final readonly class EmailVerificationNotificationController
      */
     public function store(Request $request): RedirectResponse
     {
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         if ($user->hasVerifiedEmail()) {
             return redirect()->intended(route('profile.show', [

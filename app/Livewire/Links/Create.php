@@ -6,7 +6,6 @@ namespace App\Livewire\Links;
 
 use App\Jobs\DownloadUserAvatar;
 use App\Models\User;
-use App\Rules\ValidUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -29,8 +28,7 @@ final class Create extends Component
      */
     public function store(Request $request): void
     {
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         if ($user->links()->count() >= 10 && ! $user->is_verified) {
             $this->addError('url', 'You can only have 10 links at a time.');
@@ -50,7 +48,7 @@ final class Create extends Component
 
         $validated = $this->validate([
             'description' => 'required|max:100',
-            'url' => ['required', 'max:100', 'url', 'starts_with:https', new ValidUrl()],
+            'url' => ['required', 'max:100', 'url', 'starts_with:https'],
         ]);
 
         $user->links()->create($validated);

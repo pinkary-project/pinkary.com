@@ -29,8 +29,7 @@ final readonly class AuthenticatedSessionController
 
         session()->regenerate();
 
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         return redirect()->intended(route('profile.show', [
             'username' => $user->username,

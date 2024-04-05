@@ -12,7 +12,7 @@ use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('/home', 'home')->name('home');
+Route::view('/feed', 'feed')->name('feed');
 Route::view('explore', 'explore')->name('explore');
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
@@ -39,7 +39,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/qr-code', QrCodeController::class)->name('qr-code.download');
+    Route::get('/qr-code', QrCodeController::class)->name('qr-code.image');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

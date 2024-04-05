@@ -22,16 +22,21 @@ final class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $user = $this->user();
-        assert($user instanceof User);
+        $user = type($this->user())->as(User::class);
 
         return [
             'name' => ['required', 'string', 'max:255', new NoBlankCharacters],
-            'username' => ['required', 'string', 'min:4', 'max:50', Rule::unique(User::class)->ignore($user->id), new Username($user)],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'username' => [
+                'required', 'string', 'min:4', 'max:50', Rule::unique(User::class)->ignore($user->id),
+                new Username($user),
+            ],
+            'email' => [
+                'required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id),
+            ],
             'timezone' => ['required', 'string', 'max:255', new ValidTimezone],
             'mail_preference_time' => ['required', 'string', 'max:255', 'in:daily,weekly,never'],
             'bio' => ['nullable', 'string', 'max:255'],
+            'prefers_anonymous_questions' => ['required', 'boolean'],
         ];
     }
 }

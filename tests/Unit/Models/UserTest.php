@@ -23,6 +23,7 @@ test('to array', function () {
         'timezone',
         'mail_preference_time',
         'github_username',
+        'prefers_anonymous_questions',
     ]);
 });
 

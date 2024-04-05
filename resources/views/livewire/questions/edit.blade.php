@@ -7,35 +7,36 @@
                     x-data="{
                         content: '',
                         get characterCount() {
-                            return this.content.length;
-                        }
+                            return this.content.length
+                        },
                     }"
                 >
-                    <label for="{{'answer_question_'.$question->id}}" class="sr-only">Answer</label>
+                    <label for="{{ 'answer_question_'.$question->id }}" class="sr-only">Answer</label>
 
                     <textarea
-                        id="{{'answer_question_'.$question->id}}"
+                        id="{{ 'answer_question_'.$question->id }}"
                         wire:model="answer"
                         x-ref="content"
                         x-model="content"
-                        class="h-24 w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        x-autosize
+                        class="h-24 w-full border-none border-transparent bg-transparent text-white resize-none focus:border-transparent focus:outline-0 focus:ring-0"
                         placeholder="Write your answer..."
                         maxlength="1000"
                         rows="3"
                     ></textarea>
 
-                    <p x-ref="characterCount" class="text-xs text-right text-slate-400">
-                        <span x-text="characterCount"></span> / 1000
+                    <p x-ref="characterCount" class="text-right text-xs text-slate-400">
+                        <span x-text="characterCount"></span>
+                        / 1000
                     </p>
 
                     @error('answer')
-                    <x-input-error :messages="$message" class="mt-2"/>
+                        <x-input-error :messages="$message" class="mt-2" />
                     @enderror
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <div class="items center ml-2 flex gap-4">
-                        <x-primary-colorless-button class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
-                                                    type="submit">
+                        <x-primary-colorless-button class="text-{{ $user->left_color }} border-{{ $user->left_color }}" type="submit">
                             {{ __('Send') }}
                         </x-primary-colorless-button>
 

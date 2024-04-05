@@ -25,6 +25,15 @@ Alpine.directive('sortable', (el) => {
     })
 })
 
+Alpine.directive('autosize', (el) => {
+    const offset = (el.offsetHeight - el.clientHeight) + 8
+
+    el.addEventListener('input', () => {
+        el.style.height = 'auto'
+        el.style.height = el.scrollHeight + offset + 'px'
+    })
+})
+
 import { shareProfile } from './share-profile.js'
 Alpine.data('shareProfile', shareProfile)
 

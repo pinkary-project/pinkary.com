@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use Illuminate\Support\Facades\Process;
 
 it('guest', function () {
     $response = $this->get('/');
@@ -55,4 +56,16 @@ it('displays terms of service and privacy policy', function () {
         ->assertSee('Privacy Policy')
         ->assertSee('Support')
         ->assertSee('Brand');
+});
+
+it('displays the current version of the app', function () {
+    Process::fake([
+        '*' => Process::result(
+            output: "v1.0.0\n",
+        ),
+    ]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('v1.0.0');
 });

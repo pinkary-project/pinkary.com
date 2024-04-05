@@ -19,10 +19,7 @@ final readonly class GitHubController
      */
     public function index(): RedirectResponse
     {
-        $response = Socialite::driver('github')->redirect();
-        assert($response instanceof RedirectResponse);
-
-        return $response;
+        return type(Socialite::driver('github')->redirect())->as(RedirectResponse::class);
     }
 
     /**
@@ -32,8 +29,7 @@ final readonly class GitHubController
     {
         $githubUser = Socialite::driver('github')->user();
 
-        $user = $request->user();
-        assert($user instanceof User);
+        $user = type($request->user())->as(User::class);
 
         try {
             $validated = Validator::validate([
@@ -47,24 +43,23 @@ final readonly class GitHubController
             if ($githubUser->getNickname() === $user->github_username) {
                 session()->flash('flash-message', 'The same GitHub account has been connected.');
 
-                return redirect()->route('profile.edit');
+                return to_route('profile.edit');
             }
 
-            return redirect()->route('profile.edit')->withErrors($e->errors(), 'verified');
+            return to_route('profile.edit')->withErrors($e->errors(), 'verified');
         }
 
         $user->update($validated);
 
         dispatch_sync(new SyncVerifiedUser($user));
 
-        $user = $user->fresh();
-        assert($user instanceof User);
+        $user = type($user->fresh())->as(User::class);
 
         $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
             : session()->flash('flash-message', 'Your GitHub account has been connected.');
 
-        return redirect()->route('profile.edit');
+        return to_route('profile.edit');
     }
 
     /**
@@ -72,8 +67,7 @@ final readonly class GitHubController
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $user = request()->user();
-        assert($user instanceof User);
+        $user = type(request()->user())->as(User::class);
 
         $user->update(['github_username' => null]);
 
@@ -81,6 +75,6 @@ final readonly class GitHubController
 
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 
-        return redirect()->route('profile.edit');
+        return to_route('profile.edit');
     }
 }
