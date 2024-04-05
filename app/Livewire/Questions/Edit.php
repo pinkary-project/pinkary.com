@@ -66,13 +66,13 @@ final class Edit extends Component
     }
 
     /**
-     * Destroys / Ignores the question.
+     * Ignores the question.
      */
-    public function destroy(): void
+    public function ignore(): void
     {
         $this->dispatch('notification.created', 'Question ignored.');
 
-        $this->dispatch('question.destroy', questionId: $this->questionId);
+        $this->dispatch('question.ignore', questionId: $this->questionId);
     }
 
     /**

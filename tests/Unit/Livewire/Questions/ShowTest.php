@@ -51,7 +51,7 @@ test('listeners', function () {
     ]);
 
     expect($component->instance()->getListeners())->toBe([
-        'question.destroy' => 'destroy',
+        'question.ignore' => 'ignore',
         'question.reported' => 'redirectToProfile',
     ]);
 
@@ -75,7 +75,7 @@ test('redirect to profile', function () {
     $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
 });
 
-test('destroy', function () {
+test('ignore', function () {
     $question = Question::factory()->create();
 
     $user = User::find($question->to_id);
@@ -84,14 +84,14 @@ test('destroy', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->dispatch('question.destroy', $question->id);
+    $component->dispatch('question.ignore', $question->id);
 
-    expect($question->fresh())->toBeNull();
+    expect($question->fresh()->is_ignored)->toBeTrue();
 
     $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
 });
 
-test('destroy auth', function () {
+test('ignore auth', function () {
     $question = Question::factory()->create();
 
     $user = User::factory()->create();
@@ -100,7 +100,7 @@ test('destroy auth', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->dispatch('question.destroy', $question->id);
+    $component->dispatch('question.ignore', $question->id);
 
     $component->assertStatus(403);
 });

@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $answer
  * @property Carbon|null $answered_at
  * @property bool $is_reported
+ * @property bool $is_ignored
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read User $from
@@ -70,6 +71,7 @@ final class Question extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'pinned' => 'bool',
+            'is_ignored' => 'boolean',
         ];
     }
 

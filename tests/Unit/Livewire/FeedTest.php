@@ -28,6 +28,17 @@ test('do not renders questions without answers', function () {
     $component->assertSee('There are no questions to show.');
 });
 
+test('do not renders ignored questions', function () {
+    Question::factory()->create([
+        'answer' => 'This is the answer',
+        'is_ignored' => true,
+    ]);
+
+    $component = Livewire::test(Feed::class);
+
+    $component->assertSee('There are no questions to show.');
+});
+
 test('load more', function () {
     $user = User::factory()->create();
 

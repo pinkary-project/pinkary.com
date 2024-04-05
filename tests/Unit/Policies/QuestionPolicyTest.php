@@ -16,13 +16,13 @@ test('update', function () {
     expect($user->can('update', $question))->toBeFalse();
 });
 
-test('delete', function () {
+test('ignore', function () {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
-    expect($user->can('delete', $question))->toBeTrue();
+    expect($user->can('ignore', $question))->toBeTrue();
 
     $user = User::factory()->create();
 
-    expect($user->can('delete', $question))->toBeFalse();
+    expect($user->can('ignore', $question))->toBeFalse();
 });

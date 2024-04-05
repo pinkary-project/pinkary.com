@@ -34,6 +34,7 @@ final class Feed extends Component
     {
         return view('livewire.feed', [
             'questions' => Question::where('answer', '!=', null)
+                ->where('is_ignored', false)
                 ->where('is_reported', false)
                 ->orderByDesc('updated_at')
                 ->simplePaginate($this->perPage),
