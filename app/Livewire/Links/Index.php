@@ -22,6 +22,18 @@ final class Index extends Component
     public int $userId;
 
     /**
+     * Increment the clicks counter.
+     */
+    public function click(int $linkId): void
+    {
+        if (auth()->id() === $this->userId) {
+            return;
+        }
+
+        Link::findOrFail($linkId)->increment('clicks_count');
+    }
+
+    /**
      * Store the new order of the links.
      *
      * @param  array<int, string>  $sort
