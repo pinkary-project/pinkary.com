@@ -35,7 +35,6 @@ use Illuminate\Support\Facades\Storage;
  * @property string $name
  * @property string $right_color
  * @property array<string, string>|null $settings
- * @property string $timezone
  * @property Carbon $updated_at
  * @property string $username
  * @property-read Collection<int, Link> $links

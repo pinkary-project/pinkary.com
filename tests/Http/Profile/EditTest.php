@@ -35,7 +35,6 @@ test('profile information can be updated', function () {
             'name' => 'Test User',
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
@@ -64,7 +63,6 @@ test('username can be updated to uppercase', function () {
             'name' => $user->name,
             'username' => 'TESTUSER',
             'email' => $user->email,
-            'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
@@ -90,7 +88,6 @@ test('can not update to an existing username using uppercase', function () {
             'name' => $user->name,
             'username' => 'TESTUSER',
             'email' => $user->email,
-            'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => true,
         ]);
@@ -114,7 +111,6 @@ test('email verification status is unchanged when the email address is unchanged
             'name' => 'Test User',
             'username' => 'testuser',
             'email' => $user->email,
-            'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
@@ -244,7 +240,6 @@ test('prefers_anonymous_questions can be updated', function () {
             'name' => 'Test User',
             'username' => 'testuser',
             'email' => $user->email,
-            'timezone' => 'UTC',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
