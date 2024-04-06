@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -50,11 +51,13 @@ final class Feed extends Component
     public function render(): View
     {
         $user = auth()->user();
-        assert($user instanceof User);
 
         return view('livewire.feed', [
             'questions' => Question::query()
-                ->whereIn('to_id', $user->following()->pluck('users.id'))
+                ->when(
+                    $user instanceof User,
+                    fn (Builder $query) => $query->whereIn('to_id', $user->following()->pluck('users.id'))
+                )
                 ->where('is_ignored', false)
                 ->where('answer', '!=', null)
                 ->where('is_reported', false)
