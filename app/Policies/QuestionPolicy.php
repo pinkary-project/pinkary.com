@@ -14,7 +14,7 @@ final readonly class QuestionPolicy
      */
     public function view(?User $user, Question $question): bool
     {
-        if ($question->is_reported) {
+        if ($question->is_ignored || $question->is_reported) {
             return false;
         }
 
@@ -30,9 +30,9 @@ final readonly class QuestionPolicy
     }
 
     /**
-     * Determine whether the user can delete the question.
+     * Determine whether the user can ignore the question.
      */
-    public function delete(User $user, Question $question): bool
+    public function ignore(User $user, Question $question): bool
     {
         return $user->id === $question->to_id;
     }

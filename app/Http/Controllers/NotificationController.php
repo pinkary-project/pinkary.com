@@ -30,7 +30,7 @@ final class NotificationController
             $notification->delete();
         }
 
-        return redirect()->route('questions.show', [
+        return to_route('questions.show', [
             'username' => $question->to->username,
             'question' => $question,
         ]);

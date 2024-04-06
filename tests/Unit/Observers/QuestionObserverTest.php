@@ -41,6 +41,20 @@ test('updated', function () {
     expect($question->from->notifications->count())->toBe(0);
 });
 
+test('ignored', function () {
+    $question = Question::factory()->create();
+    expect($question->to->notifications->count())->toBe(1);
+
+    $question->update(['answer' => 'answer']);
+    expect($question->from->notifications->count())->toBe(1);
+
+    $user = $question->to;
+    $question->fresh()->update(['is_ignored' => true]);
+    $question = $question->fresh();
+    expect($question->to->notifications->count())->toBe(0);
+    expect($question->from->notifications->count())->toBe(0);
+});
+
 test('deleted', function () {
     $question = Question::factory()->create();
     expect($question->to->notifications->count())->toBe(1);

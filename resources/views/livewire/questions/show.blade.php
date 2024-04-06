@@ -98,6 +98,15 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
+                            @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
+                                <x-dropdown-button
+                                    wire:click="ignore"
+                                    wire:confirm="Are you sure you want to delete this question?"
+                                    class="flex items-center gap-1.5">
+                                    <x-icons.trash class="h-4 w-4" />
+                                    <span>Delete</span>
+                                </x-dropdown-button>
+                            @endif
                         </x-slot>
                     </x-dropdown>
                 @endif
@@ -173,7 +182,7 @@
                         type="button"
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        <x-icons.paper-airplane class="h-4 w-4" />
+                        <x-icons.link class="size-4" />
                     </button>
                 </div>
             </div>

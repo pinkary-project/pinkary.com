@@ -18,7 +18,8 @@
                         wire:model="answer"
                         x-ref="content"
                         x-model="content"
-                        class="h-24 w-full border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        x-autosize
+                        class="h-24 w-full border-none border-transparent bg-transparent text-white resize-none focus:border-transparent focus:outline-0 focus:ring-0"
                         placeholder="Write your answer..."
                         maxlength="1000"
                         rows="3"
@@ -40,7 +41,7 @@
                         </x-primary-colorless-button>
 
                         <button
-                            wire:click.prevent="destroy"
+                            wire:click.prevent="ignore"
                             wire:confirm="Are you sure you want to ignore this question?"
                             class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >

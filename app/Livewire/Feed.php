@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Models\Question;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -28,12 +29,28 @@ final class Feed extends Component
     }
 
     /**
+     * Ignore the given question.
+     */
+    #[On('question.ignore')]
+    public function ignore(string $questionId): void
+    {
+        $question = Question::findOrFail($questionId);
+
+        $this->authorize('ignore', $question);
+
+        $question->update(['is_ignored' => true]);
+
+        $this->dispatch('question.ignored');
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
     {
         return view('livewire.feed', [
             'questions' => Question::where('answer', '!=', null)
+                ->where('is_ignored', false)
                 ->where('is_reported', false)
                 ->orderByDesc('updated_at')
                 ->simplePaginate($this->perPage),

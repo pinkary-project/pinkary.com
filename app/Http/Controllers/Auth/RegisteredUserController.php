@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Jobs\DownloadUserAvatar;
 use App\Models\User;
-use App\Rules\NoBlankCharacters;
 use App\Rules\Recaptcha;
 use App\Rules\Username;
 use App\Rules\ValidTimezone;
@@ -36,7 +35,7 @@ final readonly class RegisteredUserController
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', new NoBlankCharacters],
+            'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'timezone' => ['required', 'string', 'max:255', new ValidTimezone],

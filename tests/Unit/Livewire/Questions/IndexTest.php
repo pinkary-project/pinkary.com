@@ -79,7 +79,7 @@ test('do not render reported questions', function () {
     }
 });
 
-test('destroy', function () {
+test('ignore', function () {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -92,14 +92,14 @@ test('destroy', function () {
 
     $component->assertSee($question->content);
 
-    $component->dispatch('question.destroy', $question->id);
+    $component->dispatch('question.ignore', $question->id);
 
     $component->assertDontSee($question->content);
 
-    expect($question->fresh())->toBeNull();
+    expect($question->fresh()->is_ignored)->toBeTrue();
 });
 
-test('destroy auth', function () {
+test('ignore auth', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -112,11 +112,11 @@ test('destroy auth', function () {
         'userId' => $userB->id,
     ]);
 
-    $component->dispatch('question.destroy', $question->id);
+    $component->dispatch('question.ignore', $question->id);
 
     $component->assertStatus(403);
 
-    expect($question->fresh())->not->toBeNull();
+    expect($question->fresh()->is_ignored)->not->toBeTrue();
 });
 
 test('load more', function () {

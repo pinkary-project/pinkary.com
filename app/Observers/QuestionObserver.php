@@ -16,7 +16,6 @@ final readonly class QuestionObserver
      */
     public function created(Question $question): void
     {
-
         $user = type(User::find($question->to_id))->as(User::class);
 
         $user->notify(new QuestionCreated($question));
@@ -27,6 +26,13 @@ final readonly class QuestionObserver
      */
     public function updated(Question $question): void
     {
+        if ($question->is_ignored) {
+            $question->to->notifications->where('data.question_id', $question->id)->each->delete();
+            $question->from->notifications->where('data.question_id', $question->id)->each->delete();
+
+            return;
+        }
+
         if ($question->is_reported || $question->answer !== null) {
             $question->to->notifications->where('data.question_id', $question->id)->each->delete();
         }
