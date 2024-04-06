@@ -108,7 +108,7 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function followers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
+        return $this->belongsToMany(self::class, 'followers', 'user_id', 'follower_id');
     }
 
     /**
@@ -116,10 +116,10 @@ final class User extends Authenticatable implements MustVerifyEmail
      */
     public function following(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+        return $this->belongsToMany(self::class, 'followers', 'follower_id', 'user_id');
     }
 
-    public function follows(User $user): bool
+    public function follows(self $user): bool
     {
         return $this->following->contains($user);
     }

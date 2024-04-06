@@ -98,3 +98,39 @@ test('load more', function () {
 
     $component->assertSet('perPage', 100);
 });
+
+it('does not display questions from users I am not following', function () {
+    $user = User::factory()->create();
+    $notFollowing = User::factory()->create();
+    $following = User::factory()->create();
+
+    $user->following()->attach($following);
+
+    Question::factory()->create([
+        'content' => 'Do you like star wars?',
+        'answer' => 'May the force be with you!',
+        'to_id' => $notFollowing,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Feed::class);
+
+    $component->assertSee('There are no questions to show.');
+});
+
+it('displays questions from users I am following', function () {
+    $user = User::factory()->create();
+    $notFollowing = User::factory()->create();
+    $following = User::factory()->create();
+
+    $user->following()->attach($following);
+
+    Question::factory()->create([
+        'content' => 'Do you like star wars?',
+        'answer' => 'May the force be with you!',
+        'to_id' => $following,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Feed::class);
+
+    $component->assertSee('Do you like star wars?');
+});
