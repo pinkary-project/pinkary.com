@@ -30,7 +30,9 @@ final class Index extends Component
             return;
         }
 
-        Link::findOrFail($linkId)->increment('clicks_count');
+        Link::query()
+            ->whereKey($linkId)
+            ->increment('clicks_count');
     }
 
     /**
