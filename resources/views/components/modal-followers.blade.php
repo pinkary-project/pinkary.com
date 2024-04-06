@@ -13,7 +13,7 @@
         </div>
 
         @if($user->followers->count())
-            <ul class="mt-5">
+            <ul class="mt-5 space-y-2 flex flex-col items-start px-28">
                 @foreach($user->followers as $follower)
                     <li>
                         <a href="{{ route('profile.show', $follower->username) }}" class="flex items-center justify-center space-x-2 hover:cursor-pointer">

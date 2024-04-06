@@ -13,10 +13,10 @@
         </div>
 
         @if($user->following->count())
-            <ul class="mt-5">
+            <ul class="mt-5 space-y-2 flex flex-col items-start px-28">
                 @foreach($user->following as $follow)
                     <li>
-                        <a href="{{ route('profile.show', $follow->username) }}" class="flex items-center justify-center space-x-2 hover:cursor-pointer">
+                        <a href="{{ route('profile.show', $follow->username) }}" class="flex items-center justify-start space-x-2 hover:cursor-pointer">
                             <div class="size-10">
                                 <img class="rounded-full" src="{{ $follow->avatar ? url($follow->avatar) : $follow->avatar_url }}" alt="{{ $follow->name }} avatar">
                             </div>
