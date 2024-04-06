@@ -39,6 +39,46 @@ test('do not renders ignored questions', function () {
     $component->assertSee('There are no questions to show.');
 });
 
+test('ignore', function () {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Feed::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->assertSee($question->content);
+
+    $component->dispatch('question.ignore', $question->id);
+
+    $component->assertDontSee($question->content);
+
+    expect($question->fresh()->is_ignored)->toBeTrue();
+});
+
+test('ignore auth', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'from_id' => $userA->id,
+        'to_id' => $userB->id,
+    ]);
+
+    $component = Livewire::actingAs($userA)->test(Feed::class, [
+        'userId' => $userB->id,
+    ]);
+
+    $component->dispatch('question.ignore', $question->id);
+
+    $component->assertStatus(403);
+
+    expect($question->fresh()->is_ignored)->not->toBeTrue();
+});
+
 test('load more', function () {
     $user = User::factory()->create();
 
