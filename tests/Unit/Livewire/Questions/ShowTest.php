@@ -82,27 +82,38 @@ test('ignore', function () {
 
     $component = Livewire::actingAs($user)->test(Show::class, [
         'questionId' => $question->id,
+        'inIndex' => false,
     ]);
 
-    $component->dispatch('question.ignore', $question->id);
+    $component->call('ignore');
 
     expect($question->fresh()->is_ignored)->toBeTrue();
 
     $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
+
+    $question = Question::factory()->create();
+    $user = User::find($question->to_id);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+        'inIndex' => true,
+    ]);
+
+    $component->call('ignore');
+    $component->assertDispatched('notification.created', 'Question ignored.');
+    $component->assertDispatched('question.ignore');
 });
 
 test('ignore auth', function () {
     $question = Question::factory()->create();
 
-    $user = User::factory()->create();
-
-    $component = Livewire::actingAs($user)->test(Show::class, [
+    $component = Livewire::test(Show::class, [
         'questionId' => $question->id,
     ]);
 
-    $component->dispatch('question.ignore', $question->id);
+    $component->call('ignore');
 
-    $component->assertStatus(403);
+    $component->assertRedirect(route('login'));
 });
 
 test('like', function () {

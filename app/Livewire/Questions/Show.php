@@ -68,6 +68,20 @@ final class Show extends Component
      */
     public function ignore(): void
     {
+        if (! auth()->check()) {
+            to_route('login');
+
+            return;
+        }
+
+        if ($this->inIndex) {
+            $this->dispatch('notification.created', 'Question ignored.');
+
+            $this->dispatch('question.ignore', questionId: $this->questionId);
+
+            return;
+        }
+
         $question = Question::findOrFail($this->questionId);
 
         $this->authorize('ignore', $question);
