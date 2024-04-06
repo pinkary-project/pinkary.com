@@ -172,7 +172,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function getAvatarUrlAttribute(): string
     {
         /** @var array<int, string> $urls */
-        $urls = $this->links->pluck('url')->values()->all();
+        $urls = $this->links()->pluck('url')->values()->all();
 
         return (new Avatar(
             email: $this->email,
