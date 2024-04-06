@@ -13,6 +13,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 final class Index extends Component
 {
@@ -27,17 +28,18 @@ final class Index extends Component
      */
     public function click(int $linkId): void
     {
-        if (auth()->id() === $this->userId) {
+        $ipAddress = type(request()->ip())->asString();
+        $cacheKey = IpUtils::anonymize($ipAddress).'-clicked-'.$linkId;
+
+        if (auth()->id() === $this->userId || Cache::has($cacheKey)) {
             return;
-        }
-
-        if (Cache::has(auth()->id().'-clicked-'.$linkId)) {
-
         }
 
         Link::query()
             ->whereKey($linkId)
             ->increment('click_count');
+
+        Cache::put($cacheKey, true, now()->addDay());
     }
 
     /**
