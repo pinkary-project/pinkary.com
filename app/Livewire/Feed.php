@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -48,9 +49,14 @@ final class Feed extends Component
      */
     public function render(): View
     {
+        $user = auth()->user();
+        assert($user instanceof User);
+
         return view('livewire.feed', [
-            'questions' => Question::where('answer', '!=', null)
+            'questions' => Question::query()
+                ->whereIn('to_id', $user->following()->pluck('users.id'))
                 ->where('is_ignored', false)
+                ->where('answer', '!=', null)
                 ->where('is_reported', false)
                 ->orderByDesc('updated_at')
                 ->simplePaginate($this->perPage),
