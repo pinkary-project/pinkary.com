@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('links', function (Blueprint $table): void {
-            $table->unsignedBigInteger('clicks_count')->default(0);
+            $table->unsignedBigInteger('click_count')->default(0)->after('user_id');
         });
     }
 };

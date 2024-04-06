@@ -120,7 +120,7 @@ test('when user click his own links the clicks counter is not incremented', func
 
     $component->call('click', $link->id);
 
-    expect($link->refresh()->clicks_count)->toBe(0);
+    expect($link->refresh()->click_count)->toBe(0);
 });
 
 test('when user click another user link the clicks counter is incremented', function () {
@@ -138,5 +138,5 @@ test('when user click another user link the clicks counter is incremented', func
 
     $component->call('click', $link->id);
 
-    expect($link->refresh()->clicks_count)->toBe(1);
+    expect($link->refresh()->click_count)->toBe(1);
 });

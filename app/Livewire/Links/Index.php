@@ -8,6 +8,7 @@ use App\Jobs\DownloadUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -30,9 +31,13 @@ final class Index extends Component
             return;
         }
 
+        if (Cache::has(auth()->id().'-clicked-'.$linkId)) {
+
+        }
+
         Link::query()
             ->whereKey($linkId)
-            ->increment('clicks_count');
+            ->increment('click_count');
     }
 
     /**
