@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('links', function (Blueprint $table) {
+        Schema::table('links', function (Blueprint $table): void {
             $table->unsignedBigInteger('clicks_count')->default(0);
         });
     }
