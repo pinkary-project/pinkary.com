@@ -2,6 +2,7 @@
     @foreach ($notifications as $notification)
         @php
             $question = \App\Models\Question::find($notification->data['question_id']);
+            $isMention = $notification->type === 'App\Notifications\UserMentioned';
 
             if ($question === null) {
                 $notification->delete();
@@ -21,7 +22,11 @@
                                 class="h-10 w-10 rounded-full"
                             />
                         </figure>
-                        <p>{{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:</p>
+                        @if ($isMention)
+                            <p>{{ $question->to->name }} mentioned you {{ $question->anonymously ? 'anonymously' : '' }} question:</p>
+                        @else
+                            <p>{{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:</p>
+                        @endif
                     </div>
                 @else
                     @if ($question->anonymously)
@@ -29,7 +34,7 @@
                             <div class="border-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-dashed border-slate-400">
                                 <span>?</span>
                             </div>
-                            <p>Someone asked you anonymously:</p>
+                            <p>Someone {{ $isMention ? 'mentioned' : 'asked' }} you anonymously:</p>
                         </div>
                     @else
                         <div class="flex items-center gap-3 text-sm text-slate-500">
@@ -40,7 +45,7 @@
                                     class="h-10 w-10 rounded-full"
                                 />
                             </figure>
-                            <p>{{ $question->from->name }} asked you:</p>
+                            <p>{{ $question->from->name }} {{ $isMention ? 'mentioned' : 'asked' }} you:</p>
                         </div>
                     @endif
                 @endif
