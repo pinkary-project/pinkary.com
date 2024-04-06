@@ -106,3 +106,37 @@ test('guest or random user cannot see qr download link', function () {
 
     $component->assertDontSee(route('qr-code.image'));
 });
+
+test('when user click his own links the clicks counter is not incremented', function () {
+    $user = User::factory()->create();
+
+    $link = Link::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->call('click', $link->id);
+
+    expect($link->refresh()->clicks_count)->toBe(0);
+});
+
+test('when user click another user link the clicks counter is incremented', function () {
+    $user = User::factory()->create();
+
+    $anotherUser = User::factory()->create();
+
+    $link = Link::factory()->create([
+        'user_id' => $anotherUser->id,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $anotherUser->id,
+    ]);
+
+    $component->call('click', $link->id);
+
+    expect($link->refresh()->clicks_count)->toBe(1);
+});
