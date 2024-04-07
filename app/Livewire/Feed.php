@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Jobs\CheckIfViewedAndIncrement;
 use App\Models\Question;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -16,7 +18,7 @@ final class Feed extends Component
     use WithoutUrlPagination, WithPagination;
 
     /**
-     * The component's amount of questions per page.
+     * The component's number of questions per page.
      */
     public int $perPage = 5;
 
@@ -48,12 +50,27 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        return view('livewire.feed', [
-            'questions' => Question::where('answer', '!=', null)
-                ->where('is_ignored', false)
-                ->where('is_reported', false)
-                ->orderByDesc('updated_at')
-                ->simplePaginate($this->perPage),
-        ]);
+        $questions = $this->getQuestions();
+
+        dispatch(new CheckIfViewedAndIncrement(
+            /* @phpstan-ignore-next-line */
+            models: $questions->getCollection(),
+            id: auth()->user()->id ?? request()->session()->getId(),
+        ));
+
+        return view('livewire.feed', compact('questions'));
+    }
+
+    /**
+     * Get the questions.
+     * @return Paginator<Question>
+     */
+    private function getQuestions(): Paginator
+    {
+        return Question::where('answer', '!=', null)
+            ->where('is_ignored', false)
+            ->where('is_reported', false)
+            ->orderByDesc('updated_at')
+            ->simplePaginate($this->perPage);
     }
 }
