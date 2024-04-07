@@ -75,7 +75,7 @@ final class Show extends Component
         }
 
         if ($this->inIndex) {
-            $this->dispatch('notification.created', 'Question ignored.');
+            $this->dispatch('notification.created', message: 'Question ignored.');
 
             $this->dispatch('question.ignore', questionId: $this->questionId);
 

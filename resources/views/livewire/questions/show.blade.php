@@ -102,7 +102,8 @@
                                 <x-dropdown-button
                                     wire:click="ignore"
                                     wire:confirm="Are you sure you want to delete this question?"
-                                    class="flex items-center gap-1.5">
+                                    class="flex items-center gap-1.5"
+                                >
                                     <x-icons.trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
@@ -145,10 +146,10 @@
                     </button>
                 </div>
                 <div class="flex items-center text-slate-500">
-                    <time datetime="{{ $question->answered_at->timezone(auth()->user()?->timezone ?: 'UTC')->toIso8601String() }}">
+                    <time datetime="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}">
                         {{
                             $question->answered_at
-                                ->timezone(auth()->user()?->timezone ?: 'UTC')
+                                ->timezone(session()->get('timezone', 'UTC'))
                                 ->diffForHumans()
                         }}
                     </time>

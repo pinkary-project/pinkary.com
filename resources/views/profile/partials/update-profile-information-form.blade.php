@@ -85,20 +85,6 @@
         </div>
 
         <div>
-            <x-input-label for="timezone" :value="__('Timezone')" />
-            <x-select-input
-                id="timezone"
-                name="timezone"
-                class="mt-1 block w-full"
-                :options="\App\Rules\ValidTimezone::timezones()"
-                :value="old('timezone', $user->timezone)"
-                required
-                autocomplete="timezone"
-            />
-            <x-input-error class="mt-2" :messages="$errors->get('timezone')" />
-        </div>
-
-        <div>
             <x-input-label for="mail_preference_time" :value="__('Mail Preference Time')" />
             <x-select-input
                 id="mail_preference_time"
