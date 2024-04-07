@@ -102,7 +102,8 @@
                                 <x-dropdown-button
                                     wire:click="ignore"
                                     wire:confirm="Are you sure you want to delete this question?"
-                                    class="flex items-center gap-1.5">
+                                    class="flex items-center gap-1.5"
+                                >
                                     <x-icons.trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>

@@ -98,14 +98,17 @@
                                 x-sortable-handle
                                 class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
-                                <x-icons.sortable-handle class="size-6 opacity-100 sm:opacity-0 group-hover:opacity-100" />
+                                <x-icons.sortable-handle class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
                             <x-links.list-item :$user :$link />
 
                             <div class="flex items-center justify-center">
-                                <div class="hidden group-hover:flex min-w-fit items-center gap-1 text-xs" title="Clicked {{ $link->click_count }} times">
-                                    <span >{{ $link->click_count }} {{ str('click')->plural($link->click_count) }}</span>
+                                <div
+                                    class="hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
+                                    title="Clicked {{ $link->click_count }} times"
+                                >
+                                    <span>{{ $link->click_count }} {{ str('click')->plural($link->click_count) }}</span>
                                 </div>
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button
@@ -113,7 +116,10 @@
                                         type="submit"
                                         class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
-                                        <x-icons.trash class="size-5 opacity-100 sm:opacity-0 group-hover:opacity-100" x-bind:class="{ 'invisible': isDragging }" />
+                                        <x-icons.trash
+                                            class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                            x-bind:class="{ 'invisible': isDragging }"
+                                        />
                                     </button>
                                 </form>
                             </div>
