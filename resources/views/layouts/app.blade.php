@@ -30,17 +30,17 @@
         @livewireScriptConfig
 
         <script>
-            var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
             if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
                 fetch('{{ route('profile.timezone.update') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     },
-                    body: JSON.stringify({timezone})
-                });
+                    body: JSON.stringify({ timezone }),
+                })
             }
         </script>
     </body>
