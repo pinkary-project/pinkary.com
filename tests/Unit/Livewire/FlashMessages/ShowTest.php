@@ -9,12 +9,12 @@ test('displays flash message', function () {
 
     $component = Livewire::test(Show::class);
 
-    $component->dispatch('notification.created', 'Hello, world!');
+    $component->dispatch('notification.created', message: 'Hello, world!');
 
     $component->assertSee('Hello, world!');
     $component->assertDontSee('Goodbye, world!');
 
-    $component->dispatch('notification.created', 'Goodbye, world!');
+    $component->dispatch('notification.created', message: 'Goodbye, world!');
 
     $component->assertDontSee('Hello, world!');
     $component->assertSee('Goodbye, world!');
@@ -23,7 +23,7 @@ test('displays flash message', function () {
 test('flushes flash message', function () {
     $component = Livewire::test(Show::class);
 
-    $component->dispatch('notification.created', 'Hello, world!');
+    $component->dispatch('notification.created', message: 'Hello, world!');
 
     $component->assertSee('Hello, world!');
     $component->assertSee('Hello, world!');

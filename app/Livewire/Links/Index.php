@@ -79,7 +79,7 @@ final class Index extends Component
 
         $link->delete();
 
-        $this->dispatch('notification.created', 'Link deleted.');
+        $this->dispatch('notification.created', message: 'Link deleted.');
     }
 
     /**
