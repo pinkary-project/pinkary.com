@@ -52,10 +52,7 @@ final class TimezoneUpdateRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'timezone' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'timezone' => 'Too many timezone update attempts. Please try again in '.$seconds.' seconds.',
         ]);
     }
 
