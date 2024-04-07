@@ -5,28 +5,13 @@
         @empty
             <div class="text-center text-slate-400">There are no questions to show.</div>
         @endforelse
-
-        @if ($perPage < 100 && $questions->hasMorePages())
-            <div
-                x-data="{
-                    observe () {
-                        let observer = new IntersectionObserver((entries) => {
-                            entries.forEach(entry => {
-                                if (entry.isIntersecting) {
-                                    @this.call('loadMore')
-                                }
-                            })
-                        }, {
-                            root: null
-                        })
-
-                        observer.observe(this.$el)
-                    }
-                }"
-                x-init="observe"
-            ></div>
-        @elseif ($perPage > 10)
-            <div class="text-center text-slate-400">There are no more questions to load, or you have scrolled too far.</div>
-        @endif
     </section>
+
+    @if ($questions->hasMorePages())
+        <livewire:feed :page="$this->page + 1" lazy />
+    @else
+        <div class="text-center text-slate-400 mb-12">
+            There are no more questions to load, or you have scrolled too far.
+        </div>
+    @endif
 </div>

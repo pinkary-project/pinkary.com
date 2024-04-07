@@ -8,24 +8,34 @@ use App\Models\Question;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\WithoutUrlPagination;
-use Livewire\WithPagination;
 
 final class Feed extends Component
 {
-    use WithoutUrlPagination, WithPagination;
-
     /**
      * The component's amount of questions per page.
      */
-    public int $perPage = 5;
+    private int $perPage = 10;
 
     /**
-     * Load more questions.
+     *  The component will load data for this page
      */
-    public function loadMore(): void
+    private int $page = 1;
+
+    /**
+     * Mount the component.
+     */
+    public function mount(int $page = 1): void
     {
-        $this->perPage = $this->perPage > 100 ? 100 : ($this->perPage + 5);
+        $this->page = $page;
+    }
+
+    public function placeholder(): string
+    {
+        return <<<'HTML'
+            <div>
+                <!-- todo: make a good place holder -->
+            </div>
+        HTML;
     }
 
     /**
@@ -53,7 +63,7 @@ final class Feed extends Component
                 ->where('is_ignored', false)
                 ->where('is_reported', false)
                 ->orderByDesc('updated_at')
-                ->simplePaginate($this->perPage),
+                ->simplePaginate($this->perPage, page: $this->page),
         ]);
     }
 }
