@@ -22,7 +22,8 @@ it('caches viewed items', function () {
     $models = Question::factory()->count(3)->create();
     $user = User::factory()->create();
 
-    $modelName = strtolower(class_basename($models->first()));
+    /* @phpstan-ignore-next-line */
+    $modelName = mb_strtolower(class_basename($models->first()));
 
     $job = new CheckIfViewedAndIncrement($models, $user->id);
 
@@ -35,7 +36,8 @@ it('caches viewed items', function () {
 it('does not increment models when already viewed', function () {
     $models = Question::factory()->count(3)->create();
     $user = User::factory()->create();
-    $modelName = strtolower(class_basename($models->first()));
+    /* @phpstan-ignore-next-line */
+    $modelName = mb_strtolower(class_basename($models->first()));
     Cache::put("viewed.{$modelName}.for.user.{$user->id}", $models->pluck('id')->toArray(), now()->addMinutes(10));
     $job = new CheckIfViewedAndIncrement($models, $user->id);
 
@@ -47,11 +49,13 @@ it('does not increment models when already viewed', function () {
 it('releases lock when exception occurs', function () {
     $models = Question::factory()->count(3)->create();
     Cache::shouldReceive('lock')->andThrow(new LockTimeoutException);
+    /* @phpstan-ignore-next-line */
+    $modelName = mb_strtolower(class_basename($models->first()));
 
     $job = new CheckIfViewedAndIncrement($models, 1);
     $job->handle();
 
-    expect(Cache::lock('viewed.items.for.user.1')->get())->toBeTrue();
+    expect(Cache::lock("viewed.{$modelName}.for.user.1")->get())->toBeTrue();
 })->throws(LockTimeoutException::class);
 
 it('caches using session id when no user', function () {
@@ -61,7 +65,7 @@ it('caches using session id when no user', function () {
     $job = new CheckIfViewedAndIncrement($models, $sessionId);
     $job->handle();
 
-    $modelName = strtolower(class_basename($models->first()));
+    $modelName = mb_strtolower(class_basename($models->first()));
 
     $models->each(fn ($model) => expect($model->views)->toBe(1));
     expect(Cache::get("viewed.{$modelName}.for.user.{$sessionId}"))

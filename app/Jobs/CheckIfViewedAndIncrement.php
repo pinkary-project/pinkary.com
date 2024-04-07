@@ -61,7 +61,8 @@ final class CheckIfViewedAndIncrement implements ShouldQueue
      */
     public function handle(): void
     {
-        $modelType = strtolower(class_basename($this->models->first()));
+        /* @phpstan-ignore-next-line */
+        $modelType = mb_strtolower(class_basename($this->models->first()));
 
         $key = "viewed.{$modelType}.for.user.{$this->id}";
 
