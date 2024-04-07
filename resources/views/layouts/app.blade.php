@@ -30,17 +30,11 @@
         @livewireScriptConfig
 
         <script>
-            var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-            if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
-                fetch('{{ route('profile.timezone.update') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({timezone})
-                });
+            window.onload = function() {
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
+                    axios.post('{{ route('profile.timezone.update') }}', { timezone });
+                }
             }
         </script>
     </body>
