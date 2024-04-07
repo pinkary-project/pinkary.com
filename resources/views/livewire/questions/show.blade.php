@@ -28,12 +28,11 @@
                             <p class="truncate font-medium text-slate-50">
                                 {{ $question->from->name }}
                             </p>
-                            @if ($question->from->is_verified)
-                                <x-icons.verified :color="$question->from->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
-                            @endif
 
                             @if ($question->from->is_verified && $question->from->is_company_verified)
-                                <x-icons.verified-company class="ml-1.5 mt-0.5 h-3.5 w-3.5" />
+                                <x-icons.verified-company :color="$question->from->right_color" class="ml-1.5 mt-0.5 h-3.5 w-3.5" />
+                            @elseif ($question->from->is_verified)
+                                <x-icons.verified :color="$question->from->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
                             @endif
                         </div>
 
@@ -72,12 +71,11 @@
                             <p class="truncate font-medium text-slate-50">
                                 {{ $question->to->name }}
                             </p>
-                            @if ($question->to->is_verified)
-                                <x-icons.verified :color="$question->to->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
-                            @endif
 
                             @if ($question->to->is_verified && $question->to->is_company_verified)
-                                <x-icons.verified-company class="ml-1.5 mt-0.5 h-3.5 w-3.5" />
+                                <x-icons.verified-company :color="$question->to->right_color" class="ml-1.5 mt-0.5 h-3.5 w-3.5" />
+                            @elseif ($question->to->is_verified)
+                                <x-icons.verified :color="$question->to->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
                             @endif
                         </div>
 

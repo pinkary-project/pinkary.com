@@ -50,12 +50,11 @@
                                     <p class="truncate font-medium">
                                         {{ $user->name }}
                                     </p>
-                                    @if ($user->is_verified)
-                                        <x-icons.verified :color="$user->right_color" class="size-4" />
-                                    @endif
 
                                     @if ($user->is_verified && $user->is_company_verified)
-                                        <x-icons.verified-company class="ml-1.5 size-6" />
+                                        <x-icons.verified-company :color="$user->right_color" class="ml-1.5 size-6" />
+                                    @elseif ($user->is_verified)
+                                        <x-icons.verified :color="$user->right_color" class="size-4" />
                                     @endif
                                 </div>
                                 <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">

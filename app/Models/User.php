@@ -201,7 +201,23 @@ final class User extends Authenticatable implements MustVerifyEmail
             return true;
         }
 
+        if (collect(config()->array('sponsors.github_company_usernames'))->contains($this->username)) {
+            return true;
+        }
+
         return $isVerified;
+    }
+
+    /**
+     * Get the user's "is_company_verified" attribute.
+     */
+    public function getIsCompanyVerifiedAttribute(bool $isCompanyVerified): bool
+    {
+        if (collect(config()->array('sponsors.github_company_usernames'))->contains($this->username)) {
+            return true;
+        }
+
+        return $isCompanyVerified;
     }
 
     /**
