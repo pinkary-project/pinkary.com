@@ -34,20 +34,6 @@
         </div>
 
         <div class="mt-4">
-            <x-input-label for="timezone" :value="__('Timezone')" />
-            <x-select-input
-                id="timezone"
-                class="mt-1 block w-full"
-                name="timezone"
-                :options="\App\Rules\ValidTimezone::timezones()"
-                :value="old('timezone')"
-                required
-                autocomplete="timezone"
-            />
-            <x-input-error :messages="$errors->get('timezone')" class="mt-2" />
-        </div>
-
-        <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
 
             <x-text-input id="password" class="mt-1 block w-full" type="password" name="password" required autocomplete="new-password" />

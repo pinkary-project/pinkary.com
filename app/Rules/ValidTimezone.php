@@ -437,16 +437,6 @@ final class ValidTimezone implements ValidationRule
     ];
 
     /**
-     * Get the list of countries.
-     *
-     * @return array<string, string>
-     */
-    public static function timezones(): array
-    {
-        return self::$timezones;
-    }
-
-    /**
      * Run the validation rule.
      *
      * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail

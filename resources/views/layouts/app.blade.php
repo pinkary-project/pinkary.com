@@ -28,5 +28,20 @@
             <x-footer />
         </div>
         @livewireScriptConfig
+
+        <script>
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
+                fetch('{{ route('timezone.update') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({timezone})
+                });
+            }
+        </script>
     </body>
 </html>
