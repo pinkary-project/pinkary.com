@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $timezone
  * @property Carbon $updated_at
  * @property string $username
+ * @property int $profile_views
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
@@ -219,6 +220,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',
+            'profile_views' => 'integer',
         ];
     }
 }
