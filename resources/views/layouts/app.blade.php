@@ -33,7 +33,7 @@
             var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
             if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
-                fetch('{{ route('timezone.update') }}', {
+                fetch('{{ route('profile.timezone.update') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

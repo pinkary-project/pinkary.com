@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
+use App\Http\Controllers\Profile\TimezoneController;
 use App\Http\Controllers\Profile\VerifiedController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\TimezoneController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +22,7 @@ Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
 
 Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
-Route::post('/timezone', [TimezoneController::class, 'update'])->name('timezone.update');
+Route::post('/profile/timezone', [TimezoneController::class, 'update'])->name('profile.timezone.update');
 
 Route::prefix('/@{username}')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])
