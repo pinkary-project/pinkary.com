@@ -24,6 +24,7 @@ test('to array', function () {
         'mail_preference_time',
         'github_username',
         'prefers_anonymous_questions',
+        'profile_views',
     ]);
 });
 

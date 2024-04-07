@@ -22,6 +22,7 @@ test('to array', function () {
         'updated_at',
         'pinned',
         'is_ignored',
+        'views',
     ]);
 });
 
