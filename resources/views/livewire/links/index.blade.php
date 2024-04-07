@@ -68,7 +68,7 @@
 
                 <span>
                     Joined
-                    {{ $user->created_at->timezone(session()->get('timezone', 'UTC'))->format('M Y') }}
+                    {{ $user->created_at->format('M Y') }}
                 </span>
             </p>
         </div>

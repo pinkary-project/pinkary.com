@@ -146,12 +146,8 @@
                     </button>
                 </div>
                 <div class="flex items-center text-slate-500">
-                    <time datetime="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}">
-                        {{
-                            $question->answered_at
-                                ->timezone(session()->get('timezone', 'UTC'))
-                                ->diffForHumans()
-                        }}
+                    <time datetime="{{ $question->answered_at->toIso8601String() }}">
+                        {{ $question->answered_at->diffForHumans() }}
                     </time>
                     <span class="mx-1">•</span>
                     <button
