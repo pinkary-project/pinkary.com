@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\FlashMessages;
 
 use Illuminate\View\View;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class Show extends Component
