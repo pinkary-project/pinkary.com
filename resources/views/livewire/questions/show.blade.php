@@ -19,7 +19,7 @@
                         <img
                             src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
                             alt="{{ $question->from->username }}"
-                            class="h-10 w-10 rounded-full"
+                            class="h-10 w-10 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
                         />
                     </figure>
 
@@ -63,7 +63,7 @@
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
-                            class="h-10 w-10 rounded-full"
+                            class="h-10 w-10 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
                         />
                     </figure>
                     <div class="overflow-hidden text-sm">

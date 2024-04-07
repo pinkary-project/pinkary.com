@@ -39,7 +39,7 @@
                         >
                             <figure class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
                                 <img
-                                    class="h-12 w-12 rounded-full"
+                                    class="h-12 w-12 {{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
                                     src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
                                     alt="{{ $user->username }}"
                                 />

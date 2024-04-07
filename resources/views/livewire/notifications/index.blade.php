@@ -18,7 +18,7 @@
                             <img
                                 src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
                                 alt="{{ $question->to->username }}"
-                                class="h-10 w-10 rounded-full"
+                                class="h-10 w-10 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
                             />
                         </figure>
                         <p>{{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:</p>
@@ -37,7 +37,7 @@
                                 <img
                                     src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
                                     alt="{{ $question->from->username }}"
-                                    class="h-10 w-10 rounded-full"
+                                    class="h-10 w-10 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
                                 />
                             </figure>
                             <p>{{ $question->from->name }} asked you:</p>
