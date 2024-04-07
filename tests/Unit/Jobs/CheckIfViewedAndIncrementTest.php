@@ -22,18 +22,21 @@ it('caches viewed items', function () {
     $models = Question::factory()->count(3)->create();
     $user = User::factory()->create();
 
+    $modelName = strtolower(class_basename($models->first()));
+
     $job = new CheckIfViewedAndIncrement($models, $user->id);
 
     $job->handle();
 
     $models->each(fn ($model) => expect($model->views)->toBe(1));
-    expect(Cache::get("viewed.items.for.user.{$user->id}"))->toBe($models->pluck('id')->toArray());
+    expect(Cache::get("viewed.{$modelName}.for.user.{$user->id}"))->toBe($models->pluck('id')->toArray());
 });
 
 it('does not increment models when already viewed', function () {
     $models = Question::factory()->count(3)->create();
     $user = User::factory()->create();
-    Cache::put('viewed.items.for.user.'.$user->id, $models->pluck('id')->toArray(), now()->addMinutes(10));
+    $modelName = strtolower(class_basename($models->first()));
+    Cache::put("viewed.{$modelName}.for.user.{$user->id}", $models->pluck('id')->toArray(), now()->addMinutes(10));
     $job = new CheckIfViewedAndIncrement($models, $user->id);
 
     $job->handle();
@@ -58,8 +61,10 @@ it('caches using session id when no user', function () {
     $job = new CheckIfViewedAndIncrement($models, $sessionId);
     $job->handle();
 
+    $modelName = strtolower(class_basename($models->first()));
+
     $models->each(fn ($model) => expect($model->views)->toBe(1));
-    expect(Cache::get('viewed.items.for.user.'.$sessionId))
+    expect(Cache::get("viewed.{$modelName}.for.user.{$sessionId}"))
         ->toBe($models->pluck('id')->toArray());
 });
 

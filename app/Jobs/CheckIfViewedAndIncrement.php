@@ -48,9 +48,9 @@ final class CheckIfViewedAndIncrement implements ShouldQueue
      *
      * @phpstan-ignore-next-line
      */
-    public function __construct(EloquentCollection $models, int|string $id, string $column = 'views')
+    public function __construct(EloquentCollection|Model $models, int|string $id, string $column = 'views')
     {
-        $this->models = $models;
+        $this->models = $models instanceof Model ? $models->newCollection([$models]) : $models;
         $this->id = $id;
         $this->column = $column;
         $this->modelsToIncrement = collect();
@@ -61,7 +61,9 @@ final class CheckIfViewedAndIncrement implements ShouldQueue
      */
     public function handle(): void
     {
-        $key = "viewed.items.for.user.{$this->id}";
+        $modelType = strtolower(class_basename($this->models->first()));
+
+        $key = "viewed.{$modelType}.for.user.{$this->id}";
 
         $lock = Cache::lock($key);
         try {
@@ -69,7 +71,6 @@ final class CheckIfViewedAndIncrement implements ShouldQueue
             $viewedItems = Cache::get($key, []);
 
             $this->models->each(function (Model $model) use ($viewedItems) {
-                // if the model id is not in the viewed items
                 /* @phpstan-ignore-next-line */
                 if (! in_array($model->id, $viewedItems, true)) {
                     $this->modelsToIncrement->push($model);
@@ -87,7 +88,6 @@ final class CheckIfViewedAndIncrement implements ShouldQueue
 
         } catch (LockTimeoutException $e) {
             $this->release(10);
-            logger('cache lock timeout in CheckIfViewedAndIncrement job');
             logger()->error('LockTimeoutException: '.$e->getMessage());
         } finally {
             $lock->release();
