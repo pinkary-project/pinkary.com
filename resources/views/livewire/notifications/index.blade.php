@@ -14,7 +14,7 @@
             <div class="group overflow-hidden rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900">
                 @if ($question->from->is(auth()->user()) && $question->answer !== null)
                     <div class="flex items-center gap-3 text-sm text-slate-500">
-                        <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
+                        <figure class="h-10 w-10 flex-shrink-0 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
                             <img
                                 src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
                                 alt="{{ $question->to->username }}"
@@ -33,7 +33,7 @@
                         </div>
                     @else
                         <div class="flex items-center gap-3 text-sm text-slate-500">
-                            <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
+                            <figure class="h-10 w-10 flex-shrink-0 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
                                 <img
                                     src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
                                     alt="{{ $question->from->username }}"

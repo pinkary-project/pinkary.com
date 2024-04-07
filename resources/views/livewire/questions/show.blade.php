@@ -15,7 +15,7 @@
                     class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
-                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="h-10 w-10 flex-shrink-0 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
                             alt="{{ $question->from->username }}"
@@ -59,7 +59,7 @@
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
                 <a href="{{ route('profile.show', ['username' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
-                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="h-10 w-10 flex-shrink-0 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
