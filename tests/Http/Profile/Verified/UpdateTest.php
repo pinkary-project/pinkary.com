@@ -15,6 +15,7 @@ test('guest', function () {
 test('update verified', function () {
     $user = User::factory()->create([
         'is_verified' => false,
+        'is_company_verified' => false,
         'github_username' => 'test',
     ]);
 
@@ -41,7 +42,8 @@ test('update verified', function () {
 
     $user->refresh();
 
-    expect($user->is_verified)->toBeTrue();
+    expect($user->is_verified)->toBeTrue()
+        ->and($user->is_company_verified)->toBeFalse();
 });
 
 test('update non verified because does not sponsor', function () {

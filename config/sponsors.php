@@ -18,4 +18,8 @@ return [
     'github_usernames' => collect(explode(',', (string) env('SPONSORS_GITHUB_USERNAMES', '')))->map( // @phpstan-ignore-line
         fn (string $username): string => trim($username)
     )->filter()->values()->all(),
+
+    'github_company_usernames' => collect(explode(',', (string) env('SPONSORS_GITHUB_COMPANY_USERNAMES', '')))->map( // @phpstan-ignore-line
+        fn (string $username): string => trim($username)
+    )->filter()->values()->all(),
 ];
