@@ -20,11 +20,6 @@ final class Index extends Component
     public string $query = '';
 
     /**
-     * Indicates if the search input should be focused.
-     */
-    public bool $focusInput = false;
-
-    /**
      * Renders the component.
      */
     public function render(): View
