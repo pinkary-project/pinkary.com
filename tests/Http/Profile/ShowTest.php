@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Jobs\CheckIfViewedAndIncrement;
 use App\Models\User;
+use Illuminate\Queue\Jobs\Job;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -26,4 +28,15 @@ it('can show profile on username case-insensitive', function () {
     $response = $this->get(route('profile.show', ['username' => $revertCasingUsername]));
 
     $response->assertSee($this->user->name);
+});
+
+// dispatches job to check if viewed and increment
+it('dispatches job to check if viewed and increment', function () {
+    Queue::fake();
+    $this->actingAs($this->user);
+
+    $response = $this->get(route('profile.show', ['username' => $this->user->username]));
+
+    $response->assertSee($this->user->name);
+    Queue::assertPushed(CheckIfViewedAndIncrement::class);
 });
