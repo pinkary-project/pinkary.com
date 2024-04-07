@@ -37,22 +37,6 @@ final class TimezoneUpdateRequest extends FormRequest
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @throws ValidationException
-     */
-    public function updateTimezone(): void
-    {
-        $this->ensureIsNotRateLimited();
-
-        $timezone = $this->input('timezone', 'UTC');
-
-        $this->session()->put('timezone', $timezone);
-
-        RateLimiter::hit($this->throttleKey());
-    }
-
-    /**
      * Ensure the update timezone request is not rate limited.
      *
      * @throws ValidationException
@@ -60,6 +44,8 @@ final class TimezoneUpdateRequest extends FormRequest
     public function ensureIsNotRateLimited(): void
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), self::MAX_ATTEMPTS)) {
+            RateLimiter::hit($this->throttleKey());
+
             return;
         }
 

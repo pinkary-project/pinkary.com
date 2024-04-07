@@ -13,6 +13,10 @@ final readonly class TimezoneController
      */
     public function update(TimezoneUpdateRequest $request): void
     {
-        $request->updateTimezone();
+        $request->ensureIsNotRateLimited();
+
+        $timezone = $request->input('timezone', 'UTC');
+
+        $request->session()->put('timezone', $timezone);
     }
 }
