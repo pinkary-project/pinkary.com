@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Jobs\CheckIfViewedAndIncrement;
+use App\Models\Question;
+use App\Models\User;
+use Illuminate\Contracts\Cache\LockTimeoutException;
+
+it('increments models when not viewed before', function () {
+    $models = Question::factory()->count(3)->create();
+    $user = User::factory()->create();
+
+    $job = new CheckIfViewedAndIncrement($models, $user->id);
+
+    $job->handle();
+
+    $models->each(fn ($model) => expect($model->views)->toBe(1));
+});
+
+it('caches viewed items', function () {
+    $models = Question::factory()->count(3)->create();
+    $user = User::factory()->create();
+
+    $job = new CheckIfViewedAndIncrement($models, $user->id);
+
+    $job->handle();
+
+    $models->each(fn ($model) => expect($model->views)->toBe(1));
+    expect(Cache::get("viewed.items.for.user.{$user->id}"))->toBe($models->pluck('id')->toArray());
+});
+
+it('does not increment models when already viewed', function () {
+    $models = Question::factory()->count(3)->create();
+    $user = User::factory()->create();
+    Cache::put('viewed.items.for.user.'.$user->id, $models->pluck('id')->toArray(), now()->addMinutes(10));
+    $job = new CheckIfViewedAndIncrement($models, $user->id);
+
+    $job->handle();
+
+    $models->each(fn ($model) => expect($model->views)->toBe(0));
+});
+
+it('releases lock when exception occurs', function () {
+    $models = Question::factory()->count(3)->create();
+    Cache::shouldReceive('lock')->andThrow(new LockTimeoutException);
+
+    $job = new CheckIfViewedAndIncrement($models, 1);
+    $job->handle();
+
+    expect(Cache::lock('viewed.items.for.user.1')->get())->toBeTrue();
+})->throws(LockTimeoutException::class);
+
+it('caches using session id when no user', function () {
+    $models = Question::factory()->count(3)->create();
+    Session::shouldReceive('getId')->andReturn('session-id');
+    $sessionId = Session::getId();
+    $job = new CheckIfViewedAndIncrement($models, $sessionId);
+    $job->handle();
+
+    $models->each(fn ($model) => expect($model->views)->toBe(1));
+    expect(Cache::get('viewed.items.for.user.'.$sessionId))
+        ->toBe($models->pluck('id')->toArray());
+});
+
+it('increments the given column', function () {
+    Schema::table('questions', function ($table) {
+        $table->integer('test_column')->default(0);
+    });
+
+    $model = Question::factory()->create();
+    /* @phpstan-ignore-next-line */
+    $model->test_column = 0;
+
+    $models = $model->newCollection([$model]);
+    $user = User::factory()->create();
+
+    $job = new CheckIfViewedAndIncrement($models, $user->id, 'test_column');
+
+    $job->handle();
+
+    /* @phpstan-ignore-next-line */
+    $models->each(fn ($model) => expect($model->test_column)->toBe(1));
+});
