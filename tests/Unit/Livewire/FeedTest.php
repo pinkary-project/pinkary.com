@@ -75,22 +75,16 @@ test('ignore auth', function () {
     expect($question->fresh()->is_ignored)->not->toBeTrue();
 });
 
-test('load more', function () {
-    $user = User::factory()->create();
+it('can see the question in the feed', function () {
+    Question::factory(15)->create();
 
-    $questions = Question::factory(120)->create();
+    Livewire::test(Feed::class)
+        ->assertViewHas('questions', function ($questions) {
+            return count($questions) === 10;
+        });
 
-    $component = Livewire::actingAs($user)->test(Feed::class);
-
-    $component->call('loadMore');
-    $component->assertSet('perPage', 10);
-
-    $component->call('loadMore');
-    $component->assertSet('perPage', 15);
-
-    foreach (range(1, 25) as $i) {
-        $component->call('loadMore');
-    }
-
-    $component->assertSet('perPage', 100);
+    Livewire::test(Feed::class, ['page' => 2])
+        ->assertViewHas('questions', function ($questions) {
+            return count($questions) === 5;
+        });
 });
