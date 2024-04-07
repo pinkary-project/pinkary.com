@@ -13,9 +13,8 @@
             </svg>
 
             <x-text-input
-                x-data="{ focusInput: {{ $focusInput }} }"
                 x-ref="searchInput"
-                x-init="if (focusInput) $refs.searchInput.focus()"
+                x-init="$refs.searchInput.focus()"
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
