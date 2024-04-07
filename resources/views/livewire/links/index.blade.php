@@ -45,6 +45,9 @@
             @if ($user->is_verified)
                 <x-icons.verified :color="$user->right_color" class="ml-1.5 size-6" />
             @endif
+            @if ($user->is_verified && $user->is_company_sponsor)
+                <x-icons.verified-company :color="$user->right_color" class="ml-1.5 size-6" />
+            @endif
         </div>
 
         <a class="text-slate-400" href="{{ route('profile.show', ['username' => $user->username]) }}" wire:navigate>

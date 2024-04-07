@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
+ * @property bool $is_company_sponsor
  * @property string|null $github_username
  * @property string $left_color
  * @property array<int, string> $links_sort
