@@ -19,25 +19,41 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="mt-1 block w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
 
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+        <div x-data="{ password: '', confirmPassword: '' }">
 
-            <x-text-input
-                id="password_confirmation"
-                class="mt-1 block w-full"
-                type="password"
-                name="password_confirmation"
-                required
-                autocomplete="new-password"
+            <div class="mt-4">
+                <x-input-label for="password" :value="__('Password')" />
+                <x-text-input
+                    id="password"
+                    class="mt-1 block w-full"
+                    type="password"
+                    x-model="password"
+                    name="password"
+                    required
+                    autocomplete="new-password" />
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            </div>
+
+            <div class="mt-4">
+                <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+                <x-text-input
+                    id="password_confirmation"
+                    class="mt-1 block w-full"
+                    type="password"
+                    x-model="confirmPassword"
+                    name="password_confirmation"
+                    required
+                    autocomplete="new-password"
+                />
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            </div>
+
+            <x-input-error
+                x-show="password && confirmPassword && password !== confirmPassword"
+                :messages="__('validation.confirmed', ['attribute' => 'password'])"
+                class="mt-2"
             />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="mt-4 flex items-center justify-end">
