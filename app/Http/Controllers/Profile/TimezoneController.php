@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Profile;
 
-use App\Http\Controllers\Auth\Requests\TimezoneUpdateRequest;
+use App\Rules\ValidTimezone;
+use Illuminate\Http\Request;
 
 final readonly class TimezoneController
 {
     /**
      * Update the session's timezone.
      */
-    public function update(TimezoneUpdateRequest $request): void
+    public function update(Request $request): void
     {
-        $timezone = $request->input('timezone', 'UTC');
+        $validated = $request->validate([
+            'timezone' => ['required', 'string', 'max:255', new ValidTimezone],
+        ]);
 
-        $request->session()->put('timezone', $timezone);
+        $request->session()->put('timezone', $validated['timezone']);
     }
 }
