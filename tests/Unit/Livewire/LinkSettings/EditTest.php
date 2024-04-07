@@ -41,7 +41,7 @@ it('allows user to update link settings', function () {
     $component->call('update');
 
     $component->assertDispatched('link-settings.updated');
-    $component->assertDispatched('notification.created', 'Link settings updated.');
+    $component->assertDispatched('notification.created', message: 'Link settings updated.');
 
     $user->refresh();
 

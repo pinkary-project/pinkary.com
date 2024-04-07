@@ -57,7 +57,7 @@ final class Edit extends Component
         $user->update(['settings' => $validated]);
 
         $this->dispatch('link-settings.updated');
-        $this->dispatch('notification.created', 'Link settings updated.');
+        $this->dispatch('notification.created', message: 'Link settings updated.');
     }
 
     /**

@@ -19,7 +19,7 @@ test('allows to create link', function () {
     $component->call('store');
 
     $component->assertDispatched('link.created');
-    $component->assertDispatched('notification.created', 'Link created.');
+    $component->assertDispatched('notification.created', message: 'Link created.');
 
     $user->refresh();
 
@@ -43,7 +43,7 @@ test('https is added to the URL', function () {
     $component->call('store');
 
     $component->assertDispatched('link.created');
-    $component->assertDispatched('notification.created', 'Link created.');
+    $component->assertDispatched('notification.created', message: 'Link created.');
 
     $user->refresh();
 
