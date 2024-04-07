@@ -30,7 +30,7 @@
         @livewireScriptConfig
 
         <script>
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
             if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
                 fetch('{{ route('timezone.update') }}', {
