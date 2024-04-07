@@ -26,7 +26,6 @@ final readonly class GitHub
      */
     public function isSponsoringUs(string $username): bool
     {
-        /** @var array<int, array{monthlyPriceInDollars: int}> $content */
         $this->content = $this->getContent($username);
 
         return collect($this->content)->filter(
