@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Http;
 
 final readonly class GitHub
 {
+    /**
+     * The content from the GitHub API.
+     */
     private array $content;
 
     /**
@@ -21,8 +24,6 @@ final readonly class GitHub
 
     /**
      * Check if the given username is sponsoring the Pinkary project.
-     *
-     * @throw GitHubException
      */
     public function isSponsoringUs(string $username): bool
     {
@@ -33,6 +34,9 @@ final readonly class GitHub
         )->values()->isNotEmpty();
     }
 
+    /**
+     * Check if the sponsor is a company sponsor.
+     */
     public function isCompanySponsor(): bool
     {
         return collect($this->content)->filter(
