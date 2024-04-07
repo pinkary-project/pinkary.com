@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->boolean('is_company_sponsor')->default(false)->after('is_verified');
+            $table->boolean('is_company_verified')->default(false)->after('is_verified');
         });
     }
 
@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->dropColumn('is_company_sponsor');
+            $table->dropColumn('is_company_verified');
         });
     }
 };

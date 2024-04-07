@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
- * @property bool $is_company_sponsor
+ * @property bool $is_company_verified
  * @property string|null $github_username
  * @property string $left_color
  * @property array<int, string> $links_sort
@@ -216,6 +216,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'updated_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'is_verified' => 'boolean',
+            'is_company_verified' => 'boolean',
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',

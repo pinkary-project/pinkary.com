@@ -10,11 +10,6 @@ use Illuminate\Support\Facades\Http;
 final readonly class GitHub
 {
     /**
-     * The content from the GitHub API.
-     */
-    private array $content;
-
-    /**
      * Create a new instance of the GitHub service.
      */
     public function __construct(private string $personalAccessToken)
@@ -25,21 +20,23 @@ final readonly class GitHub
     /**
      * Check if the given username is sponsoring the Pinkary project.
      */
-    public function isSponsoringUs(string $username): bool
+    public function isSponsor(string $username): bool
     {
-        $this->content = $this->getContent($username);
+        $sponsorships = $this->getSponsorships($username);
 
-        return collect($this->content)->filter(
+        return collect($sponsorships)->filter(
             fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 9
         )->values()->isNotEmpty();
     }
 
     /**
-     * Check if the sponsor is a company sponsor.
+     * Check if the given username is sponsoring the Pinkary project as company.
      */
-    public function isCompanySponsor(): bool
+    public function isCompanySponsor(string $username): bool
     {
-        return collect($this->content)->filter(
+        $sponsorships = $this->getSponsorships($username);
+
+        return collect($sponsorships)->filter(
             fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 99
         )->values()->isNotEmpty();
     }
@@ -47,9 +44,11 @@ final readonly class GitHub
     /**
      * Get the content from the GitHub API.
      *
+     * @return array<int, array{monthlyPriceInDollars: int}>
+     *
      * @throw GitHubException
      */
-    private function getContent(string $username): array
+    private function getSponsorships(string $username): array
     {
         $response = Http::withHeaders([
             'Accept' => 'application/vnd.github.v3+json',
@@ -78,7 +77,8 @@ final readonly class GitHub
             ));
         }
 
-        return $response->json('data.user.sponsorshipForViewerAsSponsorable');
+        $body = $response->json('data.user.sponsorshipForViewerAsSponsorable');
 
+        return is_array($body) ? $body : [];
     }
 }

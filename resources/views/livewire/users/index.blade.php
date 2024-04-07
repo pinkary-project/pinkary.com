@@ -53,7 +53,7 @@
                                     @if ($user->is_verified)
                                         <x-icons.verified :color="$user->right_color" class="size-4" />
                                     @endif
-                                    @if ($user->is_verified && $user->is_company_sponsor)
+                                    @if ($user->is_verified && $user->is_company_verified)
                                         <x-icons.verified-company class="ml-1.5 size-6" />
                                     @endif
                                 </div>
