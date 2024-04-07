@@ -33,6 +33,7 @@ final class SyncVerifiedUser implements ShouldQueue
 
         $user->update([
             'is_verified' => $user->github_username && $github->isSponsoringUs($user->github_username),
+            'is_company_sponsor' => $user->github_username && $github->isCompanySponsor(),
         ]);
     }
 }

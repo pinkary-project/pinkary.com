@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Http;
 
 final readonly class GitHub
 {
+    private array $content;
+
     /**
      * Create a new instance of the GitHub service.
      */
@@ -23,6 +25,28 @@ final readonly class GitHub
      * @throw GitHubException
      */
     public function isSponsoringUs(string $username): bool
+    {
+        /** @var array<int, array{monthlyPriceInDollars: int}> $content */
+        $this->content = $this->getContent($username);
+
+        return collect($this->content)->filter(
+            fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 9
+        )->values()->isNotEmpty();
+    }
+
+    public function isCompanySponsor(): bool
+    {
+        return collect($this->content)->filter(
+            fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 99
+        )->values()->isNotEmpty();
+    }
+
+    /**
+     * Get the content from the GitHub API.
+     *
+     * @throw GitHubException
+     */
+    private function getContent(string $username): array
     {
         $response = Http::withHeaders([
             'Accept' => 'application/vnd.github.v3+json',
@@ -51,11 +75,7 @@ final readonly class GitHub
             ));
         }
 
-        /** @var array<int, array{monthlyPriceInDollars: int}> $content */
-        $content = $response->json('data.user.sponsorshipForViewerAsSponsorable');
+        return $response->json('data.user.sponsorshipForViewerAsSponsorable');
 
-        return collect($content)->filter(
-            fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 9
-        )->values()->isNotEmpty();
     }
 }
