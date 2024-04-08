@@ -7,6 +7,7 @@ use App\Models\Link;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Features\SupportTesting\Testable;
 use Illuminate\Support\Number;
 use Livewire\Livewire;
 
@@ -165,6 +166,20 @@ test('click counter is not incremented if user already clicked the link during t
     $component->call('click', $link->id);
 
     expect($link->refresh()->click_count)->toBe(30);
+});
+
+test('reset avatar', function () {
+
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->call('resetAvatar');
+
+    $component->assertDispatched('notification.created', message: 'Avatar reset.');
 });
 
 test('count to be abbreviated', function () {
