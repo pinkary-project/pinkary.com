@@ -38,11 +38,20 @@
             @endif
         </div>
 
-        <img
-            src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
-            alt="{{ $user->username }}"
-            class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
-        />
+        <div class="relative w-24 h-24 mx-auto">
+            <img
+                src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
+                alt="{{ $user->username }}"
+                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
+            />
+            <button
+                class="absolute top-0 right-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                wire:click="resetAvatar"
+                title="Reset Avatar"
+            >
+                <x-icons.reset class="size-5" />
+            </button>
+        </div>
 
         <div class="items center flex items-center justify-center">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
