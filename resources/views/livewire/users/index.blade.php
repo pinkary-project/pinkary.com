@@ -14,7 +14,7 @@
 
             <x-text-input
                 x-ref="searchInput"
-                x-init="$refs.searchInput.focus()"
+                x-init="if ($wire.focusInput) $refs.searchInput.focus()"
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
