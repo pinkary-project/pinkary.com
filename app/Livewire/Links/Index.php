@@ -43,6 +43,18 @@ final class Index extends Component
     }
 
     /**
+     * Reset the user's avatar.
+     */
+    public function resetAvatar(): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        dispatch(new DownloadUserAvatar($user));
+
+        $this->dispatch('notification.created', message: 'Avatar reset.');
+    }
+
+    /**
      * Store the new order of the links.
      *
      * @param  array<int, string>  $sort
