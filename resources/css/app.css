@@ -1,23 +1,23 @@
-@import "highlight.js/styles/tomorrow-night-blue.css";
+@import 'highlight.js/styles/tomorrow-night-blue.css';
 
 [x-cloak] {
-    display: none;
+  display: none;
 }
 
 .question > p,
 .answer > p {
-    margin-top: 1.25em;
-    margin-bottom: 1.25em;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
 }
 
 .question > pre,
 .answer > pre {
-    margin-top: 1.25em;
-    margin-bottom: 1.25em;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
 }
 
 .hover\:darken-gradient:hover {
-    filter: saturate(2.5);
+  filter: saturate(2.5);
 }
 
 @tailwind base;
