@@ -17,10 +17,10 @@ test('render', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->assertSee([
+    $component->assertSeeHtmlInOrder([
         $question->content,
         $question->answer,
-    ], false);
+    ]);
 });
 
 test('refresh', function () {

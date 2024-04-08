@@ -48,11 +48,11 @@ test('ignore', function () {
 
     $component = Livewire::actingAs($user)->test(Feed::class);
 
-    $component->assertSee($question->content, false);
+    $component->assertSeeHtml($question->content);
 
     $component->dispatch('question.ignore', $question->id);
 
-    $component->assertDontSee($question->content, false);
+    $component->assertDontSeeHtml($question->content);
 
     expect($question->fresh()->is_ignored)->toBeTrue();
 });

@@ -38,7 +38,7 @@ test('only renders questions with answers if user is not auth user', function ()
     ]);
 
     foreach ($questions as $question) {
-        $component->assertSee($question->content, false);
+        $component->assertSeeHtml($question->content);
     }
 
     $question = Question::factory()->create([
@@ -50,7 +50,7 @@ test('only renders questions with answers if user is not auth user', function ()
 
     $component->dispatch('question.created');
 
-    $component->assertDontSee($question->content, false);
+    $component->assertDontSeeHtml($question->content);
 
     $question->update([
         'answer' => 'Hello World',
@@ -59,7 +59,7 @@ test('only renders questions with answers if user is not auth user', function ()
 
     $component->dispatch('question.updated');
 
-    $component->assertSee($question->content, false);
+    $component->assertSeeHtml($question->content);
 });
 
 test('do not render reported questions', function () {
@@ -75,7 +75,7 @@ test('do not render reported questions', function () {
     ]);
 
     foreach ($questions as $question) {
-        $component->assertDontSee($question->content);
+        $component->assertDontSeeHtml($question->content);
     }
 });
 
@@ -90,11 +90,11 @@ test('ignore', function () {
         'userId' => $user->id,
     ]);
 
-    $component->assertSee($question->content, false);
+    $component->assertSeeHtml($question->content);
 
     $component->dispatch('question.ignore', $question->id);
 
-    $component->assertDontSee($question->content, false);
+    $component->assertDontSeeHtml($question->content);
 
     expect($question->fresh()->is_ignored)->toBeTrue();
 });
@@ -157,8 +157,8 @@ test('pinned question is displayed at the top', function () {
         'userId' => $user->id,
     ]);
 
-    $component->assertSeeInOrder([
+    $component->assertSeeHtmlInOrder([
         $pinnedQuestion->content,
         ...$otherQuestions->slice(0, 4)->map->content->toArray(),
-    ], false);
+    ]);
 });
