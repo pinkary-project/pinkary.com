@@ -224,7 +224,7 @@ test('store with user questions_preference set to anonymously', function () {
 
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)
-        ->and($question->content)->toBe('Hello World')
+        ->and($question->content)->toBe('<p>Hello World</p>')
         ->and($question->anonymously)->toBeTrue();
 });
 
