@@ -39,6 +39,26 @@ test('updated', function () {
 
     $question->update(['answer' => 'answer']);
     expect($question->from->notifications->count())->toBe(0);
+
+    // Question answered and user mentioned in the question content
+    $user = User::factory()->create([
+        'username' => 'johndoe',
+    ]);
+    $question = Question::factory()->create([
+        'content' => 'Hello @johndoe! How are you doing?',
+    ]);
+
+    $question->update(['answer' => 'answer']);
+    expect($user->notifications->count())->toBe(1);
+
+    // Question answered and user mentioned in the question answer
+    $user = User::factory()->create([
+        'username' => 'doejohn',
+    ]);
+    $question = Question::factory()->create(['answer' => null]);
+
+    $question->update(['answer' => 'Im fine @doejohn!']);
+    expect($user->notifications->count())->toBe(1);
 });
 
 test('ignored', function () {

@@ -12,6 +12,8 @@ final readonly class Mentions
 {
     /**
      * Get the users mentioned in a question.
+     *
+     * @return Collection<string, User>
      */
     public function usersMentioned(Question $question): Collection
     {
@@ -22,17 +24,21 @@ final readonly class Mentions
 
     /**
      * Get the unique mentions from a question.
+     *
+     * @return array<string>
      */
     private function mentionsFromQuestion(Question $question): array
     {
         return array_unique(array_merge(
-            $this->mentionsFromContent($question->content),
-            $this->mentionsFromContent($question->answer ?? ''),
+            $this->mentionsFromContent(type($question->content)->asString()),
+            $this->mentionsFromContent(type($question->answer)->asString()),
         ));
     }
 
     /**
      * Get the mentions from a text.
+     *
+     * @return array<string>
      */
     private function mentionsFromContent(string $content): array
     {
