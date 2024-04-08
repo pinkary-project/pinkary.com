@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
 use App\Notifications\UserMentioned;
+use App\Services\Mentions;
 
 final readonly class QuestionObserver
 {
@@ -20,16 +21,6 @@ final readonly class QuestionObserver
         $user = type(User::find($question->to_id))->as(User::class);
 
         $user->notify(new QuestionCreated($question));
-
-        preg_match_all("/\@(\w+)/", $question->content, $matches);
-
-        collect(array_unique($matches[1]))->each(function (string $username) use ($question) {
-            if (! $user = User::whereUsername($username)->first()) {
-                return;
-            }
-
-            $user->notify(new UserMentioned($question, $question->from));
-        });
     }
 
     /**
@@ -57,16 +48,7 @@ final readonly class QuestionObserver
         }
 
         $question->from->notify(new QuestionAnswered($question));
-
-        preg_match_all("/\@(\w+)/", $question->answer, $matches);
-
-        collect(array_unique($matches[1]))->each(function (string $username) use ($question) {
-            if (! $user = User::whereUsername($username)->first()) {
-                return;
-            }
-
-            $user->notify(new UserMentioned($question, $question->to));
-        });
+        app(Mentions::class)->usersMentioned($question)->each->notify(new UserMentioned($question));
     }
 
     /**

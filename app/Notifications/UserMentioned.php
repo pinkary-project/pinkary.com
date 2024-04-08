@@ -1,15 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Notifications;
 
 use App\Models\Question;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UserMentioned extends Notification
+final class UserMentioned extends Notification
 {
     use Queueable;
 
@@ -17,10 +16,8 @@ class UserMentioned extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        public Question $question,
-        public User $user
-    )
-    {
+        public Question $question
+    ) {
         //
     }
 
@@ -43,7 +40,6 @@ class UserMentioned extends Notification
     {
         return [
             'question_id' => $this->question->id,
-            'user_id' => $this->user->id,
         ];
     }
 }
