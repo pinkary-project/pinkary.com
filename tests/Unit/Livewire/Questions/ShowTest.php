@@ -51,7 +51,7 @@ test('listeners', function () {
     ]);
 
     expect($component->instance()->getListeners())->toBe([
-        'question.destroy' => 'destroy',
+        'question.ignore' => 'ignore',
         'question.reported' => 'redirectToProfile',
     ]);
 
@@ -75,34 +75,45 @@ test('redirect to profile', function () {
     $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
 });
 
-test('destroy', function () {
+test('ignore', function () {
     $question = Question::factory()->create();
 
     $user = User::find($question->to_id);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
         'questionId' => $question->id,
+        'inIndex' => false,
     ]);
 
-    $component->dispatch('question.destroy', $question->id);
+    $component->call('ignore');
 
-    expect($question->fresh())->toBeNull();
+    expect($question->fresh()->is_ignored)->toBeTrue();
 
     $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
-});
 
-test('destroy auth', function () {
     $question = Question::factory()->create();
-
-    $user = User::factory()->create();
+    $user = User::find($question->to_id);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
         'questionId' => $question->id,
+        'inIndex' => true,
     ]);
 
-    $component->dispatch('question.destroy', $question->id);
+    $component->call('ignore');
+    $component->assertDispatched('notification.created', message: 'Question ignored.');
+    $component->assertDispatched('question.ignore');
+});
 
-    $component->assertStatus(403);
+test('ignore auth', function () {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('ignore');
+
+    $component->assertRedirect(route('login'));
 });
 
 test('like', function () {

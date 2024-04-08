@@ -21,6 +21,7 @@ test('to array', function () {
         'created_at',
         'updated_at',
         'pinned',
+        'is_ignored',
     ]);
 });
 

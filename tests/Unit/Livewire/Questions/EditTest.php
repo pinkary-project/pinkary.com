@@ -76,15 +76,15 @@ test('report auth', function () {
     $component->assertStatus(403);
 });
 
-test('destroy', function () {
+test('ignore', function () {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
 
-    $component->call('destroy');
+    $component->call('ignore');
 
-    $component->assertDispatched('notification.created', 'Question ignored.');
-    $component->assertDispatched('question.destroy', questionId: $this->question->id);
+    $component->assertDispatched('notification.created', message: 'Question ignored.');
+    $component->assertDispatched('question.ignore', questionId: $this->question->id);
 });
 
 test('cannot update with blank characters', function () {

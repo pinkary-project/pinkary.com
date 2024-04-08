@@ -87,16 +87,18 @@ final class Create extends Component
             'to_id' => $this->toId,
         ]);
 
-        $this->reset(['content', 'anonymously']);
+        $this->reset(['content']);
+
+        $this->anonymously = $user->prefers_anonymous_questions;
 
         $this->dispatch('question.created');
-        $this->dispatch('notification.created', 'Question sent.');
+        $this->dispatch('notification.created', message: 'Question sent.');
     }
 
     /**
      * Render the component.
      */
-    public function render(Request $request): View
+    public function render(): View
     {
         $user = User::findOrFail($this->toId);
 

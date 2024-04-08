@@ -37,12 +37,15 @@
         <img
             src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
             alt="{{ $user->username }}"
-            class="mx-auto mb-3 size-24 rounded-full"
+            class="mx-auto mb-3 size-24 {{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
         />
 
         <div class="items center flex items-center justify-center">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
-            @if ($user->is_verified)
+
+            @if ($user->is_verified && $user->is_company_verified)
+                <x-icons.verified-company :color="$user->right_color" class="ml-1.5 size-6" />
+            @elseif ($user->is_verified)
                 <x-icons.verified :color="$user->right_color" class="ml-1.5 size-6" />
             @endif
         </div>
@@ -68,7 +71,7 @@
 
                 <span>
                     Joined
-                    {{ $user->created_at->timezone(auth()->user()?->timezone ?: 'UTC')->format('M Y') }}
+                    {{ $user->created_at->timezone(session()->get('timezone', 'UTC'))->format('M Y') }}
                 </span>
             </p>
         </div>
@@ -98,19 +101,28 @@
                                 x-sortable-handle
                                 class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
-                                <x-icons.sortable-handle class="size-6 opacity-100 sm:opacity-0 group-hover:opacity-100" />
+                                <x-icons.sortable-handle class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
                             <x-links.list-item :$user :$link />
 
                             <div class="flex items-center justify-center">
+                                <div
+                                    class="hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
+                                    title="Clicked {{ $link->click_count }} times"
+                                >
+                                    <span>{{ $link->click_count }} {{ str('click')->plural($link->click_count) }}</span>
+                                </div>
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
                                         type="submit"
                                         class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
-                                        <x-icons.trash class="size-5 opacity-100 sm:opacity-0 group-hover:opacity-100" x-bind:class="{ 'invisible': isDragging }" />
+                                        <x-icons.trash
+                                            class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                            x-bind:class="{ 'invisible': isDragging }"
+                                        />
                                     </button>
                                 </form>
                             </div>
@@ -119,9 +131,11 @@
                 </ul>
             @else
                 <div class="space-y-3">
-                    {{-- Just listing links --}}
                     @foreach ($links as $link)
-                        <div class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r">
+                        <div
+                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r"
+                            wire:click="click({{ $link->id }})"
+                        >
                             <x-links.list-item :$user :$link />
                         </div>
                     @endforeach

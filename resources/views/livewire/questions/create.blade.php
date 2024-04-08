@@ -1,17 +1,10 @@
 <div class="mb-12 pt-4" id="questions-create">
     <form wire:submit="store">
-        <div
-            x-data="{
-                content: '',
-                get characterCount() {
-                    return this.content.length
-                },
-            }"
-        >
-            <x-textarea wire:model="content" x-ref="content" x-model="content" placeholder="Ask a question..." maxlength="255" rows="3" required />
+        <div>
+            <x-textarea wire:model="content" placeholder="Ask a question..." maxlength="255" rows="3" required />
 
-            <p x-ref="characterCount" class="text-right text-xs text-slate-400">
-                <span x-text="characterCount"></span>
+            <p class="text-right text-xs text-slate-400">
+                <span x-text="$wire.content.length"></span>
                 / 255
             </p>
 

@@ -44,7 +44,7 @@ final class Edit extends Component
 
         $this->answer = '';
 
-        $this->dispatch('notification.created', 'Question answered.');
+        $this->dispatch('notification.created', message: 'Question answered.');
         $this->dispatch('question.updated');
     }
 
@@ -61,18 +61,18 @@ final class Edit extends Component
             'is_reported' => true,
         ]);
 
-        $this->dispatch('notification.created', 'Question reported.');
+        $this->dispatch('notification.created', message: 'Question reported.');
         $this->dispatch('question.reported');
     }
 
     /**
-     * Destroys / Ignores the question.
+     * Ignores the question.
      */
-    public function destroy(): void
+    public function ignore(): void
     {
-        $this->dispatch('notification.created', 'Question ignored.');
+        $this->dispatch('notification.created', message: 'Question ignored.');
 
-        $this->dispatch('question.destroy', questionId: $this->questionId);
+        $this->dispatch('question.ignore', questionId: $this->questionId);
     }
 
     /**

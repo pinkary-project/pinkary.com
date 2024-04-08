@@ -18,7 +18,7 @@ final class Show extends Component
     #[On('question.created')]
     #[On('question.updated')]
     #[On('question.reported')]
-    #[On('question.destroyed')]
+    #[On('question.ignored')]
     public function refresh(): void
     {
         //

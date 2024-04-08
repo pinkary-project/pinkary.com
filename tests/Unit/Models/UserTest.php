@@ -20,10 +20,10 @@ test('to array', function () {
         'settings',
         'avatar',
         'is_verified',
-        'timezone',
         'mail_preference_time',
         'github_username',
         'prefers_anonymous_questions',
+        'is_company_verified',
     ]);
 });
 
@@ -44,7 +44,8 @@ test('is verified because in list of fixed sponsors', function () {
 
     config()->set('sponsors.github_usernames', ['test']);
 
-    expect($user->is_verified)->toBeTrue();
+    expect($user->is_verified)->toBeTrue()
+        ->and($user->is_company_verified)->toBeFalse();
 });
 
 test('is not verified because not in sponsors', function () {
@@ -55,5 +56,18 @@ test('is not verified because not in sponsors', function () {
 
     config()->set('sponsors.github_usernames', ['test2']);
 
-    expect($user->is_verified)->toBeFalse();
+    expect($user->is_verified)->toBeFalse()
+        ->and($user->is_company_verified)->toBeFalse();
+});
+
+test('is verified because in list of fixed company sponsors', function () {
+    $user = User::factory()->create([
+        'is_verified' => false,
+        'username' => 'test',
+    ]);
+
+    config()->set('sponsors.github_company_usernames', ['test']);
+
+    expect($user->is_verified)->toBeTrue()
+        ->and($user->is_company_verified)->toBeTrue();
 });
