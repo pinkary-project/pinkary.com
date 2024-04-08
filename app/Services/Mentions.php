@@ -16,7 +16,7 @@ final readonly class Mentions
     public function usersMentioned(Question $question): Collection
     {
         return collect($this->mentionsFromQuestion($question))
-            ->each(fn (string $username) => User::whereUsername($username)->first())
+            ->map(fn (string $username) => User::whereUsername($username)->first())
             ->filter(fn (?User $user): bool => $user instanceof User);
     }
 
