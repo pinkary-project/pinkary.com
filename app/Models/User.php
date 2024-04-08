@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
+ * @property bool $is_company_verified
  * @property string|null $github_username
  * @property string $left_color
  * @property array<int, string> $links_sort
@@ -35,7 +36,6 @@ use Illuminate\Support\Facades\Storage;
  * @property string $name
  * @property string $right_color
  * @property array<string, string>|null $settings
- * @property string $timezone
  * @property Carbon $updated_at
  * @property string $username
  * @property int $profile_views
@@ -202,7 +202,23 @@ final class User extends Authenticatable implements MustVerifyEmail
             return true;
         }
 
+        if (collect(config()->array('sponsors.github_company_usernames'))->contains($this->username)) {
+            return true;
+        }
+
         return $isVerified;
+    }
+
+    /**
+     * Get the user's "is_company_verified" attribute.
+     */
+    public function getIsCompanyVerifiedAttribute(bool $isCompanyVerified): bool
+    {
+        if (collect(config()->array('sponsors.github_company_usernames'))->contains($this->username)) {
+            return true;
+        }
+
+        return $isCompanyVerified;
     }
 
     /**
@@ -217,6 +233,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'updated_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'is_verified' => 'boolean',
+            'is_company_verified' => 'boolean',
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',

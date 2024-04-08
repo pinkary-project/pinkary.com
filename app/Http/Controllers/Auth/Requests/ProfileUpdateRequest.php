@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Auth\Requests;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\Username;
-use App\Rules\ValidTimezone;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -33,7 +32,6 @@ final class ProfileUpdateRequest extends FormRequest
             'email' => [
                 'required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id),
             ],
-            'timezone' => ['required', 'string', 'max:255', new ValidTimezone],
             'mail_preference_time' => ['required', 'string', 'max:255', 'in:daily,weekly,never'],
             'bio' => ['nullable', 'string', 'max:255'],
             'prefers_anonymous_questions' => ['required', 'boolean'],

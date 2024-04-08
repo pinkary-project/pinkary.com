@@ -25,7 +25,6 @@ test('new users can register', function () {
         'email' => 'test@example.com',
         'password' => 'm@9v_.*.XCN',
         'password_confirmation' => 'm@9v_.*.XCN',
-        'timezone' => 'UTC',
         'g-recaptcha-response' => 'valid',
     ]);
 
@@ -43,7 +42,6 @@ test('required fields', function (string $field) {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ];
 
     $payload[$field] = '';
@@ -63,7 +61,6 @@ test('email must be valid', function () {
         'email' => 'invalid-email',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -77,7 +74,6 @@ test('password must be confirmed', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'not-password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -95,7 +91,6 @@ test('username must be unique', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -113,7 +108,6 @@ test('email must be unique', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -129,7 +123,6 @@ test('password must be at least 8 characters', function () {
         'email' => 'test@example.com',
         'password' => 'pass',
         'password_confirmation' => 'pass',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -145,7 +138,6 @@ test('username must have 2 letters', function () {
         'email' => 'test@gmail.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -161,7 +153,6 @@ test('username can only have letters, numbers and underscores', function (string
         'email' => 'test@gmail.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -208,7 +199,6 @@ test('username is not reserved', function (string $username) {
         'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -246,7 +236,6 @@ test('unique constraint validation is case insensitive', function (string $exist
         'email' => '2@gmail.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $response->assertRedirect('/register')
@@ -266,7 +255,6 @@ test("user's name can contain blank characters", function (string $given, string
         'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     $user = User::where('email', 'test@laravel.com')->first();
@@ -285,7 +273,6 @@ test('anonymously preference is set to true by default', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'timezone' => 'UTC',
     ]);
 
     expect(User::first()->prefers_anonymous_questions)->toBeTrue();

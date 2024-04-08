@@ -2,31 +2,21 @@
     <form wire:submit="update">
         <div class="mt-4 flex items-center justify-between">
             <div class="w-full">
-                <div
-                    class="mb-1"
-                    x-data="{
-                        content: '',
-                        get characterCount() {
-                            return this.content.length
-                        },
-                    }"
-                >
+                <div class="mb-1">
                     <label for="{{ 'answer_question_'.$question->id }}" class="sr-only">Answer</label>
 
                     <textarea
                         id="{{ 'answer_question_'.$question->id }}"
                         wire:model="answer"
-                        x-ref="content"
-                        x-model="content"
                         x-autosize
-                        class="h-24 w-full border-none border-transparent bg-transparent text-white resize-none focus:border-transparent focus:outline-0 focus:ring-0"
+                        class="h-24 w-full resize-none border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
                         placeholder="Write your answer..."
                         maxlength="1000"
                         rows="3"
                     ></textarea>
 
-                    <p x-ref="characterCount" class="text-right text-xs text-slate-400">
-                        <span x-text="characterCount"></span>
+                    <p class="text-right text-xs text-slate-400">
+                        <span x-text="$wire.answer.length"></span>
                         / 1000
                     </p>
 

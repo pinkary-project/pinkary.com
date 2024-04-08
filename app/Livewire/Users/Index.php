@@ -20,11 +20,6 @@ final class Index extends Component
     public string $query = '';
 
     /**
-     * Indicates if the search input should be focused.
-     */
-    public bool $focusInput = false;
-
-    /**
      * Renders the component.
      */
     public function render(): View
@@ -44,6 +39,7 @@ final class Index extends Component
     private function usersByQuery(): Collection
     {
         return User::query()
+            ->with('links')
             ->whereAny(['name', 'username'], 'like', "%{$this->query}%")
             ->withCount('questionsReceived')
             ->orderBy('questions_received_count', 'desc')->limit(10)->get();

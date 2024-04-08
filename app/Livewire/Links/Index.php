@@ -8,10 +8,12 @@ use App\Jobs\DownloadUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 final class Index extends Component
 {
@@ -20,6 +22,25 @@ final class Index extends Component
      */
     #[Locked]
     public int $userId;
+
+    /**
+     * Increment the clicks counter.
+     */
+    public function click(int $linkId): void
+    {
+        $ipAddress = type(request()->ip())->asString();
+        $cacheKey = IpUtils::anonymize($ipAddress).'-clicked-'.$linkId;
+
+        if (auth()->id() === $this->userId || Cache::has($cacheKey)) {
+            return;
+        }
+
+        Link::query()
+            ->whereKey($linkId)
+            ->increment('click_count');
+
+        Cache::put($cacheKey, true, now()->addDay());
+    }
 
     /**
      * Store the new order of the links.
@@ -58,7 +79,7 @@ final class Index extends Component
 
         $link->delete();
 
-        $this->dispatch('notification.created', 'Link deleted.');
+        $this->dispatch('notification.created', message: 'Link deleted.');
     }
 
     /**
@@ -81,7 +102,10 @@ final class Index extends Component
 
         return view('livewire.links.index', [
             'user' => $user,
-            'questionsReceivedCount' => $user->questionsReceived()->where('answer', '!=', null)->count(),
+            'questionsReceivedCount' => $user->questionsReceived()
+                ->where('is_reported', false)
+                ->where('is_ignored', false)
+                ->where('answer', '!=', null)->count(),
             'links' => $user->links->sortBy(function (Link $link) use ($sort): int {
                 if (($index = array_search($link->id, $sort)) === false) {
                     return 1_000_000 + $link->id;

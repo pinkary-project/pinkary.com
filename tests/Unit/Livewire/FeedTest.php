@@ -50,9 +50,7 @@ test('ignore', function () {
         'to_id' => $user->id,
     ]);
 
-    $component = Livewire::actingAs($user)->test(Feed::class, [
-        'userId' => $user->id,
-    ]);
+    $component = Livewire::actingAs($user)->test(Feed::class);
 
     $component->assertSee($question->content);
 
@@ -72,9 +70,7 @@ test('ignore auth', function () {
         'to_id' => $userB->id,
     ]);
 
-    $component = Livewire::actingAs($userA)->test(Feed::class, [
-        'userId' => $userB->id,
-    ]);
+    $component = Livewire::actingAs($userA)->test(Feed::class);
 
     $component->dispatch('question.ignore', $question->id);
 

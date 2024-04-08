@@ -15,6 +15,7 @@ test('to array', function () {
         'user_id',
         'created_at',
         'updated_at',
+        'click_count',
     ]);
 });
 

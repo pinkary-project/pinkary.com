@@ -59,7 +59,7 @@ final class Create extends Component
         $this->url = '';
 
         $this->dispatch('link.created');
-        $this->dispatch('notification.created', 'Link created.');
+        $this->dispatch('notification.created', message: 'Link created.');
     }
 
     /**
