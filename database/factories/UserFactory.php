@@ -31,11 +31,14 @@ final class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'username' => fake()->unique()->userName(),
+            'bio' => $this->faker->sentence(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'mail_preference_time' => 'daily',
+            'is_verified' => $this->faker->boolean(25),
+            'is_company_verified' => $this->faker->boolean(15),
         ];
     }
 
