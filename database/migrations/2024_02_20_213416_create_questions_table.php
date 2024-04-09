@@ -15,15 +15,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('questions', function (Blueprint $table): void {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignIdFor(User::class, 'from_id')->constrained('users')->cascadeOnDelete();
             $table->foreignIdFor(User::class, 'to_id')->constrained('users')->cascadeOnDelete();
 
             $table->text('content');
-            $table->boolean('anonymously')->default(false);
             $table->text('answer')->nullable();
-
             $table->timestamp('answered_at')->nullable();
+            $table->boolean('anonymously')->default(false);
+            $table->boolean('is_reported')->default(false);
+
             $table->timestamps();
         });
     }
