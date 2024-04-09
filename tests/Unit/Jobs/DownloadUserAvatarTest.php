@@ -16,6 +16,7 @@ test('downloads user avatar', function () {
     $job->handle();
 
     expect($user->avatar)->toBeString();
+    expect($user->avatar_updated_at)->not->toBeNull();
     Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
 });
 
@@ -35,9 +36,10 @@ test('ignores deleting avatar file if no longer exists', function () {
 
 test('deletes old avatar when downloading new one', function () {
     Storage::disk('public')->assertDirectoryEmpty('avatars');
-
+    $lastAvatarUpdated = now()->subDays(2);
     $user = User::factory()->create([
         'avatar' => 'storage/avatars/default.png',
+        'avatar_updated_at' => $lastAvatarUpdated,
     ]);
 
     Storage::disk('public')->put('avatars/default.png', '...');
@@ -49,6 +51,8 @@ test('deletes old avatar when downloading new one', function () {
     $job->handle();
 
     expect($user->avatar)->toBeString();
+    expect($user->avatar_updated_at)->not->toBe($lastAvatarUpdated);
+
     Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
     Storage::disk('public')->assertMissing('avatars/default.png');
 });

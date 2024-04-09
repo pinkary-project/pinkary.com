@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $right_color
  * @property array<string, string>|null $settings
  * @property Carbon $updated_at
+ * @property Carbon $avatar_updated_at
  * @property string $username
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
@@ -236,6 +237,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',
+            'avatar_updated_at' => 'datetime',
         ];
     }
 }

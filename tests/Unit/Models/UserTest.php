@@ -24,6 +24,7 @@ test('to array', function () {
         'github_username',
         'prefers_anonymous_questions',
         'is_company_verified',
+        'avatar_updated_at',
     ]);
 });
 
