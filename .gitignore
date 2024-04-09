@@ -19,3 +19,4 @@ package-lock.json
 /.idea
 /.vscode
 /database/backups/*.sql
+.DS_Store
