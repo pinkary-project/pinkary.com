@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Php70\Rector\FuncCall\RandomFunctionRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 
 return RectorConfig::configure()
@@ -14,6 +15,7 @@ return RectorConfig::configure()
         __DIR__.'/public',
     ])
     ->withSkip([
+        RandomFunctionRector::class,
         AddOverrideAttributeToOverriddenMethodsRector::class,
     ])
     ->withPreparedSets(
