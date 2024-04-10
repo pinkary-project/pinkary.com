@@ -14,10 +14,8 @@ final readonly class MentionProviderParsable implements ParsableContentProvider
     public function parse(string $content): string
     {
         return (string) preg_replace_callback(
-            '/(<a\s+[^>]*>.*?<\/a>)|@([^\s,.?!\/@<]+)/i',
-            fn (array $matches): string => $matches[1] !== ''
-                ? $matches[1]
-                : '<a href="/@'.$matches[2].'" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@'.$matches[2].'</a>',
+            '/@([^\s,.?!\/@<]+)/i',
+            fn (array $matches): string => '<a href="/@'.$matches[1].'" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@'.$matches[1].'</a>',
             $content
         );
     }
