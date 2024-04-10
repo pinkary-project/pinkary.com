@@ -63,6 +63,7 @@ final class Index extends Component
             ->orderByDesc('updated_at')
             ->simplePaginate($this->perPage);
 
+        /* @phpstan-ignore-next-line */
         dispatch(IncrementViews::of($questions->getCollection()));
 
         return view('livewire.questions.index', [

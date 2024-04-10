@@ -52,6 +52,8 @@ final class IncrementViews implements ShouldQueue
 
     /**
      * Static factory method to create a new job instance.
+     *
+     * @phpstan-ignore-next-line
      */
     public static function of(EloquentCollection|Model $models): self
     {
@@ -66,10 +68,11 @@ final class IncrementViews implements ShouldQueue
      */
     public function handle(): void
     {
-        /* @phpstan-ignore-next-line */
-        $modelType = mb_strtolower(class_basename($this->models->first()));
+        if ($this->models->isEmpty()) {
+            return;
+        }
 
-        $key = "viewed.{$modelType}.for.user.{$this->id}";
+        $key = "viewed.{$this->getModelName()}.for.user.{$this->id}";
 
         $lock = Cache::lock($key);
         try {
@@ -105,5 +108,18 @@ final class IncrementViews implements ShouldQueue
                 )
             );
         });
+    }
+
+    /**
+     * Lowercase name of the model.
+     */
+    public function getModelName(): string
+    {
+        if ($this->models->isEmpty()) {
+            return '';
+        }
+
+        /* @phpstan-ignore-next-line */
+        return mb_strtolower(class_basename($this->models->first()));
     }
 }
