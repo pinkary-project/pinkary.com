@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read User $from
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
+ * @property-read Collection<int, User> $mentions
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model
@@ -103,5 +104,20 @@ final class Question extends Model
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get the mentions for the question.
+     *
+     * @return Collection<int, User>
+     */
+    public function mentions(): Collection
+    {
+        preg_match_all("/\@(\w+)/", type($this->content)->asString(), $contentMatches);
+        preg_match_all("/\@(\w+)/", type($this->answer)->asString(), $answerMatches);
+
+        $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
+
+        return User::whereIn('username', $mentions)->get();
     }
 }

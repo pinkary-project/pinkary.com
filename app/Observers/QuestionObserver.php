@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
 use App\Notifications\UserMentioned;
-use App\Services\Mentions;
 
 final readonly class QuestionObserver
 {
@@ -48,7 +47,7 @@ final readonly class QuestionObserver
         }
 
         $question->from->notify(new QuestionAnswered($question));
-        app(Mentions::class)->usersMentioned($question)->each->notify(new UserMentioned($question));
+        $question->mentions()->each->notify(new UserMentioned($question));
     }
 
     /**
