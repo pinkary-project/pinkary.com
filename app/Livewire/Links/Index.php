@@ -50,6 +50,8 @@ final class Index extends Component
         $user = type(auth()->user())->as(User::class);
 
         if (! $this->canResetAvatar($user)) {
+            $this->dispatch('notification.created', message: 'cannot reset avatar.');
+
             return;
         }
 
@@ -137,7 +139,7 @@ final class Index extends Component
     {
         return auth()->id() === $this->userId
         && (
-            is_null($user->avatar_updated_at)
+            $user->avatar_updated_at === null
             || $user->avatar_updated_at->diffInHours(now()) > 24
         );
     }
