@@ -129,6 +129,7 @@ final readonly class GitHub
                     $item = preg_replace('/ in https:\/\/.*/', '', trim(mb_substr($line, 2)));
                     $item = preg_replace_callback('/@(\w+)/',
                         fn ($matches) => '<a href="https://github.com/'.$matches[1].'">@'.$matches[1].'</a>',
+                        /* @phpstan-ignore-next-line */
                         $item);
                     $sections[$lastKey]['changes'][] = $item;
                 }
