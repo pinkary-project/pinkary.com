@@ -11,7 +11,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
