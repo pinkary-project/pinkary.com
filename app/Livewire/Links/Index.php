@@ -49,7 +49,11 @@ final class Index extends Component
     {
         $user = type(auth()->user())->as(User::class);
 
-        dispatch(new DownloadUserAvatar($user));
+        if (! $this->canResetAvatar($user)) {
+            return;
+        }
+
+        dispatch_sync(new DownloadUserAvatar($user));
 
         $this->dispatch('notification.created', message: 'Avatar reset.');
     }
@@ -114,6 +118,7 @@ final class Index extends Component
 
         return view('livewire.links.index', [
             'user' => $user,
+            'canResetAvatar' => $this->canResetAvatar($user),
             'questionsReceivedCount' => $user->questionsReceived()
                 ->where('is_reported', false)
                 ->where('is_ignored', false)
@@ -126,5 +131,14 @@ final class Index extends Component
                 return $index;
             })->values(),
         ]);
+    }
+
+    private function canResetAvatar(User $user): bool
+    {
+        return auth()->id() === $this->userId
+        && (
+            is_null($user->avatar_updated_at)
+            || $user->avatar_updated_at->diffInHours(now()) > 24
+        );
     }
 }
