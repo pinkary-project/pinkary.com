@@ -7,8 +7,6 @@ use App\Models\Link;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Facades\Cache;
-use Livewire\Features\SupportTesting\Testable;
-use Illuminate\Support\Number;
 use Livewire\Livewire;
 
 test('renders a list of links', function () {
@@ -174,7 +172,6 @@ test('reset avatar', function () {
         'avatar_updated_at' => now()->subDay(),
     ]);
 
-    /** @var Testable $component */
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
     ]);
