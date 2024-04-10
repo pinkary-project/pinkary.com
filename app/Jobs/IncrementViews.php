@@ -94,9 +94,8 @@ final class IncrementViews implements ShouldQueue
                 now()->addMinutes(120)
             );
 
-        } catch (LockTimeoutException $e) {
+        } catch (LockTimeoutException) {
             $this->release(10);
-            logger()->error('LockTimeoutException: '.$e->getMessage());
         } finally {
             $lock->release();
         }
