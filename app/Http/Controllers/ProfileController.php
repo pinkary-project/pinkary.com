@@ -29,10 +29,7 @@ final readonly class ProfileController
      */
     public function show(User $user): View
     {
-        dispatch(IncrementViews::of(
-            models: $user,
-            id: auth()->id() ?? request()->session()->getId(),
-        ));
+        dispatch(IncrementViews::of($user));
 
         return view('profile.show', [
             'user' => $user,

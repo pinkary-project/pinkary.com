@@ -63,10 +63,7 @@ final class Index extends Component
             ->orderByDesc('updated_at')
             ->simplePaginate($this->perPage);
 
-        dispatch(IncrementViews::of(
-            models: $questions->getCollection(),
-            id: $request->user()?->id ?? $request->session()->getId(),
-        ));
+        dispatch(IncrementViews::of($questions->getCollection()));
 
         return view('livewire.questions.index', [
             'user' => $user,

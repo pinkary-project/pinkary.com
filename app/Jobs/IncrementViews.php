@@ -43,9 +43,9 @@ final class IncrementViews implements ShouldQueue
      *
      * @phpstan-ignore-next-line
      */
-    public function __construct(EloquentCollection|Model $models, int|string $id)
+    public function __construct(EloquentCollection $models, int|string $id)
     {
-        $this->models = $models instanceof Model ? $models->newCollection([$models]) : $models;
+        $this->models = $models;
         $this->id = $id;
         $this->modelsToIncrement = collect();
     }
@@ -53,8 +53,11 @@ final class IncrementViews implements ShouldQueue
     /**
      * Static factory method to create a new job instance.
      */
-    public static function of(EloquentCollection|Model $models, int|string $id): self
+    public static function of(EloquentCollection|Model $models): self
     {
+        $id = auth()->id() ?? request()->session()->getId();
+        $models = $models instanceof Model ? new EloquentCollection([$models]) : $models;
+
         return new self($models, $id);
     }
 

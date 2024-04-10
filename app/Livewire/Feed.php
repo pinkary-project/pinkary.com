@@ -55,10 +55,7 @@ final class Feed extends Component
             ->orderByDesc('updated_at')
             ->simplePaginate($this->perPage);
 
-        dispatch(IncrementViews::of(
-            models: $questions->getCollection(),
-            id: auth()->user()->id ?? request()->session()->getId(),
-        ));
+        dispatch(IncrementViews::of($questions->getCollection()));
 
         return view('livewire.feed', compact('questions'));
     }
