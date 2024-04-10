@@ -71,23 +71,3 @@ it('caches using session id when no user', function () {
     expect(Cache::get("viewed.{$modelName}.for.user.{$sessionId}"))
         ->toBe($models->pluck('id')->toArray());
 });
-
-it('increments the given column', function () {
-    Schema::table('questions', function ($table) {
-        $table->integer('test_column')->default(0);
-    });
-
-    $model = Question::factory()->create();
-    /* @phpstan-ignore-next-line */
-    $model->test_column = 0;
-
-    $models = $model->newCollection([$model]);
-    $user = User::factory()->create();
-
-    $job = new IncrementViews($models, $user->id, 'test_column');
-
-    $job->handle();
-
-    /* @phpstan-ignore-next-line */
-    $models->each(fn ($model) => expect($model->test_column)->toBe(1));
-});

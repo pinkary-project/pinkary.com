@@ -32,7 +32,6 @@ final readonly class ProfileController
         dispatch(new IncrementViews(
             models: $user,
             id: auth()->id() ?? request()->session()->getId(),
-            column: 'profile_views',
         ));
 
         return view('profile.show', [

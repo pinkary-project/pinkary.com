@@ -39,20 +39,14 @@ final class IncrementViews implements ShouldQueue
     protected Collection $modelsToIncrement;
 
     /**
-     * The column to increment.
-     */
-    protected string $column;
-
-    /**
      * Create a new job instance.
      *
      * @phpstan-ignore-next-line
      */
-    public function __construct(EloquentCollection|Model $models, int|string $id, string $column = 'views')
+    public function __construct(EloquentCollection|Model $models, int|string $id)
     {
         $this->models = $models instanceof Model ? $models->newCollection([$models]) : $models;
         $this->id = $id;
-        $this->column = $column;
         $this->modelsToIncrement = collect();
     }
 
@@ -95,7 +89,9 @@ final class IncrementViews implements ShouldQueue
         }
 
         DB::transaction(function () {
-            $this->modelsToIncrement->each(fn (Model $model) => $model->withoutEvents(fn () => $model->increment($this->column))
+            $this->modelsToIncrement->each(fn (Model $model) => $model
+                ->withoutEvents(fn () => $model->increment('views')
+                )
             );
         });
     }
