@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Livewire\Changelog\Releases;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
