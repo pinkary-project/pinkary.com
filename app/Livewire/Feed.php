@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Jobs\CheckIfViewedAndIncrement;
+use App\Jobs\IncrementViews;
 use App\Models\Question;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\View\View;
@@ -52,7 +52,7 @@ final class Feed extends Component
     {
         $questions = $this->getQuestions();
 
-        dispatch(new CheckIfViewedAndIncrement(
+        dispatch(new IncrementViews(
             /* @phpstan-ignore-next-line */
             models: $questions->getCollection(),
             id: auth()->user()->id ?? request()->session()->getId(),

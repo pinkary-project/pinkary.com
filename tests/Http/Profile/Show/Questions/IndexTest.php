@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\CheckIfViewedAndIncrement;
+use App\Jobs\IncrementViews;
 use App\Livewire\Feed;
 use App\Models\Question;
 use App\Models\User;
@@ -24,5 +24,5 @@ it('dispatches job to check & increment question views on profile', function () 
         'to_id' => $user->id,
         'views' => 0,
     ]);
-    Queue::assertPushed(CheckIfViewedAndIncrement::class);
+    Queue::assertPushed(IncrementViews::class);
 });

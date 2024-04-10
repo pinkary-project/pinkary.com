@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Jobs\CheckIfViewedAndIncrement;
+use App\Jobs\IncrementViews;
 use App\Models\User;
 use Illuminate\Queue\Jobs\Job;
 
@@ -38,5 +38,5 @@ it('dispatches job to check if viewed and increment', function () {
     $response = $this->get(route('profile.show', ['username' => $this->user->username]));
 
     $response->assertSee($this->user->name);
-    Queue::assertPushed(CheckIfViewedAndIncrement::class);
+    Queue::assertPushed(IncrementViews::class);
 });

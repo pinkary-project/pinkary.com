@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
-use App\Jobs\CheckIfViewedAndIncrement;
+use App\Jobs\IncrementViews;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -63,7 +63,7 @@ final class Index extends Component
             ->orderByDesc('updated_at')
             ->simplePaginate($this->perPage);
 
-        dispatch(new CheckIfViewedAndIncrement(
+        dispatch(new IncrementViews(
             /* @phpstan-ignore-next-line */
             models: $questions->getCollection(),
             id: $request->user()?->id ?? $request->session()->getId(),

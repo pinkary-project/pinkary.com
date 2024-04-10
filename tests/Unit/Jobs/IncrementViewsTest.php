@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Jobs\CheckIfViewedAndIncrement;
+use App\Jobs\IncrementViews;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Contracts\Cache\LockTimeoutException;
@@ -11,7 +11,7 @@ it('increments models when not viewed before', function () {
     $models = Question::factory()->count(3)->create();
     $user = User::factory()->create();
 
-    $job = new CheckIfViewedAndIncrement($models, $user->id);
+    $job = new IncrementViews($models, $user->id);
 
     $job->handle();
 
@@ -25,7 +25,7 @@ it('caches viewed items', function () {
     /* @phpstan-ignore-next-line */
     $modelName = mb_strtolower(class_basename($models->first()));
 
-    $job = new CheckIfViewedAndIncrement($models, $user->id);
+    $job = new IncrementViews($models, $user->id);
 
     $job->handle();
 
@@ -39,7 +39,7 @@ it('does not increment models when already viewed', function () {
     /* @phpstan-ignore-next-line */
     $modelName = mb_strtolower(class_basename($models->first()));
     Cache::put("viewed.{$modelName}.for.user.{$user->id}", $models->pluck('id')->toArray(), now()->addMinutes(10));
-    $job = new CheckIfViewedAndIncrement($models, $user->id);
+    $job = new IncrementViews($models, $user->id);
 
     $job->handle();
 
@@ -52,7 +52,7 @@ it('releases lock when exception occurs', function () {
     /* @phpstan-ignore-next-line */
     $modelName = mb_strtolower(class_basename($models->first()));
 
-    $job = new CheckIfViewedAndIncrement($models, 1);
+    $job = new IncrementViews($models, 1);
     $job->handle();
 
     expect(Cache::lock("viewed.{$modelName}.for.user.1")->get())->toBeTrue();
@@ -62,7 +62,7 @@ it('caches using session id when no user', function () {
     $models = Question::factory()->count(3)->create();
     Session::shouldReceive('getId')->andReturn('session-id');
     $sessionId = Session::getId();
-    $job = new CheckIfViewedAndIncrement($models, $sessionId);
+    $job = new IncrementViews($models, $sessionId);
     $job->handle();
 
     $modelName = mb_strtolower(class_basename($models->first()));
@@ -84,7 +84,7 @@ it('increments the given column', function () {
     $models = $model->newCollection([$model]);
     $user = User::factory()->create();
 
-    $job = new CheckIfViewedAndIncrement($models, $user->id, 'test_column');
+    $job = new IncrementViews($models, $user->id, 'test_column');
 
     $job->handle();
 

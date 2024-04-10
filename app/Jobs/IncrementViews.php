@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-final class CheckIfViewedAndIncrement implements ShouldQueue
+final class IncrementViews implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, SerializesModels;
 

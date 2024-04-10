@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Auth\Requests\ProfileUpdateRequest;
-use App\Jobs\CheckIfViewedAndIncrement;
+use App\Jobs\IncrementViews;
 use App\Jobs\DownloadUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -29,7 +29,7 @@ final readonly class ProfileController
      */
     public function show(User $user): View
     {
-        dispatch(new CheckIfViewedAndIncrement(
+        dispatch(new IncrementViews(
             models: $user,
             id: auth()->id() ?? request()->session()->getId(),
             column: 'profile_views',
