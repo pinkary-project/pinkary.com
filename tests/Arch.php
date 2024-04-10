@@ -117,3 +117,20 @@ arch('Expect all view component classes to extend Component')
     ->toExtend('Illuminate\View\Component')
     ->toHaveMethod('render')
     ->toBeFinal();
+
+// Suggestions to improve arc-rules add more expectations to cover types and unless extends
+
+// arch('Expect all classes to be readonly unless they extend something')
+//     ->expect('App')
+//     ->classes()
+//     ->toBeReadonly()
+//     ->unlessExtendsSomething();
+
+// arch('All classes should always declare return types')
+//     ->expect('App')
+//     ->toReturnType();
+
+// arch('Controller methods edit show and index should return a view type')
+//     ->expect('App\Http\Controllers')
+//     ->toHaveMethod(['edit', 'show', 'index'])
+//     ->toReturnType('Illuminate\View\View');
