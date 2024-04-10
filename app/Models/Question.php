@@ -113,8 +113,8 @@ final class Question extends Model
      */
     public function mentions(): Collection
     {
-        preg_match_all("/\@(\w+)/", type($this->content)->asString(), $contentMatches);
-        preg_match_all("/\@(\w+)/", type($this->answer)->asString(), $answerMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer)->asString(), $answerMatches);
 
         $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
 
