@@ -13,7 +13,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 final class IncrementViews implements ShouldQueue
 {
@@ -102,12 +101,13 @@ final class IncrementViews implements ShouldQueue
             $lock->release();
         }
 
-        DB::transaction(function () {
-            $this->modelsToIncrement->each(fn (Model $model) => $model
-                ->withoutEvents(fn () => $model->increment('views')
-                )
-            );
-        });
+        if ($this->modelsToIncrement->isNotEmpty()) {
+            /* @phpstan-ignore-next-line */
+            get_class($this->modelsToIncrement->first())::whereIn(
+                'id', $this->modelsToIncrement->pluck('id')->toArray()
+            )->increment('views');
+        }
+
     }
 
     /**
