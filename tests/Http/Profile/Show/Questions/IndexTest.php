@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Jobs\IncrementViews;
 use App\Livewire\Feed;
 use App\Models\Question;

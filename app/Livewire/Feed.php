@@ -6,7 +6,6 @@ namespace App\Livewire;
 
 use App\Jobs\IncrementViews;
 use App\Models\Question;
-use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -63,5 +62,4 @@ final class Feed extends Component
 
         return view('livewire.feed', compact('questions'));
     }
-
 }

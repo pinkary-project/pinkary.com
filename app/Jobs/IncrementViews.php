@@ -57,6 +57,7 @@ final class IncrementViews implements ShouldQueue
     {
         return new self($models, $id);
     }
+
     /**
      * Execute the job.
      */
