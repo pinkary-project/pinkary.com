@@ -51,6 +51,13 @@ final class IncrementViews implements ShouldQueue
     }
 
     /**
+     * Static factory method to create a new job instance.
+     */
+    public static function of(EloquentCollection|Model $models, int|string $id): self
+    {
+        return new self($models, $id);
+    }
+    /**
      * Execute the job.
      */
     public function handle(): void

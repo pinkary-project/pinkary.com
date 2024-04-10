@@ -50,10 +50,13 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $questions = $this->getQuestions();
+        $questions = Question::where('answer', '!=', null)
+            ->where('is_ignored', false)
+            ->where('is_reported', false)
+            ->orderByDesc('updated_at')
+            ->simplePaginate($this->perPage);
 
-        dispatch(new IncrementViews(
-            /* @phpstan-ignore-next-line */
+        dispatch(IncrementViews::of(
             models: $questions->getCollection(),
             id: auth()->user()->id ?? request()->session()->getId(),
         ));
@@ -61,16 +64,4 @@ final class Feed extends Component
         return view('livewire.feed', compact('questions'));
     }
 
-    /**
-     * Get the questions.
-     * @return Paginator<Question>
-     */
-    private function getQuestions(): Paginator
-    {
-        return Question::where('answer', '!=', null)
-            ->where('is_ignored', false)
-            ->where('is_reported', false)
-            ->orderByDesc('updated_at')
-            ->simplePaginate($this->perPage);
-    }
 }

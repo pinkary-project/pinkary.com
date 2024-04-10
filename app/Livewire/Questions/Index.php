@@ -63,8 +63,7 @@ final class Index extends Component
             ->orderByDesc('updated_at')
             ->simplePaginate($this->perPage);
 
-        dispatch(new IncrementViews(
-            /* @phpstan-ignore-next-line */
+        dispatch(IncrementViews::of(
             models: $questions->getCollection(),
             id: $request->user()?->id ?? $request->session()->getId(),
         ));
