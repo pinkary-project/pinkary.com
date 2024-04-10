@@ -34,7 +34,10 @@ final class DownloadUserAvatar implements ShouldQueue
 
         $this->deleteExistingAvatar();
 
-        $this->user->update(['avatar' => 'storage/'.$avatar]);
+        $this->user->update([
+            'avatar' => 'storage/'.$avatar,
+            'avatar_updated_at' => now(),
+        ]);
     }
 
     /**
