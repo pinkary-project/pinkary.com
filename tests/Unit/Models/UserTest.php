@@ -26,6 +26,7 @@ test('to array', function () {
         'prefers_anonymous_questions',
         'is_company_verified',
         'views',
+        'avatar_updated_at',
     ]);
 });
 
