@@ -141,9 +141,17 @@
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($question->likes()->where('user_id', auth()->id())->exists())
-                            <x-icons.heart-solid class="h-4 w-4" />
+                            @if($trending)
+                                <x-icons.fire-solid color="currentColor" class="h-4 w-4" />
+                            @else
+                                <x-icons.heart-solid class="h-4 w-4" />
+                            @endif
                         @else
-                            <x-icons.heart class="h-4 w-4" />
+                            @if($trending)
+                                <x-icons.fire color="currentColor" class="h-4 w-4" />
+                            @else
+                                <x-icons.heart class="h-4 w-4" />
+                            @endif
                         @endif
 
                         <p class="ml-1">

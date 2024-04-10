@@ -14,7 +14,7 @@
                     <span class="sr-only sm:not-sr-only">Feed</span>
                 </x-primary-colorless-button>
             </a>
-            <a href="{{ route('explore') }}" wire:navigate>
+            <a href="{{ route('explore.users') }}" wire:navigate>
                 <x-primary-colorless-button class="flex items-center justify-center gap-2">
                     <x-icons.magnifying-glass class="h-4 w-4" />
                     <span class="sr-only sm:not-sr-only">Explore</span>
