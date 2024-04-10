@@ -10,7 +10,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use SimpleSoftwareIO\QrCode\Generator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-final class QrCodeController
+final readonly class QrCodeController
 {
     /**
      * Generate a QR code for the user.
