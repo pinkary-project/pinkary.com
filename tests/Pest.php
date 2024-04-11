@@ -20,7 +20,7 @@ use Tests\TestCase;
 uses(TestCase::class, RefreshDatabase::class)
     ->beforeEach(function () {
         Storage::fake('public');
-    })->in('Unit', 'Http', 'Console');
+    })->in(__DIR__);
 
 /*
 |--------------------------------------------------------------------------

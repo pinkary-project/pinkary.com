@@ -15,11 +15,11 @@
                     class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
-                    <figure class="h-10 w-10 flex-shrink-0 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
                             alt="{{ $question->from->username }}"
-                            class="h-10 w-10 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
+                            class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />
                     </figure>
 
@@ -59,11 +59,11 @@
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
                 <a href="{{ route('profile.show', ['username' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
-                    <figure class="h-10 w-10 flex-shrink-0 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
-                            class="h-10 w-10 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
+                            class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />
                     </figure>
                     <div class="overflow-hidden text-sm">
@@ -164,7 +164,7 @@
                         x-cloak
                         x-data="shareProfile"
                         x-show="isVisible"
-                        @click="share({
+                        x-on:click="share({
                                         url: '{{
                                             route('questions.show', [
                                                 'username' => $question->to->username,
@@ -180,7 +180,7 @@
                         x-cloak
                         x-data="copyUrl"
                         x-show="isVisible"
-                        @click="copyToClipboard('{{
+                        x-on:click="copyToClipboard('{{
                             route('questions.show', [
                                 'username' => $question->to->username,
                                 'question' => $question,

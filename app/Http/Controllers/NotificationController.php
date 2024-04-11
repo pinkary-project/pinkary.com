@@ -9,7 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\View\View;
 
-final class NotificationController
+final readonly class NotificationController
 {
     /**
      * Display all notifications.

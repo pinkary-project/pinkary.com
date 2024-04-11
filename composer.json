@@ -4,7 +4,7 @@
     "require": {
         "php": "^8.3",
         "another-library/type-guard": "dev-main",
-        "laravel/framework": "^11.3.0",
+        "laravel/framework": "^11.3.1",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
         "laravel/socialite": "^5.12.1",
