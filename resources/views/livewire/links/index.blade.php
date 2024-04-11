@@ -37,7 +37,7 @@
         <img
             src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
             alt="{{ $user->username }}"
-            class="mx-auto mb-3 size-24 {{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
+            class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
         />
 
         <div class="items center flex items-center justify-center">
