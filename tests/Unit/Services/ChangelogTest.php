@@ -14,7 +14,7 @@ it('gets releases', function () {
     foreach ($releases as $version => $release) {
         expect($version)->toBeString()
             ->and($release)->toBeArray()
-            ->and($release)->toHaveKey('published_at')
+            ->and($release)->toHaveKey('publishedAt')
             ->and($release)->toHaveKey('changes')
             ->and($release['changes'])->toBeArray();
     }

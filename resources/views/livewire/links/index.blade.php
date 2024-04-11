@@ -15,7 +15,11 @@
                 x-cloak
                 x-data="copyUrl"
                 x-show="isVisible"
-                x-on:click="copyToClipboard('{{ route('profile.show', ['username' => $user->username]) }}')"
+                x-on:click="
+                    copyToClipboard(
+                        '{{ route('profile.show', ['username' => $user->username]) }}',
+                    )
+                "
                 type="button"
                 class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
