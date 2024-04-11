@@ -73,7 +73,7 @@
                 {{ __('Save') }}
             </x-primary-colorless-button>
             <button
-                @click="showSettingsForm = false"
+                x-on:click="showSettingsForm = false"
                 type="button"
                 class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >

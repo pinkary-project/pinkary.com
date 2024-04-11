@@ -5,7 +5,7 @@
                 x-cloak
                 x-data="shareProfile"
                 x-show="isVisible"
-                @click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
+                x-on:click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
                 type="button"
                 class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
@@ -15,7 +15,7 @@
                 x-cloak
                 x-data="copyUrl"
                 x-show="isVisible"
-                @click="copyToClipboard('{{ route('profile.show', ['username' => $user->username]) }}')"
+                x-on:click="copyToClipboard('{{ route('profile.show', ['username' => $user->username]) }}')"
                 type="button"
                 class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
@@ -155,14 +155,14 @@
             <div>
                 <div class="flex gap-2">
                     <button
-                        @click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
+                        x-on:click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
                         class="bg-{{ $user->left_color }} {{ $user->link_shape }} hover:darken-gradient flex w-full basis-4/5 items-center justify-center px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
                     >
                         <x-icons.plus class="mr-1.5 size-5" />
                         Add New Link
                     </button>
                     <button
-                        @click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
+                        x-on:click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
                         class="{{ $user->gradient }} hover:darken-gradient {{ $user->link_shape }} flex w-full basis-1/5 items-center justify-center bg-gradient-to-r px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
                     >
                         <x-icons.cog class="size-6" />
