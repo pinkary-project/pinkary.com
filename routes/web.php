@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
@@ -66,3 +67,11 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::fallback(function (string $username) {
+    if (! User::query()->where('username', $username)->exists()) {
+        abort(404);
+    }
+
+    return redirect()->route('profile.show', ['username' => $username]);
+});
