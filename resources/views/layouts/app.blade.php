@@ -30,10 +30,10 @@
         @livewireScriptConfig
 
         <script>
-            window.onload = function() {
-                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            window.onload = function () {
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
                 if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
-                    axios.post('{{ route('profile.timezone.update') }}', { timezone });
+                    axios.post('{{ route('profile.timezone.update') }}', { timezone })
                 }
             }
         </script>
