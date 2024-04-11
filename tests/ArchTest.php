@@ -114,3 +114,36 @@ arch('avoid inheritance')
         'App\Providers',
         'App\View',
     ]);
+
+arch('ensure factories', function () {
+    foreach (getModels() as $model) {
+        expect($model::factory())
+            ->toBeInstanceOf(Illuminate\Database\Eloquent\Factories\Factory::class);
+    }
+});
+
+arch('ensure datetime casts', function () {
+    foreach (getModels() as $model) {
+        $instance = $model::factory()->create();
+
+        $dates = collect($instance->getAttributes())
+            ->filter(fn ($_, $key) => str_ends_with($key, '_at'));
+
+        foreach ($dates as $key => $value) {
+            expect($instance->getCasts())->toHaveKey($key, 'datetime');
+        }
+    }
+});
+
+/**
+ * Get all models in the app/Models directory.
+ *
+ * @return array<int, class-string<\Illuminate\Database\Eloquent\Model>>
+ */
+function getModels(): array
+{
+    return collect(glob(__DIR__.'/../app/Models/*.php'))
+        ->map(function ($file) {
+            return 'App\Models\\'.basename($file, '.php');
+        })->toArray();
+}
