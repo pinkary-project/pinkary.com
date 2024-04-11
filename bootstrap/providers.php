@@ -6,4 +6,5 @@ return [
     App\Providers\AppServiceProvider::class,
     App\Providers\GitHubServiceProvider::class,
     App\Providers\PulseServiceProvider::class,
+    App\Providers\ChangelogServiceProvider::class,
 ];
