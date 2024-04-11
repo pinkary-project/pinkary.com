@@ -17,8 +17,7 @@ final class Releases extends Component
     public function render(): View
     {
         return view('components.changelog.releases', [
-            'releases' => Cache::remember('changelog.releases', 120, fn () =>
-                app(ChangelogService::class)->getReleases()
+            'releases' => Cache::remember('changelog.releases', 120, fn () => app(ChangelogService::class)->getReleases()
             ),
         ]);
     }

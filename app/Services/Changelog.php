@@ -30,9 +30,10 @@ final class Changelog
                 $published_at = trim(str_replace('>', '', array_shift($lines)));
                 array_shift($lines);
                 $changes = collect($lines)
-                    ->filter(fn ($line) => !str_starts_with($line, '##'))
+                    ->filter(fn ($line) => ! str_starts_with($line, '##'))
                     ->map(fn ($line) => trim(str_replace('- ', '', $line)))
                     ->all();
+
                 return [$version => compact('published_at', 'changes')];
             })->all();
     }
