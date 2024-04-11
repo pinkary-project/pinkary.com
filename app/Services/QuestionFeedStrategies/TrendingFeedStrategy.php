@@ -16,7 +16,8 @@ final readonly class TrendingFeedStrategy implements QuestionFeedStrategyProvide
             ->withCount('likes')
             ->orderBy('likes_count', 'desc')
             ->limit(10)
-            ->where('likes_count', '>', 0)
+            ->whereHas('likes')
+            ->where('is_reported', false)
             ->where('created_at', '>=', now()->subHours(12));
     }
 }

@@ -32,12 +32,6 @@ final class Show extends Component
     public bool $pinnable = false;
 
     /**
-     * Whether the question is being rendered from the trending section."
-     */
-    #[Locked]
-    public bool $trending = false;
-
-    /**
      * Refresh the component.
      */
     #[On('question.updated')]

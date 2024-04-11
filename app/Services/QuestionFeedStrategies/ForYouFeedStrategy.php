@@ -27,7 +27,7 @@ final readonly class ForYouFeedStrategy implements QuestionFeedStrategyProvider
                     ->whereHas('questionsSent.likes', function (Builder $qLike): void {
                         $qLike->where('user_id', $this->user->id);
                     })
-                    ->orWhereHas('questionsReceived', function (Builder $qLike): void {
+                    ->orWhereHas('questionsReceived.likes', function (Builder $qLike): void {
                         $qLike->where('user_id', $this->user->id);
                     });
             })
