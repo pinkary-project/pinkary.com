@@ -19,7 +19,7 @@
                 {{ __('Create') }}
             </x-primary-colorless-button>
             <button
-                @click="showLinksForm = false"
+                x-on:click="showLinksForm = false"
                 type="button"
                 class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >

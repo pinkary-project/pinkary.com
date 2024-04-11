@@ -164,7 +164,7 @@
                         x-cloak
                         x-data="shareProfile"
                         x-show="isVisible"
-                        @click="share({
+                        x-on:click="share({
                                         url: '{{
                                             route('questions.show', [
                                                 'username' => $question->to->username,
@@ -180,7 +180,7 @@
                         x-cloak
                         x-data="copyUrl"
                         x-show="isVisible"
-                        @click="copyToClipboard('{{
+                        x-on:click="copyToClipboard('{{
                             route('questions.show', [
                                 'username' => $question->to->username,
                                 'question' => $question,
