@@ -43,47 +43,6 @@ final readonly class GitHub
     }
 
     /**
-     * Get the content from the GitHub API.
-     *
-     * @return array<int, array{monthlyPriceInDollars: int}>
-     *
-     * @throw GitHubException
-     */
-    private function getSponsorships(string $username): array
-    {
-        $response = Http::withHeaders([
-            'Accept' => 'application/vnd.github.v3+json',
-            'Authorization' => 'token '.$this->personalAccessToken,
-        ])->post('https://api.github.com/graphql', [
-            'query' => <<<GRAPHQL
-                query {
-                  user(login:"$username") {
-                    sponsorshipForViewerAsSponsorable(activeOnly:true) {
-                        tier {
-                        name
-                        monthlyPriceInDollars
-                      }
-                    }
-                  }
-                }
-            GRAPHQL,
-        ]);
-
-        if ($response->failed()) {
-            throw new GitHubException(sprintf(
-                'Failed to check if the user "%s" is sponsoring us. GitHub responded with status code %d and body: %s',
-                $username,
-                $response->status(),
-                $response->body()
-            ));
-        }
-
-        $body = $response->json('data.user.sponsorshipForViewerAsSponsorable');
-
-        return is_array($body) ? $body : [];
-    }
-
-    /**
      * Get the releases for the site.
      *
      * @throw GitHubException
@@ -130,6 +89,47 @@ final readonly class GitHub
                 'items' => $this->formatDescription($release['description']),
             ]
             )->all();
+    }
+
+    /**
+     * Get the content from the GitHub API.
+     *
+     * @return array<int, array{monthlyPriceInDollars: int}>
+     *
+     * @throw GitHubException
+     */
+    private function getSponsorships(string $username): array
+    {
+        $response = Http::withHeaders([
+            'Accept' => 'application/vnd.github.v3+json',
+            'Authorization' => 'token '.$this->personalAccessToken,
+        ])->post('https://api.github.com/graphql', [
+            'query' => <<<GRAPHQL
+                query {
+                  user(login:"$username") {
+                    sponsorshipForViewerAsSponsorable(activeOnly:true) {
+                        tier {
+                        name
+                        monthlyPriceInDollars
+                      }
+                    }
+                  }
+                }
+            GRAPHQL,
+        ]);
+
+        if ($response->failed()) {
+            throw new GitHubException(sprintf(
+                'Failed to check if the user "%s" is sponsoring us. GitHub responded with status code %d and body: %s',
+                $username,
+                $response->status(),
+                $response->body()
+            ));
+        }
+
+        $body = $response->json('data.user.sponsorshipForViewerAsSponsorable');
+
+        return is_array($body) ? $body : [];
     }
 
     /**
