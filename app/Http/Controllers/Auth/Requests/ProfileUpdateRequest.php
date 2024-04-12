@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth\Requests;
 
+use App\Enums\UserMailPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\Username;
@@ -32,7 +33,7 @@ final class ProfileUpdateRequest extends FormRequest
             'email' => [
                 'required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id),
             ],
-            'mail_preference_time' => ['required', 'string', 'max:255', 'in:daily,weekly,never'],
+            'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
             'bio' => ['nullable', 'string', 'max:255'],
             'prefers_anonymous_questions' => ['required', 'boolean'],
         ];
