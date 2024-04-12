@@ -8,8 +8,8 @@ use App\Enums\UserMailPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\Username;
-use Illuminate\Contracts\Validation\Rule as ContractsValidationRule;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Stringable;
@@ -19,7 +19,7 @@ final class ProfileUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, array<int, ContractsValidationRule|ValidationRule|Stringable|string>>
+     * @return array<string, array<int, ValidatorAwareRule|ValidationRule|Stringable|string>>
      */
     public function rules(): array
     {
