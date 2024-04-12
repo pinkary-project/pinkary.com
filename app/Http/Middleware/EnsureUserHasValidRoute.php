@@ -19,7 +19,7 @@ final readonly class EnsureUserHasValidRoute
     public function handle(Request $request, Closure $next): Response
     {
         $path = type($request->path())->asString();
-        $validator = Validator::make(compact('path'),
+        $validator = Validator::make(['path' => $path],
             [
                 'path' => 'exists:users,username',
             ]
