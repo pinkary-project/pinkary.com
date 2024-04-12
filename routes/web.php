@@ -15,7 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('/feed', 'feed')->name('feed');
-Route::view('explore', 'explore')->name('explore');
+
+Route::view('explore/users', 'explore/users')->name('explore.users');
+Route::view('explore/trending', 'explore/trending')->name('explore.trending');
+Route::view('explore/for-you', 'explore/for-you')->name('explore.for_you');
+
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/support', 'support')->name('support');
