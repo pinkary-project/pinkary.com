@@ -74,17 +74,15 @@ test('order by the number of answered questions', function () {
         'description' => 'twitter',
     ]);
 
-    $nuno->questionsReceived()->create([
+    $nuno->questionsReceived()->createMany([[
         'from_id' => $punyapal->id,
         'content' => 'What is the best PHP framework?',
         'answer' => 'Laravel',
-    ]);
-
-    $nuno->questionsReceived()->create([
+    ], [
         'from_id' => $punyapal->id,
         'content' => 'What is the best PHP testing framework?',
         'answer' => 'Pest',
-    ]);
+    ]]);
 
     $punyapal->questionsReceived()->create([
         'from_id' => $nuno->id,
