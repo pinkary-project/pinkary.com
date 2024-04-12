@@ -10,6 +10,11 @@ enum UserMailPreference: string
     case Weekly = 'weekly';
     case Never = 'never';
 
+    /**
+     * Get the values of the enum.
+     *
+     * @return array<string, string>
+     */
     public static function toArray(): array
     {
         return [
