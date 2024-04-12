@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\UserMailPreference;
 use App\Services\Avatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $left_color
  * @property array<int, string> $links_sort
  * @property string $link_shape
- * @property string $mail_preference_time
+ * @property UserMailPreference $mail_preference_time
  * @property string $name
  * @property string $right_color
  * @property array<string, string>|null $settings
@@ -238,6 +239,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',
             'avatar_updated_at' => 'datetime',
+            'mail_preference_time' => UserMailPreference::class,
         ];
     }
 }

@@ -1,5 +1,6 @@
 @php
     use Illuminate\Contracts\Auth\MustVerifyEmail;
+    use App\Enums\UserMailPreference;
 @endphp
 
 <section>
@@ -90,8 +91,8 @@
                 id="mail_preference_time"
                 name="mail_preference_time"
                 class="mt-1 block w-full"
-                :options="['daily' => 'Daily', 'weekly' => 'Weekly', 'never' => 'Never']"
-                :value="old('mail_preference_time', $user->mail_preference_time)"
+                :options="UserMailPreference::toArray()"
+                :value="old('mail_preference_time', $user->mail_preference_time->value)"
                 required
                 autocomplete="mail_preference_time"
             />
