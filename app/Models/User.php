@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string $right_color
  * @property array<string, string>|null $settings
  * @property Carbon $updated_at
- * @property Carbon $avatar_updated_at
+ * @property ?Carbon $avatar_updated_at
  * @property string $username
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
