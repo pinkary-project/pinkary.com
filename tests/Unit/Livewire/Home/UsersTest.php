@@ -125,7 +125,7 @@ test('default users should have 2 verified users', function () {
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create();
 
-    $component = Livewire::test(Index::class);
+    $component = Livewire::test(Users::class);
 
     $component->assertSee('Nuno Maduro')
         ->assertSee('Punyapal Shah');
@@ -148,7 +148,7 @@ test('default users should be from top 50 famous users', function () {
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create(['name' => 'Adam Lee']);
 
-    $component = Livewire::test(Index::class);
+    $component = Livewire::test(Users::class);
 
     $component->assertDontSee('Adam Lee');
 
