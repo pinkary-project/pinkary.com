@@ -32,7 +32,7 @@ final class Users extends Component
         return view('livewire.home.users', [
             'users' => $this->query !== ''
                 ? $this->usersByQuery()
-                : $this->usersWithMostAnswers(),
+                : $this->usersDefaultUsers(),
         ]);
     }
 
@@ -55,11 +55,48 @@ final class Users extends Component
     }
 
     /**
-     * Returns the users with the most questions received.
+     * Returns the default users, ordered by the number of questions received.
      *
      * @return Collection<int, User>
      */
-    private function usersWithMostAnswers(): Collection
+    private function usersDefaultUsers(): Collection
+    {
+        $verifiedUsers = $this->verifiedUsers();
+
+        return $this->famousUsers($verifiedUsers)
+            ->merge($verifiedUsers)
+            ->shuffle();
+    }
+
+    /**
+     * Returns the users with the most questions received.
+     *
+     * @param  Collection<int, User>  $ignoreUsers
+     * @return Collection<int, User>
+     */
+    private function famousUsers(Collection $ignoreUsers): Collection
+    {
+        return User::query()
+            ->whereHas('links', function (Builder $query): void {
+                $query->where('url', 'like', '%twitter.com%')
+                    ->orWhere('url', 'like', '%github.com%');
+            })
+            ->whereNotIn('id', $ignoreUsers->pluck('id'))
+            ->with('links')
+            ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
+                $query->whereNotNull('answer');
+            }])
+            ->orderBy('answered_questions_count', 'desc')
+            ->limit(10 - $ignoreUsers->count())
+            ->get();
+    }
+
+    /**
+     * Resets the users with verified badges.
+     *
+     * @return Collection<int, User>
+     */
+    private function verifiedUsers(int $limit = 2): Collection
     {
         return User::query()
             ->whereHas('links', function (Builder $query): void {
@@ -67,11 +104,9 @@ final class Users extends Component
                     ->orWhere('url', 'like', '%github.com%');
             })
             ->with('links')
-            ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
-                $query->whereNotNull('answer');
-            }])
-            ->orderBy('answered_questions_count', 'desc')
-            ->limit(10)
+            ->whereIn('username', config()->array('sponsors.github_company_usernames') + config()->array('sponsors.github_usernames'))
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
             ->get();
     }
 }
