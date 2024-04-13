@@ -24,6 +24,10 @@ final class Index extends Component
     #[Locked]
     public int $userId;
 
+    public bool $showLinksEditForm = false;
+
+    protected $listeners = ['link.updated' => 'linkUpdated'];
+
     /**
      * Increment the clicks counter.
      */
@@ -130,6 +134,18 @@ final class Index extends Component
         $user->following()->detach($targetId);
 
         $this->dispatch('user.unfollowed');
+    }
+
+    public function editLink(int $linkId): void
+    {
+        $this->showLinksEditForm = true;
+        $this->dispatch('link.edit', linkId: $linkId);
+    }
+
+    public function linkUpdated(int $linkId): void
+    {
+        $this->showLinksEditForm = false;
+        $this->dispatch('notification.created', message: 'Link updated.');
     }
 
     /**
