@@ -46,8 +46,12 @@ final class Index extends Component
         return User::query()
             ->with('links')
             ->whereAny(['name', 'username'], 'like', "%{$this->query}%")
-            ->withCount('questionsReceived')
-            ->orderBy('questions_received_count', 'desc')->limit(10)->get();
+            ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
+                $query->whereNotNull('answer');
+            }])
+            ->orderBy('answered_questions_count', 'desc')
+            ->limit(10)
+            ->get();
     }
 
     /**
@@ -63,8 +67,11 @@ final class Index extends Component
                     ->orWhere('url', 'like', '%github.com%');
             })
             ->with('links')
-            ->withCount('questionsReceived')
-            ->orderBy('questions_received_count', 'desc')
-            ->limit(10)->get();
+            ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
+                $query->whereNotNull('answer');
+            }])
+            ->orderBy('answered_questions_count', 'desc')
+            ->limit(10)
+            ->get();
     }
 }

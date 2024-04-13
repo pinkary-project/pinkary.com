@@ -52,3 +52,55 @@ test('search by name', function () {
     $component->assertSee('Nuno Maduro')
         ->assertDontSee('Taylor Otwell');
 });
+
+test('order by the number of answered questions', function () {
+    $punyapal = User::factory()->create([
+        'name' => 'Artisan Punyapal Shah',
+        'email_verified_at' => now(),
+    ]);
+
+    $punyapal->links()->create([
+        'url' => 'https://twitter.com/mrpunyapal',
+        'description' => 'twitter',
+    ]);
+
+    $nuno = User::factory()->create([
+        'name' => 'Artisan Nuno Maduro',
+        'email_verified_at' => now(),
+    ]);
+
+    $nuno->links()->create([
+        'url' => 'https://twitter.com/enunomaduro',
+        'description' => 'twitter',
+    ]);
+
+    $nuno->questionsReceived()->createMany([[
+        'from_id' => $punyapal->id,
+        'content' => 'What is the best PHP framework?',
+        'answer' => 'Laravel',
+    ], [
+        'from_id' => $punyapal->id,
+        'content' => 'What is the best PHP testing framework?',
+        'answer' => 'Pest',
+    ]]);
+
+    $punyapal->questionsReceived()->create([
+        'from_id' => $nuno->id,
+        'content' => 'What is the best PHP frontend framework?',
+        'answer' => 'Livewire',
+    ]);
+
+    $component = Livewire::test(Index::class);
+
+    $component->assertSeeInOrder([
+        'Artisan Nuno Maduro',
+        'Artisan Punyapal Shah',
+    ]);
+
+    $component->set('query', 'Artisan');
+
+    $component->assertSeeInOrder([
+        'Artisan Nuno Maduro',
+        'Artisan Punyapal Shah',
+    ]);
+});
