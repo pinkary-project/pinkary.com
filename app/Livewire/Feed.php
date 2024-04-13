@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Jobs\IncrementViews;
 use App\Models\Question;
+use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -17,7 +17,7 @@ final class Feed extends Component
     use WithoutUrlPagination, WithPagination;
 
     /**
-     * The component's number of questions per page.
+     * The component's amount of questions per page.
      */
     public int $perPage = 5;
 
@@ -49,15 +49,10 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $questions = Question::where('answer', '!=', null)
-            ->where('is_ignored', false)
-            ->where('is_reported', false)
-            ->orderByDesc('updated_at')
-            ->simplePaginate($this->perPage);
+        $feed = new RecentQuestionsFeed();
 
-        /* @phpstan-ignore-next-line */
-        dispatch(IncrementViews::of($questions->getCollection()));
-
-        return view('livewire.feed', compact('questions'));
+        return view('livewire.feed', [
+            'questions' => $feed->builder()->simplePaginate($this->perPage),
+        ]);
     }
 }

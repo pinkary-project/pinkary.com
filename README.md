@@ -140,7 +140,8 @@ Pull requests that don't pass the test suite will not be merged. So, as suggeste
 
     - `SendDailyEmails`: Sends the daily emails to the users.
     - `SendWeeklyEmails`: Sends the weekly emails to the users.
-    - `PerformDailyMaintenance`: Performs the daily maintenance tasks.
+    - `PerformDatabaseBackup`: Performs database backups hourly.
+    - `SyncVerifiedUsers`: Update/sync the verified badge for all users.
     - `DeleteNonVerifiedUsers`: Deletes the non-verified users.
 
 - **Contracts**: Contains all the interfaces used by the application. This is a way to decouple the code, typically in services, from the implementation:

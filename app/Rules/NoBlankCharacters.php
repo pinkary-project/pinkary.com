@@ -7,7 +7,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-final class NoBlankCharacters implements ValidationRule
+final readonly class NoBlankCharacters implements ValidationRule
 {
     /**
      * Run the validation rule.

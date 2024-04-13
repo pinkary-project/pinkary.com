@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
 use App\Http\Controllers\Profile\TimezoneController;
@@ -14,7 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
 Route::view('/feed', 'feed')->name('feed');
-Route::view('explore', 'explore')->name('explore');
+
+Route::view('explore/users', 'explore/users')->name('explore.users');
+Route::view('explore/trending', 'explore/trending-questions')->name('explore.trending');
+Route::view('explore/for-you', 'explore/questions-for-you')->name('explore.for_you');
+
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/support', 'support')->name('support');
@@ -22,6 +27,7 @@ Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
 
 Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
+Route::get('/changelog', [ChangelogController::class, 'show'])->name('changelog');
 Route::post('/profile/timezone', [TimezoneController::class, 'update'])->name('profile.timezone.update');
 
 Route::prefix('/@{username}')->group(function () {

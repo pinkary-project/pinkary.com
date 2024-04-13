@@ -15,11 +15,11 @@
                     class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
-                    <figure class="h-10 w-10 flex-shrink-0 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
                             alt="{{ $question->from->username }}"
-                            class="h-10 w-10 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
+                            class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />
                     </figure>
 
@@ -59,11 +59,11 @@
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
                 <a href="{{ route('profile.show', ['username' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
-                    <figure class="h-10 w-10 flex-shrink-0 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
-                            class="h-10 w-10 {{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
+                            class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />
                     </figure>
                     <div class="overflow-hidden text-sm">
@@ -152,7 +152,11 @@
                     </button>
                 </div>
                 <div class="flex items-center text-slate-500">
-                    <time datetime="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}">
+                    <time
+                        class="cursor-help"
+                        title="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
+                        datetime="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
+                    >
                         {{
                             $question->answered_at
                                 ->timezone(session()->get('timezone', 'UTC'))
@@ -164,14 +168,16 @@
                         x-cloak
                         x-data="shareProfile"
                         x-show="isVisible"
-                        @click="share({
-                                        url: '{{
-                                            route('questions.show', [
-                                                'username' => $question->to->username,
-                                                'question' => $question,
-                                            ])
-                                        }}'
-                                    })"
+                        x-on:click="
+                            share({
+                                url: '{{
+                                    route('questions.show', [
+                                        'username' => $question->to->username,
+                                        'question' => $question,
+                                    ])
+                                }}',
+                            })
+                        "
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         <x-icons.paper-airplane class="h-4 w-4" />
@@ -180,12 +186,16 @@
                         x-cloak
                         x-data="copyUrl"
                         x-show="isVisible"
-                        @click="copyToClipboard('{{
-                            route('questions.show', [
-                                'username' => $question->to->username,
-                                'question' => $question,
-                            ])
-                        }}')"
+                        x-on:click="
+                            copyToClipboard(
+                                '{{
+                                    route('questions.show', [
+                                        'username' => $question->to->username,
+                                        'question' => $question,
+                                    ])
+                                }}',
+                            )
+                        "
                         type="button"
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
