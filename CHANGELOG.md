@@ -1,3 +1,13 @@
+## Version 1.7.0
+> 13 April, 2024
+
+- Added possibility to reset / re-fetch the user's profile avatar.
+
+## Version 1.6.2
+> 13 April, 2024
+
+- Adjustments on the "Feed" page layout and algorithm to improve the user experience.
+
 ## Version 1.6.1
 > 13 April, 2024
 

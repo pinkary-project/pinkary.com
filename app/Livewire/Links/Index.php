@@ -50,7 +50,7 @@ final class Index extends Component
         $user = type(auth()->user())->as(User::class);
 
         if (! $this->canResetAvatar($user)) {
-            $this->dispatch('notification.created', message: 'cannot reset avatar.');
+            $this->dispatch('notification.created', message: 'You have to wait 24 hours before resetting the avatar again.');
 
             return;
         }
@@ -135,10 +135,12 @@ final class Index extends Component
         ]);
     }
 
+    /**
+     * Determine if the user can reset the avatar.
+     */
     private function canResetAvatar(User $user): bool
     {
-        return auth()->id() === $this->userId
-        && (
+        return auth()->id() === $this->userId && (
             $user->avatar_updated_at === null
             || $user->avatar_updated_at->diffInHours(now()) > 24
         );
