@@ -76,17 +76,21 @@ final class Users extends Component
      */
     private function famousUsers(Collection $ignoreUsers): Collection
     {
-        return User::query()
+        $famousUsers = User::query()
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%');
             })
             ->whereNotIn('id', $ignoreUsers->pluck('id'))
-            ->with('links')
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
+            ->limit(50);
+
+        return User::query()
+            ->fromSub($famousUsers, 'top_users')
+            ->with('links')
             ->limit(10 - $ignoreUsers->count())
             ->get();
     }
