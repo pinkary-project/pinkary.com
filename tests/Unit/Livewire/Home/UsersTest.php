@@ -100,5 +100,38 @@ test('order by the number of answered questions', function () {
     ]);
 });
 
+test('default users should have 2 verified users', function () {
+    config(['sponsors.github_company_usernames' => ['MrPunyapal']]);
 
+    User::factory(2)
+        ->sequence([
+            'name' => 'Nuno Maduro',
+            'username' => 'nunomaduro',
+            'is_verified' => true,
+        ], [
+            'name' => 'Punyapal Shah',
+            'username' => 'MrPunyapal',
+        ])
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(1, function (array $attributes, User $user) {
+            return ['answer' => 'this is an answer'];
+        })
+        ->create();
 
+    User::factory(10)
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(1, function (array $attributes, User $user) {
+            return ['answer' => 'this is an answer'];
+        })
+        ->create();
+
+    $component = Livewire::test(Index::class);
+
+    $component->assertSee('Nuno Maduro')
+        ->assertSee('Punyapal Shah');
+
+});
