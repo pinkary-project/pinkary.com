@@ -32,7 +32,7 @@ final class Users extends Component
         return view('livewire.home.users', [
             'users' => $this->query !== ''
                 ? $this->usersByQuery()
-                : $this->usersDefaultUsers(),
+                : $this->defaultUsers(),
         ]);
     }
 
@@ -59,7 +59,7 @@ final class Users extends Component
      *
      * @return Collection<int, User>
      */
-    private function usersDefaultUsers(): Collection
+    private function defaultUsers(): Collection
     {
         $verifiedUsers = $this->verifiedUsers();
 
@@ -109,7 +109,10 @@ final class Users extends Component
                     ->orWhere('url', 'like', '%github.com%');
             })
             ->with('links')
-            ->whereIn('username', config()->array('sponsors.github_company_usernames') + config()->array('sponsors.github_usernames'))
+            ->whereIn('username', array_merge(
+                config()->array('sponsors.github_company_usernames', []),
+                config()->array('sponsors.github_usernames', [])
+            ))
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
