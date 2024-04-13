@@ -4,10 +4,10 @@
             <div class="flex"></div>
             <div class="flex items-center" x-data>
                 @auth
-                    <a href="{{ route('feed') }}" class="mr-2" wire:navigate>
+                    <a href="{{ route('home.feed') }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('feed') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('home.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-icons.home class="h-6 w-6" />
                         </button>
@@ -19,15 +19,6 @@
                             class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-icons.user class="h-6 w-6" />
-                        </button>
-                    </a>
-
-                    <a href="{{ route('explore.for_you') }}" class="mr-2" wire:navigate>
-                        <button
-                            type="button"
-                            class="{{ request()->routeIs('explore*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
-                        >
-                            <x-icons.magnifying-glass class="h-6 w-6" />
                         </button>
                     </a>
 
@@ -70,12 +61,8 @@
                                 {{ __('Home') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('feed')" :class="request()->routeIs('feed') ? 'bg-slate-800' : ''">
+                            <x-dropdown-link :href="route('home.feed')" :class="request()->routeIs('home.feed') ? 'bg-slate-800' : ''">
                                 {{ __('Feed') }}
-                            </x-dropdown-link>
-
-                            <x-dropdown-link :href="route('explore.users')" :class="request()->routeIs('explore') ? 'bg-slate-800' : ''">
-                                {{ __('Explore') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link :href="route('login')" :class="request()->routeIs('login') ? 'bg-slate-800' : ''">

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Explore;
+namespace App\Livewire\Home;
 
 use App\Queries\Feeds\TrendingQuestionsFeed;
 use Illuminate\Http\Request;
@@ -18,7 +18,7 @@ final class TrendingQuestions extends Component
     {
         $feed = new TrendingQuestionsFeed();
 
-        return view('livewire.explore.trending-questions', [
+        return view('livewire.home.trending-questions', [
             'trendingQuestions' => $feed->builder()->get(),
         ]);
     }
