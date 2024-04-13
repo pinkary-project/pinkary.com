@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Question;
-use App\Services\QuestionFeedStrategies\MainFeedStrategy;
-use App\Services\QuestionFeedStrategyContext;
+use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -50,10 +49,10 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $questionFeed = new QuestionFeedStrategyContext(new MainFeedStrategy());
+        $feed = new RecentQuestionsFeed();
 
         return view('livewire.feed', [
-            'questions' => $questionFeed->getBuilder()->simplePaginate($this->perPage),
+            'questions' => $feed->builder()->simplePaginate($this->perPage),
         ]);
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Explore\Trending;
+use App\Livewire\Explore\TrendingQuestions;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
@@ -22,7 +22,7 @@ test('renders trending questions', function () {
 
     $question->likes()->saveMany(Like::factory()->count(10)->make());
 
-    $component = Livewire::test(Trending::class);
+    $component = Livewire::test(TrendingQuestions::class);
 
     $component
         ->assertDontSee('There is no trending questions right now')
@@ -41,7 +41,7 @@ test('do not renders trending questions', function () {
         'to_id' => $user->id,
     ]);
 
-    $component = Livewire::test(Trending::class);
+    $component = Livewire::test(TrendingQuestions::class);
 
     $component
         ->assertSee('There is no trending questions right now')

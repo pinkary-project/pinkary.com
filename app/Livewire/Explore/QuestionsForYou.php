@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Livewire\Explore;
 
 use App\Models\User;
-use App\Services\QuestionFeedStrategies\ForYouFeedStrategy;
-use App\Services\QuestionFeedStrategyContext;
+use App\Queries\Feeds\QuestionsForYouFeed;
 use Illuminate\View\View;
 use Livewire\Component;
 
-final class ForYou extends Component
+final class QuestionsForYou extends Component
 {
     /**
      * The component's amount of questions per page.
@@ -30,12 +29,12 @@ final class ForYou extends Component
      */
     public function render(): View
     {
-        assert(auth()->user() instanceof User);
+        $user = type(auth()->user())->as(User::class);
 
-        $questionFeed = new QuestionFeedStrategyContext(new ForYouFeedStrategy(auth()->user()));
+        $feed = new QuestionsForYouFeed($user);
 
-        return view('livewire.explore.for-you', [
-            'forYouQuestions' => $questionFeed->getBuilder()->simplePaginate($this->perPage),
+        return view('livewire.explore.questions-for-you', [
+            'forYouQuestions' => $feed->builder()->simplePaginate($this->perPage),
         ]);
     }
 }

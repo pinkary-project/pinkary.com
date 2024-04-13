@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
-use App\Services\QuestionFeedStrategies\ForYouFeedStrategy;
+use App\Queries\Feeds\QuestionsForYouFeed;
 use Illuminate\Database\Eloquent\Builder;
 
 it('render questions with right conditions', function () {
@@ -30,7 +30,7 @@ it('render questions with right conditions', function () {
         'is_reported' => false,
     ]);
 
-    $builder = (new ForYouFeedStrategy($likerUser))->getBuilder();
+    $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
     expect($builder->count())->toBe(2);
 });
@@ -57,7 +57,7 @@ it('do not render questions without answer', function () {
         'answer' => null,
     ]);
 
-    $builder = (new ForYouFeedStrategy($likerUser))->getBuilder();
+    $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
     expect($builder->count())->toBe(1);
 });
@@ -84,13 +84,13 @@ it('do not render reported questions', function () {
         'is_reported' => true,
     ]);
 
-    $builder = (new ForYouFeedStrategy($likerUser))->getBuilder();
+    $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
     expect($builder->count())->toBe(1);
 });
 
-it('getBuilder returns Eloquent\Builder instance', function () {
-    $builder = (new ForYouFeedStrategy(User::factory()->create()))->getBuilder();
+it('builder returns Eloquent\Builder instance', function () {
+    $builder = (new QuestionsForYouFeed(User::factory()->create()))->builder();
 
     expect($builder)->toBeInstanceOf(Builder::class);
 });

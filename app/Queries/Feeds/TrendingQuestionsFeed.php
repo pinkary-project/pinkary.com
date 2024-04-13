@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Services\QuestionFeedStrategies;
+namespace App\Queries\Feeds;
 
-use App\Contracts\QuestionFeedStrategyProvider;
 use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
 
-final readonly class TrendingFeedStrategy implements QuestionFeedStrategyProvider
+final readonly class TrendingQuestionsFeed
 {
-    public function getBuilder(): Builder
+    /**
+     * Get the query builder for the feed.
+     *
+     * @return Builder<Question>
+     */
+    public function builder(): Builder
     {
         return Question::query()
             ->withCount('likes')

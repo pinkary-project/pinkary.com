@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Explore\ForYou;
-use App\Livewire\Explore\Trending;
+use App\Livewire\Explore\QuestionsForYou;
+use App\Livewire\Explore\TrendingQuestions;
 use App\Livewire\Users\Index;
 use App\Models\User;
 
@@ -20,7 +20,7 @@ it('can see the explore "trending" view', function () {
 
     $response->assertOk()
         ->assertSee('Trending')
-        ->assertSeeLivewire(Trending::class);
+        ->assertSeeLivewire(TrendingQuestions::class);
 });
 
 it('can see the explore "for you" view', function () {
@@ -30,7 +30,7 @@ it('can see the explore "for you" view', function () {
 
     $response->assertOk()
         ->assertSee('For you')
-        ->assertSeeLivewire(ForYou::class);
+        ->assertSeeLivewire(QuestionsForYou::class);
 });
 
 it('guest can see the explore "for you" view', function () {

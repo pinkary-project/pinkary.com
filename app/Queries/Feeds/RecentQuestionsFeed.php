@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Services\QuestionFeedStrategies;
+namespace App\Queries\Feeds;
 
-use App\Contracts\QuestionFeedStrategyProvider;
 use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
 
-final readonly class MainFeedStrategy implements QuestionFeedStrategyProvider
+final readonly class RecentQuestionsFeed
 {
-    public function getBuilder(): Builder
+    /**
+     * Get the query builder for the feed.
+     *
+     * @return Builder<Question>
+     */
+    public function builder(): Builder
     {
         return Question::where('answer', '!=', null)
             ->where('is_ignored', false)
