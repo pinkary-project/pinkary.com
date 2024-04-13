@@ -59,7 +59,7 @@
                 class="mt-1 block w-full"
                 :value="old('email', $user->email)"
                 required
-                autocomplete="username"
+                autocomplete="email"
             />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
