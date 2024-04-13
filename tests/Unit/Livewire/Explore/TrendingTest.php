@@ -22,7 +22,7 @@ test('renders trending questions', function () {
 
     $question->likes()->saveMany(Like::factory()->count(10)->make());
 
-    $component = Livewire::test(TrendingQuestions::class);
+    $component = Livewire::actingAs($user)->test(TrendingQuestions::class);
 
     $component
         ->assertDontSee('There is no trending questions right now')
@@ -34,14 +34,14 @@ test('do not renders trending questions', function () {
 
     $questionContent = 'Is this a trending question?';
 
-    $question = Question::factory()->create([
+    Question::factory()->create([
         'content' => $questionContent,
         'answer' => 'No',
         'from_id' => $user->id,
         'to_id' => $user->id,
     ]);
 
-    $component = Livewire::test(TrendingQuestions::class);
+    $component = Livewire::actingAs($user)->test(TrendingQuestions::class);
 
     $component
         ->assertSee('There is no trending questions right now')
