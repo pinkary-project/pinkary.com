@@ -2,13 +2,18 @@
 
 declare(strict_types=1);
 
-arch('functions')
-    ->expect(['dd', 'dump', 'die', 'var_dump'])
-    ->not->toBeUsed();
+arch('globals')
+    ->expect(['dd', 'dump', 'ray', 'die', 'var_dump', 'sleep'])
+    ->not->toBeUsed()
+    ->ignoring([
+
+    ]);
 
 arch('helpers')
     ->expect(['session', 'auth', 'request'])
     ->toOnlyBeUsedIn([
+        'App\Concerns',
+        'App\Console',
         'App\Http',
         'App\Livewire',
     ]);

@@ -18,7 +18,7 @@ arch('avoid mutation')
     ->ignoring([
         'App\Console\Commands',
         'App\Exceptions',
-        'App\Http\Controllers\Auth\Requests',
+        'App\Http\Requests',
         'App\Jobs',
         'App\Livewire',
         'App\Mail',
@@ -35,7 +35,7 @@ arch('avoid inheritance')
     ->ignoring([
         'App\Console\Commands',
         'App\Exceptions',
-        'App\Http\Controllers\Auth\Requests',
+        'App\Http\Requests',
         'App\Jobs',
         'App\Livewire',
         'App\Mail',
@@ -54,5 +54,10 @@ arch('avoid inheritance')
  * toHaveProtectedProperties
  * toHavePrivateProperties
  * toHavePrivateProperty
- * toEnsureMethodsHaveReturnTypes
+ * toUseTrait
+ * toUseTraits
+ * toEnsureMethodsHaveReturnType
+ *
+ * Modify Expectations:
+ * toExtend (Would be good to support array of classes to match)
  */
