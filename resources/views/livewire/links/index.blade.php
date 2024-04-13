@@ -38,7 +38,7 @@
             @endif
         </div>
 
-        <div class="relative w-24 h-24 mx-auto">
+        <div class="relative mx-auto h-24 w-24">
             <img
                 src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
                 alt="{{ $user->username }}"
@@ -46,10 +46,10 @@
             />
             @if ($canResetAvatar)
                 <button
-                    class="absolute top-0 right-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     wire:click="resetAvatar"
                     wire:loading.class="animate-spin"
-                    wire:target='resetAvatar'
+                    wire:target="resetAvatar"
                     wire:loading.attr="disabled"
                     title="Reset Avatar"
                 >

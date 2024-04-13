@@ -8,7 +8,7 @@
     @else
         <section class="mb-12 min-h-screen space-y-10">
             @foreach ($forYouQuestions as $question)
-                    <livewire:questions.show :questionId="$question->id" :key="'question-' . $question->id" :inIndex="true" :pinnable="false" />
+                <livewire:questions.show :questionId="$question->id" :key="'question-' . $question->id" :inIndex="true" :pinnable="false" />
             @endforeach
 
             @if ($perPage < 100 && $forYouQuestions->hasMorePages())
