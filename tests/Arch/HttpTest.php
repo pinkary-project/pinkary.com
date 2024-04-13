@@ -10,7 +10,6 @@ arch('controllers')
     ->toBeReadonly()
     ->not->toBeUsedIn('App');
 
-
 arch('middleware')
     ->expect('App\Http\Middleware')
     ->classes()
