@@ -150,6 +150,8 @@ test('default users should be from top 50 famous users', function () {
 
     $component = Livewire::test(Users::class);
 
-    $component->assertDontSee('Adam Lee');
-
-})->repeat(50);
+    foreach (range(1, 50) as $index) {
+        $component->refresh();
+        $component->assertDontSee('Adam Lee');
+    }
+});
