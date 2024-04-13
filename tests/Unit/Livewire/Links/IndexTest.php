@@ -7,7 +7,6 @@ use App\Models\Link;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Number;
 use Livewire\Livewire;
 
 test('renders a list of links', function () {
