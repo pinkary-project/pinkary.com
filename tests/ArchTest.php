@@ -44,20 +44,3 @@ arch('avoid inheritance')
         'App\Providers',
         'App\View',
     ]);
-
-/**
- * New Expectations:
- * toHavePublicProperties
- * toHavePublicProperty
- * toHaveProtectedProperties
- * toHaveProtectedProperty
- * toHaveProtectedProperties
- * toHavePrivateProperties
- * toHavePrivateProperty
- * toUseTrait
- * toUseTraits
- * toEnsureMethodsHaveReturnType
- *
- * Modify Expectations:
- * toExtend (Would be good to support array of classes to match)
- */
