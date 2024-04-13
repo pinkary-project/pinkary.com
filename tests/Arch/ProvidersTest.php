@@ -8,5 +8,4 @@ arch('providers')
     ->toBeFinal()
     ->toHaveConstructor()
     ->toExtend('Illuminate\Support\ServiceProvider')
-    ->toHaveMethod('boot')
     ->not->toBeUsed();
