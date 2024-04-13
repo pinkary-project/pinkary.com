@@ -1,3 +1,8 @@
+## Version 1.6.1
+> 13 April, 2024
+
+- Merges "Explore" into a single "Feed" page.
+
 ## Version 1.6.0
 > 13 April, 2024
 
