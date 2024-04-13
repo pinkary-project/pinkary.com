@@ -22,7 +22,7 @@ test('users can authenticate', function () {
     $this->assertAuthenticated();
 
     $response->assertRedirect(route('profile.show', [
-        'username' => $user->username,
+        'user' => $user,
     ], absolute: false));
 });
 

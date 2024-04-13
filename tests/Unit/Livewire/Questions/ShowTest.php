@@ -72,7 +72,7 @@ test('redirect to profile', function () {
 
     $component->dispatch('question.reported');
 
-    $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
+    $component->assertRedirect(route('profile.show', ['user' => $question->to]));
 });
 
 test('ignore', function () {
@@ -89,7 +89,7 @@ test('ignore', function () {
 
     expect($question->fresh()->is_ignored)->toBeTrue();
 
-    $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
+    $component->assertRedirect(route('profile.show', ['user' => $question->to]));
 
     $question = Question::factory()->create();
     $user = User::find($question->to_id);
@@ -290,7 +290,7 @@ test('display pinned label only on profile.show route', function () {
     ]);
 
     $response = $this->actingAs($user)->get(route('profile.show', [
-        'username' => $user->username,
+        'user' => $user,
     ]));
 
     $response->assertSee('Pinned');

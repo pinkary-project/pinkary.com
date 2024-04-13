@@ -11,7 +11,7 @@
                 </div>
             @else
                 <a
-                    href="{{ route('profile.show', ['username' => $question->from->username]) }}"
+                    href="{{ route('profile.show', ['user' => $question->from]) }}"
                     class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
@@ -58,7 +58,7 @@
     @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
-                <a href="{{ route('profile.show', ['username' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
+                <a href="{{ route('profile.show', ['user' => $question->to]) }}" class="group flex items-center gap-3" wire:navigate>
                     <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
                             src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
@@ -172,7 +172,7 @@
                             share({
                                 url: '{{
                                     route('questions.show', [
-                                        'username' => $question->to->username,
+                                        'user' => $question->to,
                                         'question' => $question,
                                     ])
                                 }}',
@@ -190,7 +190,7 @@
                             copyToClipboard(
                                 '{{
                                     route('questions.show', [
-                                        'username' => $question->to->username,
+                                        'user' => $question->to,
                                         'question' => $question,
                                     ])
                                 }}',

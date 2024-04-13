@@ -30,7 +30,7 @@ final readonly class QrCodeController
             ->merge('/public/img/ico.png')
             ->errorCorrection('M')
             ->generate(route('profile.show', [
-                'username' => $user->username,
+                'user' => $user,
             ]));
 
         return response()->streamDownload(

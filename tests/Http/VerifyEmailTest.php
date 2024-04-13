@@ -41,7 +41,7 @@ test('email can be verified', function () {
     Event::assertDispatched(Verified::class);
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
     $response->assertRedirect(route('profile.show', [
-        'username' => $user->username,
+        'user' => $user,
     ], absolute: false));
 
     $response->assertSessionHas('flash-message', 'Your email has been verified.');
@@ -97,7 +97,7 @@ test('notification message is show if email is already verified', function () {
     Event::assertNotDispatched(Verified::class);
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
     $response->assertRedirect(route('profile.show', [
-        'username' => $user->username,
+        'user' => $user,
     ], absolute: false));
 
     $response->assertSessionHas('flash-message', 'Your email is already verified.');

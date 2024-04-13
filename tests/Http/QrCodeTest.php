@@ -20,7 +20,7 @@ test('user can download qr code', function () {
         ->merge('/public/img/ico.png')
         ->errorCorrection('M')
         ->generate(route('profile.show', [
-            'username' => $user->username,
+            'user' => $user,
         ]));
 
     $response = $this->actingAs($user)->get(route('qr-code.image'));

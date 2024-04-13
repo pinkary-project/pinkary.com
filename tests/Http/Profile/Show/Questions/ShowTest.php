@@ -12,7 +12,7 @@ test('guest', function () {
     ]);
 
     $response = $this->get(route('questions.show', [
-        'username' => $question->to->username,
+        'user' => $question->to,
         'question' => $question->id,
     ]));
 
@@ -32,7 +32,7 @@ test('auth', function () {
     ]);
 
     $response = $this->actingAs($user)->get(route('questions.show', [
-        'username' => $question->to->username,
+        'user' => $question->to,
         'question' => $question->id,
     ]));
 
@@ -50,7 +50,7 @@ test('reported question is not visible', function () {
     ]);
 
     $response = $this->get(route('questions.show', [
-        'username' => $question->to->username,
+        'user' => $question->to,
         'question' => $question->id,
     ]));
 
@@ -65,14 +65,14 @@ test('question without answer is not visible for other users', function () {
     ]);
 
     $response = $this->actingAs($user)->get(route('questions.show', [
-        'username' => $question->to->username,
+        'user' => $question->to,
         'question' => $question->id,
     ]));
 
     $response->assertStatus(403);
 
     $response = $this->actingAs($question->to)->get(route('questions.show', [
-        'username' => $question->to->username,
+        'user' => $question->to,
         'question' => $question->id,
     ]));
 

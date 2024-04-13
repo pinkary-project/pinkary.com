@@ -31,7 +31,7 @@ test('notifications about answers are deleted', function () {
             'notification' => $notification,
         ]));
 
-    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'username' => $question->to->username]);
+    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->to]);
     expect($notification->fresh())->toBeNull();
 });
 
@@ -50,6 +50,6 @@ test('notifications about questions are not deleted', function () {
             'notification' => $notification,
         ]));
 
-    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'username' => $question->to->username]);
+    $response->assertRedirectToRoute('questions.show', ['question' => $question, 'user' => $question->to]);
     expect($notification->fresh())->not->toBeNull();
 });

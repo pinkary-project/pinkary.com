@@ -26,7 +26,7 @@
 
 @if (request()->routeIs('profile.show'))
     @php
-        $user = request()->route('username');
+        $user = request()->route('user');
     @endphp
 
     <title>{{ $user->name }} ({{ '@'.$user->username }}) / Pinkary</title>

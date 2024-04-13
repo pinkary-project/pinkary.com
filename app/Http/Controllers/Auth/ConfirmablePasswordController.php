@@ -40,7 +40,7 @@ final readonly class ConfirmablePasswordController
         session()->put('auth.password_confirmed_at', time());
 
         return redirect()->intended(route('profile.show', [
-            'username' => $user->username,
+            'user' => $user,
         ], absolute: false));
     }
 }

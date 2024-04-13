@@ -31,7 +31,7 @@ final readonly class NotificationController
         }
 
         return to_route('questions.show', [
-            'username' => $question->to->username,
+            'user' => $question->to,
             'question' => $question,
         ]);
     }

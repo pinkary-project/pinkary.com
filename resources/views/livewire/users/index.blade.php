@@ -33,7 +33,7 @@
                 @foreach ($users as $user)
                     <li>
                         <a
-                            href="{{ route('profile.show', ['username' => $user->username]) }}"
+                            href="{{ route('profile.show', ['user' => $user]) }}"
                             class="group flex items-center gap-3 rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900"
                             wire:navigate
                         >

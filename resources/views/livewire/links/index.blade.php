@@ -5,7 +5,7 @@
                 x-cloak
                 x-data="shareProfile"
                 x-show="isVisible"
-                x-on:click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
+                x-on:click="share({ url: '{{ route('profile.show', ['user' => $user]) }}' })"
                 type="button"
                 class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
@@ -17,7 +17,7 @@
                 x-show="isVisible"
                 x-on:click="
                     copyToClipboard(
-                        '{{ route('profile.show', ['username' => $user->username]) }}',
+                        '{{ route('profile.show', ['user' => $user]) }}',
                     )
                 "
                 type="button"
@@ -54,7 +54,7 @@
             @endif
         </div>
 
-        <a class="text-slate-400" href="{{ route('profile.show', ['username' => $user->username]) }}" wire:navigate>
+        <a class="text-slate-400" href="{{ route('profile.show', ['user' => $user]) }}" wire:navigate>
             <p class="text-sm">{{ '@'.$user->username }}</p>
         </a>
 
