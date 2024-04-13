@@ -16,4 +16,12 @@ final class GitHubServiceProvider extends ServiceProvider
     {
         $this->app->singleton(GitHub::class, fn (): GitHub => new GitHub(config()->string('services.github.token')));
     }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+
+    }
 }
