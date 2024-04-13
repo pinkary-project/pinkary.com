@@ -30,7 +30,7 @@ Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('s
 Route::get('/changelog', [ChangelogController::class, 'show'])->name('changelog');
 Route::post('/profile/timezone', [TimezoneController::class, 'update'])->name('profile.timezone.update');
 
-Route::prefix('/@{username}')->group(function () {
+Route::prefix('/@{user:username}')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])
         ->name('profile.show')
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
