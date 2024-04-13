@@ -36,6 +36,7 @@ final readonly class QuestionsForYouFeed
                     });
             })
             ->whereNotNull('answer')
-            ->where('is_reported', false);
+            ->where('is_reported', false)
+            ->where('is_ignored', false);
     }
 }
