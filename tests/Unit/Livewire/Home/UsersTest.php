@@ -115,18 +115,14 @@ test('default users should have 2 verified users', function () {
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(1, function (array $attributes, User $user) {
-            return ['answer' => 'this is an answer'];
-        })
+        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create();
 
     User::factory(10)
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(1, function (array $attributes, User $user) {
-            return ['answer' => 'this is an answer'];
-        })
+        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create();
 
     $component = Livewire::test(Index::class);
@@ -135,3 +131,25 @@ test('default users should have 2 verified users', function () {
         ->assertSee('Punyapal Shah');
 
 });
+
+test('default users should be from top 50 famous users', function () {
+
+    User::factory(50)
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
+        ->create();
+
+    User::factory()
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
+        ->create(['name' => 'Adam Lee']);
+
+    $component = Livewire::test(Index::class);
+
+    $component->assertDontSee('Adam Lee');
+
+})->repeat(50);
