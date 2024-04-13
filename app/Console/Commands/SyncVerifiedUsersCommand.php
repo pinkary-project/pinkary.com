@@ -7,9 +7,7 @@ namespace App\Console\Commands;
 use App\Jobs\SyncVerifiedUser;
 use App\Models\User;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Attribute\AsCommand;
 
-#[AsCommand(name: 'sync:verified-users')]
 final class SyncVerifiedUsersCommand extends Command
 {
     /**

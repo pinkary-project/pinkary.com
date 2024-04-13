@@ -6,9 +6,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Attribute\AsCommand;
 
-#[AsCommand(name: 'delete:non-email-verified-users')]
 final class DeleteNonEmailVerifiedUsersCommand extends Command
 {
     /**
