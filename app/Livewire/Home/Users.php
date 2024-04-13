@@ -109,10 +109,13 @@ final class Users extends Component
                     ->orWhere('url', 'like', '%github.com%');
             })
             ->with('links')
-            ->whereIn('username', array_merge(
-                config()->array('sponsors.github_company_usernames', []),
-                config()->array('sponsors.github_usernames', [])
-            ))
+            ->where(function (Builder $query): void {
+                $query->where('is_verified', true)
+                    ->orWhereIn('username', array_merge(
+                        config()->array('sponsors.github_company_usernames', []),
+                        config()->array('sponsors.github_usernames', [])
+                    ));
+            })
             ->limit($limit)
             ->inRandomOrder()
             ->get();
