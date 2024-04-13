@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum UserMailPreference: string
+use App\Contracts\HasToArray;
+
+enum UserMailPreference: string implements HasToArray
 {
     case Daily = 'daily';
     case Weekly = 'weekly';
