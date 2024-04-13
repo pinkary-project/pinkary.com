@@ -6,9 +6,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Symfony\Component\Console\Attribute\AsCommand;
 
-#[AsCommand(name: 'perform:database-backup')]
 final class PerformDatabaseBackupCommand extends Command
 {
     /**
