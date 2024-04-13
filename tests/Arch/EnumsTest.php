@@ -12,7 +12,7 @@ arch('enums')
     ->not->toHaveConstructor()
     ->toOnlyBeUsedIn([
         'App\Console\Commands',
-        'App\Http\Controllers\Auth\Requests',
+        'App\Http\Requests',
         'App\Livewire',
         'App\Models',
     ]);

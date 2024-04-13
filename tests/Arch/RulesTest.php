@@ -4,4 +4,13 @@ declare(strict_types=1);
 
 arch('rules')
     ->expect('App\Rules')
-    ->toImplement('Illuminate\Contracts\Validation\ValidationRule');
+    ->classes()
+    ->toBeFinal()
+    ->toBeReadonly()
+    ->toExtendNothing()
+    ->toImplement('Illuminate\Contracts\Validation\ValidationRule')
+    ->toOnlyBeUsedIn([
+        'App\Http\Controllers',
+        'App\Http\Requests',
+        'App\Livewire',
+    ]);
