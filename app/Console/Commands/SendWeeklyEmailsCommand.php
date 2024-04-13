@@ -9,7 +9,9 @@ use App\Mail\PendingNotifications;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(name: 'send:daily-emails')]
 final class SendWeeklyEmailsCommand extends Command
 {
     /**
