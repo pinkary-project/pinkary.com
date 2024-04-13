@@ -92,15 +92,66 @@ test('order by the number of answered questions', function () {
 
     $component = Livewire::test(Users::class);
 
-    $component->assertSeeInOrder([
-        'Artisan Nuno Maduro',
-        'Artisan Punyapal Shah',
-    ]);
-
     $component->set('query', 'Artisan');
 
     $component->assertSeeInOrder([
         'Artisan Nuno Maduro',
         'Artisan Punyapal Shah',
     ]);
+});
+
+test('default users should have 2 verified users', function () {
+    config(['sponsors.github_company_usernames' => ['MrPunyapal']]);
+
+    User::factory(2)
+        ->sequence([
+            'name' => 'Nuno Maduro',
+            'username' => 'nunomaduro',
+            'is_verified' => true,
+        ], [
+            'name' => 'Punyapal Shah',
+            'username' => 'MrPunyapal',
+        ])
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
+        ->create();
+
+    User::factory(10)
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
+        ->create();
+
+    $component = Livewire::test(Users::class);
+
+    $component->assertSee('Nuno Maduro')
+        ->assertSee('Punyapal Shah');
+
+});
+
+test('default users should be from top 50 famous users', function () {
+
+    User::factory(50)
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
+        ->create();
+
+    User::factory()
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
+        ->create(['name' => 'Adam Lee']);
+
+    $component = Livewire::test(Users::class);
+
+    foreach (range(1, 50) as $index) {
+        $component->refresh();
+        $component->assertDontSee('Adam Lee');
+    }
 });
