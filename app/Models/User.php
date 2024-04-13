@@ -239,9 +239,9 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',
-            'views' => 'integer',
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
+            'views' => 'integer',
         ];
     }
 }

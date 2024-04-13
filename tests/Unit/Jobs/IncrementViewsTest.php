@@ -15,7 +15,8 @@ it('increments models when not viewed before', function () {
     $job = new IncrementViews($models, $user->id);
     $job->handle();
 
-    $models->each(fn ($model) => expect($model->views)->toBe(1));
+    $models->fresh()
+        ->each(fn ($model) => expect($model->views)->toBe(1));
 });
 
 it('caches viewed items', function () {
@@ -25,7 +26,8 @@ it('caches viewed items', function () {
     $job = new IncrementViews($models, $user->id);
     $job->handle();
 
-    $models->each(fn ($model) => expect($model->views)->toBe(1));
+    $models->fresh()
+        ->each(fn ($model) => expect($model->views)->toBe(1));
     expect(Cache::get("viewed.{$job->getModelName()}.for.user.{$user->id}"))->toBe($models->pluck('id')->toArray());
 });
 
@@ -56,7 +58,8 @@ it('caches using session id when no user', function () {
     $job = new IncrementViews($models, $sessionId);
     $job->handle();
 
-    $models->each(fn ($model) => expect($model->views)->toBe(1));
+    $models->fresh()
+        ->each(fn ($model) => expect($model->views)->toBe(1));
     expect(Cache::get("viewed.{$job->getModelName()}.for.user.{$sessionId}"))
         ->toBe($models->pluck('id')->toArray());
 });

@@ -20,13 +20,12 @@ test('to array', function () {
         'settings',
         'avatar',
         'is_verified',
-        'timezone',
         'mail_preference_time',
         'github_username',
         'prefers_anonymous_questions',
         'is_company_verified',
-        'views',
         'avatar_updated_at',
+        'views',
     ]);
 });
 
