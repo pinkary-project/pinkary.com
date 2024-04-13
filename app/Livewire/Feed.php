@@ -56,7 +56,6 @@ final class Feed extends Component
         /* @phpstan-ignore-next-line */
         dispatch(IncrementViews::of($questions->getCollection()));
 
-
         return view('livewire.feed', [
             'questions' => $questions,
         ]);
