@@ -47,7 +47,7 @@ it('do not render questions older than 12 hours', function () {
     $question = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'created_at' => now()->subHours(13),
+        'created_at' => now()->subDays(8),
     ]);
 
     Like::factory()->create([

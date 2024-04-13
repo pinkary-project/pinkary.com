@@ -23,6 +23,6 @@ final readonly class TrendingQuestionsFeed
             ->whereHas('likes')
             ->where('is_reported', false)
             ->where('is_ignored', false)
-            ->where('created_at', '>=', now()->subHours(12));
+            ->where('created_at', '>=', now()->subDays(7));
     }
 }
