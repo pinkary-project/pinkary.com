@@ -86,6 +86,7 @@ final class Users extends Component
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
+            ->inRandomOrder()
             ->limit(50);
 
         return User::query()
