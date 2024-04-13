@@ -12,7 +12,7 @@
                 :value="old('email')"
                 required
                 autofocus
-                autocomplete="email"
+                autocomplete="on"
             />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
