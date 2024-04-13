@@ -113,7 +113,6 @@ final class Users extends Component
                 config()->array('sponsors.github_company_usernames', []),
                 config()->array('sponsors.github_usernames', [])
             ))
-            ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->inRandomOrder()
             ->get();

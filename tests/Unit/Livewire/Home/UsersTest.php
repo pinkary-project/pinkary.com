@@ -92,11 +92,6 @@ test('order by the number of answered questions', function () {
 
     $component = Livewire::test(Users::class);
 
-    $component->assertSeeInOrder([
-        'Artisan Nuno Maduro',
-        'Artisan Punyapal Shah',
-    ]);
-
     $component->set('query', 'Artisan');
 
     $component->assertSeeInOrder([
@@ -104,3 +99,6 @@ test('order by the number of answered questions', function () {
         'Artisan Punyapal Shah',
     ]);
 });
+
+
+
