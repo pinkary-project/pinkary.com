@@ -86,12 +86,12 @@ final class Users extends Component
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
-            ->inRandomOrder()
             ->limit(50);
 
         return User::query()
             ->fromSub($famousUsers, 'top_users')
             ->with('links')
+            ->inRandomOrder()
             ->limit(10 - $ignoreUsers->count())
             ->get();
     }
@@ -115,6 +115,7 @@ final class Users extends Component
             ))
             ->orderBy('created_at', 'desc')
             ->limit($limit)
+            ->inRandomOrder()
             ->get();
     }
 }
