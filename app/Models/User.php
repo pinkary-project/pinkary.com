@@ -233,7 +233,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function resolveRouteBinding($value, $field = null)
     {
         return match ($field) {
-            'username' => $this->where(DB::raw('LOWER(username)'), mb_strtolower($value))->firstOrFail(),
+            'username' => $this->where(DB::raw('LOWER(username)'), mb_strtolower((string) $value))->firstOrFail(),
             default => parent::resolveRouteBinding($value, $field),
         };
     }
