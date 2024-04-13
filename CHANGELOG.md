@@ -1,3 +1,8 @@
+## Version 1.6.0
+> 13 April, 2024
+
+- Introducing new "explore" page to discover "For You" and "Trending" content.
+
 ## Version 1.5.1
 > 11 April, 2024
 
