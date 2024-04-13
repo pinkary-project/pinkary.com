@@ -86,7 +86,7 @@ test('question is not visible for other usernames on the url', function () {
     ]);
 
     $response = $this->get(route('questions.show', [
-        'username' => 'wrongusername',
+        'user' => 'wrongusername',
         'question' => $question->id,
     ]));
 
