@@ -5,9 +5,14 @@ declare(strict_types=1);
 arch('models')
     ->expect('App\Models')
     ->classes()
+    // Could be nice addition to laravel plugin?
+    // ->models()
+    // ->toHaveFactories()
+    // ->toValidateCasts('datetime'
     ->toHaveMethod('casts')
     ->toExtend('Illuminate\Database\Eloquent\Model')
     ->toOnlyBeUsedIn([
+        'App\Concerns',
         'App\Console',
         'App\Contracts',
         'App\Http',
