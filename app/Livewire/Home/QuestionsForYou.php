@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Explore;
+namespace App\Livewire\Home;
 
 use App\Models\User;
 use App\Queries\Feeds\QuestionsForYouFeed;
@@ -33,7 +33,7 @@ final class QuestionsForYou extends Component
 
         $feed = new QuestionsForYouFeed($user);
 
-        return view('livewire.explore.questions-for-you', [
+        return view('livewire.home.questions-for-you', [
             'forYouQuestions' => $feed->builder()->simplePaginate($this->perPage),
         ]);
     }

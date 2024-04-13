@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Users\Index;
+use App\Livewire\Home\Users;
 use App\Models\Link;
 use App\Models\User;
 use Livewire\Livewire;
 
 test('lists no users when there are no users', function () {
-    $component = Livewire::test(Index::class);
+    $component = Livewire::test(Users::class);
 
     $component->assertSee('No users found.');
 });
@@ -18,7 +18,7 @@ test('lists by default users with GitHub or Twitter links', function () {
         'url' => 'twitter.com/nunomaduro',
     ]);
 
-    $component = Livewire::test(Index::class);
+    $component = Livewire::test(Users::class);
 
     $users = User::all();
     expect($users->count())->toBe(3);
@@ -42,7 +42,7 @@ test('search by name', function () {
         'email_verified_at' => now(),
     ]);
 
-    $component = Livewire::test(Index::class);
+    $component = Livewire::test(Users::class);
 
     $component->assertDontSee('Nuno Maduro')
         ->assertDontSee('Taylor Otwell');
@@ -90,7 +90,7 @@ test('order by the number of answered questions', function () {
         'answer' => 'Livewire',
     ]);
 
-    $component = Livewire::test(Index::class);
+    $component = Livewire::test(Users::class);
 
     $component->assertSeeInOrder([
         'Artisan Nuno Maduro',

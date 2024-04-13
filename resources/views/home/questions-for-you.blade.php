@@ -1,12 +1,12 @@
 <x-app-layout>
-    <x-slot name="title">For you</x-slot>
+    <x-slot name="title">Questions you might like</x-slot>
 
     <div class="flex flex-col items-center justify-center">
-        <div class="min-h-screen w-full max-w-md overflow-hidden shadow-md">
-            <x-explore-menu></x-explore-menu>
+        <div class="w-full max-w-md overflow-hidden rounded-lg px-2 shadow-md sm:px-0">
+            <x-home-menu></x-home-menu>
 
             @auth
-                <livewire:explore.questions-for-you :focus-input="true" />
+                <livewire:home.questions-for-you :focus-input="true" />
             @else
                 <div class="mb-4">Log in or sign up to access personalized content.</div>
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Feed;
+use App\Livewire\Home\Feed;
 
-it('can see the home view', function () {
-    $response = $this->get(route('feed'));
+it('can see the "feed" view', function () {
+    $response = $this->get(route('home.feed'));
 
     $response->assertOk()
         ->assertSee('Home')

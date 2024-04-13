@@ -3,9 +3,9 @@
 
     <div class="flex flex-col items-center justify-center">
         <div class="min-h-screen w-full max-w-md overflow-hidden shadow-md">
-            <x-explore-menu></x-explore-menu>
+            <x-home-menu></x-home-menu>
 
-            <livewire:users.index :focus-input="true" />
+            <livewire:home.users :focus-input="true" />
         </div>
     </div>
 </x-app-layout>

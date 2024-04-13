@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Users;
+namespace App\Livewire\Home;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,7 +11,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
-final class Index extends Component
+final class Users extends Component
 {
     /**
      * The component's search query.
@@ -29,7 +29,7 @@ final class Index extends Component
      */
     public function render(): View
     {
-        return view('livewire.users.index', [
+        return view('livewire.home.users', [
             'users' => $this->query !== ''
                 ? $this->usersByQuery()
                 : $this->usersWithMostAnswers(),

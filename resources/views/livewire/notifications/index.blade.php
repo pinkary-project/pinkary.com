@@ -54,7 +54,7 @@
 
     @if ($user->notifications->count() === 0)
         <div class="rounded-lg">
-            <p class="text-slate-400">No pending questions.</p>
+            <p class="text-slate-400">No pending notifications.</p>
         </div>
     @endif
 </div>
