@@ -196,7 +196,7 @@ test('cannot reset avatar if user is not the owner', function () {
 
     $component->call('resetAvatar');
 
-    $component->assertDispatched('notification.created', message: 'cannot reset avatar.');
+    $component->assertDispatched('notification.created', message: 'You have to wait 24 hours before resetting the avatar again.');
 
     $this->assertNull($user->avatar_updated_at);
 
@@ -217,7 +217,7 @@ test('cannot reset avatar if user avatar updated recently', function () {
 
     $component->call('resetAvatar');
 
-    $component->assertDispatched('notification.created', message: 'cannot reset avatar.');
+    $component->assertDispatched('notification.created', message: 'You have to wait 24 hours before resetting the avatar again.');
 
     $this->assertEquals($avatarLastUpdated, $user->avatar_updated_at->format('Y-m-d H:i:s'));
 });
