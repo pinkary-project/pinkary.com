@@ -71,17 +71,17 @@ final class Users extends Component
     /**
      * Returns the users with the most questions received.
      *
-     * @param  Collection<int, User>  $ignoreUsers
+     * @param  Collection<int, User>  $except
      * @return Collection<int, User>
      */
-    private function famousUsers(Collection $ignoreUsers): Collection
+    private function famousUsers(Collection $except): Collection
     {
         $famousUsers = User::query()
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%');
             })
-            ->whereNotIn('id', $ignoreUsers->pluck('id'))
+            ->whereNotIn('id', $except->pluck('id'))
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
                 $query->whereNotNull('answer');
             }])
@@ -92,7 +92,7 @@ final class Users extends Component
             ->fromSub($famousUsers, 'top_users')
             ->with('links')
             ->inRandomOrder()
-            ->limit(10 - $ignoreUsers->count())
+            ->limit(10 - $except->count())
             ->get();
     }
 
