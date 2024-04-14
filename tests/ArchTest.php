@@ -16,7 +16,7 @@ test('ensure no extends')
     ->classes()
     ->not->toBeAbstract();
 
-arch('avoid mutation')
+arch('avoid \utation')
     ->expect('App')
     ->classes()
     ->toBeReadonly()
