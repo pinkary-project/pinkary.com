@@ -2,93 +2,41 @@
 
 declare(strict_types=1);
 
-use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
 use App\Queries\Feeds\QuestionsForYouFeed;
 use Illuminate\Database\Eloquent\Builder;
 
 it('render questions with right conditions', function () {
-    $likerUser = User::factory()->create();
+    $user = User::factory()->create();
 
-    $userTo = User::factory()->create();
+    $inspirationalUser = User::factory()
+        ->has(Question::factory()
+            ->hasLikes(1, ['user_id' => $user->id])
+            ->state(['answer' => 'yes']),
+            'questionsReceived')
+        ->create();
 
-    $questionWithLike = Question::factory()->create([
-        'to_id' => $userTo->id,
-        'answer' => 'Answer',
-        'is_reported' => false,
-    ]);
+    Question::factory(5)
+        ->sequence(
+            ['answer' => null],
+            ['is_reported' => true],
+            ['is_ignored' => true],
+            ['answer' => 'Some answer'],
+            ['answer' => 'Some answer']
+        )
+        ->hasLikes(1, ['user_id' => $inspirationalUser->id])
+        ->create();
 
-    Like::factory()->create([
-        'user_id' => $likerUser->id,
-        'question_id' => $questionWithLike->id,
-    ]);
+    $builder = (new QuestionsForYouFeed($user))->builder();
 
-    Question::factory()->create([
-        'to_id' => $userTo->id,
-        'answer' => 'Answer 2',
-        'is_reported' => false,
-    ]);
-
-    $builder = (new QuestionsForYouFeed($likerUser))->builder();
-
-    expect($builder->count())->toBe(2);
-});
-
-it('do not render questions without answer', function () {
-    $likerUser = User::factory()->create();
-
-    $userTo = User::factory()->create();
-
-    $answer = 'Answer to the question that needs to be rendered';
-
-    $questionWithLike = Question::factory()->create([
-        'to_id' => $userTo->id,
-        'answer' => $answer,
-        'is_reported' => false,
-    ]);
-
-    Like::factory()->create([
-        'user_id' => $likerUser->id,
-        'question_id' => $questionWithLike->id,
-    ]);
-
-    Question::factory()->create([
-        'to_id' => $userTo->id,
-        'is_reported' => false,
-        'answer' => null,
-    ]);
-
-    $builder = (new QuestionsForYouFeed($likerUser))->builder();
-
-    expect($builder->where('answer', $answer)->count())->toBe(1);
-});
-
-it('do not render reported questions', function () {
-    $likerUser = User::factory()->create();
-
-    $userTo = User::factory()->create();
-
-    $questionWithLike = Question::factory()->create([
-        'to_id' => $userTo->id,
-        'answer' => 'Answer',
-        'is_reported' => false,
-    ]);
-
-    Like::factory()->create([
-        'user_id' => $likerUser->id,
-        'question_id' => $questionWithLike->id,
-    ]);
-
-    Question::factory()->create([
-        'to_id' => $userTo->id,
-        'answer' => 'Answer 2',
-        'is_reported' => true,
-    ]);
-
-    $builder = (new QuestionsForYouFeed($likerUser))->builder();
-
-    expect($builder->where('is_reported', false)->count())->toBe(1);
+    $result = $builder->get();
+    expect($result->count())->toBe(2);
+    $result->each(function ($question) {
+        expect($question->answer)->toBe('Some answer');
+        expect($question->is_reported)->toBeFalse();
+        expect($question->is_ignored)->toBeFalse();
+    });
 });
 
 it('builder returns Eloquent\Builder instance', function () {
