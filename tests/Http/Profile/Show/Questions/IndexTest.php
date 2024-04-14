@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Jobs\IncrementViews;
-use App\Livewire\Feed;
+use App\Livewire\Home\Feed;
 use App\Models\Question;
 use App\Models\User;
 

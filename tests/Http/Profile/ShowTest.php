@@ -30,9 +30,8 @@ it('can show profile on username case-insensitive', function () {
     $response->assertSee($this->user->name);
 });
 
-// dispatches job to check if viewed and increment
-it('dispatches job to check if viewed and increment', function () {
-    Queue::fake();
+it('dispatches "IncrementViews" job', function () {
+    Queue::fake(IncrementViews::class);
     $this->actingAs($this->user);
 
     $response = $this->get(route('profile.show', ['username' => $this->user->username]));
