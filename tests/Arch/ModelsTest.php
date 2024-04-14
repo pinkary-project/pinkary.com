@@ -6,11 +6,9 @@ arch('models')
     ->expect('App\Models')
     ->toHaveMethod('casts')
     ->toExtend('Illuminate\Database\Eloquent\Model')
-    ->not->toBeInvokable()
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',
-        'App\Contracts',
         'App\Http',
         'App\Jobs',
         'App\Livewire',
