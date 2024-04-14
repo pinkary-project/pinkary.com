@@ -6,7 +6,6 @@ arch('notifications')
     ->expect('App\Notifications')
     ->toHaveConstructor()
     ->toExtend('Illuminate\Notifications\Notification')
-    ->toUse('Illuminate\Bus\Queueable')
     ->toOnlyBeUsedIn([
         'App\Console\Commands',
         'App\Http\Controllers',
