@@ -212,7 +212,7 @@
             </p>
         </div>
     </div>
-    <div class="py-5">
+    <div class="py-5" x-data="{ showLinksEditForm: false }">
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
                 <p class="mx-2 text-center text-slate-500">No links yet. Add your first link!</p>
@@ -220,7 +220,8 @@
         @else
             @if (auth()->user()?->is($user))
                 <ul
-                    x-data="{ isDragging: false }"
+                    x-data="{isDragging: false}"
+                    x-show="!showLinksEditForm"
                     x-sortable
                     x-on:choose.stop="isDragging = true"
                     x-on:unchoose.stop="isDragging = false"
@@ -254,6 +255,19 @@
                                     {{ Number::abbreviate($link->click_count) }}
                                     {{ str('click')->plural($link->click_count) }}
                                 </div>
+
+                                <button
+                                    @click="showLinksEditForm = true"
+                                    wire:click="editLink({{ $link->id }})"
+                                    type="button"
+                                    class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                >
+                                    <x-icons.edit
+                                        class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                        x-bind:class="{ 'invisible': isDragging }"
+                                    />
+                                </button>
+
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
@@ -270,6 +284,19 @@
                         </li>
                     @endforeach
                 </ul>
+                <div
+                    x-show="showLinksEditForm"
+                    x-transition:enter="transition duration-300 ease-out"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition duration-300 ease-in"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="mt-4"
+                    x-cloak
+                >
+                    <livewire:links.edit />
+                </div>
             @else
                 <div class="space-y-3">
                     @foreach ($links as $link)
