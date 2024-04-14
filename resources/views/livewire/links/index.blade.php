@@ -129,7 +129,10 @@
                                     class="hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
                                     title="Clicked {{ $link->click_count }} times"
                                 >
-                                    <span>{{ Number::abbreviate($link->click_count) }} {{ str('click')->plural($link->click_count) }}</span>
+                                    <span class="cursor-help" title="{{ Number::format($link->click_count) }} {{ str('click')->plural($link->click_count) }}">
+                                        {{ Number::abbreviate($link->click_count) }}
+                                        {{ str('click')->plural($link->click_count) }}
+                                    </span>
                                 </div>
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button
