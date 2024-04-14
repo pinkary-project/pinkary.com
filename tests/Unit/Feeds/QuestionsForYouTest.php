@@ -105,7 +105,6 @@ it('does not render reported questions', function () {
 
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
-
     expect($builder->count())->toBe(1);
 
     expect($builder->first()->answer)->toBe('Answer 3');
