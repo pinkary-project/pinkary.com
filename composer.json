@@ -16,7 +16,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
-        "larastan/larastan": "^2.9.2",
+        "larastan/larastan": "^2.9.3",
         "laravel/pint": "^1.15.1",
         "mockery/mockery": "^1.6.11",
         "laravel/sail": "^1.29.1",
