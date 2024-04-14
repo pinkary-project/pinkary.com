@@ -25,7 +25,7 @@ final class LinkFactory extends Factory
         return [
             'description' => $this->faker->sentence,
             'url' => $this->faker->url,
-            'user_id' => User::factory(),
+            'user_id' => User::query()->InRandomOrder()->first()?->id ?? User::factory(),
         ];
     }
 }

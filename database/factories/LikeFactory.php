@@ -25,8 +25,9 @@ final class LikeFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'question_id' => Question::factory(),
+            'user_id' => User::query()->inRandomOrder()->first()?->id ?? User::factory(),
+            'question_id' => Question::query()->inRandomOrder()->first()?->id ?? Question::factory(),
         ];
     }
 }
+    

@@ -23,8 +23,8 @@ final class QuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'from_id' => User::factory(),
-            'to_id' => User::factory(),
+            'from_id' => User::query()->InRandomOrder()->first()?->id ?? User::factory(),
+            'to_id' => User::query()->InRandomOrder()->first()?->id ?? User::factory(),
             'content' => $this->faker->sentence,
             'anonymously' => $this->faker->boolean,
             'answer' => $this->faker->sentence,
