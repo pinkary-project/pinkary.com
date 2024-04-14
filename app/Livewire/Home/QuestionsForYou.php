@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Home;
 
-use App\Concerns\HasLoadMore;
+use App\Livewire\Concerns\HasLoadMore;
 use App\Models\User;
 use App\Queries\Feeds\QuestionsForYouFeed;
 use Illuminate\View\View;

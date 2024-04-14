@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
-use App\Concerns\HasLoadMore;
+use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
