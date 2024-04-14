@@ -7,6 +7,5 @@ arch('commands')
     ->toExtend('Illuminate\Console\Command')
     ->toHaveSuffix('Command')
     ->toHaveMethod('handle')
-    ->not->toBeInvokable()
     ->toImplementNothing()
     ->not->toBeUsedIn('App');

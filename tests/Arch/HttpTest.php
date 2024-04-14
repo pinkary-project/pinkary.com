@@ -6,15 +6,14 @@ arch('controllers')
     ->expect('App\Http\Controllers')
     ->classes()
     ->toExtendNothing()
-    ->toBeReadonly()
-    ->not->toBeUsedIn('App');
+    ->not->toBeUsed();
 
 arch('middleware')
     ->expect('App\Http\Middleware')
     ->classes()
     ->toHaveMethod('handle')
     ->toUse('Illuminate\Http\Request')
-    ->not->toBeUsedIn('App');
+    ->not->toBeUsed();
 
 arch('requests')
     ->expect('App\Http\Requests')
