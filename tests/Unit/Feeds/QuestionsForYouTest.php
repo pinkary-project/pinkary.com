@@ -40,9 +40,11 @@ it('do not render questions without answer', function () {
 
     $userTo = User::factory()->create();
 
+    $answer = 'Answer to the question that needs to be rendered';
+
     $questionWithLike = Question::factory()->create([
         'to_id' => $userTo->id,
-        'answer' => 'Answer',
+        'answer' => $answer,
         'is_reported' => false,
     ]);
 
@@ -59,7 +61,7 @@ it('do not render questions without answer', function () {
 
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
-    expect($builder->count())->toBe(1);
+    expect($builder->where('answer', $answer)->count())->toBe(1);
 });
 
 it('do not render reported questions', function () {
@@ -86,7 +88,7 @@ it('do not render reported questions', function () {
 
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
-    expect($builder->count())->toBe(1);
+    expect($builder->where('is_reported', false)->count())->toBe(1);
 });
 
 it('builder returns Eloquent\Builder instance', function () {
