@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Jobs\IncrementViews;
 use App\Models\User;
-use Illuminate\Queue\Jobs\Job;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
