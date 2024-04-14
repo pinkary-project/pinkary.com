@@ -83,6 +83,16 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
     }
 
     /**
+     * Get the user's likes.
+     *
+     * @return HasMany<Like>
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    /**
      * Get the user's questions sent.
      *
      * @return HasMany<Question>
