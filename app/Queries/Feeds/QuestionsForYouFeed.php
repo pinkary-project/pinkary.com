@@ -27,7 +27,7 @@ final readonly class QuestionsForYouFeed
     {
         return Question::query()
             ->whereHas('likes', function (Builder $query): void {
-                $query->whereIn('user_id', Question::select('from_id')->whereRelation('likes', 'user_id', $this->user->id));
+                $query->whereIn('user_id', Question::select('to_id')->whereRelation('likes', 'user_id', $this->user->id));
             })
             ->orderByDesc('updated_at')
             ->whereNotNull('answer')
