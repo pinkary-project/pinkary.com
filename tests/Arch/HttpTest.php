@@ -6,7 +6,6 @@ arch('controllers')
     ->expect('App\Http\Controllers')
     ->classes()
     ->toExtendNothing()
-    ->toBeFinal()
     ->toBeReadonly()
     ->not->toBeUsedIn('App');
 

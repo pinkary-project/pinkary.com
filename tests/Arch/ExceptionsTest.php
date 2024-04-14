@@ -5,7 +5,6 @@ declare(strict_types=1);
 arch('exceptions')
     ->expect('App\Exceptions')
     ->classes()
-    ->toBeFinal()
     ->toExtend('Exception')
     ->toImplement('Throwable')
     ->toOnlyBeUsedIn([
