@@ -11,6 +11,11 @@ arch('avoid open for extension')
     ->classes()
     ->toBeFinal();
 
+test('ensure no extends')
+    ->expect('App')
+    ->classes()
+    ->not->toBeAbstract();
+
 arch('avoid mutation')
     ->expect('App')
     ->classes()
