@@ -38,7 +38,11 @@
             @endif
         </div>
 
-        <div class="relative mx-auto h-24 w-24">
+        <div class="relative mx-auto h-24 w-24"
+            x-data="{ avatarIsHovered: false }"
+            x-on:mouseenter="avatarIsHovered = true"
+            x-on:mouseleave="avatarIsHovered = false"
+        >
             <img
                 src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
                 alt="{{ $user->username }}"
@@ -46,6 +50,7 @@
             />
             @if ($canResetAvatar)
                 <button
+                    x-show="avatarIsHovered || window.innerWidth <= 640"
                     class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     wire:click="resetAvatar"
                     wire:loading.class="animate-spin"
