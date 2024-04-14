@@ -4,30 +4,16 @@ declare(strict_types=1);
 
 namespace App\Livewire\Home;
 
+use App\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\WithoutUrlPagination;
-use Livewire\WithPagination;
 
 final class Feed extends Component
 {
-    use WithoutUrlPagination, WithPagination;
-
-    /**
-     * The component's amount of questions per page.
-     */
-    public int $perPage = 5;
-
-    /**
-     * Load more questions.
-     */
-    public function loadMore(): void
-    {
-        $this->perPage = $this->perPage > 100 ? 100 : ($this->perPage + 5);
-    }
+    use HasLoadMore;
 
     /**
      * Ignore the given question.
