@@ -125,11 +125,8 @@
                             <x-links.list-item :$user :$link />
 
                             <div class="flex items-center justify-center">
-                                <div
-                                    class="hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
-                                    title="Clicked {{ $link->click_count }} times"
-                                >
-                                    <span class="cursor-help" title="{{ Number::format($link->click_count) }} {{ str('click')->plural($link->click_count) }}">
+                                <div class="hidden min-w-fit items-center gap-1 text-xs group-hover:flex">
+                                    <span class="cursor-help" title="Clicked {{ Number::format($link->click_count) }} times">
                                         {{ Number::abbreviate($link->click_count) }}
                                         {{ str('click')->plural($link->click_count) }}
                                     </span>
