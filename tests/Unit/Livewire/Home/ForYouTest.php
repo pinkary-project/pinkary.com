@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Explore\QuestionsForYou;
+use App\Livewire\Home\QuestionsForYou;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;

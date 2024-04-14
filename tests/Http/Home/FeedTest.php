@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use App\Jobs\IncrementViews;
-use App\Livewire\Feed;
+use App\Livewire\Home\Feed;
 
-it('can see the home view', function () {
+it('can see the "feed" view', function () {
     Queue::fake(IncrementViews::class);
-    $response = $this->get(route('feed'));
+    $response = $this->get(route('home.feed'));
 
     $response->assertOk()
         ->assertSee('Home')

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -17,8 +18,10 @@ final class WelcomeUsersAvatars extends Component
     {
         $users = User::query()
             ->with('links')
-            ->withCount('questionsReceived')
-            ->orderBy('questions_received_count', 'desc')
+            ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
+                $query->whereNotNull('answer');
+            }])
+            ->orderBy('answered_questions_count', 'desc')
             ->limit(14)
             ->get()
             ->shuffle();

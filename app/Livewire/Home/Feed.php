@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire;
+namespace App\Livewire\Home;
 
 use App\Jobs\IncrementViews;
 use App\Models\Question;

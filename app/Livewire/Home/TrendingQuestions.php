@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Explore;
+namespace App\Livewire\Home;
 
 use App\Jobs\IncrementViews;
 use App\Queries\Feeds\TrendingQuestionsFeed;
@@ -17,12 +17,12 @@ final class TrendingQuestions extends Component
      */
     public function render(Request $request): View
     {
-        $questions = (new TrendingQuestionsFeed())->builder()->simplePaginate(5);
+        $questions = (new TrendingQuestionsFeed())->builder()->get();
 
         /* @phpstan-ignore-next-line */
         dispatch(IncrementViews::of($questions->getCollection()));
 
-        return view('livewire.explore.trending-questions', [
+        return view('livewire.home.trending-questions', [
             'trendingQuestions' => $questions,
         ]);
     }

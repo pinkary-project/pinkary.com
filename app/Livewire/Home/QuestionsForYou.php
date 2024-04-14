@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Explore;
+namespace App\Livewire\Home;
 
 use App\Jobs\IncrementViews;
 use App\Models\User;
@@ -37,7 +37,7 @@ final class QuestionsForYou extends Component
         /* @phpstan-ignore-next-line */
         dispatch(IncrementViews::of($questions->getCollection()));
 
-        return view('livewire.explore.questions-for-you', [
+        return view('livewire.home.questions-for-you', [
             'forYouQuestions' => $questions,
         ]);
     }

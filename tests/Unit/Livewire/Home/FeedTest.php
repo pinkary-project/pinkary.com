@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Feed;
+use App\Livewire\Home\Feed;
 use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
