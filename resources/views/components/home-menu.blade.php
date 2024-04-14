@@ -5,8 +5,8 @@
         wire:navigate
         wire:transition
     >
-        <x-icons.home class="h-6 w-6 min-[467px]:mr-3" />
-        <span class="hidden min-[467px]:inline">{{ __('Feed') }}</span>
+        <x-icons.home class="h-6 w-6 xsm:mr-3" />
+        <span class="hidden xsm:inline">{{ __('Feed') }}</span>
     </a>
 
     <a
@@ -15,8 +15,8 @@
         wire:navigate
         wire:transition
     >
-        <x-icons.smile class="h-6 w-6 min-[467px]:mr-3" />
-        <span class="hidden min-[467px]:inline">{{ __('For you') }}</span>
+        <x-icons.smile class="h-6 w-6 xsm:mr-3" />
+        <span class="hidden xsm:inline">{{ __('For you') }}</span>
     </a>
 
     <a
@@ -25,8 +25,8 @@
         wire:navigate
         wire:transition
     >
-        <x-icons.trending-solid color="currentColor" class="h-6 w-6 min-[467px]:mr-3" />
-        <span class="hidden min-[467px]:inline">{{ __('Trending') }}</span>
+        <x-icons.trending-solid color="currentColor" class="h-6 w-6 xsm:mr-3" />
+        <span class="hidden xsm:inline">{{ __('Trending') }}</span>
     </a>
 
     <a
@@ -35,7 +35,7 @@
         wire:navigate
         wire:transition
     >
-        <x-icons.users class="h-6 w-6 min-[467px]:mr-3" />
-        <span class="hidden min-[467px]:inline">{{ __('Users') }}</span>
+        <x-icons.users class="h-6 w-6 xsm:mr-3" />
+        <span class="hidden xsm:inline">{{ __('Users') }}</span>
     </a>
 </div>
