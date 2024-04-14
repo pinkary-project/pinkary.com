@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Auth\Requests;
+namespace App\Http\Requests;
 
 use App\Enums\UserMailPreference;
 use App\Models\User;

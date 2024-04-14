@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Auth\Requests\ProfileUpdateRequest;
+use App\Http\Requests\ProfileUpdateRequest;
 use App\Jobs\DownloadUserAvatar;
 use App\Jobs\IncrementViews;
 use App\Models\User;
