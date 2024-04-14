@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 arch('models')
     ->expect('App\Models')
-    ->classes()
     ->toHaveMethod('casts')
     ->toExtend('Illuminate\Database\Eloquent\Model')
     ->not->toBeInvokable()

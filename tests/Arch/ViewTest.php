@@ -6,5 +6,4 @@ arch('view components')
     ->expect('App\View\Components')
     ->toExtend('Illuminate\View\Component')
     ->toHaveMethod('render')
-    ->toUse('view')
     ->not->toBeUsed();

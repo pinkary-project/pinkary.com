@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 arch('mailables')
     ->expect('App\Mail')
-    ->classes()
     ->toHaveConstructor()
     ->toExtend('Illuminate\Mail\Mailable')
     ->toUse([

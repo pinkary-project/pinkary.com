@@ -8,4 +8,4 @@ arch('commands')
     ->toHaveSuffix('Command')
     ->toHaveMethod('handle')
     ->toImplementNothing()
-    ->not->toBeUsedIn('App');
+    ->not->toBeUsed();
