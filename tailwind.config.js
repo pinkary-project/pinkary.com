@@ -2,7 +2,7 @@ import defaultTheme from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    plugins: [require('@tailwindcss/typography'),require('@tailwindcss/forms')],
+    plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')],
 
     content: [
         "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
@@ -15,6 +15,9 @@ export default {
         extend: {
             fontFamily: {
                 mona: ["Mona Sans", ...defaultTheme.fontFamily.sans],
+            },
+            screens: {
+                xsm: '467px',
             },
         },
     },
