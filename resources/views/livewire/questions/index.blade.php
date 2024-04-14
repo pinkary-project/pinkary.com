@@ -3,9 +3,5 @@
         <livewire:questions.show :questionId="$question->id" :key="'question-' . $question->id" :inIndex="true" :pinnable="$pinnable" />
     @endforeach
 
-    @if ($perPage < 100 && $questions->hasMorePages())
-        <div x-intersect="$wire.loadMore()"></div>
-    @elseif ($perPage > 10)
-        <div class="text-center text-slate-400">There are no more questions to load, or you have scrolled too far.</div>
-    @endif
+    {{ $this->getLoadMoreButton($questions, 'There are no more questions to load, or you have scrolled too far.') }}
 </section>
