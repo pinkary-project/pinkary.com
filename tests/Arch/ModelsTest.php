@@ -18,6 +18,7 @@ arch('models')
         'App\Notifications',
         'App\Policies',
         'App\Providers',
+        'App\Queries',
         'App\Rules',
         'App\Services',
         'Database\Factories',
