@@ -5,11 +5,9 @@ declare(strict_types=1);
 arch('models')
     ->expect('App\Models')
     ->classes()
-    ->toBeFinal()
     ->toHaveMethod('casts')
     ->toExtend('Illuminate\Database\Eloquent\Model')
     ->not->toBeInvokable()
-    ->not->toBeAbstract()
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',

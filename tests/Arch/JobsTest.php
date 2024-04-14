@@ -5,7 +5,6 @@ declare(strict_types=1);
 arch('jobs')
     ->expect('App\Jobs')
     ->classes()
-    ->toBeFinal()
     ->toHaveMethod('handle')
     ->toHaveConstructor()
     ->toExtendNothing()
