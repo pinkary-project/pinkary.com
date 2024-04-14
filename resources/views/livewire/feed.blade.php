@@ -6,10 +6,7 @@
             <div class="text-center text-slate-400">There are no questions to show.</div>
         @endforelse
 
-        @if ($perPage < 100 && $questions->hasMorePages())
-            <div x-intersect="$wire.loadMore()"></div>
-        @elseif ($perPage > 10)
-            <div class="text-center text-slate-400">There are no more questions to load, or you have scrolled too far.</div>
-        @endif
+        <x-load-more-button :perPage="$perPage" :paginator="$questions"
+            message="There are no more questions to load, or you have scrolled too far." />
     </section>
 </div>
