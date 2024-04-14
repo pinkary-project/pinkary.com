@@ -83,7 +83,7 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
     }
 
     /**
-     * Get the user's likes.
+     * Get the likes made by the user.
      *
      * @return HasMany<Like>
      */
