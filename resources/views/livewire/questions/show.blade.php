@@ -150,6 +150,11 @@
                             {{ $question->likes()->count() ? $question->likes()->count().' '.str('like')->plural($question->likes()->count()) : '' }}
                         </p>
                     </button>
+                    <span class="mx-1">•</span>
+                    <x-icons.chart class="h-4 w-4" />
+                    <p class="ml-1">
+                        {{ $question->views }} {{ str('view')->plural($question->views) }}
+                    </p>
                 </div>
                 <div class="flex items-center text-slate-500">
                     <time

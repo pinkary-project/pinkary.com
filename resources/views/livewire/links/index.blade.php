@@ -88,6 +88,13 @@
                 <span class="mx-1">•</span>
 
                 <span>
+                    {{ $user->views }}
+                    {{ str('View')->plural($user->views) }}
+                </span>
+
+                <span class="mx-1">•</span>
+
+                <span>
                     Joined
                     {{ $user->created_at->timezone(session()->get('timezone', 'UTC'))->format('M Y') }}
                 </span>
