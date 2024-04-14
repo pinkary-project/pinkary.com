@@ -53,7 +53,7 @@ arch('ensure datetime casts', function () {
  */
 function getModels(): array
 {
-    return collect(glob(__DIR__.'/../app/Models/*.php')) //@phpstan-ignore-line
+    return collect(glob(__DIR__.'/../../app/Models/*.php')) //@phpstan-ignore-line
         ->map(function ($file) {
             return 'App\Models\\'.basename($file, '.php'); //@phpstan-ignore-line
         })->toArray();
