@@ -6,11 +6,9 @@ arch('globals')
     ->expect(['dd', 'dump', 'ray', 'die', 'var_dump', 'sleep'])
     ->not->toBeUsed();
 
-arch('helpers')
+arch('http helpers')
     ->expect(['session', 'auth', 'request'])
     ->toOnlyBeUsedIn([
-        'App\Concerns',
-        'App\Console',
         'App\Http',
         'App\Livewire',
     ]);

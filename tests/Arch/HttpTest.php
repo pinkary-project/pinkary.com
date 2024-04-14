@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 arch('controllers')
     ->expect('App\Http\Controllers')
-    ->classes()
     ->toExtendNothing()
     ->not->toBeUsed();
 
 arch('middleware')
     ->expect('App\Http\Middleware')
-    ->classes()
     ->toHaveMethod('handle')
     ->toUse('Illuminate\Http\Request')
     ->not->toBeUsed();
