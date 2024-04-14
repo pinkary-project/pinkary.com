@@ -8,16 +8,10 @@
                 <x-primary-button>Your Profile</x-primary-button>
             </a>
         @else
-            <a href="{{ route('feed') }}" wire:navigate>
+            <a href="{{ route('home.feed') }}" wire:navigate>
                 <x-primary-colorless-button class="flex items-center justify-center gap-2">
                     <x-icons.home class="h-4 w-4" />
                     <span class="sr-only sm:not-sr-only">Feed</span>
-                </x-primary-colorless-button>
-            </a>
-            <a href="{{ route('explore.users') }}" wire:navigate>
-                <x-primary-colorless-button class="flex items-center justify-center gap-2">
-                    <x-icons.magnifying-glass class="h-4 w-4" />
-                    <span class="sr-only sm:not-sr-only">Explore</span>
                 </x-primary-colorless-button>
             </a>
             <a href="{{ route('login') }}" wire:navigate>
@@ -93,7 +87,7 @@
             <div class="absolute -left-20 top-0 h-56 w-56 rounded-full bg-gradient-to-r from-teal-500 via-transparent to-emerald-300 blur-3xl"></div>
 
             <div class="z-10 order-2 mt-10 w-full max-w-sm md:order-1 md:mt-0">
-                <livewire:users.index />
+                <livewire:home.users />
             </div>
 
             <div class="order-1 flex cursor-pointer flex-col items-center justify-center transition-transform duration-700 sm:max-w-md md:order-2 md:-translate-y-10 md:translate-x-10 md:items-start md:hover:-translate-y-5 md:hover:translate-x-5">

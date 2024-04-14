@@ -43,6 +43,24 @@ final class Index extends Component
     }
 
     /**
+     * Reset the user's avatar.
+     */
+    public function resetAvatar(): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        if (! $this->canResetAvatar($user)) {
+            $this->dispatch('notification.created', message: 'You have to wait 24 hours before resetting the avatar again.');
+
+            return;
+        }
+
+        dispatch_sync(new DownloadUserAvatar($user));
+
+        $this->dispatch('notification.created', message: 'Avatar reset.');
+    }
+
+    /**
      * Store the new order of the links.
      *
      * @param  array<int, string>  $sort
@@ -102,6 +120,7 @@ final class Index extends Component
 
         return view('livewire.links.index', [
             'user' => $user,
+            'canResetAvatar' => $this->canResetAvatar($user),
             'questionsReceivedCount' => $user->questionsReceived()
                 ->where('is_reported', false)
                 ->where('is_ignored', false)
@@ -114,5 +133,16 @@ final class Index extends Component
                 return $index;
             })->values(),
         ]);
+    }
+
+    /**
+     * Determine if the user can reset the avatar.
+     */
+    private function canResetAvatar(User $user): bool
+    {
+        return auth()->id() === $this->userId && (
+            $user->avatar_updated_at === null
+            || $user->avatar_updated_at->diffInHours(now()) > 24
+        );
     }
 }

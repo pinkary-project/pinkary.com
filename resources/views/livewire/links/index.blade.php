@@ -38,11 +38,25 @@
             @endif
         </div>
 
-        <img
-            src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
-            alt="{{ $user->username }}"
-            class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
-        />
+        <div class="relative mx-auto h-24 w-24">
+            <img
+                src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
+                alt="{{ $user->username }}"
+                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
+            />
+            @if ($canResetAvatar)
+                <button
+                    class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    wire:click="resetAvatar"
+                    wire:loading.class="animate-spin"
+                    wire:target="resetAvatar"
+                    wire:loading.attr="disabled"
+                    title="Reset Avatar"
+                >
+                    <x-icons.reset class="size-5" />
+                </button>
+            @endif
+        </div>
 
         <div class="items center flex items-center justify-center">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
@@ -115,7 +129,7 @@
                                     class="hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
                                     title="Clicked {{ $link->click_count }} times"
                                 >
-                                    <span>{{ $link->click_count }} {{ str('click')->plural($link->click_count) }}</span>
+                                    <span>{{ Number::abbreviate($link->click_count) }} {{ str('click')->plural($link->click_count) }}</span>
                                 </div>
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button

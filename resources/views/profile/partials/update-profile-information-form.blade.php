@@ -1,6 +1,6 @@
 @php
-    use Illuminate\Contracts\Auth\MustVerifyEmail;
     use App\Enums\UserMailPreference;
+    use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
 
 <section>

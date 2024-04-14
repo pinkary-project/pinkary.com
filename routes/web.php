@@ -14,11 +14,11 @@ use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
-Route::view('/feed', 'feed')->name('feed');
 
-Route::view('explore/users', 'explore/users')->name('explore.users');
-Route::view('explore/trending', 'explore/trending')->name('explore.trending');
-Route::view('explore/for-you', 'explore/for-you')->name('explore.for_you');
+Route::view('/feed', 'home/feed')->name('home.feed');
+Route::view('/for-you', 'home/questions-for-you')->name('home.for_you');
+Route::view('/trending', 'home/trending-questions')->name('home.trending');
+Route::view('/users', 'home/users')->name('home.users');
 
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
