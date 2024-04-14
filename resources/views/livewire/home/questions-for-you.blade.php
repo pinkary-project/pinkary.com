@@ -11,7 +11,7 @@
                 <livewire:questions.show :questionId="$question->id" :key="'question-' . $question->id" :inIndex="true" :pinnable="false" />
             @endforeach
 
-            <x-load-more-button :perPage="$perPage" :paginator="$questions"
+            <x-load-more-button :perPage="$perPage" :paginator="$forYouQuestions"
                 message="There are no more questions to load, or you have scrolled too far." />
         </section>
     @endif
