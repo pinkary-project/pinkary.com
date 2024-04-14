@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Queries\Feeds\QuestionsForYouFeed;
 use Illuminate\Database\Eloquent\Builder;
 
-it('render questions with right conditions', function () {
+it('renders questions with right conditions', function () {
     $likerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
@@ -32,10 +32,12 @@ it('render questions with right conditions', function () {
 
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
-    expect($builder->count())->toBe(2);
+    expect($builder->count())->toBe(1);
+
+    expect($builder->first()->answer)->toBe('Answer 2');
 });
 
-it('do not render questions without answer', function () {
+it('does not render questions without answer', function () {
     $likerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
@@ -54,15 +56,23 @@ it('do not render questions without answer', function () {
     Question::factory()->create([
         'to_id' => $userTo->id,
         'is_reported' => false,
+        'answer' => 'Answer 2',
+    ]);
+
+    Question::factory()->create([
+        'to_id' => $userTo->id,
+        'is_reported' => false,
         'answer' => null,
     ]);
 
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
     expect($builder->count())->toBe(1);
+
+    expect($builder->first()->answer)->toBe('Answer 2');
 });
 
-it('do not render reported questions', function () {
+it('does not render reported questions', function () {
     $likerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
@@ -84,12 +94,20 @@ it('do not render reported questions', function () {
         'is_reported' => true,
     ]);
 
+    Question::factory()->create([
+        'to_id' => $userTo->id,
+        'answer' => 'Answer 3',
+        'is_reported' => false,
+    ]);
+
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
     expect($builder->count())->toBe(1);
+
+    expect($builder->first()->answer)->toBe('Answer 3');
 });
 
-it('builder returns Eloquent\Builder instance', function () {
+it('returns Eloquent\Builder instance', function () {
     $builder = (new QuestionsForYouFeed(User::factory()->create()))->builder();
 
     expect($builder)->toBeInstanceOf(Builder::class);

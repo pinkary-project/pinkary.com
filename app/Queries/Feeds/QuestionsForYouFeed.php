@@ -35,6 +35,9 @@ final readonly class QuestionsForYouFeed
                         $questionsQuery->where('user_id', $this->user->id);
                     });
             })
+            ->whereDoesntHave('likes', function (Builder $likesQuery): void {
+                $likesQuery->where('user_id', $this->user->id);
+            })
             ->orderByDesc('updated_at')
             ->whereNotNull('answer')
             ->where('is_reported', false)
