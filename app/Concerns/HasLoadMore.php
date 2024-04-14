@@ -25,6 +25,11 @@ trait HasLoadMore
         $this->perPage = $this->perPage > 100 ? 100 : ($this->perPage + 5);
     }
 
+    /**
+     * Get the load more button.
+     *
+     * @param  Paginator<mixed>  $paginator
+     */
     private function getLoadMoreButton(Paginator $paginator, string $message): HtmlString
     {
         return new HtmlString(Blade::render(<<<'BLADE'
