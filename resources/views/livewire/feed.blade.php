@@ -6,6 +6,7 @@
             <div class="text-center text-slate-400">There are no questions to show.</div>
         @endforelse
 
-        {{ $this->getLoadMoreButton($questions, 'There are no more questions to load, or you have scrolled too far.') }}
+        <x-load-more-button :perPage="$perPage" :paginator="$questions"
+            message="There are no more questions to load, or you have scrolled too far." />
     </section>
 </div>

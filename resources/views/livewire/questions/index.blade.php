@@ -3,5 +3,6 @@
         <livewire:questions.show :questionId="$question->id" :key="'question-' . $question->id" :inIndex="true" :pinnable="$pinnable" />
     @endforeach
 
-    {{ $this->getLoadMoreButton($questions, 'There are no more questions to load, or you have scrolled too far.') }}
+    <x-load-more-button :perPage="$perPage" :paginator="$questions"
+        message="There are no more questions to load, or you have scrolled too far." />
 </section>
