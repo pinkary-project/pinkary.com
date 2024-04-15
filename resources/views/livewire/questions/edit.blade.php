@@ -15,10 +15,7 @@
                         rows="3"
                     ></textarea>
 
-                    <p class="text-right text-xs text-slate-400">
-                        <span x-text="$wire.answer.length"></span>
-                        / 1000
-                    </p>
+                    <p class="text-right text-xs text-slate-400"><span x-text="$wire.answer.length"></span> / 1000</p>
 
                     @error('answer')
                         <x-input-error :messages="$message" class="mt-2" />

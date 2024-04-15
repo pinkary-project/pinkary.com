@@ -147,10 +147,8 @@
                         @endif
 
                         @php($likesCount = $question->likes()->count())
-                        @if($likesCount)
-                            <p class="ml-1 cursor-click" title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}">
-                                {{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}
-                            </p>
+                        @if ($likesCount)
+                            <p class="cursor-click ml-1" title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}">{{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}</p>
                         @endif
                     </button>
                 </div>
