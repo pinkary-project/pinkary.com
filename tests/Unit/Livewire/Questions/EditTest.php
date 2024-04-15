@@ -117,7 +117,9 @@ test('cannot answer a question that has already been answered', function () {
 
     $component->call('update');
 
-    $component->assertDispatched('notification.created', message: 'cannot answer this question.');
+    $component->assertDispatched('notification.created', message: __('messages.error'));
+
+    $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
 });
 
 test('cannot answer a question that has been reported or ignored', function () {
@@ -133,7 +135,7 @@ test('cannot answer a question that has been reported or ignored', function () {
 
     $component->call('update');
 
-    $component->assertDispatched('notification.created', message: 'cannot answer this question.');
+    $component->assertDispatched('notification.created', message: __('messages.error'));
 
     $this->question->update([
         'is_reported' => false,
@@ -142,5 +144,7 @@ test('cannot answer a question that has been reported or ignored', function () {
 
     $component->call('update');
 
-    $component->assertDispatched('notification.created', message: 'cannot answer this question.');
+    $component->assertDispatched('notification.created', message: __('messages.error'));
+
+    $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
 });
