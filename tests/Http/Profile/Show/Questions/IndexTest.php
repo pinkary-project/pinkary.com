@@ -24,7 +24,7 @@ it('dispatches job to check & increment question views on profile', function () 
         'id' => $question->id,
         'is_ignored' => true,
         'to_id' => $user->id,
-        'views' => 0,
+        'views' => $question->views,
     ]);
     Queue::assertPushed(IncrementViews::class);
 });

@@ -9,7 +9,9 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Eloquent\Collection;
 
 it('increments models when not viewed before', function () {
-    $models = Question::factory()->count(3)->create();
+    $models = Question::factory()->count(3)->create(
+        ['views' => 0]
+    );
     $user = User::factory()->create();
 
     $job = new IncrementViews($models, $user->id);
@@ -20,7 +22,9 @@ it('increments models when not viewed before', function () {
 });
 
 it('caches viewed items', function () {
-    $models = Question::factory()->count(3)->create();
+    $models = Question::factory()->count(3)->create(
+        ['views' => 0]
+    );
     $user = User::factory()->create();
 
     $job = new IncrementViews($models, $user->id);
@@ -32,13 +36,15 @@ it('caches viewed items', function () {
 });
 
 it('does not increment models when already viewed', function () {
-    $models = Question::factory()->count(3)->create();
+    $models = Question::factory()->count(3)->create(
+        ['views' => 1]
+    );
     $user = User::factory()->create();
     $job = new IncrementViews($models, $user->id);
     Cache::put("viewed.{$job->getModelName()}.for.user.{$user->id}", $models->pluck('id')->toArray(), now()->addMinutes(10));
     $job->handle();
 
-    $models->each(fn ($model) => expect($model->views)->toBe(0));
+    $models->each(fn ($model) => expect($model->views)->toBe(1));
 });
 
 it('releases lock when exception occurs', function () {
@@ -52,7 +58,9 @@ it('releases lock when exception occurs', function () {
 })->throws(LockTimeoutException::class);
 
 it('caches using session id when no user', function () {
-    $models = Question::factory()->count(3)->create();
+    $models = Question::factory()->count(3)->create(
+        ['views' => 0]
+    );
     Session::shouldReceive('getId')->andReturn('session-id');
     $sessionId = Session::getId();
     $job = new IncrementViews($models, $sessionId);
