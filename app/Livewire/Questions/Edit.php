@@ -33,7 +33,17 @@ final class Edit extends Component
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
 
-        $question = Question::findOrFail($this->questionId);
+        $question = Question::query()
+            ->whereNull('answer')
+            ->where('is_reported', false)
+            ->where('is_ignored', false)
+            ->find($this->questionId);
+
+        if (is_null($question)) {
+            $this->dispatch('notification.created', message: 'cannot answer this question.');
+
+            return;
+        }
 
         $this->authorize('update', $question);
 
