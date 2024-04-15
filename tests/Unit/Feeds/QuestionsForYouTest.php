@@ -7,66 +7,71 @@ use App\Models\User;
 use App\Queries\Feeds\QuestionsForYouFeed;
 use Illuminate\Database\Eloquent\Builder;
 
-it('render questions with right conditions', function ($user) {
+describe('verify query', function () {
 
-    $builder = (new QuestionsForYouFeed($user))->builder();
+    beforeEach(function () {
+        $this->user = User::factory()->create();
 
-    $result = $builder->get();
-    expect($result->count())->toBe(2);
-})->with('user-in-for-you');
-
-it('render questions which has answer', function ($user) {
-
-    $builder = (new QuestionsForYouFeed($user))->builder();
-
-    $result = $builder->get();
-    $result->each(function ($question) {
-        expect($question->answer)->toBe('Some answer');
+        $this->inspirationalUser = User::factory()
+            ->has(Question::factory()
+                ->hasLikes(1, ['user_id' => $this->user->id])
+                ->state(['answer' => 'yes']),
+                'questionsReceived')
+            ->create();
     });
-})->with('user-in-for-you');
 
-it('render questions which has not been reported', function ($user) {
+    it('get questions liked by inspirational user', function () {
 
-    $builder = (new QuestionsForYouFeed($user))->builder();
+        Question::factory(2)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
+            ->create();
 
-    $result = $builder->get();
-    $result->each(function ($question) {
-        expect($question->is_reported)->toBe(false);
+        Question::factory()->create();
+
+        $builder = (new QuestionsForYouFeed($this->user))->builder();
+
+        $result = $builder->get();
+        expect($result->count())->toBe(2);
     });
-})->with('user-in-for-you');
 
-it('render questions which has not been ignored', function ($user) {
+    it('does not get questions with no answer', function () {
 
-    $builder = (new QuestionsForYouFeed($user))->builder();
+        Question::factory(2)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
+            ->create();
 
-    $result = $builder->get();
-    $result->each(function ($question) {
-        expect($question->is_ignored)->toBe(false);
+        Question::factory(2)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
+            ->state(['answer' => null])
+            ->create();
+
+        $builder = (new QuestionsForYouFeed($this->user))->builder();
+
+        $result = $builder->get();
+        expect($result->count())->toBe(2);
     });
-})->with('user-in-for-you');
 
-dataset('user-in-for-you', function () {
-    $user = User::factory()->create();
+    it('does not get questions that are reported or ignored', function () {
 
-    $inspirationalUser = User::factory()
-        ->has(Question::factory()
-            ->hasLikes(1, ['user_id' => $user->id])
-            ->state(['answer' => 'yes']),
-            'questionsReceived')
-        ->create();
+        Question::factory(2)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
+            ->create();
 
-    Question::factory(5)
-        ->sequence(
-            ['answer' => null],
-            ['is_reported' => true],
-            ['is_ignored' => true],
-            ['answer' => 'Some answer'],
-            ['answer' => 'Some answer']
-        )
-        ->hasLikes(1, ['user_id' => $inspirationalUser->id])
-        ->create();
+        Question::factory(2)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
+            ->state(['is_reported' => true])
+            ->create();
 
-    return $user;
+        Question::factory(2)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
+            ->state(['is_ignored' => true])
+            ->create();
+
+        $builder = (new QuestionsForYouFeed($this->user))->builder();
+
+        $result = $builder->get();
+        expect($result->count())->toBe(2);
+    });
 });
 
 it('builder returns Eloquent\Builder instance', function () {
