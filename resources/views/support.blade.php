@@ -10,11 +10,7 @@
                 <h1>Support</h1>
                 <p><strong>Last Updated: 02 March 2024</strong></p>
 
-                <p>
-                    If you have any questions or need help, please feel free to contact us at
-                    <a href="mailto:team@pinkary.com">team@pinkary.com</a>
-                    .
-                </p>
+                <p>If you have any questions or need help, please feel free to contact us at <a href="mailto:team@pinkary.com">team@pinkary.com</a> .</p>
             </div>
         </div>
     </div>
