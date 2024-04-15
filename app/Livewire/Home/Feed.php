@@ -6,15 +6,12 @@ namespace App\Livewire\Home;
 
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
-use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class Feed extends Component
 {
-    use HasLoadMore;
-
     /**
      * Ignore the given question.
      */
@@ -35,10 +32,6 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $feed = new RecentQuestionsFeed();
-
-        return view('livewire.feed', [
-            'questions' => $feed->builder()->simplePaginate($this->perPage),
-        ]);
+        return view('livewire.feed');
     }
 }

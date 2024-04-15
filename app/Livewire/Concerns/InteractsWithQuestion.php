@@ -2,22 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Questions;
+namespace App\Livewire\Concerns;
 
 use App\Models\Question;
 use App\Models\User;
-use Illuminate\View\View;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\On;
-use Livewire\Component;
 
-/**
- * Class Show
- * @package App\Livewire\Questions
- *
- * @deprecated This component is deprecated and will be removed in the future.
- */
-final class Show extends Component
+trait InteractsWithQuestion
 {
     public Question $question2;
 
@@ -26,27 +17,12 @@ final class Show extends Component
      */
     #[Locked]
     public string $questionId;
-
+    
     /**
      * The component's in index state.
      */
     #[Locked]
     public bool $inIndex = false;
-
-    /**
-     * Whether the pinned label should be displayed or not.
-     */
-    #[Locked]
-    public bool $pinnable = false;
-
-    /**
-     * Refresh the component.
-     */
-    #[On('question.updated')]
-    public function refresh(): void
-    {
-        //
-    }
 
     /**
      * Get the listeners for the component.
@@ -178,18 +154,5 @@ final class Show extends Component
 
             $like->delete();
         }
-    }
-
-    /**
-     * Render the component.
-     */
-    public function render(): View
-    {
-        $question = Question::findOrFail($this->questionId);
-
-        return view('livewire.questions.show', [
-            'user' => $question->to,
-            'question' => $question,
-        ]);
     }
 }
