@@ -13,6 +13,8 @@ use Livewire\Component;
 
 final class Show extends Component
 {
+    public Question $question2;
+
     /**
      * The component's question ID.
      */
