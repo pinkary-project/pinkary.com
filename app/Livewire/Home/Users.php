@@ -65,7 +65,8 @@ final class Users extends Component
 
         return $this->famousUsers($verifiedUsers)
             ->merge($verifiedUsers)
-            ->shuffle();
+            ->shuffle()
+            ->load('links');
     }
 
     /**
@@ -90,7 +91,6 @@ final class Users extends Component
 
         return User::query()
             ->fromSub($famousUsers, 'top_users')
-            ->with('links')
             ->inRandomOrder()
             ->limit(10 - $except->count())
             ->get();
@@ -108,7 +108,6 @@ final class Users extends Component
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%');
             })
-            ->with('links')
             ->where(function (Builder $query): void {
                 $query->where('is_verified', true)
                     ->orWhereIn('username', array_merge(
