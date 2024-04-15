@@ -25,7 +25,9 @@ arch('models')
     ]);
 
 arch('ensure factories', function () {
-    foreach (getModels() as $model) {
+    expect($models = getModels())->toHaveCount(4);
+
+    foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
         expect($model::factory()) // @phpstan-ignore-line
             ->toBeInstanceOf(Illuminate\Database\Eloquent\Factories\Factory::class);
@@ -33,7 +35,9 @@ arch('ensure factories', function () {
 });
 
 arch('ensure datetime casts', function () {
-    foreach (getModels() as $model) {
+    expect($models = getModels())->toHaveCount(4);
+
+    foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
         $instance = $model::factory()->create(); //@phpstan-ignore-line
 
@@ -53,8 +57,10 @@ arch('ensure datetime casts', function () {
  */
 function getModels(): array
 {
-    return collect(glob(__DIR__.'/../app/Models/*.php')) //@phpstan-ignore-line
+    $models = type(glob(__DIR__.'/../../app/Models/*.php'))->asArray();
+
+    return collect($models)
         ->map(function ($file) {
-            return 'App\Models\\'.basename($file, '.php'); //@phpstan-ignore-line
+            return 'App\Models\\'.basename($file, '.php');
         })->toArray();
 }

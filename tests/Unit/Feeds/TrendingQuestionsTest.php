@@ -12,9 +12,11 @@ it('render questions with right conditions', function () {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
+        'content' => 'How did you manage to get on the trending list, tomloprod?',
+        'answer' => 'By modifying the likes in the database :-)',
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'created_at' => now()->subHours(12),
+        'answered_at' => now()->subDays(7),
     ]);
 
     Like::factory()->create([
@@ -30,10 +32,10 @@ it('render questions with right conditions', function () {
 it('do not render questions without likes', function () {
     $user = User::factory()->create();
 
-    $question = Question::factory()->create([
+    Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'created_at' => now()->subHours(12),
+        'answered_at' => now()->subDays(12),
     ]);
 
     $builder = (new TrendingQuestionsFeed())->builder();
@@ -41,13 +43,13 @@ it('do not render questions without likes', function () {
     expect($builder->count())->toBe(0);
 });
 
-it('do not render questions older than 12 hours', function () {
+it('do not render questions older than 7 days', function () {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'created_at' => now()->subDays(8),
+        'answered_at' => now()->subDays(8),
     ]);
 
     Like::factory()->create([

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\HasLoadMore;
 use App\Jobs\IncrementViews;
 use App\Models\Question;
 use App\Models\User;
@@ -13,12 +14,10 @@ use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\WithoutUrlPagination;
-use Livewire\WithPagination;
 
 final class Index extends Component
 {
-    use WithoutUrlPagination, WithPagination;
+    use HasLoadMore;
 
     /**
      * The component's user ID.
@@ -27,23 +26,10 @@ final class Index extends Component
     public int $userId;
 
     /**
-     * The component's per page count.
-     */
-    public int $perPage = 5;
-
-    /**
      * Whether the pinned label should be displayed or not.
      */
     #[Locked]
     public bool $pinnable = false;
-
-    /**
-     * Load more questions.
-     */
-    public function loadMore(): void
-    {
-        $this->perPage = ($this->perPage > 100) ? 100 : ($this->perPage + 5);
-    }
 
     /**
      * Render the component.

@@ -133,10 +133,11 @@
 
                             <div class="flex items-center justify-center">
                                 <div
-                                    class="hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
-                                    title="Clicked {{ $link->click_count }} times"
+                                    class="cursor-help hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
+                                    title="Clicked {{ Number::format($link->click_count) }} times"
                                 >
-                                    <span>{{ Number::abbreviate($link->click_count) }} {{ str('click')->plural($link->click_count) }}</span>
+                                    {{ Number::abbreviate($link->click_count) }}
+                                    {{ str('click')->plural($link->click_count) }}
                                 </div>
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button

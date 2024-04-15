@@ -15,11 +15,12 @@
         "spatie/laravel-mailcoach-mailer": "^1.2.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.13.4",
         "fakerphp/faker": "^1.23.1",
-        "larastan/larastan": "^2.9.2",
+        "larastan/larastan": "^2.9.3",
         "laravel/pint": "^1.15.1",
-        "mockery/mockery": "^1.6.11",
         "laravel/sail": "^1.29.1",
+        "mockery/mockery": "^1.6.11",
         "nunomaduro/collision": "^8.1.1",
         "pestphp/pest": "^2.34.7",
         "pestphp/pest-plugin-laravel": "^2.3.0",

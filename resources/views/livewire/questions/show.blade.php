@@ -146,9 +146,12 @@
                             <x-icons.heart class="h-4 w-4" />
                         @endif
 
-                        <p class="ml-1">
-                            {{ $question->likes()->count() ? $question->likes()->count().' '.str('like')->plural($question->likes()->count()) : '' }}
-                        </p>
+                        @php($likesCount = $question->likes()->count())
+                        @if($likesCount)
+                            <p class="ml-1 cursor-click" title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}">
+                                {{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}
+                            </p>
+                        @endif
                     </button>
                     <span class="mx-1">•</span>
                     <x-icons.chart class="h-4 w-4" />
