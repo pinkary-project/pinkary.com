@@ -10,14 +10,6 @@ use Livewire\Attributes\Locked;
 
 trait InteractsWithQuestion
 {
-    public Question $question2;
-
-    /**
-     * The component's question ID.
-     */
-    #[Locked]
-    public string $questionId;
-    
     /**
      * The component's in index state.
      */
@@ -50,7 +42,7 @@ trait InteractsWithQuestion
     /**
      * Ignores the question.
      */
-    public function ignore(): void
+    public function ignore(string $questionId): void
     {
         if (! auth()->check()) {
             to_route('login');
@@ -61,12 +53,12 @@ trait InteractsWithQuestion
         if ($this->inIndex) {
             $this->dispatch('notification.created', message: 'Question ignored.');
 
-            $this->dispatch('question.ignore', questionId: $this->questionId);
+            $this->dispatch('question.ignore', questionId: $questionId);
 
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = Question::findOrFail($questionId);
 
         $this->authorize('ignore', $question);
 
@@ -78,7 +70,7 @@ trait InteractsWithQuestion
     /**
      * Like the question.
      */
-    public function like(): void
+    public function like(string $questionId): void
     {
         if (! auth()->check()) {
             to_route('login');
@@ -86,7 +78,7 @@ trait InteractsWithQuestion
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = Question::findOrFail($questionId);
 
         $question->likes()->firstOrCreate([
             'user_id' => auth()->id(),
@@ -96,7 +88,7 @@ trait InteractsWithQuestion
     /**
      * Pin a question.
      */
-    public function pin(): void
+    public function pin(string $questionId): void
     {
         if (! auth()->check()) {
             to_route('login');
@@ -106,7 +98,7 @@ trait InteractsWithQuestion
 
         $user = type(auth()->user())->as(User::class);
 
-        $question = Question::findOrFail($this->questionId);
+        $question = Question::findOrFail($questionId);
 
         $this->authorize('pin', $question);
 
@@ -119,7 +111,7 @@ trait InteractsWithQuestion
     /**
      * Unpin a pinned question.
      */
-    public function unpin(): void
+    public function unpin(string $questionId): void
     {
         if (! auth()->check()) {
             to_route('login');
@@ -127,7 +119,7 @@ trait InteractsWithQuestion
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = Question::findOrFail($questionId);
 
         $this->authorize('update', $question);
 
@@ -139,7 +131,7 @@ trait InteractsWithQuestion
     /**
      * Unlike the question.
      */
-    public function unlike(): void
+    public function unlike(string $questionId): void
     {
         if (! auth()->check()) {
             to_route('login');
@@ -147,7 +139,7 @@ trait InteractsWithQuestion
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = Question::findOrFail($questionId);
 
         if ($like = $question->likes()->where('user_id', auth()->id())->first()) {
             $this->authorize('delete', $like);
