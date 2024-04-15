@@ -150,6 +150,8 @@ final class User extends Authenticatable implements MustVerifyEmail
         /** @var array<int, string> $urls */
         // $urls = $this->links->pluck('url')->values()->all();
 
+        // @todo This needs to be fixed and later extracted to laravel-reflection (remove this comment before PR)
+
         return (new Avatar(
             email: $this->email,
             links: [],
