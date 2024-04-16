@@ -31,7 +31,7 @@ final class Edit extends Component
     public function update(Request $request): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }

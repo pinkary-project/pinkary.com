@@ -57,7 +57,7 @@ final class Create extends Component
     public function store(Request $request): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }
