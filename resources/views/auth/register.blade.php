@@ -58,14 +58,14 @@
 
         <div class="mt-4">
             <div class="flex items-center">
-                <input id="is-over-18" name="is-over-18" type="checkbox" class="h-4 w-4 mr-2 rounded border-gray-300 text-pink-600 focus:ring-pink-600" />
+                <input id="terms" name="terms" type="checkbox" class="h-4 w-4 mr-2 rounded border-gray-300 text-pink-600 focus:ring-pink-600" />
 
-                <x-input-label for="is-over-18">
-                    I certify that I am at least 18 years old and that I agree to the <a href="{{ route('terms') }}" class="text-pink-500 underline hover:no-underline">Terms and Policies</a> and <a href="{{ route('privacy') }}" class="text-pink-500 underline hover:no-underline">Privacy Policy</a>.
+                <x-input-label for="terms">
+                    I am over 18 and I agree to the <a target="_blank" href="{{ route('terms') }}" class="text-pink-500 underline hover:no-underline">Terms of Service</a> and <a href="{{ route('privacy') }}" class="text-pink-500 underline hover:no-underline">Privacy Policy</a>.
                 </x-input-label>
             </div>
 
-            <x-input-error :messages="$errors->get('is-over-18')" class="mt-2" />
+            <x-input-error :messages="$errors->get('terms')" class="mt-2" />
         </div>
 
         <div class="g-recaptcha mt-4" data-sitekey="{{ config('services.recaptcha.key') }}" data-theme="dark"></div>

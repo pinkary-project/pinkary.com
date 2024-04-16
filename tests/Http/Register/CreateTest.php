@@ -25,7 +25,7 @@ test('new users can register', function () {
         'email' => 'test@example.com',
         'password' => 'm@9v_.*.XCN',
         'password_confirmation' => 'm@9v_.*.XCN',
-        'is-over-18' => true,
+        'terms' => true,
         'g-recaptcha-response' => 'valid',
     ]);
 
@@ -53,7 +53,7 @@ test('required fields', function (string $field) {
         ->assertSessionHasErrors([
             $field => 'The '.$field.' field is required.',
         ]);
-})->with(['name', 'username', 'email', 'password', 'is-over-18']);
+})->with(['name', 'username', 'email', 'password', 'terms']);
 
 test('email must be valid', function () {
     $response = $this->from('/register')->post('/register', [
@@ -88,11 +88,11 @@ test('users must be at least 18 years old', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'not-password',
-        'is-over-18' => false,
+        'terms' => false,
     ]);
 
     $response->assertRedirect('/register')
-        ->assertSessionHasErrors(['is-over-18' => 'The is-over-18 field must be accepted.']);
+        ->assertSessionHasErrors(['terms' => 'The terms field must be accepted.']);
 });
 
 test('username must be unique', function () {
@@ -270,7 +270,7 @@ test("user's name can contain blank characters", function (string $given, string
         'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'is-over-18' => true,
+        'terms' => true,
     ]);
 
     $user = User::where('email', 'test@laravel.com')->first();
@@ -289,7 +289,7 @@ test('anonymously preference is set to true by default', function () {
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'is-over-18' => true,
+        'terms' => true,
     ]);
 
     expect(User::first()->prefers_anonymous_questions)->toBeTrue();
