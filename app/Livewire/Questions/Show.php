@@ -60,7 +60,7 @@ final class Show extends Component
     {
         $question = Question::findOrFail($this->questionId);
 
-        $this->redirectRoute('profile.show', ['username' => $question->to->username]);
+        $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
     }
 
     /**
@@ -88,7 +88,7 @@ final class Show extends Component
 
         $question->update(['is_ignored' => true]);
 
-        $this->redirectRoute('profile.show', ['username' => $question->to->username]);
+        $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
     }
 
     /**
