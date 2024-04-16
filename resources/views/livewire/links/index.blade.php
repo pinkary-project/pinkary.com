@@ -126,7 +126,7 @@
 
                             <div class="flex items-center justify-center">
                                 <div
-                                    class="cursor-help hidden min-w-fit items-center gap-1 text-xs group-hover:flex"
+                                    class="hidden min-w-fit cursor-help items-center gap-1 text-xs group-hover:flex"
                                     title="Clicked {{ Number::format($link->click_count) }} times"
                                 >
                                     {{ Number::abbreviate($link->click_count) }}

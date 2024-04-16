@@ -102,3 +102,49 @@ test('cannot update with blank characters', function () {
         'answer' => 'The answer field cannot contain blank characters.',
     ]);
 });
+
+test('cannot answer a question that has already been answered', function () {
+    $this->question->update([
+        'answer' => 'Hello World',
+        'answered_at' => now(),
+    ]);
+
+    $component = Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ]);
+
+    $component->set('answer', 'Hello World');
+
+    $component->call('update');
+
+    $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
+
+    $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
+});
+
+test('cannot answer a question that has been reported or ignored', function () {
+    $this->question->update([
+        'is_reported' => true,
+    ]);
+
+    $component = Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ]);
+
+    $component->set('answer', 'Hello World');
+
+    $component->call('update');
+
+    $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
+
+    $this->question->update([
+        'is_reported' => false,
+        'is_ignored' => true,
+    ]);
+
+    $component->call('update');
+
+    $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
+
+    $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
+});

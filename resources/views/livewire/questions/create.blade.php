@@ -3,10 +3,7 @@
         <div>
             <x-textarea wire:model="content" placeholder="Ask a question..." maxlength="255" rows="3" required />
 
-            <p class="text-right text-xs text-slate-400">
-                <span x-text="$wire.content.length"></span>
-                / 255
-            </p>
+            <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / 255</p>
 
             @error('content')
                 <x-input-error :messages="$message" class="my-2" />

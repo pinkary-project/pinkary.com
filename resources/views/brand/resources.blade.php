@@ -11,10 +11,7 @@
                 <p><strong>Last Updated: 27 March 2024</strong></p>
 
                 <h2>Pinkary logotype and icon</h2>
-                <p>
-                    Download vector and .png versions of our logotype and icon. Please respect our branding guidelines and do not alter the logo - we
-                    like it the way it is.
-                </p>
+                <p>Download vector and .png versions of our logotype and icon. Please respect our branding guidelines and do not alter the logo - we like it the way it is.</p>
 
                 <div class="mb-16 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-7">
                     <div class="relative flex items-center justify-center rounded-lg bg-slate-900 p-12">
@@ -48,11 +45,7 @@
                     </div>
                 </div>
 
-                <p>
-                    If you have any questions or need help, please feel free to contact us at
-                    <a href="mailto:team@pinkary.com">team@pinkary.com</a>
-                    .
-                </p>
+                <p>If you have any questions or need help, please feel free to contact us at <a href="mailto:team@pinkary.com">team@pinkary.com</a> .</p>
             </div>
         </div>
     </div>
