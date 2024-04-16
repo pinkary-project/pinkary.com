@@ -14,7 +14,8 @@ arch('livewire components')
         'App\Http\Controllers',
         'App\Http\Livewire',
     ])
-    ->ignoring('App\Livewire\Concerns');
+    ->ignoring('App\Livewire\Concerns')
+    ->not->toUse(['redirect', 'to_route', 'back']);
 
 arch('livewire concerns')
     ->expect('App\Livewire\Concerns')
