@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
-use App\Models\Concerns\Viewable;
 use App\Services\Avatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
@@ -49,9 +49,9 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  */
-final class User extends Authenticatable implements MustVerifyEmail
+final class User extends Authenticatable implements MustVerifyEmail, Viewable
 {
-    use HasFactory, Notifiable, Viewable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -62,6 +62,15 @@ final class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
+
+    public static function incrementViews(array $ids): void
+    {
+        self::withoutTimestamps(function () use ($ids): void {
+            self::query()
+                ->whereIn('id', $ids)
+                ->increment('views');
+        });
+    }
 
     /**
      * Get the user's links.
