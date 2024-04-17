@@ -6,7 +6,6 @@ namespace App\Jobs;
 
 use App\Models\Question;
 use App\Models\User;
-use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
@@ -63,7 +62,7 @@ final class IncrementViews implements ShouldQueue
         try {
             $lock->block(5);
 
-            $recentlyViewed = $this->getRecentlyViewed($lock, $key);
+            $recentlyViewed = $this->getRecentlyViewed($key);
         } catch (LockTimeoutException) { // @codeCoverageIgnore
             $this->release(10); // @codeCoverageIgnore
         } finally {
@@ -82,26 +81,6 @@ final class IncrementViews implements ShouldQueue
     }
 
     /**
-     * Get the recently viewed models.
-     *
-     * @return Collection<array-key, Question>|Collection<array-key, User>
-     */
-    private function getRecentlyViewed(Lock $lock, string $key): Collection
-    {
-        /** @var array<int, int> $viewed */
-        $viewed = Cache::get($key, []);
-
-        $recentlyViewed = $this->viewables->reject(fn (Question|User $model) => in_array($model->id, $viewed, true))->values();
-
-        Cache::put($key, array_unique(array_merge(
-            $viewed,
-            $recentlyViewed->pluck('id')->toArray(),
-        )), now()->addMinutes(120));
-
-        return $recentlyViewed;
-    }
-
-    /**
      * Lowercase name of the model.
      */
     public function getModelName(): string
@@ -114,5 +93,25 @@ final class IncrementViews implements ShouldQueue
         $model = $this->viewables->first();
 
         return mb_strtolower(class_basename($model));
+    }
+
+    /**
+     * Get the recently viewed models.
+     *
+     * @return Collection<array-key, Question>|Collection<array-key, User>
+     */
+    private function getRecentlyViewed(string $key): Collection
+    {
+        /** @var array<int, int> $viewed */
+        $viewed = Cache::get($key, []);
+
+        $recentlyViewed = $this->viewables->reject(fn (Question|User $model): bool => in_array($model->id, $viewed, true))->values();
+
+        Cache::put($key, array_unique(array_merge(
+            $viewed,
+            $recentlyViewed->pluck('id')->toArray(),
+        )), now()->addMinutes(120));
+
+        return $recentlyViewed;
     }
 }
