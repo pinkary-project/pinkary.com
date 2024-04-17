@@ -18,6 +18,8 @@ trait Viewable
      */
     public static function incrementViews(array $ids): void
     {
-        static::query()->whereIn('id', $ids)->increment('views');
+        static::withoutTimestamps(function () use ($ids) {
+            static::query()->whereIn('id', $ids)->increment('views');
+        });
     }
 }
