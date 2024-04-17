@@ -1,4 +1,8 @@
-<div>
+<div @if (auth()->user()?->is($user)) x-data="{
+    showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
+    gradient: '{{ $user->gradient }}',
+    link_shape: '{{ $user->link_shape }}',
+}" @endif>
     <div class="relative bg-gradient-to-r p-5 text-center text-white">
         <div class="absolute left-0 top-6 flex">
             <button
@@ -120,6 +124,7 @@
                     @foreach ($links as $link)
                         <li
                             class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient group flex bg-gradient-to-r"
+                            :class="showSettingsForm && gradient + ' ' + link_shape"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
                         >
@@ -175,7 +180,6 @@
         <div
             x-data="{
                 showLinksForm: {{ $errors->links->isEmpty() ? 'false' : 'true' }},
-                showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
             }"
             class="py-4"
         >
