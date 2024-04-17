@@ -44,7 +44,7 @@ final class Question extends Model implements Viewable
      */
     public static function incrementViews(array $ids): void
     {
-        self::withoutTimestamps(function () use ($ids) {
+        self::withoutTimestamps(function () use ($ids): void {
             self::query()
                 ->whereIn('id', $ids)
                 ->whereNotNull('answer')
