@@ -81,5 +81,3 @@ test('increment views', function () {
 
     expect($user->fresh()->views)->toBe(1);
 });
-
-
