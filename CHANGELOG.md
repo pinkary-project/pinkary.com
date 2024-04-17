@@ -1,3 +1,8 @@
+## Version 1.8.0
+> 17 April, 2024
+
+- Added views count to the user's profile page and questions / answers blocks.
+
 ## Version 1.7.0
 > 13 April, 2024
 
