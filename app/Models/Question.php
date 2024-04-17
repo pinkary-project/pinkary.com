@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\Viewable;
+use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -35,9 +35,22 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Like> $likes
  */
 #[ObservedBy(QuestionObserver::class)]
-final class Question extends Model
+final class Question extends Model implements Viewable
 {
-    use HasFactory, HasUuids, Viewable;
+    use HasFactory, HasUuids;
+
+    /**
+     * Increment the views for the given question IDs.
+     */
+    public static function incrementViews(array $ids): void
+    {
+        self::withoutTimestamps(function () use ($ids) {
+            self::query()
+                ->whereIn('id', $ids)
+                ->whereNotNull('answer')
+                ->increment('views');
+        });
+    }
 
     /**
      * The attributes that should be cast.
