@@ -81,7 +81,7 @@
         <div class="mt-2 text-sm">
             <p class="text-slate-400">
                 <span>
-                    {{ $questionsReceivedCount }}
+                    {{ Number::abbreviate($questionsReceivedCount) }}
                     {{ str('Answer')->plural($questionsReceivedCount) }}
                 </span>
 
@@ -89,7 +89,7 @@
                     <span class="mx-1">•</span>
 
                     <span>
-                        {{ $user->views }} {{ str('View')->plural($user->views) }}
+                        {{ Number::abbreviate($user->views) }} {{ str('View')->plural($user->views) }}
                     </span>
                 @endif
 
