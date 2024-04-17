@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
@@ -57,43 +58,47 @@ final class IncrementViews implements ShouldQueue
         $key = "viewed.{$this->getModelName()}.for.user.{$this->id}";
         $lock = Cache::lock($key);
 
-        $viewed = new Collection;
+        $recentlyViewed = collect();
 
         try {
             $lock->block(5);
 
-            /** @var array<int, int> $alreadyViewed */
-            $alreadyViewed = Cache::get($key, []);
-
-            $this->viewables->each(function (Question|User $model) use ($alreadyViewed, $viewed): void {
-                if (! in_array($model->id, $alreadyViewed, true)) {
-                    $viewed->push($model);
-                }
-            });
-
-            Cache::put(
-                $key,
-                array_unique(array_merge(
-                    $alreadyViewed,
-                    $viewed->pluck('id')->toArray()
-                )),
-                now()->addMinutes(120)
-            );
+            $recentlyViewed = $this->getRecentlyViewed($lock, $key);
         } catch (LockTimeoutException) {
             $this->release(10);
         } finally {
             $lock->release();
         }
 
-        if ($viewed->isNotEmpty()) {
+        if ($recentlyViewed->isNotEmpty()) {
             /** @var Question|User $model */
-            $model = $viewed->first();
+            $model = $recentlyViewed->first();
 
             /** @var array<int, int> $ids */
-            $ids = $viewed->pluck('id')->toArray();
+            $ids = $recentlyViewed->pluck('id')->toArray();
 
             $model::incrementViews($ids);
         }
+    }
+
+    /**
+     * Get the recently viewed models.
+     *
+     * @return Collection<array-key, Question>|Collection<array-key, User>
+     */
+    private function getRecentlyViewed(Lock $lock, string $key): Collection
+    {
+        /** @var array<int, int> $viewed */
+        $viewed = Cache::get($key, []);
+
+        $recentlyViewed = $this->viewables->reject(fn (Question|User $model) => in_array($model->id, $viewed, true))->values();
+
+        Cache::put($key, array_unique(array_merge(
+            $viewed,
+            $recentlyViewed->pluck('id')->toArray(),
+        )), now()->addMinutes(120));
+
+        return $recentlyViewed;
     }
 
     /**
