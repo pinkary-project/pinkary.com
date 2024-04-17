@@ -30,12 +30,6 @@ final class Edit extends Component
      */
     public function update(Request $request): void
     {
-        if (! auth()->check()) {
-            $this->redirectRoute('login', navigate: true);
-
-            return;
-        }
-
         $this->validate([
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
