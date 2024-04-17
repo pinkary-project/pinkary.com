@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Home;
 
-use App\Livewire\Concerns\HasLoadMore;
 use App\Jobs\IncrementViews;
+use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\View\View;
@@ -39,8 +39,7 @@ final class Feed extends Component
 
         $questions = (new RecentQuestionsFeed())->builder()->simplePaginate($this->perPage);
 
-        /* @phpstan-ignore-next-line */
-        dispatch(IncrementViews::of($questions->getCollection()));
+        IncrementViews::dispatchUsingSession($questions->getCollection());
 
         return view('livewire.feed', [
             'questions' => $questions,

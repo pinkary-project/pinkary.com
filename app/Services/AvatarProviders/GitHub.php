@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\AvatarProviders;
 
-use App\Contracts\AvatarProvider;
+use App\Contracts\Services\AvatarProvider;
 
 final readonly class GitHub implements AvatarProvider
 {

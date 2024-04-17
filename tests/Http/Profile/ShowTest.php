@@ -29,7 +29,7 @@ it('can show profile on username case-insensitive', function () {
     $response->assertSee($this->user->name);
 });
 
-it('dispatches "IncrementViews" job', function () {
+it('does increment views', function () {
     Queue::fake(IncrementViews::class);
     $this->actingAs($this->user);
 

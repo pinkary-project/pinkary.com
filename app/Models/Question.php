@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -36,7 +37,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, Viewable;
 
     /**
      * The attributes that should be cast.

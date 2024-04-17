@@ -23,7 +23,7 @@ it('guest can see the "for you" view', function () {
         ->assertSee('Log in or sign up to access personalized content');
 });
 
-it('dispatches the "IncrementViews" job', function () {
+it('does increment views', function () {
     Queue::fake(IncrementViews::class);
 
     $this->actingAs(User::factory()->create());

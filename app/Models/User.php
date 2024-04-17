@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\UserMailPreference;
+use App\Models\Concerns\Viewable;
 use App\Services\Avatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
@@ -50,7 +51,7 @@ use Illuminate\Support\Facades\Storage;
  */
 final class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Viewable;
 
     /**
      * The attributes that should be hidden for serialization.

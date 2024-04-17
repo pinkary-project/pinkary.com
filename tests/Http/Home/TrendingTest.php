@@ -13,7 +13,7 @@ it('can see the "trending" view', function () {
         ->assertSeeLivewire(TrendingQuestions::class);
 });
 
-it('dispatches the "IncrementViews" job', function () {
+it('does increment views', function () {
     Queue::fake(IncrementViews::class);
 
     $this->get(route('home.trending'));

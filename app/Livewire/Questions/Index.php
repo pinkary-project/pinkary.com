@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
-use App\Livewire\Concerns\HasLoadMore;
 use App\Jobs\IncrementViews;
+use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,8 +49,7 @@ final class Index extends Component
             ->orderByDesc('updated_at')
             ->simplePaginate($this->perPage);
 
-        /* @phpstan-ignore-next-line */
-        dispatch(IncrementViews::of($questions->getCollection()));
+        IncrementViews::dispatchUsingSession($questions->getCollection());
 
         return view('livewire.questions.index', [
             'user' => $user,

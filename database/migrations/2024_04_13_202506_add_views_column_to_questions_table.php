@@ -13,15 +13,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('questions', function (Blueprint $table) {
+        Schema::table('questions', function (Blueprint $table): void {
             $table->unsignedBigInteger('views')->default(0);
-        });
-    }
-
-    public function down(): void
-    {
-        Schema::table('questions', function (Blueprint $table) {
-            $table->dropColumn('views');
         });
     }
 };

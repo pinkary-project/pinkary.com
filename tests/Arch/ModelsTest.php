@@ -5,7 +5,9 @@ declare(strict_types=1);
 arch('models')
     ->expect('App\Models')
     ->toHaveMethod('casts')
+    ->ignoring('App\Models\Concerns')
     ->toExtend('Illuminate\Database\Eloquent\Model')
+    ->ignoring('App\Models\Concerns')
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',
@@ -22,7 +24,7 @@ arch('models')
         'App\Rules',
         'App\Services',
         'Database\Factories',
-    ]);
+    ])->ignoring('App\Models\Concerns');
 
 arch('ensure factories', function () {
     expect($models = getModels())->toHaveCount(4);

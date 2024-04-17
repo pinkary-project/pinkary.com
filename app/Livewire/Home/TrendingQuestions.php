@@ -19,7 +19,7 @@ final class TrendingQuestions extends Component
     {
         $questions = (new TrendingQuestionsFeed())->builder()->get();
 
-        dispatch(IncrementViews::of($questions));
+        IncrementViews::dispatchUsingSession($questions);
 
         return view('livewire.home.trending-questions', [
             'trendingQuestions' => $questions,
