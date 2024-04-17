@@ -40,8 +40,6 @@ final class IncrementViews implements ShouldQueue
     {
         $id = auth()->id() ?? session()->getId();
 
-        info($id);
-
         /** @var Collection<array-key, Question>|Collection<array-key, User> $viewables */
         $viewables = $viewables instanceof Model ? collect([$viewables]) : $viewables;
 
@@ -66,8 +64,8 @@ final class IncrementViews implements ShouldQueue
             $lock->block(5);
 
             $recentlyViewed = $this->getRecentlyViewed($lock, $key);
-        } catch (LockTimeoutException) {
-            $this->release(10);
+        } catch (LockTimeoutException) { // @codeCoverageIgnore
+            $this->release(10); // @codeCoverageIgnore
         } finally {
             $lock->release();
         }
