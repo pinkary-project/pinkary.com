@@ -85,12 +85,13 @@
                     {{ str('Answer')->plural($questionsReceivedCount) }}
                 </span>
 
-                <span class="mx-1">•</span>
+                @if ($user->views > 0)
+                    <span class="mx-1">•</span>
 
-                <span>
-                    {{ $user->views }}
-                    {{ str('View')->plural($user->views) }}
-                </span>
+                    <span>
+                        {{ $user->views }} {{ str('View')->plural($user->views) }}
+                    </span>
+                @endif
 
                 <span class="mx-1">•</span>
 
