@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Contracts\AvatarProvider;
+use App\Contracts\Services\AvatarProvider;
 use App\Services\AvatarProviders\GitHub;
 use App\Services\AvatarProviders\Twitter;
 

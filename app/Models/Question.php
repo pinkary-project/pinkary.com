@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -26,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $answered_at
  * @property bool $is_reported
  * @property bool $is_ignored
+ * @property int $views
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read User $from
@@ -35,7 +37,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, Viewable;
 
     /**
      * The attributes that should be cast.
@@ -72,6 +74,7 @@ final class Question extends Model
             'updated_at' => 'datetime',
             'pinned' => 'bool',
             'is_ignored' => 'boolean',
+            'views' => 'integer',
         ];
     }
 

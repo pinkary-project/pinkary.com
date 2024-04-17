@@ -30,6 +30,7 @@ final class QuestionFactory extends Factory
             'answer' => $this->faker->sentence,
             'answered_at' => $this->faker->dateTime,
             'pinned' => false,
+            'views' => $this->faker->numberBetween(0, 1000),
         ];
     }
 }

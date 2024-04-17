@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\UserMailPreference;
+use App\Models\Concerns\Viewable;
 use App\Services\Avatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
@@ -40,6 +41,7 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon $updated_at
  * @property ?Carbon $avatar_updated_at
  * @property string $username
+ * @property int $views
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
@@ -49,7 +51,7 @@ use Illuminate\Support\Facades\Storage;
  */
 final class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Viewable;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -240,6 +242,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'prefers_anonymous_questions' => 'boolean',
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
+            'views' => 'integer',
         ];
     }
 }

@@ -151,6 +151,11 @@
                             <p class="cursor-click ml-1" title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}">{{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}</p>
                         @endif
                     </button>
+                    <span class="mx-1">•</span>
+                    <x-icons.chart class="h-4 w-4" />
+                    <p class="ml-1">
+                        {{ $question->views }} {{ str('view')->plural($question->views) }}
+                    </p>
                 </div>
                 <div class="flex items-center text-slate-500">
                     <time

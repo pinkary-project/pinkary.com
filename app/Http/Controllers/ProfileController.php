@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Jobs\DownloadUserAvatar;
+use App\Jobs\IncrementViews;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,8 @@ final readonly class ProfileController
      */
     public function show(User $user): View
     {
+        IncrementViews::dispatchUsingSession($user);
+
         return view('profile.show', [
             'user' => $user,
         ]);

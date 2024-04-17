@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Jobs\IncrementViews;
 use App\Models\User;
 
 beforeEach(function () {
@@ -26,4 +27,14 @@ it('can show profile on username case-insensitive', function () {
     $response = $this->get(route('profile.show', ['username' => $revertCasingUsername]));
 
     $response->assertSee($this->user->name);
+});
+
+it('does increment views', function () {
+    Queue::fake(IncrementViews::class);
+    $this->actingAs($this->user);
+
+    $response = $this->get(route('profile.show', ['username' => $this->user->username]));
+
+    $response->assertSee($this->user->name);
+    Queue::assertPushed(IncrementViews::class);
 });

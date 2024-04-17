@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Contracts\ParsableContentProvider;
+use App\Contracts\Services\ParsableContentProvider;
 use App\Services\ParsableContentProviders\BrProviderParsable;
 use App\Services\ParsableContentProviders\CodeProviderParsable;
 use App\Services\ParsableContentProviders\LinkProviderParsable;
