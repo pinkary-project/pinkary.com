@@ -8,12 +8,11 @@ use App\Models\User;
 use Livewire\Livewire;
 
 test('renders questions with answers', function () {
-    $user = User::factory()->create();
     Question::factory()->create([
         'answer' => 'This is the answer',
     ]);
 
-    $component = Livewire::actingAs($user)->test(Feed::class);
+    $component = Livewire::test(Feed::class);
 
     $component->assertSee('This is the answer')
         ->assertDontSee('There are no questions to show.');
@@ -32,13 +31,12 @@ test('do not renders questions without answers', function () {
 });
 
 test('do not renders ignored questions', function () {
-    $user = User::factory()->create();
     Question::factory()->create([
         'answer' => 'This is the answer',
         'is_ignored' => true,
     ]);
 
-    $component = Livewire::actingAs($user)->test(Feed::class);
+    $component = Livewire::test(Feed::class);
 
     $component->assertSee('There are no questions to show.');
 });

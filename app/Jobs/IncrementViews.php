@@ -38,7 +38,9 @@ final class IncrementViews implements ShouldQueue
      */
     public static function dispatchUsingSession(Collection|Question|User $viewables): PendingDispatch
     {
-        $id = auth()->id() ?? request()->session()->getId();
+        $id = auth()->id() ?? session()->getId();
+
+        info($id);
 
         /** @var Collection<array-key, Question>|Collection<array-key, User> $viewables */
         $viewables = $viewables instanceof Model ? collect([$viewables]) : $viewables;

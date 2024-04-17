@@ -26,7 +26,7 @@ test('renders trending questions', function () {
         'question_id' => $question->id,
     ]);
 
-    $component = Livewire::actingAs($user)->test(TrendingQuestions::class);
+    $component = Livewire::test(TrendingQuestions::class);
 
     $component
         ->assertDontSee('There is no trending questions right now')
@@ -45,7 +45,7 @@ test('do not renders trending questions', function () {
         'to_id' => $user->id,
     ]);
 
-    $component = Livewire::actingAs($user)->test(TrendingQuestions::class);
+    $component = Livewire::test(TrendingQuestions::class);
 
     $component
         ->assertSee('There is no trending questions right now')
