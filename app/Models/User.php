@@ -156,9 +156,9 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
     /**
      * Get the user's avatar URL attribute.
      */
-    public function getAvatarAttribute($value): string
+    public function getAvatarAttribute(?string $value): string
     {
-        return $value ? asset($value) : asset('img/default-avatar.png');
+        return $value !== null && $value !== '' && $value !== '0' ? asset($value) : asset('img/default-avatar.png');
     }
 
     /**
