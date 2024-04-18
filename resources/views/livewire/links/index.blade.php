@@ -80,7 +80,7 @@
 
         <div class="mt-2 text-sm">
             <p class="text-slate-400">
-                <span>
+                <span class="cursor-help" title="{{ Number::format($questionsReceivedCount) }} {{ str('Answer')->plural($questionsReceivedCount) }}">
                     {{ Number::abbreviate($questionsReceivedCount) }}
                     {{ str('Answer')->plural($questionsReceivedCount) }}
                 </span>
@@ -88,8 +88,8 @@
                 @if ($user->views > 0)
                     <span class="mx-1">•</span>
 
-                    <span>
-                        {{ Number::abbreviate($user->views) }} {{ str('View')->plural($user->views) }}
+                    <span class="cursor-help" title="{{ Number::format($user->views) }} {{ str('view')->plural($user->views) }}">
+                        {{ Number::abbreviate($user->views) }} {{ str('view')->plural($user->views) }}
                     </span>
                 @endif
 
