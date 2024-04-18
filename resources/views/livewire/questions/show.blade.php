@@ -17,7 +17,7 @@
                 >
                     <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
-                            src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
+                            src="{{ $question->from->avatar }}"
                             alt="{{ $question->from->username }}"
                             class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />
@@ -61,7 +61,7 @@
                 <a href="{{ route('profile.show', ['username' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
                     <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
-                            src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
+                            src="{{ $question->to->avatar }}"
                             alt="{{ $question->to->username }}"
                             class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />

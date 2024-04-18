@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @property bool $prefers_anonymous_questions
  * @property string $avatar
- * @property string $avatar_url
  * @property string|null $bio
  * @property Carbon $created_at
  * @property string $email
@@ -157,9 +156,9 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
     /**
      * Get the user's avatar URL attribute.
      */
-    public function getAvatarUrlAttribute(): string
+    public function getAvatarAttribute($value): string
     {
-        return asset('img/default-avatar.png');
+        return $value ? asset($value) : asset('img/default-avatar.png');
     }
 
     /**

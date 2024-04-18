@@ -34,7 +34,7 @@
     <meta property="profile:username" content="{{ $user->username }}" data-rh="true" />
     <meta property="og:title" content="{{ $user->name }} ({{ '@'.$user->username }}) / Pinkary" data-rh="true" />
     <meta property="og:description" content="{{ $user->bio ?: 'One Link. All Your Socials.' }}" data-rh="true" />
-    <meta property="og:image" content="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}" data-rh="true" />
+    <meta property="og:image" content="{{ $user->avatar }}" data-rh="true" />
 @elseif (request()->routeIs('questions.show'))
     @php
         $question = request()->route('question');
@@ -52,7 +52,7 @@
     />
     <meta property="og:type" content="profile" data-rh="true" />
     <meta property="profile:username" content="{{ $question->to->username }}" data-rh="true" />
-    <meta property="og:image" content="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}" data-rh="true" />
+    <meta property="og:image" content="{{ $question->to->avatar }}" data-rh="true" />
 
     @if ($answer)
         <title>{{ $question->to->name }}: "{{ $answer }}" / Pinkary</title>

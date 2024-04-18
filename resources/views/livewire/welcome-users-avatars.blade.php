@@ -5,7 +5,7 @@
     @foreach ($users as $user)
         <a class="flex-shrink-0 transition-opacity hover:opacity-90" href="{{ route('profile.show', ['username' => $user->username]) }}">
             <img
-                src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
+                src="{{ $user->avatar }}"
                 alt="{{ $user->username }}"
                 class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12"
             />

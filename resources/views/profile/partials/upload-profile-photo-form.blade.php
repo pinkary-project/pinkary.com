@@ -10,16 +10,10 @@
     </header>
         <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <div class="flex items-center justify-center">
-                @if (auth()->user()->avatar)
-                    <figure class="w-20 h-20 flex-shrink-0">
-                        <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}"
-                             class="inline-block w-full h-full rounded-full object-cover">
-                    </figure>
-                @else
-                    <span class="w-20 h-20 rounded-full bg-slate-500 flex items-center justify-center flex-shrink-0">
-                        <x-icons.user class="w-6 h-6 text-slate-300"/>
-                    </span>
-                @endif
+                <figure class="w-20 h-20 flex-shrink-0">
+                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}"
+                            class="inline-block w-full h-full rounded-full object-cover">
+                </figure>
             </div>
             @if (auth()->user()->has_custom_avatar)
                 <div class="flex gap-2">
