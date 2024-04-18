@@ -1,4 +1,8 @@
-<div>
+<div @if (auth()->user()?->is($user)) x-data="{
+    showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
+    gradient: '{{ $user->gradient }}',
+    link_shape: '{{ $user->link_shape }}',
+}" @endif>
     <div class="relative bg-gradient-to-r p-5 text-center text-white">
         <div class="absolute left-0 top-6 flex">
             <button
@@ -120,6 +124,7 @@
                     @foreach ($links as $link)
                         <li
                             class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient group flex bg-gradient-to-r"
+                            :class="showSettingsForm && gradient + ' ' + link_shape"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
                         >
@@ -175,7 +180,6 @@
         <div
             x-data="{
                 showLinksForm: {{ $errors->links->isEmpty() ? 'false' : 'true' }},
-                showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
             }"
             class="py-4"
         >
@@ -183,14 +187,16 @@
                 <div class="flex gap-2">
                     <button
                         x-on:click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
-                        class="bg-{{ $user->left_color }} {{ $user->link_shape }} hover:darken-gradient flex w-full basis-4/5 items-center justify-center px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
-                    >
+                        class="{{ $user->gradient }} {{ $user->link_shape }} hover:darken-gradient flex w-full basis-4/5 items-center justify-center bg-gradient-to-r px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
+                        :class="showSettingsForm && gradient + ' ' + link_shape"
+                        >
                         <x-icons.plus class="mr-1.5 size-5" />
                         Add New Link
                     </button>
                     <button
-                        x-on:click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
-                        class="{{ $user->gradient }} hover:darken-gradient {{ $user->link_shape }} flex w-full basis-1/5 items-center justify-center bg-gradient-to-r px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
+                    x-on:click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
+                    class="bg-{{ $user->right_color }} hover:darken-gradient {{ $user->link_shape }} flex w-full basis-1/5 items-center justify-center px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
+                    :class="showSettingsForm && 'bg-' + gradient.split(' ')[1].replace('to-', '') + ' ' + link_shape"
                     >
                         <x-icons.cog class="size-6" />
                     </button>

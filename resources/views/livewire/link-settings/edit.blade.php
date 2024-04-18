@@ -5,12 +5,13 @@
             <p class="text-sm text-slate-500">In what shape do you want to present your links?</p>
             <fieldset class="mt-4">
                 <legend class="sr-only">Shape for links</legend>
-                <div class="space-y-4">
+                <div class="space-x-4 flex">
                     @foreach (['rounded-none' => 'Square', 'rounded-lg' => 'Round', 'rounded-full' => 'Extra Round'] as $shape => $label)
                         <div class="flex items-center">
                             <input
                                 id="{{ strtolower($shape) }}"
                                 wire:model="link_shape"
+                                x-model="link_shape"
                                 type="radio"
                                 value="{{ $shape }}"
                                 class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} h-4 w-4 border-slate-300"
@@ -48,6 +49,7 @@
                                 class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} mr-3 mt-2 border-slate-300"
                                 type="radio"
                                 wire:model="gradient"
+                                x-model="gradient"
                                 name="gradient"
                                 id="{{ $gradient }}"
                                 value="{{ $gradient }}"
