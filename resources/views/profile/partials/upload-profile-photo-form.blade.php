@@ -22,7 +22,7 @@
             @if (auth()->user()->has_custom_avatar)
                 <div class="sm:col-span-10 flex items-center justify-self-start gap-2">
                     <p class="mt-1 text-sm text-slate-500">
-                        {{ __("If you delete your uploaded avatar, your profile will revert to using our avatar service & fetch one from your links.") }}
+                        {{ __("If you delete your uploaded avatar, your profile will revert to using your GitHub account or Gravatar.") }}
                     </p>
                 </div>
             @endif
