@@ -51,9 +51,9 @@ final class DownloadUserAvatar implements ShouldQueue
      */
     private function fetchNewAvatar(): Avatar
     {
-        /** @var array<int, string> $urls */
-        $urls = $this->user->links->pluck('url')->values()->all();
-
-        return new Avatar($this->user->email, $urls);
+        return new Avatar(
+            $this->user->email,
+            $this->user->github_username,
+        );
     }
 }
