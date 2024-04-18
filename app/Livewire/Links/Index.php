@@ -93,7 +93,9 @@ final class Index extends Component
 
         $this->authorize('delete', $link);
 
-        dispatch(new DownloadUserAvatar($user));
+        if (! $user->has_custom_avatar) {
+            dispatch(new DownloadUserAvatar($user));
+        }
 
         $link->delete();
 

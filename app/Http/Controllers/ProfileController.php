@@ -49,9 +49,11 @@ final readonly class ProfileController
             $user->email_verified_at = null;
         }
 
-        $user->save();
+        if (! $user->has_custom_avatar) {
+            DownloadUserAvatar::dispatch($user);
+        }
 
-        dispatch(new DownloadUserAvatar($user));
+        $user->save();
 
         session()->flash('flash-message', 'Profile updated.');
 

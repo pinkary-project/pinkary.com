@@ -53,7 +53,9 @@ final class Create extends Component
 
         $user->links()->create($validated);
 
-        dispatch(new DownloadUserAvatar($user));
+        if (! $user->has_custom_avatar) {
+            dispatch(new DownloadUserAvatar($user));
+        }
 
         $this->description = '';
         $this->url = '';
