@@ -4,25 +4,27 @@
             {{ __('Profile Photo') }}
         </h2>
 
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="mt-1 text-sm text-slate-500 mb-4">
             {{ __("Upload a new avatar to your profile.") }}
         </p>
     </header>
-        <div class="grid grid-cols-1 sm:gap-4 sm:grid-cols-12">
-            <div class="sm:col-span-2 min-w-16 w-16 max-w-16 flex items-center justify-center my-4">
+        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <div class="flex items-center justify-center">
                 @if (auth()->user()->avatar)
-                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}"
-                         class="w-16 h-16 rounded-full object-cover">
+                    <figure class="w-20 h-20 flex-shrink-0">
+                        <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}"
+                             class="inline-block w-full h-full rounded-full object-cover">
+                    </figure>
                 @else
-                    <span class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                    <x-icons.user class="w-8 h-8 text-gray-400"/>
-                </span>
+                    <span class="w-20 h-20 rounded-full bg-slate-500 flex items-center justify-center flex-shrink-0">
+                        <x-icons.user class="w-6 h-6 text-slate-300"/>
+                    </span>
                 @endif
             </div>
             @if (auth()->user()->has_custom_avatar)
-                <div class="sm:col-span-10 flex items-center justify-self-start gap-2">
-                    <p class="mt-1 text-sm text-slate-500">
-                        {{ __("If you delete your uploaded avatar, your profile will revert to using your GitHub account or Gravatar.") }}
+                <div class="flex gap-2">
+                    <p class="text-sm text-slate-500">
+                        {{ __("If you delete your uploaded avatar, your profile will revert to using default.") }}
                     </p>
                 </div>
             @endif
@@ -33,20 +35,20 @@
             @method('patch')
 
             <div>
-                <x-input-label for="avatar" :value="__('Avatar')"/>
+                <x-input-label for="avatar" :value="__('Avatar')" class="sr-only" />
                 <x-text-input
                     type="file"
                     accept="image/*"
                     id="avatar"
                     name="avatar"
-                    class="my-4 border block w-full text-sm focus:ring-0 focus:outline-none
-                    file:mr-4 file:border-0 file:text-sm file:font-semibold file:bg-pink-200
-                    file:text-pink-700 file:px-4 file:py-2 file:rounded-md hover:file:bg-pink-100"
+                    class="mt-4 border block w-full text-sm focus:ring-0 focus:outline-none
+                    file:mr-4 file:border-0 file:text-xs file:font-semibold file:bg-pink-200 file:transition-colors
+                    file:text-pink-700 file:px-4 file:py-2 file:tracking-widest hover:file:bg-pink-100"
                 />
-                <x-input-error class="my-2" :messages="$errors->get('avatar')"/>
+                <x-input-error class="mt-2" :messages="$errors->get('avatar')"/>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 mt-7">
                 <x-primary-button>{{ __('Upload') }}</x-primary-button>
             </form>
                 @if (auth()->user()->has_custom_avatar)
