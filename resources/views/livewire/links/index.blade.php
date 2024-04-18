@@ -44,16 +44,13 @@
                 alt="{{ $user->username }}"
                 class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
             />
-            @if ($canResetAvatar)
-                <button
+            @if (auth()->user()?->is($user))
+                <a
                     class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
-                    wire:click="resetAvatar"
-                    wire:loading.class="animate-spin"
-                    wire:target="resetAvatar"
-                    wire:loading.attr="disabled"
-                    title="Reset Avatar"
+                    href="{{ route('profile.edit') }}" wire:navigate
+                    title="Upload Avatar"
                 >
-                    <x-icons.reset class="size-5" />
+                    <x-icons.camera class="size-5" />
                 </button>
             @endif
         </div>
