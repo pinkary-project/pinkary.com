@@ -159,10 +159,7 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
      */
     public function getAvatarUrlAttribute(): string
     {
-        return (new Avatar(
-            email: $this->email,
-            githubUsername: $this->github_username ?? null
-        ))->url();
+        return asset('img/default-avatar.png');
     }
 
     /**
