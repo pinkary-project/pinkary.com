@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Profile\AvatarController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
 use App\Http\Controllers\Profile\TimezoneController;
 use App\Http\Controllers\Profile\VerifiedController;
@@ -65,6 +66,11 @@ Route::middleware('auth')->group(function () {
             GitHubController::class, 'destroy',
         ])->name('profile.connect.github.destroy');
     });
+
+    Route::patch('/profile/avatar', [AvatarController::class, 'update'])
+        ->name('profile.avatar.update');
+    Route::delete('/profile/avatar', [AvatarController::class, 'delete'])
+        ->name('profile.avatar.delete');
 
     Route::post('/profile/verified', [VerifiedController::class, 'update'])
         ->name('profile.verified.update');
