@@ -209,6 +209,23 @@
                     >
                         <x-icons.link class="size-4" />
                     </button>
+                    <span class="mx-1">•</span>
+                    <button
+                        x-cloak
+                        x-data="shareProfile"
+                        x-show="isVisible"
+                        x-on:click="
+                            twitter({
+                                url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
+                                question: '{{ $question->content }}',
+                                message: 'See response on Pinkary',
+                            })
+                        "
+                        type="button"
+                        class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                    >
+                        <x-icons.twitter-x class="size-4" />
+                    </button>
                 </div>
             </div>
         </div>
