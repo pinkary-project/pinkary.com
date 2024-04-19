@@ -49,11 +49,11 @@ final readonly class ProfileController
             $user->email_verified_at = null;
         }
 
+        $user->save();
+
         if (! $user->is_uploaded_avatar) {
             UpdateUserAvatar::dispatch($user);
         }
-
-        $user->save();
 
         session()->flash('flash-message', 'Profile updated.');
 

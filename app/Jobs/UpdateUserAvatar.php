@@ -42,9 +42,7 @@ final class UpdateUserAvatar implements ShouldQueue
             }
         }
 
-        $file = $this->file !== null ? $this->file : (
-            new Avatar($this->user->email, $this->user->github_username)
-        )->url();
+        $file = $this->file !== null ? $this->file : (new Avatar($this->user->email))->url();
 
         $contents = (string) file_get_contents($file);
 

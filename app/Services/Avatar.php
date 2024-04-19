@@ -11,7 +11,6 @@ final readonly class Avatar
      */
     public function __construct(
         private string $email,
-        private ?string $githubUsername = null,
     ) {
         //
     }
@@ -21,19 +20,8 @@ final readonly class Avatar
      */
     public function url(): string
     {
-
-        $fallbacks = collect();
-
-        if ($this->githubUsername !== null && $this->githubUsername !== '' && $this->githubUsername !== '0') {
-            $fallbacks->add("https://avatars.githubusercontent.com/$this->githubUsername");
-        }
-
         $gravatarHash = hash('sha256', mb_strtolower($this->email));
-        $fallbacks->add("https://gravatar.com/avatar/$gravatarHash?s=300");
 
-        /* @var string $resolved */
-        $resolved = $fallbacks->first();
-
-        return $resolved;
+        return "https://gravatar.com/avatar/$gravatarHash?s=300";
     }
 }

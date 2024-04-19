@@ -75,11 +75,11 @@ final class Index extends Component
 
         $this->authorize('delete', $link);
 
+        $link->delete();
+
         if (! $user->is_uploaded_avatar) {
             dispatch(new UpdateUserAvatar($user));
         }
-
-        $link->delete();
 
         $this->dispatch('notification.created', message: 'Link deleted.');
     }
