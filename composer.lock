@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e44a9ad1797ee3f69df9c85d07b32b1a",
+    "content-hash": "94165c31555d8c86a68452486c2187ca",
     "packages": [
         {
             "name": "another-library/type-guard",
