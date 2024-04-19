@@ -5,7 +5,7 @@
         </h2>
 
         <p class="mt-1 text-sm text-slate-500 mb-4">
-            {{ __("Upload a new avatar to your profile.") }}
+            {{ __("Upload a profile photo to personalize your account.") }}
         </p>
     </header>
         <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
@@ -15,10 +15,10 @@
                             class="inline-block w-full h-full rounded-full object-cover">
                 </figure>
             </div>
-            @if (auth()->user()->has_custom_avatar)
+            @if (auth()->user()->is_uploaded_avatar)
                 <div class="flex gap-2">
                     <p class="text-sm text-slate-500">
-                        {{ __("If you delete your uploaded avatar, your profile will revert to using default.") }}
+                        {{ __("If you delete your uploaded avatar, we will try to fetch your image based in your email, links, etc.") }}
                     </p>
                 </div>
             @endif
@@ -45,7 +45,7 @@
             <div class="flex items-center gap-2 mt-7">
                 <x-primary-button>{{ __('Upload') }}</x-primary-button>
             </form>
-                @if (auth()->user()->has_custom_avatar)
+                @if (auth()->user()->is_uploaded_avatar)
                 <form method="post" action="{{ route('profile.avatar.delete') }}">
                     @csrf
                     @method('delete')

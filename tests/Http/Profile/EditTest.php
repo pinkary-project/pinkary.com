@@ -270,7 +270,7 @@ test('user can upload an avatar', function () {
         ->and($user->avatar)->toContain('.png')
         ->and($user->avatar)->toContain('storage/')
         ->and($user->avatar_updated_at)->not()->toBeNull()
-        ->and($user->has_custom_avatar)->toBeTrue()
+        ->and($user->is_uploaded_avatar)->toBeTrue()
         ->and(session('flash-message'))->toBe('Avatar updated.');
 });
 
@@ -279,7 +279,7 @@ test('user can delete custom avatar', function () {
 
     $user = User::factory()->create([
         'avatar' => 'storage/avatars/avatar.jpg',
-        'has_custom_avatar' => true,
+        'is_uploaded_avatar' => true,
     ]);
 
     Storage::disk('public')->put('avatars/avatar.jpg', '...');
@@ -295,6 +295,6 @@ test('user can delete custom avatar', function () {
 
     expect($user->avatar)->not->toBeNull()
         ->and($user->avatar_updated_at)->not->toBeNull()
-        ->and($user->has_custom_avatar)->toBeFalse()
+        ->and($user->is_uploaded_avatar)->toBeFalse()
         ->and(session('flash-message'))->toBe('Avatar deleted.');
 });

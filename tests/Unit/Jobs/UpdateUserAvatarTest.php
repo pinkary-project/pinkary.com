@@ -34,20 +34,20 @@ it('stores a url base avatar', function () {
     Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
 });
 
-it('deletes the previous avatar', function () {
+it('deletes the given avatar file', function () {
     Storage::fake('public');
 
+    $contents = file_get_contents(public_path('img/default-avatar.png'));
+    Storage::disk('public')->put('avatars/1.png', $contents, 'public');
+
     $user = User::factory()->create();
-    $file = UploadedFile::fake()->image('avatar.jpg');
 
-    UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
-    $previousAvatar = $user->fresh()->avatar;
+    UpdateUserAvatar::dispatchSync($user, Storage::disk('public')->path('avatars/1.png'));
 
-    UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
-    $currentAvatar = $user->fresh()->avatar;
+    $user = $user->fresh();
 
-    expect($currentAvatar)->not->toBe($previousAvatar);
+    expect($user->avatar)->toBeString();
+    Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
 
-    Storage::disk('public')->assertMissing(str_replace('storage/', '', $previousAvatar));
-    Storage::disk('public')->assertExists(str_replace('storage/', '', $currentAvatar));
+    Storage::disk('public')->assertMissing('avatars/1.png');
 });

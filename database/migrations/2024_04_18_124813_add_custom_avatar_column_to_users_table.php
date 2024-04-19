@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->boolean('has_custom_avatar')->default(false);
+            $table->boolean('is_uploaded_avatar')->default(false);
         });
     }
 };

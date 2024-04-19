@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Storage;
  * @property ?Carbon $avatar_updated_at
  * @property string $username
  * @property int $views
- * @property bool $has_custom_avatar
+ * @property bool $is_uploaded_avatar
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
@@ -246,7 +246,7 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
             'views' => 'integer',
-            'has_custom_avatar' => 'boolean',
+            'is_uploaded_avatar' => 'boolean',
         ];
     }
 }

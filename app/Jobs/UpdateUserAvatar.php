@@ -11,9 +11,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers;
 use Intervention\Image\ImageManager;
+use Throwable;
 
 final class UpdateUserAvatar implements ShouldQueue
 {
@@ -57,8 +59,34 @@ final class UpdateUserAvatar implements ShouldQueue
         $this->user->update([
             'avatar' => "storage/$avatar",
             'avatar_updated_at' => now(),
-            'has_custom_avatar' => $this->file !== null,
+            'is_uploaded_avatar' => $this->file !== null,
         ]);
+
+        $this->ensureFileIsDeleted();
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?Throwable $exception): void
+    {
+        $this->ensureFileIsDeleted();
+
+        $this->user->update([
+            'avatar' => null,
+            'avatar_updated_at' => null,
+            'is_uploaded_avatar' => false,
+        ]);
+    }
+
+    /**
+     * Ensure the file is deleted.
+     */
+    private function ensureFileIsDeleted(): void
+    {
+        if ($this->file !== null) {
+            File::delete($this->file);
+        }
     }
 
     /**

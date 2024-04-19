@@ -53,7 +53,7 @@ final class Create extends Component
 
         $user->links()->create($validated);
 
-        if (! $user->has_custom_avatar) {
+        if (! $user->is_uploaded_avatar) {
             dispatch(new UpdateUserAvatar($user));
         }
 

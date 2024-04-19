@@ -49,7 +49,7 @@ final readonly class ProfileController
             $user->email_verified_at = null;
         }
 
-        if (! $user->has_custom_avatar) {
+        if (! $user->is_uploaded_avatar) {
             UpdateUserAvatar::dispatch($user);
         }
 
