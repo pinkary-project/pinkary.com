@@ -26,7 +26,7 @@
     </div>
 
     @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
+        <div class="answer mt-3 rounded-2xl bg-slate-900 p-4" x-intersect="$wire.viewed || $wire.incrementView()">
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
