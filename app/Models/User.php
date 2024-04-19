@@ -112,6 +112,14 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
     }
 
     /**
+     * Get the user's avatar URL attribute.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
+    }
+
+    /**
      * Get the user's links sort attribute.
      *
      * @return array<int, int>
@@ -151,14 +159,6 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
             ->match('/from-.*?\d{3}/')
             ->after('from-')
             ->value();
-    }
-
-    /**
-     * Get the user's avatar URL attribute.
-     */
-    public function getAvatarAttribute(?string $value): string
-    {
-        return $value !== null && $value !== '' && $value !== '0' ? asset($value) : asset('img/default-avatar.png');
     }
 
     /**

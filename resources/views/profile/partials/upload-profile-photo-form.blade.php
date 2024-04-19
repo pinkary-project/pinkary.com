@@ -11,7 +11,7 @@
         <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <div class="flex items-center justify-center">
                 <figure class="w-20 h-20 flex-shrink-0">
-                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}"
+                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}"
                             class="inline-block w-full h-full rounded-full object-cover">
                 </figure>
             </div>

@@ -40,7 +40,7 @@
 
         <div class="relative mx-auto h-24 w-24">
             <img
-                src="{{ $user->avatar }}"
+                src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
                 class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
             />

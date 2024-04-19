@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Stringable;
 
-final class AvatarUploadRequest extends FormRequest
+final class UpdateUserAvatarRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -18,9 +18,8 @@ final class AvatarUploadRequest extends FormRequest
      */
     public function rules(): array
     {
-
         return [
-            'avatar' => ['required', 'image', 'max:8192'],
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
 }

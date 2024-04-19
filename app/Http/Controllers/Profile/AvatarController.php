@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Profile;
 
-use App\Actions\Profile\DeleteAvatar;
-use App\Actions\Profile\StoreAvatar;
-use App\Http\Requests\AvatarUploadRequest;
-use App\Jobs\DownloadUserAvatar;
+use App\Http\Requests\UpdateUserAvatarRequest;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,28 +16,15 @@ final readonly class AvatarController
     /**
      * Handles the verified refresh.
      */
-    public function update(AvatarUploadRequest $request): RedirectResponse
+    public function update(UpdateUserAvatarRequest $request): RedirectResponse
     {
         $user = type(request()->user())->as(User::class);
 
-        if ($user->avatar) {
-            DeleteAvatar::execute($user->avatar);
-        }
-
-        /** @var UploadedFile $file */
-        $file = $request->file('avatar');
-        $location = StoreAvatar::execute($file, $user->id);
-
-        $user->update([
-            'avatar' => 'storage/'.$location,
-            'avatar_updated_at' => now(),
-            'has_custom_avatar' => true,
-        ]);
-
-        $user->save();
+        $file = type($request->file('avatar'))->as(UploadedFile::class);
+        UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
 
         return to_route('profile.edit')
-            ->with('flash-message', 'Avatar uploaded.');
+            ->with('flash-message', 'Avatar updated.');
     }
 
     /**
@@ -49,17 +34,7 @@ final readonly class AvatarController
     {
         $user = type($request->user())->as(User::class);
 
-        DeleteAvatar::execute($user->avatar);
-
-        $user->update([
-            'avatar' => null,
-            'avatar_updated_at' => null,
-            'has_custom_avatar' => false,
-        ]);
-
-        $user->save();
-
-        DownloadUserAvatar::dispatch($user);
+        UpdateUserAvatar::dispatchSync($user);
 
         return to_route('profile.edit')
             ->with('flash-message', 'Avatar deleted.');

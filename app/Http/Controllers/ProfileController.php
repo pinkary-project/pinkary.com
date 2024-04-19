@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Jobs\DownloadUserAvatar;
 use App\Jobs\IncrementViews;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,7 +50,7 @@ final readonly class ProfileController
         }
 
         if (! $user->has_custom_avatar) {
-            DownloadUserAvatar::dispatch($user);
+            UpdateUserAvatar::dispatch($user);
         }
 
         $user->save();
