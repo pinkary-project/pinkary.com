@@ -45,6 +45,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('notifications/{notification}', [NotificationController::class, 'show'])
         ->name('notifications.show');
+
+    Route::patch('/profile/avatar', [AvatarController::class, 'update'])
+        ->name('profile.avatar.update');
+    Route::delete('/profile/avatar', [AvatarController::class, 'delete'])
+        ->name('profile.avatar.delete');
 });
 
 Route::middleware('auth')->group(function () {
@@ -66,11 +71,6 @@ Route::middleware('auth')->group(function () {
             GitHubController::class, 'destroy',
         ])->name('profile.connect.github.destroy');
     });
-
-    Route::patch('/profile/avatar', [AvatarController::class, 'update'])
-        ->name('profile.avatar.update');
-    Route::delete('/profile/avatar', [AvatarController::class, 'delete'])
-        ->name('profile.avatar.delete');
 
     Route::post('/profile/verified', [VerifiedController::class, 'update'])
         ->name('profile.verified.update');
