@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\Viewable;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\View\View;
@@ -13,6 +14,8 @@ use Livewire\Component;
 
 final class Show extends Component
 {
+    use Viewable;
+
     /**
      * The component's question ID.
      */
@@ -178,6 +181,8 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::findOrFail($this->questionId);
+
+        $this->setViewable(Question::class, $this->questionId);
 
         return view('livewire.questions.show', [
             'user' => $question->to,
