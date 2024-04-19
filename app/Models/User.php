@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * @property bool $prefers_anonymous_questions
- * @property string $avatar
+ * @property string|null $avatar
  * @property string $avatar_url
  * @property string|null $bio
  * @property Carbon $created_at
@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Storage;
  * @property ?Carbon $avatar_updated_at
  * @property string $username
  * @property int $views
+ * @property bool $is_uploaded_avatar
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
@@ -112,6 +113,14 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
     }
 
     /**
+     * Get the user's avatar URL attribute.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
+    }
+
+    /**
      * Get the user's links sort attribute.
      *
      * @return array<int, int>
@@ -151,20 +160,6 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
             ->match('/from-.*?\d{3}/')
             ->after('from-')
             ->value();
-    }
-
-    /**
-     * Get the user's avatar URL attribute.
-     */
-    public function getAvatarUrlAttribute(): string
-    {
-        /** @var array<int, string> $urls */
-        $urls = $this->links->pluck('url')->values()->all();
-
-        return (new Avatar(
-            email: $this->email,
-            links: $urls,
-        ))->url();
     }
 
     /**
@@ -252,6 +247,7 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
             'views' => 'integer',
+            'is_uploaded_avatar' => 'boolean',
         ];
     }
 }

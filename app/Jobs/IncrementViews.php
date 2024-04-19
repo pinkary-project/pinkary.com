@@ -25,7 +25,7 @@ final class IncrementViews implements ShouldQueue
      *
      * @param  Collection<array-key, Question>|Collection<array-key, User>  $viewables
      */
-    public function __construct(protected Collection $viewables, protected int|string $id)
+    public function __construct(private Collection $viewables, private int|string $id)
     {
         //
     }

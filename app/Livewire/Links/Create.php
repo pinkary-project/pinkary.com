@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Links;
 
-use App\Jobs\DownloadUserAvatar;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -53,7 +53,9 @@ final class Create extends Component
 
         $user->links()->create($validated);
 
-        dispatch(new DownloadUserAvatar($user));
+        if (! $user->is_uploaded_avatar) {
+            dispatch(new UpdateUserAvatar($user));
+        }
 
         $this->description = '';
         $this->url = '';

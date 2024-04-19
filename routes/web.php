@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Profile\AvatarController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
 use App\Http\Controllers\Profile\TimezoneController;
 use App\Http\Controllers\Profile\VerifiedController;
@@ -44,6 +45,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('notifications/{notification}', [NotificationController::class, 'show'])
         ->name('notifications.show');
+
+    Route::patch('/profile/avatar', [AvatarController::class, 'update'])
+        ->name('profile.avatar.update');
+    Route::delete('/profile/avatar', [AvatarController::class, 'delete'])
+        ->name('profile.avatar.delete');
 });
 
 Route::middleware('auth')->group(function () {
