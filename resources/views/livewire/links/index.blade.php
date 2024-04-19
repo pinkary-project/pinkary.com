@@ -45,7 +45,7 @@
                 class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
             />
             @if (auth()->user()?->is($user))
-                <a
+                <button
                     class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     href="{{ route('profile.edit') }}" wire:navigate
                     title="Upload Avatar"
