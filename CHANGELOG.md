@@ -1,3 +1,8 @@
+## Version 1.9.0
+> 19 April, 2024
+
+- Added the possibility to change the user's profile avatar by uploading a new image.
+
 ## Version 1.8.0
 > 17 April, 2024
 
