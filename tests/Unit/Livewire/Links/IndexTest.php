@@ -188,3 +188,37 @@ test('count to be abbreviated', function () {
         ->assertSee('125K')
         ->assertSee('1M');
 });
+
+test('increment profile views', function () {
+    $user = User::factory()->create([
+        'views' => 70,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $user->refresh();
+
+    expect($user->views)->toBe(71);
+});
+
+test('does not increment profile views if recently viewed', function () {
+    $user = User::factory()->create([
+        'views' => 70,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    Cache::shouldReceive('has')
+        ->once()
+        ->andReturn(true);
+
+    $component->call('refresh');
+
+    $user->refresh();
+
+    expect($user->views)->toBe(71);
+});
