@@ -37,7 +37,7 @@ trait Viewable
      * Increment the views of the given model.
      */
     #[Renderless]
-    public function incrementView(): void
+    public function incrementViews(): void
     {
         if ($this->hasBeenViewed()) {
             return;

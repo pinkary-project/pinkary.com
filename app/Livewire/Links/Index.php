@@ -159,7 +159,7 @@ final class Index extends Component
 
         $this->setViewable(User::class, $this->userId);
 
-        $this->incrementView();
+        $this->incrementViews();
 
         return view('livewire.links.index', [
             'user' => $user,
