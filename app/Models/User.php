@@ -49,7 +49,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  */
-final class User extends Authenticatable implements MustVerifyEmail, Viewable
+final class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -62,15 +62,6 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
         'password',
         'remember_token',
     ];
-
-    public static function incrementViews(array $ids): void
-    {
-        self::withoutTimestamps(function () use ($ids): void {
-            self::query()
-                ->whereIn('id', $ids)
-                ->increment('views');
-        });
-    }
 
     /**
      * Get the user's links.
