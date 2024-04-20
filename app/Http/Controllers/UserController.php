@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserUpdateRequest;
-use App\Jobs\IncrementViews;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -29,8 +28,6 @@ final readonly class UserController
      */
     public function show(User $user): View
     {
-        IncrementViews::dispatchUsingSession($user);
-
         return view('profile.show', [
             'user' => $user,
         ]);
