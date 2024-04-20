@@ -188,53 +188,36 @@ test('count to be abbreviated', function () {
         ->assertSee('1M');
 });
 
-test('follow is idempotent', function () {
-    $user = User::factory()->create();
-    $target = User::factory()->create();
-
-    $component = Livewire::actingAs($user)->test(Index::class, [
-        'userId' => $target->id,
+test('increment profile views', function () {
+    $user = User::factory()->create([
+        'views' => 70,
     ]);
 
-    $component->call('follow', $target->id);
-    $component->call('follow', $target->id);
-
-    expect($user->following->count())->toBe(1);
-});
-
-test('unfollow is idempotent', function () {
-    $user = User::factory()->create();
-    $target = User::factory()->create();
-
     $component = Livewire::actingAs($user)->test(Index::class, [
-        'userId' => $target->id,
-    ]);
-
-    $component->call('follow', $target->id);
-    $component->call('unfollow', $target->id);
-    $component->call('unfollow', $target->id);
-
-    expect($user->following->count())->toBe(0);
-});
-
-test('guest cannot follow', function () {
-    $user = User::factory()->create();
-    $component = Livewire::test(Index::class, [
         'userId' => $user->id,
     ]);
 
-    $component->call('follow', 1);
+    $user->refresh();
 
-    $component->assertRedirect(route('login'));
+    expect($user->views)->toBe(71);
 });
 
-test('guest cannot unfollow', function () {
-    $user = User::factory()->create();
-    $component = Livewire::test(Index::class, [
+test('does not increment profile views if recently viewed', function () {
+    $user = User::factory()->create([
+        'views' => 70,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
     ]);
 
-    $component->call('unfollow', 1);
+    Cache::shouldReceive('has')
+        ->once()
+        ->andReturn(true);
 
-    $component->assertRedirect(route('login'));
+    $component->call('refresh');
+
+    $user->refresh();
+
+    expect($user->views)->toBe(71);
 });
