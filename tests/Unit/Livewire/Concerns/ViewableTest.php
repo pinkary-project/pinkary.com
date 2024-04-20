@@ -12,67 +12,53 @@ use function PHPUnit\Framework\assertEquals;
 
 beforeEach(function () {
     Cache::flush();
+
+    $this->user = User::factory()->create([
+        'views' => 70,
+    ]);
+
+    $this->component = new ViewableTestComponent();
+    $this->component->setViewable(User::class, $this->user->id);
 });
 
 it('increments the views of the given model', function () {
-    $user = User::factory()->create([
-        'views' => 70,
-    ]);
 
-    $component = new ViewableTestComponent();
-    $component->setViewable(User::class, $user->id);
-    $component->incrementViews();
+    $this->component->incrementViews();
 
-    expect($component->viewed)->toBeTrue();
-    expect($user->refresh()->views)->toBe(71);
+    expect($this->component->viewed)->toBeTrue();
+    expect($this->user->refresh()->views)->toBe(71);
 });
 
 it('does not update the timestamp of the given model when incrementing views', function () {
-    $user = User::factory()->create([
-        'views' => 70,
-    ]);
 
-    $lastUpdatedAt = $user->updated_at;
+    $lastUpdatedAt = $this->user->updated_at;
+    $this->component->incrementViews();
 
-    $component = new ViewableTestComponent();
-    $component->setViewable(User::class, $user->id);
-    $component->incrementViews();
-
-    assertEquals($lastUpdatedAt, $user->refresh()->updated_at);
+    assertEquals($lastUpdatedAt, $this->user->refresh()->updated_at);
 });
 
 it('does not increment the views of the given model if it has been viewed', function () {
-    $user = User::factory()->create([
-        'views' => 70,
-    ]);
 
-    $component = new ViewableTestComponent();
-    $component->setViewable(User::class, $user->id);
-    $component->incrementViews();
-    $component->incrementViews();
+    $this->component->incrementViews();
+    $this->component->incrementViews();
 
-    expect($component->viewed)->toBeTrue();
-    expect($user->refresh()->views)->toBe(71);
+    expect($this->component->viewed)->toBeTrue();
+    expect($this->user->refresh()->views)->toBe(71);
 });
 
 it('increments the views of the given model after the cache expires', function () {
-    $user = User::factory()->create([
-        'views' => 70,
-    ]);
 
-    $component = new ViewableTestComponent();
-    $component->setViewable(User::class, $user->id);
-    $component->incrementViews();
+    $this->component->incrementViews();
 
-    expect($component->viewed)->toBeTrue();
-    expect($user->refresh()->views)->toBe(71);
+    expect($this->component->viewed)->toBeTrue();
+    expect($this->user->refresh()->views)->toBe(71);
 
     travel(121)->minutes();
 
-    $component->incrementViews();
+    $this->component->incrementViews();
 
-    expect($component->viewed)->toBeTrue();
-    expect($user->refresh()->views)->toBe(72);
+    expect($this->component->viewed)->toBeTrue();
+    expect($this->user->refresh()->views)->toBe(72);
 
     travelBack();
 });
