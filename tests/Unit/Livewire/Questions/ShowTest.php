@@ -379,10 +379,11 @@ test('does not increment views if ignored or reported', function () {
 
     $component->call('incrementViews');
 
-    expect($question->refresh()->views)->toBe(0);
+    expect($question->refresh()->views)->toBe(70);
 
     $question = Question::factory()->create([
         'is_reported' => true,
+        'views' => 70,
     ]);
 
     $component = Livewire::test(Show::class, [
