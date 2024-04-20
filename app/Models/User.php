@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -54,7 +53,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Collection<int, User> $following
  * @property-read Collection<int, User> $followers
  */
-final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
+final class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
