@@ -6,6 +6,9 @@ use App\Livewire\Concerns\Viewable;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
+use function Pest\Laravel\travel;
+use function Pest\Laravel\travelBack;
+
 beforeEach(function () {
     Cache::flush();
 });
@@ -49,13 +52,14 @@ it('increments the views of the given model after the cache expires', function (
     expect($component->viewed)->toBeTrue();
     expect($user->refresh()->views)->toBe(71);
 
-    Carbon\Carbon::setTestNow(now()->addMinutes(121));
+    travel(121)->minutes();
+
     $component->incrementViews();
 
     expect($component->viewed)->toBeTrue();
     expect($user->refresh()->views)->toBe(72);
 
-    Carbon\Carbon::setTestNow(null);
+    travelBack();
 });
 
 final class ViewableTestComponent
