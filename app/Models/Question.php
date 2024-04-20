@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;

@@ -43,4 +43,3 @@ test('relations', function () {
         ->and($question->to)->toBeInstanceOf(User::class)
         ->and($question->likes)->each->toBeInstanceOf(Like::class);
 });
-
