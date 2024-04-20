@@ -11,5 +11,4 @@ arch('http helpers')
     ->toOnlyBeUsedIn([
         'App\Http',
         'App\Livewire',
-        'App\Jobs\IncrementViews',
     ]);

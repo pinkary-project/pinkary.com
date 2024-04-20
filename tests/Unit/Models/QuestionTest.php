@@ -44,24 +44,3 @@ test('relations', function () {
         ->and($question->likes)->each->toBeInstanceOf(Like::class);
 });
 
-test('increment views', function () {
-    $question = Question::factory()->create([
-        'answer' => 'Hello',
-        'views' => 0,
-    ]);
-
-    Question::incrementViews([$question->id]);
-
-    expect($question->fresh()->views)->toBe(1);
-});
-
-test('does not increment views without answer', function () {
-    $question = Question::factory()->create([
-        'answer' => null,
-        'views' => 0,
-    ]);
-
-    Question::incrementViews([$question->id]);
-
-    expect($question->fresh()->views)->toBe(0);
-});
