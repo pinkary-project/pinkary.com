@@ -23,14 +23,12 @@ trait Viewable
     /**
      * Mount the viewable model.
      */
-    public function setViewable(string $viewable, string|int $key)
+    public function setViewable(string $viewable, string|int $key): void
     {
         $this->viewable = $viewable;
         $this->viewedKey = $key;
         if ($this->hasBeenViewed()) {
             $this->viewed = true;
-
-            return;
         }
     }
 
@@ -76,6 +74,7 @@ trait Viewable
     {
         $id = auth()->id() ?? session()->getId();
 
+        /** @var Model $model */
         $model = $this->viewable;
 
         return (new $model())->getTable().':'.$this->viewedKey.':viewed_by:'.$id;
