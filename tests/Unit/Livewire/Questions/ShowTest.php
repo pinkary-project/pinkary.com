@@ -322,3 +322,74 @@ test('pinnable', function () {
 
     $component->assertSee('Pinned');
 });
+
+test('increment views', function () {
+    $question = Question::factory()->create([
+        'views' => 70,
+    ]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('incrementViews');
+
+    expect($question->refresh()->views)->toBe(71);
+});
+
+test('increment views once', function () {
+    $question = Question::factory()->create([
+        'views' => 70,
+    ]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('incrementViews');
+    $component->call('incrementViews');
+
+    expect($question->refresh()->views)->toBe(71);
+});
+
+test('does not increment views if not answered', function () {
+    $question = Question::factory()->create([
+        'answer' => null,
+        'views' => 70,
+    ]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('incrementViews');
+
+    expect($question->refresh()->views)->toBe(70);
+});
+
+test('does not increment views if ignored or reported', function () {
+    $question = Question::factory()->create([
+        'is_ignored' => true,
+        'views' => 70,
+    ]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('incrementViews');
+
+    expect($question->refresh()->views)->toBe(0);
+
+    $question = Question::factory()->create([
+        'is_reported' => true,
+    ]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('incrementViews');
+
+    expect($question->refresh()->views)->toBe(70);
+});
