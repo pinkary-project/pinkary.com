@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\IpUtils;
 
@@ -29,6 +30,7 @@ final class Index extends Component
     /**
      * Increment the clicks counter.
      */
+    #[Renderless]
     public function click(int $linkId): void
     {
         $ipAddress = type(request()->ip())->asString();
