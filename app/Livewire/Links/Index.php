@@ -26,8 +26,6 @@ final class Index extends Component
 
     public bool $showLinksEditForm = false;
 
-    protected $listeners = ['link.updated' => 'linkUpdated'];
-
     /**
      * Increment the clicks counter.
      */
@@ -142,6 +140,7 @@ final class Index extends Component
         $this->dispatch('link.edit', linkId: $linkId);
     }
 
+    #[On('link.updated')]
     public function linkUpdated(int $linkId): void
     {
         $this->showLinksEditForm = false;
