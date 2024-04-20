@@ -10,10 +10,18 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class Edit extends Component
 {
+    /**
+     * The component's link ID.
+     */
+    #[Locked]
+    public int $linkId;
+
     /**
      * The component's link ID.
      */
@@ -28,8 +36,6 @@ final class Edit extends Component
      * The component's URL.
      */
     public string $url = '';
-
-    protected $listeners = ['link.edit' => 'edit'];
 
     /**
      * Store a new link.
@@ -70,6 +76,7 @@ final class Edit extends Component
         ]);
     }
 
+    #[On('link.edit')]
     public function edit(int $linkId): void
     {
         $this->link = Link::findOrFail($linkId);
