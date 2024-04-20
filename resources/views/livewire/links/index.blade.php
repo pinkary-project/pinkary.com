@@ -3,7 +3,7 @@
     gradient: '{{ $user->gradient }}',
     link_shape: '{{ $user->link_shape }}',
 }" @endif>
-    <div class="relative bg-gradient-to-r p-5 text-center text-white">
+    <div class="relative bg-gradient-to-r p-5 text-center text-white" x-intersect="$wire.viewed || $wire.incrementView()">
         <div class="absolute left-0 top-6 flex">
             <button
                 x-cloak
