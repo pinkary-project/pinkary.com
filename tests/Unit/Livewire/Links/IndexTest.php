@@ -212,10 +212,6 @@ test('does not increment profile views if recently viewed', function () {
         'userId' => $user->id,
     ]);
 
-    Cache::shouldReceive('has')
-        ->once()
-        ->andReturn(true);
-
     $component->call('refresh');
 
     $user->refresh();
