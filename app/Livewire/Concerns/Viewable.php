@@ -27,6 +27,7 @@ trait Viewable
     {
         $this->viewable = $viewable;
         $this->viewedKey = $key;
+
         if ($this->hasBeenViewed()) {
             $this->viewed = true;
         }
@@ -41,12 +42,15 @@ trait Viewable
         if ($this->hasBeenViewed()) {
             return;
         }
+
         /** @var Model $model */
         $model = $this->viewable;
 
-        $model::query()
-            ->where('id', $this->viewedKey)
-            ->increment('views');
+        Model::withoutTimestamps(function () use ($model): void {
+            $model::query()
+                ->where('id', $this->viewedKey)
+                ->increment('views');
+        });
 
         $this->viewed = true;
 
