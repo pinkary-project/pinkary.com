@@ -159,6 +159,10 @@ final class Index extends Component
 
         $this->setViewable(User::class, $this->userId);
 
+        if (! $this->hasBeenViewed()) {
+            $this->incrementView();
+        }
+
         return view('livewire.links.index', [
             'user' => $user,
             'questionsReceivedCount' => $user->questionsReceived()
