@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Locked;
@@ -47,7 +48,7 @@ trait Viewable
         $model = $this->viewable;
 
         Model::withoutTimestamps(function () use ($model): void {
-            $model::query()
+            $this->viewableScope($model::query())
                 ->where('id', $this->viewedKey)
                 ->increment('views');
         });
@@ -59,6 +60,14 @@ trait Viewable
             true,
             now()->addMinutes(120)
         );
+    }
+
+    /**
+     * viewable model scope.
+     */
+    protected function viewableScope(Builder $query): Builder
+    {
+        return $query;
     }
 
     /**
