@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Livewire\Concerns\Viewable;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -188,5 +189,12 @@ final class Show extends Component
             'user' => $question->to,
             'question' => $question,
         ]);
+    }
+
+    protected function viewableScope(Builder $query): Builder
+    {
+        return $query->whereNotNull('answer')
+            ->where('is_ignored', false)
+            ->where('is_reported', false);
     }
 }
