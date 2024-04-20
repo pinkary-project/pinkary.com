@@ -49,7 +49,7 @@ trait Viewable
 
         Model::withoutTimestamps(function () use ($model): void {
             $this->viewableScope($model::query())
-                ->where('id', $this->viewedKey)
+                ->whereKey($this->viewedKey)
                 ->increment('views');
         });
 
