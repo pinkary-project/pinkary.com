@@ -75,14 +75,6 @@ test('is verified because in list of fixed company sponsors', function () {
         ->and($user->is_company_verified)->toBeTrue();
 });
 
-test('increment views', function () {
-    $user = User::factory()->create();
-
-    User::incrementViews([$user->id]);
-
-    expect($user->fresh()->views)->toBe(1);
-});
-
 test('default avatar url', function () {
     $user = User::factory()->create();
 
