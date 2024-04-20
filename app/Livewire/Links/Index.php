@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Links;
 
 use App\Jobs\UpdateUserAvatar;
+use App\Livewire\Concerns\Viewable;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\IpUtils;
 
 final class Index extends Component
 {
+    use Viewable;
+
     /**
      * The component's user ID.
      */
@@ -153,6 +156,8 @@ final class Index extends Component
             ->withCount('following')
             ->findOrFail($this->userId);
         $sort = $user->links_sort;
+
+        $this->setViewable(User::class, $this->userId);
 
         return view('livewire.links.index', [
             'user' => $user,
