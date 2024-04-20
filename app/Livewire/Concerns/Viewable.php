@@ -81,6 +81,6 @@ trait Viewable
         /** @var Model $model */
         $model = $this->viewable;
 
-        return (new $model())->getTable().':'.$this->viewedKey.':viewed_by:'.$id;
+        return (new $model())->getTable().'-'.$this->viewedKey.'-viewed-by-'.$id;
     }
 }
