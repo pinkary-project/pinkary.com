@@ -4,7 +4,7 @@
             <div class="flex"></div>
             <div class="flex items-center" x-data>
                 @auth
-                    <a href="{{ route('home.feed') }}" class="mr-2" wire:navigate>
+                    <a href="{{ route('home.explorer', 'feed') }}" class="mr-2" wire:navigate>
                         <button
                             type="button"
                             class="{{ request()->routeIs('home.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
@@ -61,7 +61,7 @@
                                 {{ __('Home') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('home.feed')" :class="request()->routeIs('home.feed') ? 'bg-slate-800' : ''">
+                            <x-dropdown-link :href="route('home.explorer', 'feed')" :class="request()->routeIs('home.feed') ? 'bg-slate-800' : ''">
                                 {{ __('Feed') }}
                             </x-dropdown-link>
 

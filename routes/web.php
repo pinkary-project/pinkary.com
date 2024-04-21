@@ -12,14 +12,15 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
+use App\Livewire\HomeExplorer;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
 
-Route::view('/feed', 'home/feed')->name('home.feed');
-Route::view('/for-you', 'home/questions-for-you')->name('home.for_you');
-Route::view('/trending', 'home/trending-questions')->name('home.trending');
-Route::view('/users', 'home/users')->name('home.users');
+// Route::view('/feed', 'home/feed')->name('home.feed');
+// Route::view('/for-you', 'home/questions-for-you')->name('home.for_you');
+// Route::view('/trending', 'home/trending-questions')->name('home.trending');
+// Route::view('/users', 'home/users')->name('home.users');
 
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
@@ -77,3 +78,5 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('{section}', HomeExplorer::class)->name('home.explorer');
