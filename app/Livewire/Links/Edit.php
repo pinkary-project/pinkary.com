@@ -63,7 +63,7 @@ final class Edit extends Component
 
         dispatch(new DownloadUserAvatar($user));
 
-        $this->dispatch('link.updated', $this->link->id);
+        $this->dispatch('link.updated');
     }
 
     /**

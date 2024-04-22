@@ -140,8 +140,14 @@ final class Index extends Component
         $this->dispatch('link.edit', linkId: $linkId);
     }
 
+    #[On('link-edit.cancelled')]
+    public function cancelEditLinkForm(): void
+    {
+        $this->showLinksEditForm = false;
+    }
+
     #[On('link.updated')]
-    public function linkUpdated(int $linkId): void
+    public function linkUpdated(): void
     {
         $this->showLinksEditForm = false;
         $this->dispatch('notification.created', message: 'Link updated.');

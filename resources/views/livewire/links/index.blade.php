@@ -212,7 +212,7 @@
             </p>
         </div>
     </div>
-    <div class="py-5" x-data="{ showLinksEditForm: false }">
+    <div class="py-5">
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
                 <p class="mx-2 text-center text-slate-500">No links yet. Add your first link!</p>
@@ -221,7 +221,6 @@
             @if (auth()->user()?->is($user))
                 <ul
                     x-data="{isDragging: false}"
-                    x-show="!showLinksEditForm"
                     x-sortable
                     x-on:choose.stop="isDragging = true"
                     x-on:unchoose.stop="isDragging = false"
@@ -257,7 +256,6 @@
                                 </div>
 
                                 <button
-                                    @click="showLinksEditForm = true"
                                     wire:click="editLink({{ $link->id }})"
                                     type="button"
                                     class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
@@ -284,8 +282,9 @@
                         </li>
                     @endforeach
                 </ul>
+
                 <div
-                    x-show="showLinksEditForm"
+                    x-show="$wire.showLinksEditForm"
                     x-transition:enter="transition duration-300 ease-out"
                     x-transition:enter-start="opacity-0"
                     x-transition:enter-end="opacity-100"
@@ -319,6 +318,7 @@
         <div
             x-data="{
                 showLinksForm: {{ $errors->links->isEmpty() ? 'false' : 'true' }},
+                showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
             }"
             class="py-4"
         >
