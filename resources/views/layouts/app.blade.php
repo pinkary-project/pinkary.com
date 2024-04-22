@@ -25,6 +25,10 @@
                 </main>
             </div>
 
+            <x-back-to-top
+                :offset="300"
+            />
+
             <x-footer />
         </div>
         @livewireScriptConfig
