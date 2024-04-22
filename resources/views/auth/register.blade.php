@@ -126,7 +126,7 @@
                 />
 
                 <x-input-label for="terms">
-                    I am over 18 and I agree to the
+                    By signing up, I confirm that I am at least 18 years old and accept the
                     <a
                         target="_blank"
                         href="{{ route('terms') }}"
