@@ -1,3 +1,14 @@
+## Version 1.10.0
+> 22 April, 2024
+
+- Adds "Back To Top" button to the user's profile page and feeds.
+- Adds "Accept Terms" checkbox to the user's registration form.
+
+## Version 1.9.0
+> 19 April, 2024
+
+- Adds possibility to upload a custom avatar image to the user's profile.
+
 ## Version 1.8.0
 > 17 April, 2024
 
