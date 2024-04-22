@@ -120,4 +120,14 @@ final class Question extends Model implements Viewable
     {
         return $this->hasMany(Like::class);
     }
+
+    /**
+     * Get the likes for the question by the given user.
+     *
+     * @return HasMany<Like>
+     */
+    public function likesByUser(): HasMany
+    {
+        return $this->likes()->where('user_id', auth()->id());
+    }
 }

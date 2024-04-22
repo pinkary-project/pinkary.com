@@ -26,6 +26,13 @@ final readonly class QuestionsForYouFeed
     public function builder(): Builder
     {
         return Question::query()
+            ->with([
+                'from',
+                'to',
+                'likes',
+                'likesByUser',
+            ])
+            ->withCount('likes')
             ->whereHas('to', function (Builder $toQuery): void {
                 $toQuery
                     ->whereHas('questionsSent.likes', function (Builder $questionsQuery): void {

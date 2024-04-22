@@ -118,18 +118,7 @@
             </div>
 
             <div id="answers" class="mt-10 flex w-full flex-col gap-8 sm:max-w-md md:mt-0">
-                @if ($question = App\Models\Question::find('9b7fd5db-76a5-4533-910b-ad5590ed6124'))
-                    <livewire:questions.show :questionId="$question->id" />
-                @endif
-
-                @if ($question = App\Models\Question::find('9b6e38c2-15db-4cd0-a0d7-3a300e877296'))
-                    <livewire:questions.show :questionId="$question->id" />
-                @endif
-
-                @if ($question = App\Models\Question::find('9b899451-e4cc-494d-aa19-cf16e66f52f6'))
-                    <livewire:questions.show :questionId="$question->id" />
-                    <livewire:questions.show :questionId="$question->id" />
-                @endif
+                <livewire:questions.widget current-section="featured" />
             </div>
         </section>
 
