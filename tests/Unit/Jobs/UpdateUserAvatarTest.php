@@ -51,3 +51,21 @@ it('deletes the given avatar file', function () {
 
     Storage::disk('public')->assertMissing('avatars/1.png');
 });
+
+it('sets resets avatar state when job fails', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $file = UploadedFile::fake()->image('avatar.jpg');
+
+    expect(file_exists($file->getRealPath()))->toBeTrue();
+
+    UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
+    (new UpdateUserAvatar($user))->failed(null);
+
+    $user = $user->fresh();
+
+    expect($user->avatar)->toBeNull();
+    expect($file->getRealPath())->toBeFalse();
+});
+
