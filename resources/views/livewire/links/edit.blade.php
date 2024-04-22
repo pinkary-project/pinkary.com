@@ -13,6 +13,10 @@
             @error('url')
                 <x-input-error :messages="$message" class="mt-2" />
             @enderror
+
+            <p wire:dirty wire:target="url" class="mt-2 text-sm text-slate-600 text-amber-100">
+                Editing the URL will reset the click counter to zero
+            </p>
         </div>
         <div class="flex items-center gap-4">
             <x-primary-colorless-button class="text-{{ $user->left_color }} border-{{ $user->left_color }}" type="submit">
