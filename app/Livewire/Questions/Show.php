@@ -60,7 +60,7 @@ final class Show extends Component
     {
         $question = Question::findOrFail($this->questionId);
 
-        $this->redirect(route('profile.show', ['username' => $question->to->username]));
+        $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
     }
 
     /**
@@ -69,7 +69,7 @@ final class Show extends Component
     public function ignore(): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }
@@ -88,7 +88,7 @@ final class Show extends Component
 
         $question->update(['is_ignored' => true]);
 
-        $this->redirect(route('profile.show', ['username' => $question->to->username]));
+        $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
     }
 
     /**
@@ -97,7 +97,7 @@ final class Show extends Component
     public function like(): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }
@@ -115,7 +115,7 @@ final class Show extends Component
     public function pin(): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }
@@ -138,7 +138,7 @@ final class Show extends Component
     public function unpin(): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }
@@ -158,7 +158,7 @@ final class Show extends Component
     public function unlike(): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }

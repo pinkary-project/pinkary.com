@@ -17,14 +17,4 @@ return new class extends Migration
             $table->dropColumn('timezone');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table): void {
-            $table->string('timezone')->nullable();
-        });
-    }
 };

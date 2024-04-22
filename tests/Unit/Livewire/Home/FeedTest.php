@@ -19,11 +19,13 @@ test('renders questions with answers', function () {
 });
 
 test('do not renders questions without answers', function () {
+    $user = User::factory()->create();
+
     Question::factory()->create([
         'answer' => null,
     ]);
 
-    $component = Livewire::test(Feed::class);
+    $component = Livewire::actingAs($user)->test(Feed::class);
 
     $component->assertSee('There are no questions to show.');
 });

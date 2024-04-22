@@ -3,7 +3,11 @@
         <div class="mt-4 flex items-center justify-between">
             <div class="w-full">
                 <div class="mb-1">
-                    <label for="{{ 'answer_question_'.$question->id }}" class="sr-only">Answer</label>
+                    <label
+                        for="{{ 'answer_question_'.$question->id }}"
+                        class="sr-only"
+                        >Answer</label
+                    >
 
                     <textarea
                         id="{{ 'answer_question_'.$question->id }}"
@@ -18,12 +22,18 @@
                     <p class="text-right text-xs text-slate-400"><span x-text="$wire.answer.length"></span> / 1000</p>
 
                     @error('answer')
-                        <x-input-error :messages="$message" class="mt-2" />
+                        <x-input-error
+                            :messages="$message"
+                            class="mt-2"
+                        />
                     @enderror
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <div class="items center ml-2 flex gap-4">
-                        <x-primary-colorless-button class="text-{{ $user->left_color }} border-{{ $user->left_color }}" type="submit">
+                        <x-primary-colorless-button
+                            class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
+                            type="submit"
+                        >
                             {{ __('Send') }}
                         </x-primary-colorless-button>
 

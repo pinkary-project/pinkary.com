@@ -17,14 +17,4 @@ return new class extends Migration
             $table->timestamp('avatar_updated_at')->nullable()->after('avatar');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table): void {
-            $table->dropColumn('avatar_updated_at');
-        });
-    }
 };

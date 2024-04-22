@@ -17,14 +17,4 @@ return new class extends Migration
             $table->boolean('is_company_verified')->default(false)->after('is_verified');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table): void {
-            $table->dropColumn('is_company_verified');
-        });
-    }
 };

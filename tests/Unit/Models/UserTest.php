@@ -25,6 +25,8 @@ test('to array', function () {
         'prefers_anonymous_questions',
         'is_company_verified',
         'avatar_updated_at',
+        'views',
+        'is_uploaded_avatar',
     ]);
 });
 
@@ -71,4 +73,28 @@ test('is verified because in list of fixed company sponsors', function () {
 
     expect($user->is_verified)->toBeTrue()
         ->and($user->is_company_verified)->toBeTrue();
+});
+
+test('increment views', function () {
+    $user = User::factory()->create();
+
+    User::incrementViews([$user->id]);
+
+    expect($user->fresh()->views)->toBe(1);
+});
+
+test('default avatar url', function () {
+    $user = User::factory()->create();
+
+    expect($user->avatar)->toBeNull()
+        ->and($user->avatar_url)->toBe(asset('img/default-avatar.png'));
+});
+
+test('custom avatar url', function () {
+    $user = User::factory()->create([
+        'avatar' => 'storage/avatars/123.png',
+    ]);
+
+    expect($user->avatar)->toBe('storage/avatars/123.png')
+        ->and($user->avatar_url)->toBe(asset('storage/avatars/123.png'));
 });

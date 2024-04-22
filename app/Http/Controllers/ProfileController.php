@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Jobs\DownloadUserAvatar;
+use App\Jobs\IncrementViews;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,8 @@ final readonly class ProfileController
      */
     public function show(User $user): View
     {
+        IncrementViews::dispatchUsingSession($user);
+
         return view('profile.show', [
             'user' => $user,
         ]);
@@ -48,7 +51,9 @@ final readonly class ProfileController
 
         $user->save();
 
-        dispatch(new DownloadUserAvatar($user));
+        if (! $user->is_uploaded_avatar) {
+            UpdateUserAvatar::dispatch($user);
+        }
 
         session()->flash('flash-message', 'Profile updated.');
 

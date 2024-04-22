@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Jobs\DownloadUserAvatar;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use App\Rules\Recaptcha;
 use App\Rules\Username;
@@ -53,7 +53,7 @@ final readonly class RegisteredUserController
 
         Auth::login($user);
 
-        dispatch(new DownloadUserAvatar($user));
+        dispatch(new UpdateUserAvatar($user));
 
         return redirect(route('profile.show', [
             'username' => $user->username,

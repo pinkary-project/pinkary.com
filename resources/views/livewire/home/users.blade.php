@@ -40,7 +40,7 @@
                             <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90">
                                 <img
                                     class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12"
-                                    src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
+                                    src="{{ $user->avatar_url }}"
                                     alt="{{ $user->username }}"
                                 />
                             </figure>
@@ -51,9 +51,15 @@
                                     </p>
 
                                     @if ($user->is_verified && $user->is_company_verified)
-                                        <x-icons.verified-company :color="$user->right_color" class="size-4" />
+                                        <x-icons.verified-company
+                                            :color="$user->right_color"
+                                            class="size-4"
+                                        />
                                     @elseif ($user->is_verified)
-                                        <x-icons.verified :color="$user->right_color" class="size-4" />
+                                        <x-icons.verified
+                                            :color="$user->right_color"
+                                            class="size-4"
+                                        />
                                     @endif
                                 </div>
                                 <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">

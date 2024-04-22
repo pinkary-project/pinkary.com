@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 test('guest', function () {
@@ -249,4 +250,51 @@ test('prefers_anonymous_questions can be updated', function () {
         ->assertRedirect('/profile');
 
     expect($user->refresh()->prefers_anonymous_questions)->toBeFalse();
+});
+
+test('user can upload an avatar', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->patch('/profile/avatar', [
+            'avatar' => UploadedFile::fake()->image('avatar.jpg'),
+        ])
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    $user->refresh();
+
+    expect($user->avatar)->toContain('avatars/')
+        ->and($user->avatar)->toContain('.png')
+        ->and($user->avatar)->toContain('storage/')
+        ->and($user->avatar_updated_at)->not()->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeTrue()
+        ->and(session('flash-message'))->toBe('Avatar updated.');
+});
+
+test('user can delete custom avatar', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create([
+        'avatar' => 'storage/avatars/avatar.jpg',
+        'is_uploaded_avatar' => true,
+    ]);
+
+    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+
+    $this->actingAs($user)
+        ->delete('/profile/avatar')
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+
+    $user->refresh();
+
+    expect($user->avatar)->not->toBeNull()
+        ->and($user->avatar_updated_at)->not->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeFalse()
+        ->and(session('flash-message'))->toBe('Avatar deleted.');
 });

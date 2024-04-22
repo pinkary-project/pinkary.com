@@ -4,10 +4,11 @@
     "require": {
         "php": "^8.3",
         "another-library/type-guard": "dev-main",
-        "laravel/framework": "^11.3.1",
+        "intervention/image": "^3.5.1",
+        "laravel/framework": "^11.4.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
-        "laravel/socialite": "^5.12.1",
+        "laravel/socialite": "^5.13.0",
         "laravel/tinker": "^2.9.0",
         "livewire/livewire": "^3.4.10",
         "scrivo/highlight.php": "^9.18.1.10",
@@ -17,7 +18,7 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13.4",
         "fakerphp/faker": "^1.23.1",
-        "larastan/larastan": "^2.9.3",
+        "larastan/larastan": "^2.9.5",
         "laravel/pint": "^1.15.1",
         "laravel/sail": "^1.29.1",
         "mockery/mockery": "^1.6.11",
@@ -26,7 +27,7 @@
         "pestphp/pest-plugin-laravel": "^2.3.0",
         "pestphp/pest-plugin-type-coverage": "^2.8.1",
         "rector/rector": "^1.0.4",
-        "spatie/laravel-ignition": "^2.5.1"
+        "spatie/laravel-ignition": "^2.5.2"
     },
     "autoload": {
         "psr-4": {

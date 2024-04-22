@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
-use App\Services\Avatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * @property bool $prefers_anonymous_questions
- * @property string $avatar
+ * @property string|null $avatar
  * @property string $avatar_url
  * @property string|null $bio
  * @property Carbon $created_at
@@ -40,6 +40,8 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon $updated_at
  * @property ?Carbon $avatar_updated_at
  * @property string $username
+ * @property int $views
+ * @property bool $is_uploaded_avatar
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
@@ -47,7 +49,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  */
-final class User extends Authenticatable implements MustVerifyEmail
+final class User extends Authenticatable implements MustVerifyEmail, Viewable
 {
     use HasFactory, Notifiable;
 
@@ -60,6 +62,15 @@ final class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
+
+    public static function incrementViews(array $ids): void
+    {
+        self::withoutTimestamps(function () use ($ids): void {
+            self::query()
+                ->whereIn('id', $ids)
+                ->increment('views');
+        });
+    }
 
     /**
      * Get the user's links.
@@ -98,6 +109,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Question::class, 'to_id')
             ->where('pinned', true);
+    }
+
+    /**
+     * Get the user's avatar URL attribute.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
     }
 
     /**
@@ -140,20 +159,6 @@ final class User extends Authenticatable implements MustVerifyEmail
             ->match('/from-.*?\d{3}/')
             ->after('from-')
             ->value();
-    }
-
-    /**
-     * Get the user's avatar URL attribute.
-     */
-    public function getAvatarUrlAttribute(): string
-    {
-        /** @var array<int, string> $urls */
-        $urls = $this->links->pluck('url')->values()->all();
-
-        return (new Avatar(
-            email: $this->email,
-            links: $urls,
-        ))->url();
     }
 
     /**
@@ -240,6 +245,8 @@ final class User extends Authenticatable implements MustVerifyEmail
             'prefers_anonymous_questions' => 'boolean',
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
+            'views' => 'integer',
+            'is_uploaded_avatar' => 'boolean',
         ];
     }
 }
