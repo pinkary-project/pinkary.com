@@ -1,8 +1,8 @@
 <button
     @if ($question->likesByUser)
-        wire:click="unlike()"
+        wire:click="unlike('{{ $question->id }}')"
     @else
-        wire:click="like()"
+        wire:click="like('{{ $question->id }}')"
     @endif
     class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
 >
