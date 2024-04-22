@@ -118,14 +118,34 @@
 
         <div class="mt-4">
             <div class="flex items-center">
-                <input id="terms" name="terms" type="checkbox" class="h-4 w-4 mr-2 rounded border-gray-300 text-pink-600 focus:ring-pink-600" />
+                <input
+                    id="terms"
+                    name="terms"
+                    type="checkbox"
+                    class="mr-2 h-4 w-4 rounded border-gray-300 text-pink-600 focus:ring-pink-600"
+                />
 
                 <x-input-label for="terms">
-                    I am over 18 and I agree to the <a target="_blank" href="{{ route('terms') }}" class="text-pink-500 underline hover:no-underline">Terms of Service</a> and <a href="{{ route('privacy') }}" class="text-pink-500 underline hover:no-underline">Privacy Policy</a>.
+                    I am over 18 and I agree to the
+                    <a
+                        target="_blank"
+                        href="{{ route('terms') }}"
+                        class="text-pink-500 underline hover:no-underline"
+                        >Terms of Service</a
+                    >
+                    and
+                    <a
+                        href="{{ route('privacy') }}"
+                        class="text-pink-500 underline hover:no-underline"
+                        >Privacy Policy</a
+                    >.
                 </x-input-label>
             </div>
 
-            <x-input-error :messages="$errors->get('terms')" class="mt-2" />
+            <x-input-error
+                :messages="$errors->get('terms')"
+                class="mt-2"
+            />
         </div>
 
         <div
