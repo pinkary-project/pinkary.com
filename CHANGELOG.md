@@ -3,6 +3,7 @@
 
 - Adds "Back To Top" button to the user's profile page and feeds.
 - Adds "Accept Terms" checkbox to the user's registration form.
+- Makes mastodon links verifiable.
 
 ## Version 1.9.0
 > 19 April, 2024
