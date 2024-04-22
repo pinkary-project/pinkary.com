@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Livewire\Concerns\HasLoadMore;
+use App\Models\User;
 use App\Queries\Feeds\FeaturedQuestionsFeed;
 use App\Queries\Feeds\QuestionsForYouFeed;
 use App\Queries\Feeds\RecentQuestionsFeed;
@@ -34,7 +35,9 @@ trait HasQuestionsFeed
      */
     public function forYou(): Paginator
     {
-        return (new QuestionsForYouFeed($this->user))
+        $user = type(auth()->user())->as(User::class);
+
+        return (new QuestionsForYouFeed($user))
             ->builder()
             ->simplePaginate($this->perPage);
     }
