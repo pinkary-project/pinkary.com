@@ -68,4 +68,3 @@ it('sets resets avatar state when job fails', function () {
     expect($user->avatar)->toBeNull();
     expect($file->getRealPath())->toBeFalse();
 });
-

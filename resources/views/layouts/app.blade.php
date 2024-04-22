@@ -3,7 +3,10 @@
     <head>
         @include('layouts.components.head')
     </head>
-    <body class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased" style="background-image: url({{ asset('/img/dots.svg') }})">
+    <body
+        class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased"
+        style="background-image: url({{ asset('/img/dots.svg') }})"
+    >
         <livewire:flash-messages.show />
 
         <div class="flex min-h-screen flex-col">
@@ -25,9 +28,7 @@
                 </main>
             </div>
 
-            <x-back-to-top
-                :offset="300"
-            />
+            <x-back-to-top :offset="300" />
 
             <x-footer />
         </div>

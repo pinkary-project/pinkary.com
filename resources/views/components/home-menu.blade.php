@@ -25,7 +25,10 @@
         wire:navigate
         wire:transition
     >
-        <x-icons.trending-solid color="currentColor" class="h-6 w-6 xsm:mr-3" />
+        <x-icons.trending-solid
+            color="currentColor"
+            class="h-6 w-6 xsm:mr-3"
+        />
         <span class="hidden xsm:inline">{{ __('Trending') }}</span>
     </a>
 
