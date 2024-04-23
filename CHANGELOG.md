@@ -1,7 +1,7 @@
 ## Version 1.11.0
 > 23 April, 2024
 
-- Improves Firewall system to prevent increasing number of profile / questions views from bots.
+- Improves Firewall system to mitigate the growing volume of profile and question views by bots.
 
 ## Version 1.10.0
 > 22 April, 2024
