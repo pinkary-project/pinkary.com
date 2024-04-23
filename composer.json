@@ -11,6 +11,7 @@
         "laravel/socialite": "^5.13.0",
         "laravel/tinker": "^2.9.0",
         "livewire/livewire": "^3.4.10",
+        "matomo/device-detector": "^6.3.1",
         "scrivo/highlight.php": "^9.18.1.10",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-mailcoach-mailer": "^1.2.0"

@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Models\Question;
 use App\Models\User;
+use App\Services\Firewall;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
@@ -35,8 +36,12 @@ final class IncrementViews implements ShouldQueue
      *
      * @param  Collection<array-key, Question>|Collection<array-key, User>|Question|User  $viewables
      */
-    public static function dispatchUsingSession(Collection|Question|User $viewables): PendingDispatch
+    public static function dispatchUsingSession(Collection|Question|User $viewables): ?PendingDispatch
     {
+        if (app(Firewall::class)->isBot(request())) {
+            return null;
+        }
+
         $id = auth()->id() ?? session()->getId();
 
         /** @var Collection<array-key, Question>|Collection<array-key, User> $viewables */
