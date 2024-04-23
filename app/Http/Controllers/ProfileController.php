@@ -47,6 +47,7 @@ final readonly class ProfileController
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
+            $user->sendEmailVerificationNotification();
         }
 
         $user->save();
