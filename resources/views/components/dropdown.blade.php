@@ -1,4 +1,4 @@
-@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'bg-slate-900 py-1 text-slate-500'])
+@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'bg-slate-900 py-1 text-slate-500', 'dropdownClasses' => ''])
 
 @php
     switch ($align) {
@@ -34,7 +34,7 @@
         x-transition:leave="transition duration-75 ease-in"
         x-transition:leave-start="scale-100 opacity-100"
         x-transition:leave-end="scale-95 opacity-0"
-        class="{{ $width }} {{ $alignmentClasses }} absolute z-50 mt-2 rounded-md shadow-lg"
+        class="{{ $width }} {{ $alignmentClasses }} {{ $dropdownClasses }} absolute z-50 mt-2 rounded-md shadow-lg"
         style="display: none"
         x-on:click="open = false"
     >
