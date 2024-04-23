@@ -50,11 +50,11 @@ final readonly class ProfileController
             $user->sendEmailVerificationNotification();
         }
 
-        $user->save();
-
-        if (! $user->is_uploaded_avatar) {
+        if (! $user->is_uploaded_avatar && $user->isDirty('email')) {
             UpdateUserAvatar::dispatch($user);
         }
+
+        $user->save();
 
         session()->flash('flash-message', 'Profile updated.');
 
