@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use App\Contracts\Models;
 use App\Services\Firewall;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Locked;
@@ -45,14 +45,10 @@ trait Viewable
             return;
         }
 
-        /** @var Model $model */
+        /** @var Models\Viewable $model */
         $model = $this->viewable;
 
-        Model::withoutTimestamps(function () use ($model): void {
-            $this->viewableScope($model::query())
-                ->whereKey($this->viewedKey)
-                ->increment('views');
-        });
+        $model::incrementViews([$this->viewedKey]);
 
         $this->isViewable = false;
 
@@ -61,14 +57,6 @@ trait Viewable
             true,
             now()->addMinutes(120)
         );
-    }
-
-    /**
-     * viewable model scope.
-     */
-    protected function viewableScope(Builder $query): Builder
-    {
-        return $query;
     }
 
     /**

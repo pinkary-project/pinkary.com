@@ -69,3 +69,49 @@ test('mentions when there is no answer', function () {
 
     expect($question->mentions()->count())->toBe(0);
 });
+
+test('increment views', function () {
+    $question = Question::factory()->create([
+        'answer' => 'Hello',
+        'views' => 0,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(1);
+});
+
+test('does not increment views without answer', function () {
+    $question = Question::factory()->create([
+        'answer' => null,
+        'views' => 0,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(0);
+});
+
+test('does not increment views if question is ignored', function () {
+    $question = Question::factory()->create([
+        'answer' => 'Hello',
+        'views' => 0,
+        'is_ignored' => true,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(0);
+});
+
+test('does not increment views if question is reported', function () {
+    $question = Question::factory()->create([
+        'answer' => 'Hello',
+        'views' => 0,
+        'is_reported' => true,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(0);
+});

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -53,7 +54,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Collection<int, User> $following
  * @property-read Collection<int, User> $followers
  */
-final class User extends Authenticatable implements FilamentUser, MustVerifyEmail
+final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
     use HasFactory, Notifiable;
 
@@ -67,6 +68,9 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         'remember_token',
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     */
     public static function incrementViews(array $ids): void
     {
         self::withoutTimestamps(function () use ($ids): void {
@@ -74,14 +78,6 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
                 ->whereIn('id', $ids)
                 ->increment('views');
         });
-    }
-
-    /**
-     * Determine if the user can access the admin given panel.
-     */
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->hasVerifiedEmail() && $this->email === 'enunomaduro@gmail.com';
     }
 
     /**
