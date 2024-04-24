@@ -21,22 +21,6 @@ final readonly class AuthenticatedSessionController
     }
 
     /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-
-        session()->regenerate();
-
-        $user = type($request->user())->as(User::class);
-
-        return redirect()->intended(route('profile.show', [
-            'username' => $user->username,
-        ], absolute: false));
-    }
-
-    /**
      * Destroy an authenticated session.
      */
     public function destroy(): RedirectResponse
