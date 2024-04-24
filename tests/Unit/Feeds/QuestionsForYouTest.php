@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Queries\Feeds\QuestionsForYouFeed;
 use Illuminate\Database\Eloquent\Builder;
 
+use function Pest\Laravel\travel;
+
 describe('verify query', function () {
 
     beforeEach(function () {
@@ -39,6 +41,27 @@ describe('verify query', function () {
         });
 
         expect($result->where('content', 'This question should not be included in the feed')->count())->toBe(0);
+    });
+
+    it('gets questions ordered by updated_at', function () {
+
+        $questions = Question::factory(5)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
+            ->create();
+
+        $questions->each(function ($question, $index) {
+            travel($index)->minutes();
+            $question->update(['content' => 'Updated content '.$index]);
+        });
+
+        $builder = (new QuestionsForYouFeed($this->user))->builder();
+
+        $result = $builder->get();
+        $index = 4;
+
+        $result->each(function ($question) use (&$index) {
+            expect($question->content)->toBe('Updated content '.$index--);
+        });
     });
 
     it('it gets nothing if inspirational user has not liked any questions', function () {
