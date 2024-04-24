@@ -22,6 +22,9 @@ final readonly class TrendingQuestionsFeed
 
         $order = DB::raw('((`likes_count` * 0.5) + (`views` * 0.2)) / ((strftime("%s", "now") - strftime("%s", `answered_at`)) / 60 + 1)');
 
+        // for MySQL use this: if we move to MySQL, we need to change the query
+        // $order = DB::raw('((`likes_count` * 0.5) + (`views` * 0.2)) / ((UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`answered_at`)) / 60 + 1)');
+
         return Question::query()
             ->withCount('likes')
             ->orderBy($order, 'desc')
