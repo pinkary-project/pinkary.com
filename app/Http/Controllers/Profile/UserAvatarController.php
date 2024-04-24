@@ -11,14 +11,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
-final readonly class AvatarController
+final readonly class UserAvatarController
 {
     /**
      * Handles the verified refresh.
      */
     public function update(UpdateUserAvatarRequest $request): RedirectResponse
     {
-        $user = type(request()->user())->as(User::class);
+        $user = type($request->user())->as(User::class);
 
         $file = type($request->file('avatar'))->as(UploadedFile::class);
         UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
@@ -40,22 +40,6 @@ final readonly class AvatarController
         );
 
         return to_route('profile.edit')
-            ->with('flash-message', 'Avatar deleted.');
-    }
-
-    /**
-     * Create avatar from service.
-     */
-    public function fetch(Request $request): RedirectResponse
-    {
-        $user = type($request->user())->as(User::class);
-
-        UpdateUserAvatar::dispatchSync(
-            $user,
-            service: $user->github_username ? 'github' : 'gravatar'
-        );
-
-        return to_route('profile.edit')
-            ->with('flash-message', 'Attempting to fetch avatar.');
+            ->with('flash-message', 'Updating avatar using '.($user->github_username ? 'GitHub' : 'Gravatar').'.');
     }
 }

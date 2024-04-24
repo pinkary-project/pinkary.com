@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Profile\AvatarController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
 use App\Http\Controllers\Profile\TimezoneController;
+use App\Http\Controllers\Profile\UserAvatarController;
 use App\Http\Controllers\Profile\VerifiedController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
@@ -46,12 +46,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('notifications/{notification}', [NotificationController::class, 'show'])
         ->name('notifications.show');
 
-    Route::patch('/profile/avatar', [AvatarController::class, 'update'])
+    Route::patch('/profile/avatar', [UserAvatarController::class, 'update'])
         ->name('profile.avatar.update');
-    Route::delete('/profile/avatar', [AvatarController::class, 'delete'])
+    Route::delete('/profile/avatar', [UserAvatarController::class, 'delete'])
         ->name('profile.avatar.delete');
-    Route::get('/profile/avatar', [AvatarController::class, 'fetch'])
-        ->name('profile.avatar.fetch');
 });
 
 Route::middleware('auth')->group(function () {

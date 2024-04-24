@@ -310,7 +310,7 @@ test('user can upload an avatar', function () {
         ->and(session('flash-message'))->toBe('Avatar updated.');
 });
 
-test('user can delete custom avatar', function () {
+test('user can delete custom avatar and update using Gravatar', function () {
     Storage::fake('public');
 
     $user = User::factory()->create([
@@ -332,5 +332,74 @@ test('user can delete custom avatar', function () {
     expect($user->avatar)->not->toBeNull()
         ->and($user->avatar_updated_at)->not->toBeNull()
         ->and($user->is_uploaded_avatar)->toBeFalse()
-        ->and(session('flash-message'))->toBe('Avatar deleted.');
+        ->and(session('flash-message'))->toBe('Updating avatar using Gravatar.');
+});
+
+test('user can delete custom avatar and update using GitHub', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create([
+        'avatar' => 'storage/avatars/avatar.jpg',
+        'is_uploaded_avatar' => true,
+        'github_username' => 'testuser',
+    ]);
+
+    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+
+    $this->actingAs($user)
+        ->delete('/profile/avatar')
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+
+    $user->refresh();
+
+    expect($user->avatar)->not->toBeNull()
+        ->and($user->avatar_updated_at)->not->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeFalse()
+        ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
+});
+
+test('user can re-fetch avatar from Gravatar', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create([
+        'avatar' => 'storage/avatars/avatar.jpg',
+        'is_uploaded_avatar' => false,
+    ]);
+
+    $this->actingAs($user)
+        ->delete('/profile/avatar')
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    $user->refresh();
+
+    expect($user->avatar)->not->toBeNull()
+        ->and($user->avatar_updated_at)->not->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeFalse()
+        ->and(session('flash-message'))->toBe('Updating avatar using Gravatar.');
+});
+
+test('user can re-fetch avatar from GitHub', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create([
+        'avatar' => 'storage/avatars/avatar.jpg',
+        'is_uploaded_avatar' => false,
+        'github_username' => 'testuser',
+    ]);
+
+    $this->actingAs($user)
+        ->delete('/profile/avatar')
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    $user->refresh();
+
+    expect($user->avatar)->not->toBeNull()
+        ->and($user->avatar_updated_at)->not->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeFalse()
+        ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
 });

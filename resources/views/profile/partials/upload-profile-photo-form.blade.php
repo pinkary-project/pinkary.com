@@ -66,28 +66,17 @@
         </div>
     </form>
     <div class="relative">
-        @if (auth()->user()->is_uploaded_avatar)
-            <form
-                method="post"
-                class="absolute left-[100px] -top-[34px]"
-                action="{{ route('profile.avatar.delete') }}"
-            >
-                @csrf
-                @method('delete')
+        <form
+            method="post"
+            class="absolute -top-[34px] left-[100px]"
+            action="{{ route('profile.avatar.delete') }}"
+        >
+            @csrf
+            @method('delete')
 
-                <x-secondary-button type="submit">
-                    {{ __('Delete Uploaded Avatar') }}
-                </x-secondary-button>
-            </form>
-        @else
-            <div class="absolute left-[100px] -top-[34px]">
-                <x-secondary-button
-                    x-data="{ fetchAvatar: function () { window.location.href = '{{ route('profile.avatar.fetch') }}' } }"
-                    @click.prevent="fetchAvatar"
-                >
-                    {{ __('Fetch Avatar') }}
-                </x-secondary-button>
-            </div>
-        @endif
+            <x-secondary-button type="submit">
+                {{ auth()->user()->is_uploaded_avatar ? __('Delete Uploaded Avatar') : __('Re-fetch Avatar') }}
+            </x-secondary-button>
+        </form>
     </div>
 </section>
