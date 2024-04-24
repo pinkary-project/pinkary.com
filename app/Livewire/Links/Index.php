@@ -159,7 +159,7 @@ final class Index extends Component
 
         $this->setViewable(User::class, $this->userId);
 
-        if (! $this->viewed) {
+        if ($this->isViewable) {
             $this->incrementViews();
         }
 
