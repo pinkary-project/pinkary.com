@@ -45,20 +45,19 @@ final readonly class ProfileController
 
         $user->fill($request->validated());
 
-        $emailChanged = $user->isDirty('email');
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
 
         $user->save();
 
-        if ($emailChanged) {
-            $user->email_verified_at = null;
-            $user->save();
+        if ($user->wasChanged('email')) {
             $user->sendEmailVerificationNotification();
-        }
 
-        if (! $user->is_uploaded_avatar && $emailChanged) {
-            UpdateUserAvatar::dispatch($user);
+            if (! $user->is_uploaded_avatar) {
+                UpdateUserAvatar::dispatch($user);
+            }
         }
-
         session()->flash('flash-message', 'Profile updated.');
 
         return to_route('profile.edit');
