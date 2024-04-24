@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use App\Services\Firewall;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -13,7 +14,7 @@ use Livewire\Attributes\Renderless;
 trait Viewable
 {
     #[Locked]
-    public bool $viewed = false;
+    public bool $isViewable = false;
 
     #[Locked]
     public string|int $viewedKey = 0;
@@ -29,8 +30,8 @@ trait Viewable
         $this->viewable = $viewable;
         $this->viewedKey = $key;
 
-        if ($this->hasBeenViewed()) {
-            $this->viewed = true;
+        if ($this->canBeViewed()) {
+            $this->isViewable = true;
         }
     }
 
@@ -40,7 +41,7 @@ trait Viewable
     #[Renderless]
     public function incrementViews(): void
     {
-        if ($this->hasBeenViewed()) {
+        if (! $this->canBeViewed()) {
             return;
         }
 
@@ -53,7 +54,7 @@ trait Viewable
                 ->increment('views');
         });
 
-        $this->viewed = true;
+        $this->isViewable = false;
 
         Cache::put(
             $this->getViewsCacheKey(),
@@ -91,5 +92,11 @@ trait Viewable
         $model = $this->viewable;
 
         return (new $model())->getTable().'-'.$this->viewedKey.'-viewed-by-'.$id;
+    }
+
+    private function canBeViewed(): bool
+    {
+        return app(Firewall::class)->isBot(request()) === false
+            && $this->hasBeenViewed() === false;
     }
 }
