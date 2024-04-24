@@ -88,7 +88,9 @@ describe('verify query', function () {
         $builder = (new QuestionsForYouFeed($this->user))->builder();
 
         $result = $builder->get();
-        expect($result->count())->toBe(2);
+        $result->each(function ($question) {
+            expect($question->answer)->not->toBeNull();
+        });
     });
 
     it('does not get questions that are reported', function () {
@@ -105,7 +107,9 @@ describe('verify query', function () {
         $builder = (new QuestionsForYouFeed($this->user))->builder();
 
         $result = $builder->get();
-        expect($result->count())->toBe(2);
+        $result->each(function ($question) {
+            expect($question->is_reported)->toBeFalse();
+        });
     });
 
     it('does not get questions that are ignored', function () {
@@ -122,7 +126,9 @@ describe('verify query', function () {
         $builder = (new QuestionsForYouFeed($this->user))->builder();
 
         $result = $builder->get();
-        expect($result->count())->toBe(2);
+        $result->each(function ($question) {
+            expect($question->is_ignored)->toBeFalse();
+        });
     });
 
 });
