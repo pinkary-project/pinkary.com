@@ -51,7 +51,7 @@ describe('verify query', function () {
         expect($result->count())->toBe(2);
     });
 
-    it('does not get questions that are reported or ignored', function () {
+    it('does not get questions that are reported', function () {
 
         Question::factory(2)
             ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
@@ -60,6 +60,18 @@ describe('verify query', function () {
         Question::factory(2)
             ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
             ->state(['is_reported' => true])
+            ->create();
+
+        $builder = (new QuestionsForYouFeed($this->user))->builder();
+
+        $result = $builder->get();
+        expect($result->count())->toBe(2);
+    });
+
+    it('does not get questions that are ignored', function () {
+
+        Question::factory(2)
+            ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
             ->create();
 
         Question::factory(2)
@@ -72,6 +84,8 @@ describe('verify query', function () {
         $result = $builder->get();
         expect($result->count())->toBe(2);
     });
+
+
 });
 
 it('builder returns Eloquent\Builder instance', function () {
