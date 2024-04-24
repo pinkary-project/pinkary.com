@@ -31,5 +31,5 @@ test('avatar url with github', function () {
         user: $user,
     );
 
-    expect($avatar->url('github'))->toBe("https://avatars.githubusercontent.com/nunomaduro");
+    expect($avatar->url('github'))->toBe('https://avatars.githubusercontent.com/nunomaduro');
 });

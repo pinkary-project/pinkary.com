@@ -334,4 +334,3 @@ test('user can delete custom avatar', function () {
         ->and($user->is_uploaded_avatar)->toBeFalse()
         ->and(session('flash-message'))->toBe('Avatar deleted.');
 });
-
