@@ -45,13 +45,17 @@ final readonly class ProfileController
 
         $user->fill($request->validated());
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
+        $emailChanged = $user->isDirty('email');
 
         $user->save();
 
-        if (! $user->is_uploaded_avatar) {
+        if ($emailChanged) {
+            $user->email_verified_at = null;
+            $user->save();
+            $user->sendEmailVerificationNotification();
+        }
+
+        if (! $user->is_uploaded_avatar && $emailChanged) {
             UpdateUserAvatar::dispatch($user);
         }
 

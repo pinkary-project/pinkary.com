@@ -49,7 +49,7 @@ final class UpdateUserAvatar implements ShouldQueue
         Storage::disk('public')->put($avatar, $contents, 'public');
 
         $this->resizer()->read($disk->path($avatar))
-            ->resize(200, 200)
+            ->coverDown(200, 200)
             ->save();
 
         $this->user->update([

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -121,6 +123,40 @@ test('email verification status is unchanged when the email address is unchanged
         ->assertRedirect('/profile');
 
     $this->assertNotNull($user->refresh()->email_verified_at);
+});
+
+test('email verification job sent & status reset when the email address is changed', function () {
+    Notification::fake();
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'username' => 'valid_username',
+            'email' => 'new@email.address',
+            'prefers_anonymous_questions' => false,
+        ])
+        ->assertSessionHasNoErrors();
+
+    expect($user->email_verified_at)->toBeNull();
+
+    Notification::assertSentTo($user, VerifyEmail::class);
+});
+
+test('only updates avatar if email changes & avatar not been uploaded', function () {
+    Queue::fake();
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'username' => 'valid_username',
+            'email' => $user->email,
+            'prefers_anonymous_questions' => false,
+        ])
+        ->assertSessionHasNoErrors();
+
+    Queue::assertNotPushed(UpdateUserAvatar::class);
 });
 
 test('password can be updated', function () {
