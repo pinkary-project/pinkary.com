@@ -20,18 +20,25 @@ describe('verify query', function () {
             ->create();
     });
 
-    it('get questions liked by inspirational user', function () {
+    it('only gets questions liked by inspirational user', function () {
 
-        Question::factory(2)
+        Question::factory(rand(1, 5))
             ->hasLikes(1, ['user_id' => $this->inspirationalUser->id])
             ->create();
 
-        Question::factory()->create();
+        Question::factory()->create([
+            'content' => 'This question should not be included in the feed',
+        ]);
 
         $builder = (new QuestionsForYouFeed($this->user))->builder();
 
         $result = $builder->get();
-        expect($result->count())->toBe(2);
+
+        $result->each(function ($question) {
+            expect($question->likes()->where('user_id', $this->inspirationalUser->id)->exists())->toBeTrue();
+        });
+
+        expect($result->where('content', 'This question should not be included in the feed')->count())->toBe(0);
     });
 
     it('does not get questions with no answer', function () {
@@ -84,7 +91,6 @@ describe('verify query', function () {
         $result = $builder->get();
         expect($result->count())->toBe(2);
     });
-
 
 });
 
