@@ -24,6 +24,13 @@
                     {{ __('If you delete your uploaded avatar, we will try to fetch your image using our avatar service') }}
                 </p>
             </div>
+        @else
+            <div class="flex gap-2">
+                <p class="text-sm text-slate-500">
+                    @php($message = auth()->user()->github_username ? 'GitHub or' : '')
+                    {{ __("You can click the button below to fetch your avatar from your {$message} Gravatar account") }}
+                </p>
+            </div>
         @endif
     </div>
 
