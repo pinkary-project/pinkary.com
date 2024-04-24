@@ -15,35 +15,54 @@
             >
                 <x-icons.share class="size-5" />
             </button>
-            <button
-                x-cloak
+            <span
                 x-data="copyUrl"
                 x-show="isVisible"
-                x-on:click="
-                    copyToClipboard(
-                        '{{ route('profile.show', ['username' => $user->username]) }}',
-                    )
-                "
-                type="button"
-                class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
             >
-                <x-icons.link class="size-5" />
-            </button>
-            <button
-                x-cloak
-                x-data="shareProfile"
-                x-show="isVisible"
-                x-on:click="
-                    twitter({
-                        url: '{{ route('profile.show', ['username' => $user->username]) }}',
-                        message: 'Follow me on Pinkary',
-                    })
-                "
-                type="button"
-                class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
-            >
-                <x-icons.twitter-x class="size-5" />
-            </button>
+                <x-dropdown-link-profile>
+                    <x-slot name="trigger">
+                        <button
+                            x-bind:class="{ 'bg-pink-500 hover:bg-pink-500': open,
+                                            'bg-slate-900 hover:bg-slate-800': !open }"
+                                        class="mr-2 flex size-10 items-center justify-center rounded-lg text-slate-300 hover:text-white transition duration-150 ease-in-out "
+                        >
+                            <x-icons.share class="size-5" />
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <button
+                            x-cloak
+                            x-data="copyUrl"
+                            x-show="isVisible"
+                            x-on:click="
+                                copyToClipboard(
+                                    '{{ route('profile.show', ['username' => $user->username]) }}',
+                                )
+                            "
+                            type="button"
+                            class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        >
+                            <x-icons.link class="size-5" />
+                        </button>
+                        <button
+                            x-cloak
+                            x-data="shareProfile"
+                            x-show="isVisible"
+                            x-on:click="
+                                twitter({
+                                    url: '{{ route('profile.show', ['username' => $user->username]) }}',
+                                    message: 'Follow me on Pinkary',
+                                })
+                            "
+                            type="button"
+                            class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        >
+                            <x-icons.twitter-x class="size-5" />
+                        </button>
+                    </x-slot>
+                </x-dropdown-link-profile>
+            </span>
             @if (auth()->user()?->is($user))
                 <button
                     class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
