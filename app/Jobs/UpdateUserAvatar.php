@@ -24,8 +24,11 @@ final class UpdateUserAvatar implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private User $user, private ?string $file = null)
-    {
+    public function __construct(
+        private readonly User $user,
+        private readonly ?string $file = null,
+        private readonly ?string $service = null
+    ) {
         //
     }
 
@@ -40,7 +43,19 @@ final class UpdateUserAvatar implements ShouldQueue
             $disk->delete(str_replace('storage/', '', (string) $this->user->avatar));
         }
 
-        $file = $this->file ?? (new Avatar($this->user->email))->url();
+        $file = $this->file ?? (new Avatar($this->user))->url(
+            $this->service ?? 'gravatar',
+        );
+
+        if ($file === asset('img/default-avatar.png')) {
+            $this->user->update([
+                'avatar' => $file,
+                'avatar_updated_at' => now(),
+                'is_uploaded_avatar' => false,
+            ]);
+
+            return;
+        }
 
         $contents = (string) file_get_contents($file);
 
