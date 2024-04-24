@@ -25,7 +25,7 @@ it('increments the views of the given model', function () {
 
     $this->component->incrementViews();
 
-    expect($this->component->viewed)->toBeTrue();
+    expect($this->component->isViewable)->toBeFalse();
     expect($this->user->refresh()->views)->toBe(71);
 });
 
@@ -42,7 +42,7 @@ it('does not increment the views of the given model if it has been viewed', func
     $this->component->incrementViews();
     $this->component->incrementViews();
 
-    expect($this->component->viewed)->toBeTrue();
+    expect($this->component->isViewable)->toBeFalse();
     expect($this->user->refresh()->views)->toBe(71);
 });
 
@@ -50,14 +50,14 @@ it('increments the views of the given model after the cache expires', function (
 
     $this->component->incrementViews();
 
-    expect($this->component->viewed)->toBeTrue();
+    expect($this->component->isViewable)->toBeFalse();
     expect($this->user->refresh()->views)->toBe(71);
 
     travel(121)->minutes();
 
     $this->component->incrementViews();
 
-    expect($this->component->viewed)->toBeTrue();
+    expect($this->component->isViewable)->toBeFalse();
     expect($this->user->refresh()->views)->toBe(72);
 
     travelBack();
