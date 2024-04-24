@@ -25,10 +25,10 @@ final readonly class QuestionsForYouFeed
      */
     public function builder(): Builder
     {
+        $inspirationalUsers = Question::select('to_id')->whereRelation('likes', 'user_id', $this->user->id);
+
         return Question::query()
-            ->whereHas('likes', function (Builder $query): void {
-                $query->whereIn('user_id', Question::select('to_id')->whereRelation('likes', 'user_id', $this->user->id));
-            })
+            ->whereHas('likes', fn (Builder $query) => $query->whereIn('user_id', $inspirationalUsers))
             ->orderByDesc('updated_at')
             ->whereNotNull('answer')
             ->where('is_reported', false)
