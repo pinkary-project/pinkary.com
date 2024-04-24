@@ -50,6 +50,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         ->name('profile.avatar.update');
     Route::delete('/profile/avatar', [AvatarController::class, 'delete'])
         ->name('profile.avatar.delete');
+    Route::get('/profile/avatar', [AvatarController::class, 'fetch'])
+        ->name('profile.avatar.fetch');
 });
 
 Route::middleware('auth')->group(function () {

@@ -34,9 +34,28 @@ final readonly class AvatarController
     {
         $user = type($request->user())->as(User::class);
 
-        UpdateUserAvatar::dispatchSync($user);
+        UpdateUserAvatar::dispatchSync(
+            $user,
+            service: $user->github_username ? 'github' : 'gravatar',
+        );
 
         return to_route('profile.edit')
             ->with('flash-message', 'Avatar deleted.');
+    }
+
+    /**
+     * Create avatar from service.
+     */
+    public function fetch(Request $request): RedirectResponse
+    {
+        $user = type($request->user())->as(User::class);
+
+        UpdateUserAvatar::dispatchSync(
+            $user,
+            service: $user->github_username ? 'github' : 'gravatar'
+        );
+
+        return to_route('profile.edit')
+            ->with('flash-message', 'Attempting to fetch avatar.');
     }
 }

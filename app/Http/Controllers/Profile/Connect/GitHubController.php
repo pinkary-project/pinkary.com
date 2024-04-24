@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Profile\Connect;
 
 use App\Jobs\SyncVerifiedUser;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -58,6 +59,13 @@ final readonly class GitHubController
         $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
             : session()->flash('flash-message', 'Your GitHub account has been connected.');
+
+        if (! $user->is_uploaded_avatar) {
+            UpdateUserAvatar::dispatch(
+                user: $user,
+                service: 'github',
+            );
+        }
 
         return to_route('profile.edit');
     }
