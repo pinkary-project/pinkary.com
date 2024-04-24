@@ -4,6 +4,7 @@
     "require": {
         "php": "^8.3",
         "another-library/type-guard": "dev-main",
+        "filament/filament": "^3.2",
         "intervention/image": "^3.6.0",
         "laravel/framework": "^11.4.0",
         "laravel/pennant": "^1.7",
@@ -45,7 +46,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
