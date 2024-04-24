@@ -41,6 +41,16 @@ describe('verify query', function () {
         expect($result->where('content', 'This question should not be included in the feed')->count())->toBe(0);
     });
 
+    it('it gets nothing if inspirational user has not liked any questions', function () {
+
+        Question::factory(10)->create();
+
+        $builder = (new QuestionsForYouFeed($this->user))->builder();
+
+        $result = $builder->get();
+        expect($result->count())->toBe(0);
+    });
+
     it('does not get questions with no answer', function () {
 
         Question::factory(2)
