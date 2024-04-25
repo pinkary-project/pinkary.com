@@ -17,7 +17,7 @@ final readonly class VerifiedController
     {
         $user = type(request()->user())->as(User::class);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         $user = type($user->fresh())->as(User::class);
 
