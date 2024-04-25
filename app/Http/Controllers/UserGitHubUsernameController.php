@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile\Connect;
+namespace App\Http\Controllers;
 
 use App\Jobs\SyncVerifiedUser;
 use App\Jobs\UpdateUserAvatar;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 
-final readonly class GitHubController
+final readonly class UserGitHubUsernameController
 {
     /**
      * Handles the GitHub connection redirect.

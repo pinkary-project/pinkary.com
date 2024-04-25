@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile;
+namespace App\Http\Controllers;
 
 use App\Jobs\SyncVerifiedUser;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 
-final readonly class VerifiedController
+final readonly class UserIsVerifiedController
 {
     /**
      * Handles the verified refresh.

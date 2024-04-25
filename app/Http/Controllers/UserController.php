@@ -12,7 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final readonly class ProfileController
+final readonly class UserController
 {
     /**
      * Display the user's profile form.

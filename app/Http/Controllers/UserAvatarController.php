@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile;
+namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserAvatarRequest;
 use App\Jobs\UpdateUserAvatar;
