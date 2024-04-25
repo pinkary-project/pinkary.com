@@ -18,7 +18,7 @@ final readonly class QuestionPolicy
             return false;
         }
 
-        return ! ($question->answer === null && ! $question->to->is($user));
+        return $question->answer || $question->to_id === $user?->id;
     }
 
     /**
