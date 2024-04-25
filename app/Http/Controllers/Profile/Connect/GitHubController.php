@@ -52,7 +52,7 @@ final readonly class GitHubController
 
         $user->update($validated);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         $user = type($user->fresh())->as(User::class);
 
@@ -79,7 +79,7 @@ final readonly class GitHubController
 
         $user->update(['github_username' => null]);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 
