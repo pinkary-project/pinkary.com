@@ -12,11 +12,7 @@
     <section>
         <h3 class="text-lg font-medium text-slate-300">
             @if ($this->enabled)
-                @if ($showingConfirmation)
-                    {{ __('Finish enabling two factor authentication.') }}
-                @else
-                    {{ __('You have enabled two factor authentication.') }}
-                @endif
+                {{ __('You have enabled two factor authentication.') }}
             @else
                 {{ __('You have not enabled two factor authentication.') }}
             @endif
@@ -32,11 +28,7 @@
             @if ($showingQrCode)
                 <div class="mt-4 max-w-xl text-sm text-slate-500">
                     <p class="font-semibold">
-                        @if ($showingConfirmation)
-                            {{ __('To finish enabling two factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.') }}
-                        @else
-                            {{ __('Two factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.') }}
-                        @endif
+                        {{ __('Two factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.') }}
                     </p>
                 </div>
 
@@ -49,18 +41,6 @@
                         {{ __('Setup Key') }}: {{ decrypt($this->user->two_factor_secret) }}
                     </p>
                 </div>
-
-                @if ($showingConfirmation)
-                    <div class="mt-4">
-                        <x-input-label for="code" value="{{ __('Code') }}" />
-
-                        <x-text-input id="code" type="text" name="code" class="block mt-1 w-1/2" inputmode="numeric" autofocus autocomplete="one-time-code"
-                            wire:model="code"
-                            wire:keydown.enter="confirmTwoFactorAuthentication" />
-
-                        <x-input-error for="code" class="mt-2" />
-                    </div>
-                @endif
             @endif
 
             @if ($showingRecoveryCodes)
@@ -95,15 +75,6 @@
                     >
                         {{ __('Regenerate Recovery Codes') }}
                     </x-secondary-button>
-                @elseif ($showingConfirmation)
-                    <x-primary-button
-                        type="button"
-                        class="me-3"
-                        wire:loading.attr="disabled"
-                        wire:click="confirmTwoFactorAuthentication"
-                    >
-                        {{ __('Confirm') }}
-                    </x-primary-button>
                 @else
                     <x-secondary-button
                         class="me-3"
@@ -113,21 +84,12 @@
                     </x-secondary-button>
                 @endif
 
-                @if ($showingConfirmation)
-                    <x-secondary-button
-                        wire:loading.attr="disabled"
-                        wire:click="disableTwoFactorAuthentication"
-                    >
-                        {{ __('Cancel') }}
-                    </x-secondary-button>
-                @else
-                    <x-danger-button
-                        wire:loading.attr="disabled"
-                        wire:click="disableTwoFactorAuthentication"
-                    >
-                        {{ __('Disable') }}
-                    </x-danger-button>
-                @endif
+                <x-danger-button
+                    wire:loading.attr="disabled"
+                    wire:click="disableTwoFactorAuthentication"
+                >
+                    {{ __('Disable') }}
+                </x-danger-button>
             @endif
         </div>
     </section>

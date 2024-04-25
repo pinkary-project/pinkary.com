@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\Profile;
 
 use Illuminate\View\View;
-use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
@@ -17,11 +16,6 @@ final class TwoFactorAuthenticationForm extends Component
      * Indicates if two factor authentication QR code is being displayed.
      */
     public bool $showingQrCode = false;
-
-    /**
-     * Indicates if the two factor authentication confirmation input and button are being displayed.
-     */
-    public bool $showingConfirmation = false;
 
     /**
      * Indicates if two factor authentication recovery codes are being displayed.
@@ -41,18 +35,6 @@ final class TwoFactorAuthenticationForm extends Component
         $enable(auth()->user());
 
         $this->showingQrCode = true;
-        $this->showingRecoveryCodes = true;
-    }
-
-    /**
-     * Confirm two factor authentication for the user.
-     */
-    public function confirmTwoFactorAuthentication(ConfirmTwoFactorAuthentication $confirm): void
-    {
-        $confirm(auth()->user(), type($this->code)->asString());
-
-        $this->showingQrCode = false;
-        $this->showingConfirmation = false;
         $this->showingRecoveryCodes = true;
     }
 
@@ -82,7 +64,6 @@ final class TwoFactorAuthenticationForm extends Component
         $disable(auth()->user());
 
         $this->showingQrCode = false;
-        $this->showingConfirmation = false;
         $this->showingRecoveryCodes = false;
     }
 
