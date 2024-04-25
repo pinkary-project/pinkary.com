@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Auth;
 
 use App\Models\User;
@@ -8,7 +10,7 @@ use App\Rules\Username;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
 
-class RegisteredUserRequest extends FormRequest
+final class RegisteredUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
