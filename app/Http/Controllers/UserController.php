@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Jobs\IncrementViews;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
@@ -39,7 +39,7 @@ final readonly class UserController
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(UserUpdateRequest $request): RedirectResponse
     {
         $user = type($request->user())->as(User::class);
 
