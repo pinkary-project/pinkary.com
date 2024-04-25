@@ -8,7 +8,7 @@
         "laravel/framework": "^11.5.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
-        "laravel/socialite": "^5.13.0",
+        "laravel/socialite": "^5.13.1",
         "laravel/tinker": "^2.9.0",
         "livewire/livewire": "^3.4.11",
         "matomo/device-detector": "^6.3.1",
