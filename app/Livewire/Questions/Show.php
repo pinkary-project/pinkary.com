@@ -182,8 +182,6 @@ final class Show extends Component
             ->withCount('likes')
             ->firstOrFail();
 
-        //dd($question);
-
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
