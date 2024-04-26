@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile\Connect;
+namespace App\Http\Controllers;
 
 use App\Jobs\SyncVerifiedUser;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 
-final readonly class GitHubController
+final readonly class UserGitHubUsernameController
 {
     /**
      * Handles the GitHub connection redirect.
@@ -51,13 +52,20 @@ final readonly class GitHubController
 
         $user->update($validated);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         $user = type($user->fresh())->as(User::class);
 
         $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
             : session()->flash('flash-message', 'Your GitHub account has been connected.');
+
+        if (! $user->is_uploaded_avatar) {
+            UpdateUserAvatar::dispatch(
+                user: $user,
+                service: 'github',
+            );
+        }
 
         return to_route('profile.edit');
     }
@@ -71,7 +79,7 @@ final readonly class GitHubController
 
         $user->update(['github_username' => null]);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 

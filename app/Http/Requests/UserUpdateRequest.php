@@ -14,7 +14,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Stringable;
 
-final class ProfileUpdateRequest extends FormRequest
+final class UserUpdateRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.

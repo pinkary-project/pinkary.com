@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile;
+namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserAvatarRequest;
+use App\Http\Requests\UserAvatarUpdateRequest;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
-final readonly class AvatarController
+final readonly class UserAvatarController
 {
     /**
      * Handles the verified refresh.
      */
-    public function update(UpdateUserAvatarRequest $request): RedirectResponse
+    public function update(UserAvatarUpdateRequest $request): RedirectResponse
     {
-        $user = type(request()->user())->as(User::class);
+        $user = type($request->user())->as(User::class);
 
         $file = type($request->file('avatar'))->as(UploadedFile::class);
         UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
@@ -34,9 +34,12 @@ final readonly class AvatarController
     {
         $user = type($request->user())->as(User::class);
 
-        UpdateUserAvatar::dispatchSync($user);
+        UpdateUserAvatar::dispatchSync(
+            $user,
+            service: $user->github_username ? 'github' : 'gravatar',
+        );
 
         return to_route('profile.edit')
-            ->with('flash-message', 'Avatar deleted.');
+            ->with('flash-message', 'Updating avatar using '.($user->github_username ? 'GitHub' : 'Gravatar').'.');
     }
 }

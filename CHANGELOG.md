@@ -1,3 +1,9 @@
+## Version 1.12.0
+> 24 April, 2024
+
+- Improves avatar image fetching from social media.
+
+
 ## Version 1.11.0
 > 23 April, 2024
 

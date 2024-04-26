@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Jobs\IncrementViews;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
@@ -12,7 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final readonly class ProfileController
+final readonly class UserController
 {
     /**
      * Display the user's profile form.
@@ -39,7 +39,7 @@ final readonly class ProfileController
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(UserUpdateRequest $request): RedirectResponse
     {
         $user = type($request->user())->as(User::class);
 
@@ -51,10 +51,13 @@ final readonly class ProfileController
 
         $user->save();
 
-        if (! $user->is_uploaded_avatar) {
-            UpdateUserAvatar::dispatch($user);
-        }
+        if ($user->wasChanged('email')) {
+            $user->sendEmailVerificationNotification();
 
+            if (! $user->is_uploaded_avatar) {
+                UpdateUserAvatar::dispatch($user);
+            }
+        }
         session()->flash('flash-message', 'Profile updated.');
 
         return to_route('profile.edit');

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
@@ -111,4 +112,43 @@ test('connect to github may get you verified if you are sponsoring us', function
 
     expect($user->github_username)->toBe('test');
     expect($user->is_verified)->toBeTrue();
+});
+
+test('fetches github avatar if no custom avatar uploaded', function () {
+    Http::fake();
+    Queue::fake();
+
+    $user = User::factory()->create();
+    expect($user->github_username)->toBeNull();
+    Socialite::shouldReceive('driver->user->getNickname')->andReturn('test');
+
+    $this->actingAs($user)
+        ->get(route('profile.connect.github.update'))
+        ->assertStatus(302)
+        ->assertRedirect(route('profile.edit'));
+
+    expect(session('flash-message'))
+        ->toBe('Your GitHub account has been connected.');
+
+    Queue::assertPushed(UpdateUserAvatar::class);
+
+    $job = new UpdateUserAvatar(
+        user: $user,
+        service: 'github',
+    );
+
+    $job->handle();
+
+    expect($job)->toBeInstanceOf(UpdateUserAvatar::class);
+
+    $user->refresh();
+
+    expect($user->github_username)->toBe('test')
+        ->and($user->is_verified)->toBeFalse()
+        ->and($user->avatar)->toContain('avatars/')
+        ->and($user->avatar)->toContain('.png')
+        ->and($user->avatar)->toContain('storage/')
+        ->and($user->avatar_updated_at)->not()->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeFalse();
+
 });

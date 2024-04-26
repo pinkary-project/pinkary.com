@@ -21,7 +21,14 @@
         @if (auth()->user()->is_uploaded_avatar)
             <div class="flex gap-2">
                 <p class="text-sm text-slate-500">
-                    {{ __('If you delete your uploaded avatar, we will try to fetch your image based in your email, links, etc.') }}
+                    {{ __('If you delete your uploaded avatar, we will try to fetch your image using our avatar service') }}
+                </p>
+            </div>
+        @else
+            <div class="flex gap-2">
+                <p class="text-sm text-slate-500">
+                    @php($message = auth()->user()->github_username ? 'GitHub or' : '')
+                    {{ __("You can click the button below to fetch your avatar from your {$message} Gravatar account") }}
                 </p>
             </div>
         @endif
@@ -58,19 +65,18 @@
             <x-primary-button>{{ __('Upload') }}</x-primary-button>
         </div>
     </form>
-    <div class="mt-2">
-        @if (auth()->user()->is_uploaded_avatar)
-            <form
-                method="post"
-                action="{{ route('profile.avatar.delete') }}"
-            >
-                @csrf
-                @method('delete')
+    <div class="relative">
+        <form
+            method="post"
+            class="absolute -top-[34px] left-[100px]"
+            action="{{ route('profile.avatar.delete') }}"
+        >
+            @csrf
+            @method('delete')
 
-                <x-secondary-button type="submit">
-                    {{ __('Delete Uploaded Avatar') }}
-                </x-secondary-button>
-            </form>
-        @endif
+            <x-secondary-button type="submit">
+                {{ auth()->user()->is_uploaded_avatar ? __('Delete Uploaded Avatar') : __('Re-fetch Avatar') }}
+            </x-secondary-button>
+        </form>
     </div>
 </section>
