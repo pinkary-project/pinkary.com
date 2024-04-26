@@ -4,7 +4,7 @@
         @class([
             'bg-pink-600 text-slate-100' => request()->routeIs('home.feed'),
             'text-slate-500 hover:text-slate-100 bg-slate-900' => ! request()->routeIs('home.feed'),
-            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none'
+            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none',
         ])
         wire:navigate
         wire:transition
@@ -18,7 +18,7 @@
         @class([
             'bg-pink-600 text-slate-100' => request()->routeIs('home.for_you'),
             'text-slate-500 hover:text-slate-100 bg-slate-900' => ! request()->routeIs('home.for_you'),
-            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none'
+            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none',
         ])
         wire:navigate
         wire:transition
@@ -32,7 +32,7 @@
         @class([
             'bg-pink-600 text-slate-100' => request()->routeIs('home.trending'),
             'text-slate-500 hover:text-slate-100 bg-slate-900' => ! request()->routeIs('home.trending'),
-            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none'
+            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none',
         ])
         wire:navigate
         wire:transition
@@ -49,7 +49,7 @@
         @class([
             'bg-pink-600 text-slate-100' => request()->routeIs('home.users'),
             'text-slate-500 hover:text-slate-100 bg-slate-900' => ! request()->routeIs('home.users'),
-            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none'
+            'inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none',
         ])
         wire:navigate
         wire:transition

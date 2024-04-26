@@ -28,7 +28,7 @@
                                 @class([
                                     'rounded-md' => $question->to->is_company_verified,
                                     'rounded-full' => ! $question->to->is_company_verified,
-                                    'h-10 w-10'
+                                    'h-10 w-10',
                                 ])
                             />
                         </figure>
@@ -55,7 +55,7 @@
                                     @class([
                                     'rounded-md' => $question->from->is_company_verified,
                                     'rounded-full' => ! $question->from->is_company_verified,
-                                    'h-10 w-10'
+                                    'h-10 w-10',
                                     ])
                                 />
                             </figure>

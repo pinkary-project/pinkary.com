@@ -13,7 +13,7 @@
                 @class([
                     'rounded-md' => $user->is_company_verified,
                     'rounded-full' => ! $user->is_company_verified,
-                    'h-12 w-12'
+                    'h-12 w-12',
                 ])
             />
         </a>

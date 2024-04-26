@@ -17,9 +17,8 @@
                             @class([
                                 'text-slate-100' => request()->routeIs('home.*'),
                                 'text-slate-500 hover:text-slate-100' => ! request()->routeIs('home.*'),
-                                'inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none'
-                            ])
-                        >
+                                'inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none',
+                            ])>
                             <x-icons.home class="h-6 w-6" />
                         </button>
                     </a>
@@ -34,10 +33,9 @@
                             @class([
                                 'text-slate-100' => request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])),
                                 'text-slate-500 hover:text-slate-100' => ! request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])),
-                                'inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none'
+                                'inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none',
 
-                            ])
-                        >
+                            ])>
                             <x-icons.user class="h-6 w-6" />
                         </button>
                     </a>
@@ -52,9 +50,8 @@
                             @class([
                                 'text-slate-100' => request()->routeIs('notifications.index'),
                                 'text-slate-500 hover:text-slate-100' => ! request()->routeIs('notifications.index'),
-                                'inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none'
-                            ])
-                        >
+                                'inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none',
+                            ])>
                             <x-icons.bell class="h-6 w-6" />
 
                             <livewire:navigation.notifications-count.show />

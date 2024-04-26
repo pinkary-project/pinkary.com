@@ -40,13 +40,13 @@
                             <figure @class([
                                     'rounded-md' => $user->is_company_verified,
                                     'rounded-full' => ! $user->is_company_verified,
-                                    'h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90'
-                                ]) >
+                                    'h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90',
+                                ])>
                                 <img
                                     @class([
                                         'rounded-md' => $user->is_company_verified,
                                         'rounded-full' => ! $user->is_company_verified,
-                                        'h-12 w-12'
+                                        'h-12 w-12',
                                     ])
                                     src="{{ $user->avatar_url }}"
                                     alt="{{ $user->username }}"
