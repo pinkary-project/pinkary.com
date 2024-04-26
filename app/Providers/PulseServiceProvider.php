@@ -21,7 +21,7 @@ final class PulseServiceProvider extends ServiceProvider
         Pulse::user(fn (User $user): array => [
             'name' => $user->name,
             'extra' => $user->email,
-            'avatar' => $user->avatar,
+            'avatar' => $user->avatar_url,
         ]);
     }
 }

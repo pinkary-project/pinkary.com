@@ -73,14 +73,4 @@ return new class extends PulseMigration
             $table->index(['period', 'type', 'aggregate', 'bucket']); // For aggregate queries...
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('pulse_values');
-        Schema::dropIfExists('pulse_entries');
-        Schema::dropIfExists('pulse_aggregates');
-    }
 };

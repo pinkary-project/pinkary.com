@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Livewire\Links\Index;
 use App\Models\Link;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
@@ -163,4 +164,27 @@ test('click counter is not incremented if user already clicked the link during t
     $component->call('click', $link->id);
 
     expect($link->refresh()->click_count)->toBe(30);
+});
+
+test('count to be abbreviated', function () {
+
+    $user = User::factory()
+        ->hasLinks(5, new Sequence(
+            ['click_count' => 125],
+            ['click_count' => 1250],
+            ['click_count' => 12500],
+            ['click_count' => 125000],
+            ['click_count' => 1250000],
+        ))
+        ->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->assertSee('125')
+        ->assertSee('1K')
+        ->assertSee('12K')
+        ->assertSee('125K')
+        ->assertSee('1M');
 });

@@ -17,14 +17,4 @@ return new class extends Migration
             $table->string('mail_preference_time')->default('daily')->after('timezone');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table): void {
-            //
-        });
-    }
 };

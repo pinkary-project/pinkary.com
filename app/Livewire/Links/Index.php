@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Links;
 
-use App\Jobs\DownloadUserAvatar;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -75,9 +75,11 @@ final class Index extends Component
 
         $this->authorize('delete', $link);
 
-        dispatch(new DownloadUserAvatar($user));
-
         $link->delete();
+
+        if (! $user->is_uploaded_avatar) {
+            UpdateUserAvatar::dispatch($user);
+        }
 
         $this->dispatch('notification.created', message: 'Link deleted.');
     }

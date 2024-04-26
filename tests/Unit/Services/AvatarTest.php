@@ -2,50 +2,34 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
 use App\Services\Avatar;
 
-test('avatar url without links', function () {
+test('avatar default url', function () {
     $avatar = new Avatar(
-        email: 'enunomaduro@gmail.com',
-        links: [],
+        user: User::factory()->create(),
     );
 
-    expect($avatar->url())->toBe('https://unavatar.io/enunomaduro@gmail.com?fallback=https://gravatar.com/avatar/86cfef5c1f5195df1a9db17a5f8ecb34455e1f0133a725de9acf7f2fb26ac6a1?s=300');
+    expect($avatar->url())->toBe(asset('img/default-avatar.png'));
 });
 
-test('avatar url', function () {
+test('avatar url with gravatar', function () {
+    $user = User::factory()->create(['email' => 'enunomaduro@gmail.com']);
+    $gravHash = hash('sha256', mb_strtolower($user->email));
+
     $avatar = new Avatar(
-        email: 'enunomaduro@gmail.com',
-        links: [
-            'https://twitter.com/@enunomaduro',
-        ],
+        user: $user,
     );
 
-    expect($avatar->url())->toBe('https://unavatar.io/twitter/enunomaduro?fallback=https://unavatar.io/enunomaduro@gmail.com?fallback=https://gravatar.com/avatar/86cfef5c1f5195df1a9db17a5f8ecb34455e1f0133a725de9acf7f2fb26ac6a1?s=300');
+    expect($avatar->url())->toBe("https://gravatar.com/avatar/{$gravHash}?s=300&d=404");
 });
 
-test('avatar url with multiple links', function () {
+test('avatar url with github', function () {
+    $user = User::factory()->create(['github_username' => 'nunomaduro']);
+
     $avatar = new Avatar(
-        email: 'taylor@laravel.com',
-        links: [
-            'https://twitter.com/taylorotwell',
-            'https://x.com/@laravelphp',
-            'https://github.com/taylorotwell',
-        ],
+        user: $user,
     );
 
-    expect($avatar->url())->toBe('https://unavatar.io/twitter/laravelphp?fallback=https://unavatar.io/taylor@laravel.com?fallback=https://unavatar.io/twitter/taylorotwell?fallback=https://unavatar.io/github/taylorotwell?fallback=https://gravatar.com/avatar/75cc0771635c9940dd8bf7f884ee259b7502eb4a5797b5265d830e530b05ae7d?s=300');
-});
-
-test('avatar url with multiple links with _', function () {
-    $avatar = new Avatar(
-        email: 'taylor@laravel.com',
-        links: [
-            'https://twitter.com/taylorotwell_',
-            'https://x.com/@laravelphp_',
-            'https://github.com/taylorotwell_',
-        ],
-    );
-
-    expect($avatar->url())->toBe('https://unavatar.io/twitter/laravelphp_?fallback=https://unavatar.io/taylor@laravel.com?fallback=https://unavatar.io/twitter/taylorotwell_?fallback=https://unavatar.io/github/taylorotwell_?fallback=https://gravatar.com/avatar/75cc0771635c9940dd8bf7f884ee259b7502eb4a5797b5265d830e530b05ae7d?s=300');
+    expect($avatar->url('github'))->toBe('https://avatars.githubusercontent.com/nunomaduro');
 });

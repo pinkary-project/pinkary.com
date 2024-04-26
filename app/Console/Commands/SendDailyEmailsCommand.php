@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\UserMailPreference;
 use App\Mail\PendingNotifications;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -30,7 +31,7 @@ final class SendDailyEmailsCommand extends Command
      */
     public function handle(): void
     {
-        User::where('mail_preference_time', 'daily')
+        User::where('mail_preference_time', UserMailPreference::Daily)
             ->whereHas('notifications')
             ->each(fn (User $user) => Mail::to($user)->queue(new PendingNotifications($user)));
     }

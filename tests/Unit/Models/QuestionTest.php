@@ -22,6 +22,7 @@ test('to array', function () {
         'updated_at',
         'pinned',
         'is_ignored',
+        'views',
     ]);
 });
 
@@ -55,4 +56,26 @@ test('mentions', function () {
     expect($question->mentions()->count())->toBe(2)
         ->and($question->mentions()->first()->username)->toBe('firstuser')
         ->and($question->mentions()->last()->username)->toBe('seconduser');
+});
+
+test('increment views', function () {
+    $question = Question::factory()->create([
+        'answer' => 'Hello',
+        'views' => 0,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(1);
+});
+
+test('does not increment views without answer', function () {
+    $question = Question::factory()->create([
+        'answer' => null,
+        'views' => 0,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(0);
 });

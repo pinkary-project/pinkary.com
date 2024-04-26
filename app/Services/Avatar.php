@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Contracts\AvatarProvider;
-use App\Services\AvatarProviders\GitHub;
-use App\Services\AvatarProviders\Twitter;
+use App\Models\User;
 
 final readonly class Avatar
 {
     /**
      * Create a new avatar for the given name and email address.
-     *
-     * @param  array<int, string>  $links
      */
     public function __construct(
-        private string $email,
-        private array $links,
+        private User $user,
     ) {
         //
     }
@@ -25,43 +20,21 @@ final readonly class Avatar
     /**
      * Get the avatar URL.
      */
-    public function url(): string
+    public function url(string $service = 'gravatar'): string
     {
-        $url = "https://unavatar.io/$this->email";
+        if ($service === 'github' && $this->user->github_username) {
+            return "https://avatars.githubusercontent.com/{$this->user->github_username}";
+        }
 
-        $providers = [
-            Twitter::class,
-            GitHub::class,
-        ];
-
-        $fallbacks = collect();
-
-        $gravatarHash = hash('sha256', mb_strtolower($this->email));
-
-        foreach ($this->links as $link) {
-            foreach ($providers as $provider) {
-                $provider = type(new $provider())->as(AvatarProvider::class);
-
-                if ($provider->applicable($link)) {
-                    $fallback = $provider->getUrl($link);
-
-                    if ($provider instanceof Twitter) {
-                        $fallbacks->add($url);
-
-                        $url = $fallback;
-                    } else {
-                        $fallbacks->add($fallback);
-                    }
-                }
+        if ($service === 'gravatar') {
+            $gravatarHash = hash('sha256', mb_strtolower($this->user->email));
+            $gravatarUrl = "https://gravatar.com/avatar/{$gravatarHash}?s=300&d=404";
+            $headers = get_headers($gravatarUrl);
+            if ($headers !== false && ! in_array('HTTP/1.1 404 Not Found', $headers, true)) {
+                return $gravatarUrl;
             }
         }
 
-        $fallbacks->add("https://gravatar.com/avatar/$gravatarHash?s=300");
-
-        $fallbacks = $fallbacks->unique();
-
-        return $url.$fallbacks
-            ->map(fn (string $url): string => "?fallback=$url")
-            ->implode('');
+        return asset('img/default-avatar.png');
     }
 }

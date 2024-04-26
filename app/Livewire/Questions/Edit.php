@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Models\Question;
+use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -27,13 +28,26 @@ final class Edit extends Component
     /**
      * Updates the question with the given answer.
      */
-    public function update(): void
+    public function update(Request $request): void
     {
         $this->validate([
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
 
-        $question = Question::findOrFail($this->questionId);
+        $user = type($request->user())->as(User::class);
+
+        $question = Question::query()
+            ->whereNull('answer')
+            ->where('is_reported', false)
+            ->where('is_ignored', false)
+            ->find($this->questionId);
+
+        if (is_null($question)) {
+            $this->dispatch('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
+            $this->redirectRoute('profile.show', ['username' => $user->username], navigate: true);
+
+            return;
+        }
 
         $this->authorize('update', $question);
 

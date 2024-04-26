@@ -13,7 +13,7 @@ it('gets non-verified if does not have a GitHub username', function () {
         'github_username' => null,
     ]);
 
-    dispatch_sync(new SyncVerifiedUser($user));
+    SyncVerifiedUser::dispatchSync($user);
 
     expect($user->fresh()->is_verified)->toBeFalse();
 });
@@ -36,7 +36,7 @@ it('gets non-verified if GitHub username is not sponsoring us', function () {
         ]),
     ]);
 
-    dispatch_sync(new SyncVerifiedUser($user));
+    SyncVerifiedUser::dispatchSync($user);
 
     expect($user->fresh()->is_verified)->toBeFalse();
 });
@@ -51,7 +51,7 @@ it('does not touch on the verified status if GitHub call fails', function () {
         'github.com/*' => Http::response([], 500),
     ]);
 
-    dispatch_sync(new SyncVerifiedUser($user));
+    SyncVerifiedUser::dispatchSync($user);
 })->throws(GitHubException::class);
 
 it('does not get verified if GitHub username is sponsoring us but the tier is less than $9', function () {
@@ -74,7 +74,7 @@ it('does not get verified if GitHub username is sponsoring us but the tier is le
         ]),
     ]);
 
-    dispatch_sync(new SyncVerifiedUser($user));
+    SyncVerifiedUser::dispatchSync($user);
 
     expect($user->fresh()->is_verified)->toBeFalse();
 });
@@ -99,7 +99,7 @@ it('gets verified if GitHub username is sponsoring us', function () {
         ]),
     ]);
 
-    dispatch_sync(new SyncVerifiedUser($user));
+    SyncVerifiedUser::dispatchSync($user);
 
     expect($user->fresh()->is_verified)->toBeTrue();
 });
