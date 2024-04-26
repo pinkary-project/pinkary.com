@@ -1,3 +1,8 @@
+## Version 1.12.1
+> 26 April, 2024
+
+- Internal improvements and bug fixes.
+
 ## Version 1.12.0
 > 24 April, 2024
 
