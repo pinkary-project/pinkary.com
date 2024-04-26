@@ -15,11 +15,19 @@
                     class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
-                    <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure @class([
+                        'rounded-md' => $question->from->is_company_verified,
+                        'rounded-full' => ! $question->from->is_company_verified,
+                        'h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90',
+                        ])>
                         <img
                             src="{{ $question->from->avatar_url }}"
                             alt="{{ $question->from->username }}"
-                            class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                            @class([
+                                'rounded-md' => $question->from->is_company_verified,
+                                'rounded-full' => ! $question->from->is_company_verified,
+                                'h-10 w-10'
+                            ])
                         />
                     </figure>
 
@@ -69,11 +77,19 @@
                     class="group flex items-center gap-3"
                     wire:navigate
                 >
-                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure @class([
+                        'rounded-md' => $question->to->is_company_verified,
+                        'rounded-full' => ! $question->to->is_company_verified,
+                        'h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90',
+                        ])>
                         <img
                             src="{{ $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
-                            class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                            @class([
+                                'rounded-md' => $question->to->is_company_verified,
+                                'rounded-full' => ! $question->to->is_company_verified,
+                                'h-10 w-10'
+                            ])
                         />
                     </figure>
                     <div class="overflow-hidden text-sm">
