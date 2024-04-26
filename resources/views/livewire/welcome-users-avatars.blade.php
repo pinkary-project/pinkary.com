@@ -10,7 +10,11 @@
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
-                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12"
+                @class([
+                    'rounded-md' => $user->is_company_verified,
+                    'rounded-full' => ! $user->is_company_verified,
+                    'h-12 w-12'
+                ])
             />
         </a>
     @endforeach
