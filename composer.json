@@ -5,7 +5,7 @@
         "php": "^8.3",
         "another-library/type-guard": "dev-main",
         "intervention/image": "^3.6.1",
-        "laravel/framework": "^11.5.0",
+        "laravel/framework": "dev-feat/exception-page as 11.5.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
         "laravel/socialite": "^5.13.1",
@@ -27,8 +27,7 @@
         "pestphp/pest": "^2.34.7",
         "pestphp/pest-plugin-laravel": "^2.3.0",
         "pestphp/pest-plugin-type-coverage": "^2.8.1",
-        "rector/rector": "^1.0.4",
-        "spatie/laravel-ignition": "^2.5.2"
+        "rector/rector": "^1.0.4"
     },
     "autoload": {
         "psr-4": {
