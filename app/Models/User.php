@@ -76,9 +76,6 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
 
     /**
      * Determine if the user can access the admin given panel.
-     *
-     * @param Panel $panel
-     * @return bool
      */
     public function canAccessPanel(Panel $panel): bool
     {
@@ -147,7 +144,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         $sorting = json_decode($value, true);
 
         return collect($sorting)
-            ->map(fn(string $linkId): int => (int)$linkId)
+            ->map(fn (string $linkId): int => (int) $linkId)
             ->values()
             ->all();
     }
