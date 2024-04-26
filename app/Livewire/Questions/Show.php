@@ -178,7 +178,7 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from'])
+            ->with(['to', 'from', 'likes'])
             ->withCount('likes')
             ->firstOrFail();
 
