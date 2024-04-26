@@ -45,29 +45,10 @@
                                         class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                                     />
                                 </figure>
-                                <p>{{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:</p>
+                                <p>{{ $question->from->name }} asked you:</p>
                             </div>
-                        @else
-                            @if ($question->anonymously)
-                                <div class="flex items-center gap-3 text-sm text-slate-500">
-                                    <div class="border-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-dashed border-slate-400">
-                                        <span>?</span>
-                                    </div>
-                                    <p>Someone asked you anonymously:</p>
-                                </div>
-                            @else
-                                <div class="flex items-center gap-3 text-sm text-slate-500">
-                                    <figure class="h-10 w-10 flex-shrink-0 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} bg-slate-800 transition-opacity group-hover:opacity-90">
-                                        <img
-                                            src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
-                                            alt="{{ $question->from->username }}"
-                                            class="h-10 w-10 {{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }}"
-                                        />
-                                    </figure>
-                                    <p>{{ $question->from->name }} asked you:</p>
-                                </div>
-                            @endif
-                      @endif
+                        @endif
+                    @endif
                 @else
                     <p class="text-sm text-slate-500">You have been mentioned in a question:</p>
                 @endif
