@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\ParsableContentProviders;
 
-use App\Contracts\ParsableContentProvider;
+use App\Contracts\Services\ParsableContentProvider;
 
 final readonly class BrProviderParsable implements ParsableContentProvider
 {

@@ -3,9 +3,12 @@
     <div class="absolute right-0 h-full w-24 bg-gradient-to-l from-slate-950 to-transparent"></div>
 
     @foreach ($users as $user)
-        <a class="flex-shrink-0 transition-opacity hover:opacity-90" href="{{ route('profile.show', ['username' => $user->username]) }}">
+        <a
+            class="flex-shrink-0 transition-opacity hover:opacity-90"
+            href="{{ route('profile.show', ['username' => $user->username]) }}"
+        >
             <img
-                src="{{ $user->avatar ? url($user->avatar) : $user->avatar_url }}"
+                src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
                 class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12"
             />

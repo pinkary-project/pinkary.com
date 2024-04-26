@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile;
+namespace App\Http\Controllers;
 
 use App\Jobs\SyncVerifiedUser;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 
-final readonly class VerifiedController
+final readonly class UserIsVerifiedController
 {
     /**
      * Handles the verified refresh.
@@ -17,7 +17,7 @@ final readonly class VerifiedController
     {
         $user = type(request()->user())->as(User::class);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         $user = type($user->fresh())->as(User::class);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Jobs\DownloadUserAvatar;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use App\Rules\Recaptcha;
 use App\Rules\Username;
@@ -38,6 +38,7 @@ final readonly class RegisteredUserController
             'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'terms' => ['required', 'accepted'],
             'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
         ]);
 
@@ -52,7 +53,7 @@ final readonly class RegisteredUserController
 
         Auth::login($user);
 
-        dispatch(new DownloadUserAvatar($user));
+        UpdateUserAvatar::dispatch($user);
 
         return redirect(route('profile.show', [
             'username' => $user->username,

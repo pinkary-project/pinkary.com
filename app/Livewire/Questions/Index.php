@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Jobs\IncrementViews;
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Models\User;
@@ -37,18 +38,22 @@ final class Index extends Component
     {
         $user = User::findOrFail($this->userId);
 
+        $questions = $user
+            ->questionsReceived()
+            ->where('is_ignored', false)
+            ->where('is_reported', false)
+            ->when($user->isNot($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
+                $query->whereNotNull('answer');
+            })
+            ->orderByDesc('pinned')
+            ->orderByDesc('updated_at')
+            ->simplePaginate($this->perPage);
+
+        IncrementViews::dispatchUsingSession($questions->getCollection());
+
         return view('livewire.questions.index', [
             'user' => $user,
-            'questions' => $user
-                ->questionsReceived()
-                ->where('is_ignored', false)
-                ->where('is_reported', false)
-                ->when(! $user->is($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
-                    $query->whereNotNull('answer');
-                })
-                ->orderByDesc('pinned')
-                ->orderByDesc('updated_at')
-                ->simplePaginate($this->perPage),
+            'questions' => $questions,
         ]);
     }
 
