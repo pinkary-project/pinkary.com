@@ -79,7 +79,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return config('admin.super_admin_email') && config('admin.super_admin_email') === $this->email && $this->hasVerifiedEmail();
+        return $this->hasVerifiedEmail() && $this->email === 'enunomaduro@gmail.com';
     }
 
     /**
