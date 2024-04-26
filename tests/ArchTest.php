@@ -16,13 +16,14 @@ test('ensure no extends')
     ->classes()
     ->not->toBeAbstract();
 
-arch('avoid \utation')
+arch('avoid mutation')
     ->expect('App')
     ->classes()
     ->toBeReadonly()
     ->ignoring([
         'App\Console\Commands',
         'App\Exceptions',
+        'App\Filament',
         'App\Http\Requests',
         'App\Jobs',
         'App\Livewire',
@@ -40,6 +41,7 @@ arch('avoid inheritance')
     ->ignoring([
         'App\Console\Commands',
         'App\Exceptions',
+        'App\Filament',
         'App\Http\Requests',
         'App\Jobs',
         'App\Livewire',

@@ -4,7 +4,7 @@
     "require": {
         "php": "^8.3",
         "another-library/type-guard": "dev-main",
-        "filament/filament": "^3.2",
+        "filament/filament": "^3.2.40",
         "intervention/image": "^3.6.1",
         "laravel/framework": "dev-feat/exception-page as 11.5.0",
         "laravel/pennant": "^1.7",
