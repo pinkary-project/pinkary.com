@@ -17,11 +17,19 @@
             <div class="group overflow-hidden rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900">
                 @if ($question->from->is(auth()->user()) && $question->answer !== null)
                     <div class="flex items-center gap-3 text-sm text-slate-500">
-                        <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
+                        <figure @class([
+                                'rounded-md' => $question->to->is_company_verified,
+                                'rounded-full' => ! $question->to->is_company_verified,
+                                'h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90',
+                            ])>
                             <img
                                 src="{{ $question->to->avatar_url }}"
                                 alt="{{ $question->to->username }}"
-                                class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                                @class([
+                                    'rounded-md' => $question->to->is_company_verified,
+                                    'rounded-full' => ! $question->to->is_company_verified,
+                                    'h-10 w-10'
+                                ])
                             />
                         </figure>
                         <p>{{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:</p>
@@ -36,11 +44,19 @@
                         </div>
                     @else
                         <div class="flex items-center gap-3 text-sm text-slate-500">
-                            <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
+                            <figure @class([
+                                'rounded-md' => $question->from->is_company_verified,
+                                'rounded-full' => ! $question->from->is_company_verified,
+                                'h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90',
+                                ])>
                                 <img
                                     src="{{ $question->from->avatar_url }}"
                                     alt="{{ $question->from->username }}"
-                                    class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                                    @class([
+                                    'rounded-md' => $question->from->is_company_verified,
+                                    'rounded-full' => ! $question->from->is_company_verified,
+                                    'h-10 w-10'
+                                    ])
                                 />
                             </figure>
                             <p>{{ $question->from->name }} asked you:</p>
