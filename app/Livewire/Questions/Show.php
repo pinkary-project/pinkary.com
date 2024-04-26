@@ -177,7 +177,12 @@ final class Show extends Component
      */
     public function render(): View
     {
-        $question = Question::findOrFail($this->questionId);
+        $question = Question::where('id', $this->questionId)
+            ->with(['to', 'from'])
+            ->withCount('likes')
+            ->firstOrFail();
+
+        //dd($question);
 
         return view('livewire.questions.show', [
             'user' => $question->to,

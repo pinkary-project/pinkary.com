@@ -141,7 +141,7 @@
                             <x-icons.heart class="h-4 w-4" />
                         @endif
 
-                        @php($likesCount = $question->likes->count())
+                        @php($likesCount = $question->likes_count)
                         @if ($likesCount)
                             <p class="cursor-click ml-1" title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}">{{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}</p>
                         @endif
