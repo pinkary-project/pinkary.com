@@ -46,7 +46,11 @@
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
-                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
+                @class([
+                    'rounded-md' => $user->is_company_verified,
+                    'rounded-full' => ! $user->is_company_verified,
+                    'mx-auto mb-3 size-24',
+                ])
             />
             @if (auth()->user()?->is($user))
                 <button
