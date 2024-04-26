@@ -6,6 +6,8 @@ namespace App\Models;
 
 use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -49,7 +51,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  */
-final class User extends Authenticatable implements MustVerifyEmail, Viewable
+final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
     use HasFactory, Notifiable;
 
@@ -70,6 +72,14 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
                 ->whereIn('id', $ids)
                 ->increment('views');
         });
+    }
+
+    /**
+     * Determine if the user can access the admin given panel.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return config('admin.super_admin_email') && config('admin.super_admin_email') === $this->email && $this->hasVerifiedEmail();
     }
 
     /**
