@@ -4,8 +4,9 @@
     "require": {
         "php": "^8.3",
         "another-library/type-guard": "dev-main",
+        "filament/filament": "^3.2.40",
         "intervention/image": "^3.6.1",
-        "laravel/framework": "^11.5.0",
+        "laravel/framework": "dev-feat/exception-page as 11.5.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
         "laravel/socialite": "^5.13.1",
@@ -27,8 +28,7 @@
         "pestphp/pest": "^2.34.7",
         "pestphp/pest-plugin-laravel": "^2.3.0",
         "pestphp/pest-plugin-type-coverage": "^2.8.1",
-        "rector/rector": "^1.0.4",
-        "spatie/laravel-ignition": "^2.5.2"
+        "rector/rector": "^1.0.4"
     },
     "autoload": {
         "psr-4": {
@@ -45,7 +45,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
