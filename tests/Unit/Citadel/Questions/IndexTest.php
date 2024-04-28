@@ -37,3 +37,12 @@ it('can not see name of the questioner if anonymously', function () {
         ->assertCanSeeTableRecords(Question::all())
         ->assertDontSee('Ludovic Guénet');
 });
+
+it('can delete question', function () {
+    $question = Question::factory()->create();
+
+    Livewire::test(QuestionResource\Pages\Index::class)
+        ->callTableAction('delete', $question);
+
+    $this->assertTrue($question->refresh()->is_ignored);
+});
