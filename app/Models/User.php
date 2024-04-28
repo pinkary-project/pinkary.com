@@ -11,6 +11,7 @@ use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -44,12 +45,16 @@ use Illuminate\Support\Facades\Storage;
  * @property string $username
  * @property int $views
  * @property bool $is_uploaded_avatar
+ * @property-read int $followers_count
+ * @property-read int $following_count
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
  * @property-read Question $pinnedQuestion
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
+ * @property-read Collection<int, User> $following
+ * @property-read Collection<int, User> $followers
  */
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
@@ -119,6 +124,27 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     {
         return $this->hasOne(Question::class, 'to_id')
             ->where('pinned', true);
+    }
+
+    /**
+     * @return BelongsToMany<User>
+     */
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'followers', 'user_id', 'follower_id');
+    }
+
+    /**
+     * @return BelongsToMany<User>
+     */
+    public function following(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'followers', 'follower_id', 'user_id');
+    }
+
+    public function follows(self $user): bool
+    {
+        return $this->following->contains($user);
     }
 
     /**

@@ -84,6 +84,24 @@ final class Index extends Component
         $this->dispatch('notification.created', message: 'Link deleted.');
     }
 
+    public function follow(int $userId): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        $user->following()->attach($userId);
+
+        $this->dispatch('user.followed');
+    }
+
+    public function unfollow(int $userId): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        $user->following()->detach($userId);
+
+        $this->dispatch('user.unfollowed');
+    }
+
     /**
      * Refresh the component.
      */
@@ -99,7 +117,11 @@ final class Index extends Component
      */
     public function render(): View
     {
-        $user = User::with(['links'])->findOrFail($this->userId);
+        $user = User::query()
+            ->with(['links'])
+            ->withCount('followers')
+            ->withCount('following')
+            ->findOrFail($this->userId);
         $sort = $user->links_sort;
 
         return view('livewire.links.index', [
