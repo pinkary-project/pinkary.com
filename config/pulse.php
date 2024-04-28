@@ -32,7 +32,7 @@ return [
     |
     */
 
-    'path' => env('PULSE_PATH', 'pulse'),
+    'path' => env('PULSE_PATH', 'citadel/pulse'),
 
     /*
     |--------------------------------------------------------------------------
