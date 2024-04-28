@@ -44,7 +44,7 @@
 
         @if(! $user->is(auth()->user()))
             <div class="absolute right-0 top-6 flex">
-                @if(auth()->user()?->follows($user))
+                @if($user->followers()->where('follower_id', auth()->id())->exists())
                     <button type="button"
                             wire:click="unfollow({{ $user->id }})"
                             class="px-2 py-1 flex items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white">

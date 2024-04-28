@@ -84,20 +84,36 @@ final class Index extends Component
         $this->dispatch('notification.created', message: 'Link deleted.');
     }
 
-    public function follow(int $userId): void
+    public function follow(int $targetId): void
     {
         $user = type(auth()->user())->as(User::class);
 
-        $user->following()->attach($userId);
+        $target = User::findOrFail($targetId);
+
+        $this->authorize('follow', $target);
+
+        if ($target->followers()->where('follower_id', $user->id)->exists()) {
+            return;
+        }
+
+        $user->following()->attach($targetId);
 
         $this->dispatch('user.followed');
     }
 
-    public function unfollow(int $userId): void
+    public function unfollow(int $targetId): void
     {
         $user = type(auth()->user())->as(User::class);
 
-        $user->following()->detach($userId);
+        $target = User::findOrFail($targetId);
+
+        $this->authorize('unfollow', $target);
+
+        if ($target->followers()->where('follower_id', $user->id)->doesntExist()) {
+            return;
+        }
+
+        $user->following()->detach($targetId);
 
         $this->dispatch('user.unfollowed');
     }

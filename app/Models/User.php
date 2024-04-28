@@ -45,8 +45,6 @@ use Illuminate\Support\Facades\Storage;
  * @property string $username
  * @property int $views
  * @property bool $is_uploaded_avatar
- * @property-read int $followers_count
- * @property-read int $following_count
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
@@ -127,6 +125,8 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Get the user's followers.
+     *
      * @return BelongsToMany<User>
      */
     public function followers(): BelongsToMany
@@ -135,16 +135,13 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Get the user's following.
+     *
      * @return BelongsToMany<User>
      */
     public function following(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'followers', 'follower_id', 'user_id');
-    }
-
-    public function follows(self $user): bool
-    {
-        return $this->following->contains($user);
     }
 
     /**

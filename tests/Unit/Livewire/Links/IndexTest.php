@@ -167,7 +167,6 @@ test('click counter is not incremented if user already clicked the link during t
 });
 
 test('count to be abbreviated', function () {
-
     $user = User::factory()
         ->hasLinks(5, new Sequence(
             ['click_count' => 125],
@@ -187,4 +186,33 @@ test('count to be abbreviated', function () {
         ->assertSee('12K')
         ->assertSee('125K')
         ->assertSee('1M');
+});
+
+test('follow is idempotent', function () {
+    $user = User::factory()->create();
+    $target = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $target->id,
+    ]);
+
+    $component->call('follow', $target->id);
+    $component->call('follow', $target->id);
+
+    expect($user->following->count())->toBe(1);
+});
+
+test('unfollow is idempotent', function () {
+    $user = User::factory()->create();
+    $target = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $target->id,
+    ]);
+
+    $component->call('follow', $target->id);
+    $component->call('unfollow', $target->id);
+    $component->call('unfollow', $target->id);
+
+    expect($user->following->count())->toBe(0);
 });
