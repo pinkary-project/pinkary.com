@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ChangelogController;
+use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Profile\Connect\GitHubController;
 use App\Http\Controllers\Profile\TimezoneController;
@@ -40,6 +41,9 @@ Route::prefix('/@{username}')->group(function () {
         ->name('questions.show')
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
 });
+
+Route::get('discuss/{question}', DiscussionController::class)
+    ->name('discussion.show');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
