@@ -38,8 +38,6 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $user = auth()->user();
-
         $questions = (new RecentQuestionsFeed())->builder()->simplePaginate($this->perPage);
 
         IncrementViews::dispatchUsingSession($questions->getCollection());
