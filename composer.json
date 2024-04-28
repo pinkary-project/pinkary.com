@@ -3,9 +3,8 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "another-library/type-guard": "dev-main",
-        "filament/filament": "^3.2.40",
-        "intervention/image": "^3.6.1",
+        "filament/filament": "^3.2.72",
+        "intervention/image": "^3.6.2",
         "laravel/framework": "dev-feat/exception-page as 11.5.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
@@ -13,6 +12,7 @@
         "laravel/tinker": "^2.9.0",
         "livewire/livewire": "^3.4.11",
         "matomo/device-detector": "^6.3.1",
+        "pinkary-project/type-guard": "^0.1.0",
         "scrivo/highlight.php": "^9.18.1.10",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-mailcoach-mailer": "^1.2.0"
@@ -25,9 +25,9 @@
         "laravel/sail": "^1.29.1",
         "mockery/mockery": "^1.6.11",
         "nunomaduro/collision": "^8.1.1",
-        "pestphp/pest": "^2.34.7",
-        "pestphp/pest-plugin-laravel": "^2.3.0",
-        "pestphp/pest-plugin-type-coverage": "^2.8.1",
+        "pestphp/pest": "^3.0.0",
+        "pestphp/pest-plugin-laravel": "^3.0.0",
+        "pestphp/pest-plugin-type-coverage": "^3.0.0",
         "rector/rector": "^1.0.4"
     },
     "autoload": {
@@ -89,6 +89,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
