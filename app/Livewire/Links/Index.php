@@ -137,7 +137,7 @@ final class Index extends Component
     public function editLink(int $linkId): void
     {
         $this->showLinksEditForm = true;
-        $this->dispatch('link.edit', linkId: $linkId);
+        $this->dispatch('link.edit', $linkId);
     }
 
     #[On('link-edit.cancelled')]
