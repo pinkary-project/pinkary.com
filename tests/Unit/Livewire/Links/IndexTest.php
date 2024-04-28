@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Livewire\Links\Index;
 use App\Models\Link;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
 test('renders a list of links', function () {
@@ -105,4 +107,84 @@ test('guest or random user cannot see qr download link', function () {
     ]);
 
     $component->assertDontSee(route('qr-code.image'));
+});
+
+test('when user click his own links the clicks counter is not incremented', function () {
+    $user = User::factory()->create();
+
+    $link = Link::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->call('click', $link->id);
+
+    expect($link->refresh()->click_count)->toBe(0);
+});
+
+test('when user click another user link the clicks counter is incremented', function () {
+    $user = User::factory()->create();
+
+    $anotherUser = User::factory()->create();
+
+    $link = Link::factory()->create([
+        'user_id' => $anotherUser->id,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $anotherUser->id,
+    ]);
+
+    $component->call('click', $link->id);
+
+    expect($link->refresh()->click_count)->toBe(1);
+});
+
+test('click counter is not incremented if user already clicked the link during the day', function () {
+    $user = User::factory()->create();
+
+    $anotherUser = User::factory()->create();
+
+    $link = Link::factory()->create([
+        'user_id' => $anotherUser->id,
+        'click_count' => 30,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $anotherUser->id,
+    ]);
+
+    Cache::shouldReceive('has')
+        ->once()
+        ->andReturn(true);
+
+    $component->call('click', $link->id);
+
+    expect($link->refresh()->click_count)->toBe(30);
+});
+
+test('count to be abbreviated', function () {
+
+    $user = User::factory()
+        ->hasLinks(5, new Sequence(
+            ['click_count' => 125],
+            ['click_count' => 1250],
+            ['click_count' => 12500],
+            ['click_count' => 125000],
+            ['click_count' => 1250000],
+        ))
+        ->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->assertSee('125')
+        ->assertSee('1K')
+        ->assertSee('12K')
+        ->assertSee('125K')
+        ->assertSee('1M');
 });

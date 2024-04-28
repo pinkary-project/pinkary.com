@@ -15,11 +15,11 @@
                     class="group flex items-center gap-3 px-4"
                     wire:navigate
                 >
-                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
-                            src="{{ $question->from->avatar ? url($question->from->avatar) : $question->from->avatar_url }}"
+                            src="{{ $question->from->avatar_url }}"
                             alt="{{ $question->from->username }}"
-                            class="h-10 w-10 rounded-full"
+                            class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />
                     </figure>
 
@@ -28,8 +28,17 @@
                             <p class="truncate font-medium text-slate-50">
                                 {{ $question->from->name }}
                             </p>
-                            @if ($question->from->is_verified)
-                                <x-icons.verified :color="$question->from->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
+
+                            @if ($question->from->is_verified && $question->from->is_company_verified)
+                                <x-icons.verified-company
+                                    :color="$question->from->right_color"
+                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
+                                />
+                            @elseif ($question->from->is_verified)
+                                <x-icons.verified
+                                    :color="$question->from->right_color"
+                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
+                                />
                             @endif
                         </div>
 
@@ -55,12 +64,16 @@
     @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
-                <a href="{{ route('profile.show', ['username' => $question->to->username]) }}" class="group flex items-center gap-3" wire:navigate>
-                    <figure class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-800 transition-opacity group-hover:opacity-90">
+                <a
+                    href="{{ route('profile.show', ['username' => $question->to->username]) }}"
+                    class="group flex items-center gap-3"
+                    wire:navigate
+                >
+                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                         <img
-                            src="{{ $question->to->avatar ? url($question->to->avatar) : $question->to->avatar_url }}"
+                            src="{{ $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
-                            class="h-10 w-10 rounded-full"
+                            class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                         />
                     </figure>
                     <div class="overflow-hidden text-sm">
@@ -68,8 +81,17 @@
                             <p class="truncate font-medium text-slate-50">
                                 {{ $question->to->name }}
                             </p>
-                            @if ($question->to->is_verified)
-                                <x-icons.verified :color="$question->to->right_color" class="ml-1 mt-0.5 h-3.5 w-3.5" />
+
+                            @if ($question->to->is_verified && $question->to->is_company_verified)
+                                <x-icons.verified-company
+                                    :color="$question->to->right_color"
+                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
+                                />
+                            @elseif ($question->to->is_verified)
+                                <x-icons.verified
+                                    :color="$question->to->right_color"
+                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
+                                />
                             @endif
                         </div>
 
@@ -79,7 +101,10 @@
                     </div>
                 </a>
                 @if (auth()->check() && auth()->user()->can('update', $question))
-                    <x-dropdown align="right" width="48">
+                    <x-dropdown
+                        align="right"
+                        width="48"
+                    >
                         <x-slot name="trigger">
                             <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
                                 <x-icons.ellipsis-horizontal class="h-6 w-6" />
@@ -88,12 +113,18 @@
 
                         <x-slot name="content">
                             @if (! $question->pinned && auth()->user()->can('pin', $question))
-                                <x-dropdown-button wire:click="pin" class="flex items-center gap-1.5">
+                                <x-dropdown-button
+                                    wire:click="pin"
+                                    class="flex items-center gap-1.5"
+                                >
                                     <x-icons.pin class="h-4 w-4 text-slate-50" />
                                     <span>Pin</span>
                                 </x-dropdown-button>
                             @elseif ($question->pinned)
-                                <x-dropdown-button wire:click="unpin" class="flex items-center gap-1.5">
+                                <x-dropdown-button
+                                    wire:click="unpin"
+                                    class="flex items-center gap-1.5"
+                                >
                                     <x-icons.pin class="h-4 w-4" />
                                     <span>Unpin</span>
                                 </x-dropdown-button>
@@ -102,7 +133,8 @@
                                 <x-dropdown-button
                                     wire:click="ignore"
                                     wire:confirm="Are you sure you want to delete this question?"
-                                    class="flex items-center gap-1.5">
+                                    class="flex items-center gap-1.5"
+                                >
                                     <x-icons.trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
@@ -139,16 +171,36 @@
                             <x-icons.heart class="h-4 w-4" />
                         @endif
 
-                        <p class="ml-1">
-                            {{ $question->likes()->count() ? $question->likes()->count().' '.str('like')->plural($question->likes()->count()) : '' }}
-                        </p>
+                        @php($likesCount = $question->likes()->count())
+                        @if ($likesCount)
+                            <p
+                                class="cursor-click ml-1"
+                                title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
+                            >
+                                {{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}
+                            </p>
+                        @endif
                     </button>
+                    @if ($question->views > 0)
+                        <span class="mx-1">•</span>
+                        <x-icons.chart class="h-4 w-4" />
+                        <p
+                            class="ml-1 cursor-help"
+                            title="{{ Number::format($question->views) }} {{ str('view')->plural($question->views) }}"
+                        >
+                            {{ Number::abbreviate($question->views) }} {{ str('view')->plural($question->views) }}
+                        </p>
+                    @endif
                 </div>
                 <div class="flex items-center text-slate-500">
-                    <time datetime="{{ $question->answered_at->timezone(auth()->user()?->timezone ?: 'UTC')->toIso8601String() }}">
+                    <time
+                        class="cursor-help"
+                        title="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
+                        datetime="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
+                    >
                         {{
                             $question->answered_at
-                                ->timezone(auth()->user()?->timezone ?: 'UTC')
+                                ->timezone(session()->get('timezone', 'UTC'))
                                 ->diffForHumans()
                         }}
                     </time>
@@ -157,14 +209,16 @@
                         x-cloak
                         x-data="shareProfile"
                         x-show="isVisible"
-                        @click="share({
-                                        url: '{{
-                                            route('questions.show', [
-                                                'username' => $question->to->username,
-                                                'question' => $question,
-                                            ])
-                                        }}'
-                                    })"
+                        x-on:click="
+                            share({
+                                url: '{{
+                                    route('questions.show', [
+                                        'username' => $question->to->username,
+                                        'question' => $question,
+                                    ])
+                                }}',
+                            })
+                        "
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         <x-icons.paper-airplane class="h-4 w-4" />
@@ -173,12 +227,16 @@
                         x-cloak
                         x-data="copyUrl"
                         x-show="isVisible"
-                        @click="copyToClipboard('{{
-                            route('questions.show', [
-                                'username' => $question->to->username,
-                                'question' => $question,
-                            ])
-                        }}')"
+                        x-on:click="
+                            copyToClipboard(
+                                '{{
+                                    route('questions.show', [
+                                        'username' => $question->to->username,
+                                        'question' => $question,
+                                    ])
+                                }}',
+                            )
+                        "
                         type="button"
                         class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
@@ -188,6 +246,9 @@
             </div>
         </div>
     @elseif (auth()->user()?->is($user))
-        <livewire:questions.edit :questionId="$question->id" :key="$question->id" />
+        <livewire:questions.edit
+            :questionId="$question->id"
+            :key="$question->id"
+        />
     @endif
 </article>

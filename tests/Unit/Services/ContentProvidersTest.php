@@ -75,6 +75,79 @@ test('links with mail', function (string $content, string $parsed) {
     ],
 ]);
 
+test('links with ports in the url', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'https://example.com:8080',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080">example.com:8080</a>',
+    ],
+    [
+        'content' => 'https://example.com:8080/',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/">example.com:8080</a>',
+    ],
+    [
+        'content' => 'https://example.com:8080/?utm_source=twitter',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter">example.com:8080/?utm_source=twitter</a>',
+    ],
+    [
+        'content' => 'https://example.com:8080/?utm_source=twitter&utm_medium=social',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social">example.com:8080/?utm_source=twitter&utm_medium=social</a>',
+    ],
+    [
+        'content' => 'https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example</a>',
+    ],
+    [
+        'content' => 'https://example.com:8080/@nunomaduro',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/@nunomaduro">example.com:8080/@nunomaduro</a>',
+    ],
+]);
+
+test('links with localhost or ip addresses', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'http://localhost',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://localhost">localhost</a>',
+    ],
+    [
+        'content' => 'http://localhost/@nunomaduro',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://localhost/@nunomaduro">localhost/@nunomaduro</a>',
+    ],
+    [
+        'content' => 'http://127.0.0.1',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://127.0.0.1">127.0.0.1</a>',
+    ],
+    [
+        'content' => 'http://127.0.0.1/@nunomaduro',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://127.0.0.1/@nunomaduro">127.0.0.1/@nunomaduro</a>',
+    ],
+]);
+
+test('links with query params', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'https://example.com/?utm_source=twitter',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter">example.com/?utm_source=twitter</a>',
+    ],
+    [
+        'content' => 'https://example.com/?utm_source=twitter&utm_medium=social',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter&utm_medium=social">example.com/?utm_source=twitter&utm_medium=social</a>',
+    ],
+    [
+        'content' => 'https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example</a>',
+    ],
+]);
+
 test('code', function (string $content) {
     $provider = new App\Services\ParsableContentProviders\CodeProviderParsable();
 

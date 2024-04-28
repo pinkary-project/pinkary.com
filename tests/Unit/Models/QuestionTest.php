@@ -22,6 +22,7 @@ test('to array', function () {
         'updated_at',
         'pinned',
         'is_ignored',
+        'views',
     ]);
 });
 
@@ -41,4 +42,52 @@ test('relations', function () {
     expect($question->from)->toBeInstanceOf(User::class)
         ->and($question->to)->toBeInstanceOf(User::class)
         ->and($question->likes)->each->toBeInstanceOf(Like::class);
+});
+
+test('mentions', function () {
+    User::factory()->create(['username' => 'firstuser']);
+    User::factory()->create(['username' => 'seconduser']);
+
+    $question = Question::factory()->create([
+        'content' => 'Hello @firstuser! How are you doing?',
+        'answer' => 'I am doing fine, @seconduser! @invaliduser is not doing well.',
+    ]);
+
+    expect($question->mentions()->count())->toBe(2)
+        ->and($question->mentions()->first()->username)->toBe('firstuser')
+        ->and($question->mentions()->last()->username)->toBe('seconduser');
+});
+
+test('mentions when there is no answer', function () {
+    User::factory()->create(['username' => 'firstuser']);
+    User::factory()->create(['username' => 'seconduser']);
+
+    $question = Question::factory()->create([
+        'content' => 'Hello @firstuser! How are you doing?',
+        'answer' => null,
+    ]);
+
+    expect($question->mentions()->count())->toBe(0);
+});
+
+test('increment views', function () {
+    $question = Question::factory()->create([
+        'answer' => 'Hello',
+        'views' => 0,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(1);
+});
+
+test('does not increment views without answer', function () {
+    $question = Question::factory()->create([
+        'answer' => null,
+        'views' => 0,
+    ]);
+
+    Question::incrementViews([$question->id]);
+
+    expect($question->fresh()->views)->toBe(0);
 });

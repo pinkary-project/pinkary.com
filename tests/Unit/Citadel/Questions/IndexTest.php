@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Filament\Resources\QuestionResource;
+use App\Models\Question;
+use App\Models\User;
+use Livewire\Livewire;
+
+it('can be listed', function () {
+    $questions = Question::factory()->count(10)->create();
+
+    Livewire::test(QuestionResource\Pages\Index::class)
+        ->assertCanSeeTableRecords($questions);
+});
+
+it('can filtered by reported', function () {
+    $questions = Question::factory()->count(10)->create([
+        'is_reported' => rand(0, 1),
+    ]);
+
+    Livewire::test(QuestionResource\Pages\Index::class)
+        ->assertCanSeeTableRecords($questions)
+        ->filterTable('is_reported')
+        ->assertCanSeeTableRecords($questions->where('is_reported', true))
+        ->assertCanNotSeeTableRecords($questions->where('is_reported', false));
+});
+
+it('can not see name of the questioner if anonymously', function () {
+    User::factory()->hasQuestionsSent([
+        'anonymously' => true,
+    ])->create(['name' => 'Ludovic Guénet']);
+
+    Question::factory(5)->create();
+
+    Livewire::test(QuestionResource\Pages\Index::class)
+        ->assertCanSeeTableRecords(Question::all())
+        ->assertDontSee('Ludovic Guénet');
+});

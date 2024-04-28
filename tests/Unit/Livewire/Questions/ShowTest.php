@@ -100,7 +100,7 @@ test('ignore', function () {
     ]);
 
     $component->call('ignore');
-    $component->assertDispatched('notification.created', 'Question ignored.');
+    $component->assertDispatched('notification.created', message: 'Question ignored.');
     $component->assertDispatched('question.ignore');
 });
 
@@ -295,7 +295,7 @@ test('display pinned label only on profile.show route', function () {
 
     $response->assertSee('Pinned');
 
-    $response = $this->actingAs($user)->get(route('feed'));
+    $response = $this->actingAs($user)->get(route('home.feed'));
 
     $response->assertDontSee('Pinned');
 });

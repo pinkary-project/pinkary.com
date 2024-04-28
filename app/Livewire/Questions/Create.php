@@ -57,7 +57,7 @@ final class Create extends Component
     public function store(Request $request): void
     {
         if (! auth()->check()) {
-            to_route('login');
+            $this->redirectRoute('login', navigate: true);
 
             return;
         }
@@ -92,7 +92,7 @@ final class Create extends Component
         $this->anonymously = $user->prefers_anonymous_questions;
 
         $this->dispatch('question.created');
-        $this->dispatch('notification.created', 'Question sent.');
+        $this->dispatch('notification.created', message: 'Question sent.');
     }
 
     /**

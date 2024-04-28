@@ -3,29 +3,32 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "another-library/type-guard": "dev-main",
-        "laravel/framework": "^11.2.0",
+        "filament/filament": "^3.2.72",
+        "intervention/image": "^3.6.2",
+        "laravel/framework": "dev-feat/exception-page as 11.5.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
-        "laravel/socialite": "^5.12.1",
+        "laravel/socialite": "^5.13.1",
         "laravel/tinker": "^2.9.0",
-        "livewire/livewire": "^3.4.10",
+        "livewire/livewire": "^3.4.11",
+        "matomo/device-detector": "^6.3.1",
+        "pinkary-project/type-guard": "^0.1.0",
         "scrivo/highlight.php": "^9.18.1.10",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-mailcoach-mailer": "^1.2.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.13.4",
         "fakerphp/faker": "^1.23.1",
-        "larastan/larastan": "^2.9.2",
-        "laravel/pint": "^1.15.1",
-        "mockery/mockery": "^1.6.11",
+        "larastan/larastan": "^2.9.5",
+        "laravel/pint": "^1.15.2",
         "laravel/sail": "^1.29.1",
+        "mockery/mockery": "^1.6.11",
         "nunomaduro/collision": "^8.1.1",
-        "pestphp/pest": "^2.34.7",
-        "pestphp/pest-plugin-laravel": "^2.3.0",
-        "pestphp/pest-plugin-type-coverage": "^2.8.1",
-        "rector/rector": "^1.0.4",
-        "spatie/laravel-ignition": "^2.5.1"
+        "pestphp/pest": "^3.0.0",
+        "pestphp/pest-plugin-laravel": "^3.0.0",
+        "pestphp/pest-plugin-type-coverage": "^3.0.0",
+        "rector/rector": "^1.0.4"
     },
     "autoload": {
         "psr-4": {
@@ -42,7 +45,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
@@ -60,6 +64,7 @@
         "test:lint": "pint --test",
         "test:refactor": "rector --dry-run",
         "test:types": "phpstan analyse",
+        "test:arch": "pest --filter=arch",
         "test:type-coverage": "pest --type-coverage --min=100",
         "test:unit": "pest --parallel --coverage --min=100",
         "test": [
@@ -84,6 +89,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Services\Avatar;
+use App\Contracts\Models\Viewable;
+use App\Enums\UserMailPreference;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +22,7 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * @property bool $prefers_anonymous_questions
- * @property string $avatar
+ * @property string|null $avatar
  * @property string $avatar_url
  * @property string|null $bio
  * @property Carbon $created_at
@@ -28,17 +31,20 @@ use Illuminate\Support\Facades\Storage;
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
+ * @property bool $is_company_verified
  * @property string|null $github_username
  * @property string $left_color
  * @property array<int, string> $links_sort
  * @property string $link_shape
- * @property string $mail_preference_time
+ * @property UserMailPreference $mail_preference_time
  * @property string $name
  * @property string $right_color
  * @property array<string, string>|null $settings
- * @property string $timezone
  * @property Carbon $updated_at
+ * @property ?Carbon $avatar_updated_at
  * @property string $username
+ * @property int $views
+ * @property bool $is_uploaded_avatar
  * @property-read int $followers_count
  * @property-read int $following_count
  * @property-read Collection<int, Link> $links
@@ -50,7 +56,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read Collection<int, User> $following
  * @property-read Collection<int, User> $followers
  */
-final class User extends Authenticatable implements MustVerifyEmail
+final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
     use HasFactory, Notifiable;
 
@@ -63,6 +69,23 @@ final class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
+
+    public static function incrementViews(array $ids): void
+    {
+        self::withoutTimestamps(function () use ($ids): void {
+            self::query()
+                ->whereIn('id', $ids)
+                ->increment('views');
+        });
+    }
+
+    /**
+     * Determine if the user can access the admin given panel.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasVerifiedEmail() && $this->email === 'enunomaduro@gmail.com';
+    }
 
     /**
      * Get the user's links.
@@ -125,6 +148,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the user's avatar URL attribute.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
+    }
+
+    /**
      * Get the user's links sort attribute.
      *
      * @return array<int, int>
@@ -164,20 +195,6 @@ final class User extends Authenticatable implements MustVerifyEmail
             ->match('/from-.*?\d{3}/')
             ->after('from-')
             ->value();
-    }
-
-    /**
-     * Get the user's avatar URL attribute.
-     */
-    public function getAvatarUrlAttribute(): string
-    {
-        /** @var array<int, string> $urls */
-        $urls = $this->links()->pluck('url')->values()->all();
-
-        return (new Avatar(
-            email: $this->email,
-            links: $urls,
-        ))->url();
     }
 
     /**
@@ -227,7 +244,23 @@ final class User extends Authenticatable implements MustVerifyEmail
             return true;
         }
 
+        if (collect(config()->array('sponsors.github_company_usernames'))->contains($this->username)) {
+            return true;
+        }
+
         return $isVerified;
+    }
+
+    /**
+     * Get the user's "is_company_verified" attribute.
+     */
+    public function getIsCompanyVerifiedAttribute(bool $isCompanyVerified): bool
+    {
+        if (collect(config()->array('sponsors.github_company_usernames'))->contains($this->username)) {
+            return true;
+        }
+
+        return $isCompanyVerified;
     }
 
     /**
@@ -242,9 +275,14 @@ final class User extends Authenticatable implements MustVerifyEmail
             'updated_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'is_verified' => 'boolean',
+            'is_company_verified' => 'boolean',
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',
+            'avatar_updated_at' => 'datetime',
+            'mail_preference_time' => UserMailPreference::class,
+            'views' => 'integer',
+            'is_uploaded_avatar' => 'boolean',
         ];
     }
 }

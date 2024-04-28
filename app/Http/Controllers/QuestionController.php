@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Jobs\IncrementViews;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Http\Response;
@@ -19,7 +20,9 @@ final readonly class QuestionController
     {
         Gate::authorize('view', $question);
 
-        abort_unless($question->to->is($user), 404);
+        IncrementViews::dispatchUsingSession($question);
+
+        abort_unless($question->to_id === $user->id, 404);
 
         return view('questions.show', [
             'question' => $question,

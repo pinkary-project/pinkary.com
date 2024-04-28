@@ -56,7 +56,7 @@ test('store', function () {
     $component->assertSet('content', '');
     $component->assertSet('anonymously', true);
 
-    $component->assertDispatched('notification.created', 'Question sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = App\Models\Question::first();
@@ -187,7 +187,7 @@ test('store with user questions_preference set to public', function () {
     $component->assertSet('content', '');
     $component->assertSet('anonymously', false);
 
-    $component->assertDispatched('notification.created', 'Question sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = App\Models\Question::first();
@@ -217,7 +217,7 @@ test('store with user questions_preference set to anonymously', function () {
     $component->assertSet('content', '');
     $component->assertSet('anonymously', true);
 
-    $component->assertDispatched('notification.created', 'Question sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = App\Models\Question::first();
@@ -248,7 +248,7 @@ test('anonymous set back to user\'s preference after sending a question', functi
     $component->assertSet('content', '');
     $component->assertSet('anonymously', false);
 
-    $component->assertDispatched('notification.created', 'Question sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = App\Models\Question::first();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -26,16 +27,31 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $answered_at
  * @property bool $is_reported
  * @property bool $is_ignored
+ * @property int $views
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read User $from
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
+ * @property-read Collection<int, User> $mentions
  */
 #[ObservedBy(QuestionObserver::class)]
-final class Question extends Model
+final class Question extends Model implements Viewable
 {
     use HasFactory, HasUuids;
+
+    /**
+     * Increment the views for the given question IDs.
+     */
+    public static function incrementViews(array $ids): void
+    {
+        self::withoutTimestamps(function () use ($ids): void {
+            self::query()
+                ->whereIn('id', $ids)
+                ->whereNotNull('answer')
+                ->increment('views');
+        });
+    }
 
     /**
      * The attributes that should be cast.
@@ -72,6 +88,7 @@ final class Question extends Model
             'updated_at' => 'datetime',
             'pinned' => 'bool',
             'is_ignored' => 'boolean',
+            'views' => 'integer',
         ];
     }
 
@@ -103,5 +120,27 @@ final class Question extends Model
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get the mentions for the question.
+     *
+     * @return Collection<int, User>
+     */
+    public function mentions(): Collection
+    {
+        if (is_null($this->answer)) {
+            /** @var Collection<int, User> $mentionedUsers */
+            $mentionedUsers = new Collection();
+
+            return $mentionedUsers;
+        }
+
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer)->asString(), $answerMatches);
+
+        $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
+
+        return User::whereIn('username', $mentions)->get();
     }
 }

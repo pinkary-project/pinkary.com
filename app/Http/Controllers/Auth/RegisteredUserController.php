@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Jobs\DownloadUserAvatar;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use App\Rules\Recaptcha;
 use App\Rules\Username;
-use App\Rules\ValidTimezone;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,15 +37,14 @@ final readonly class RegisteredUserController
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'timezone' => ['required', 'string', 'max:255', new ValidTimezone],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'terms' => ['required', 'accepted'],
             'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'timezone' => $request->timezone,
             'username' => $request->username,
             'password' => Hash::make($request->string('password')->value()),
         ]);
@@ -55,7 +53,7 @@ final readonly class RegisteredUserController
 
         Auth::login($user);
 
-        dispatch(new DownloadUserAvatar($user));
+        UpdateUserAvatar::dispatch($user);
 
         return redirect(route('profile.show', [
             'username' => $user->username,

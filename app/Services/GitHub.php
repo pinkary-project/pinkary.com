@@ -19,10 +19,36 @@ final readonly class GitHub
 
     /**
      * Check if the given username is sponsoring the Pinkary project.
+     */
+    public function isSponsor(string $username): bool
+    {
+        $sponsorships = $this->getSponsorships($username);
+
+        return collect($sponsorships)->filter(
+            fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 9
+        )->values()->isNotEmpty();
+    }
+
+    /**
+     * Check if the given username is sponsoring the Pinkary project as company.
+     */
+    public function isCompanySponsor(string $username): bool
+    {
+        $sponsorships = $this->getSponsorships($username);
+
+        return collect($sponsorships)->filter(
+            fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 99
+        )->values()->isNotEmpty();
+    }
+
+    /**
+     * Get the content from the GitHub API.
+     *
+     * @return array<int, array{monthlyPriceInDollars: int}>
      *
      * @throw GitHubException
      */
-    public function isSponsoringUs(string $username): bool
+    private function getSponsorships(string $username): array
     {
         $response = Http::withHeaders([
             'Accept' => 'application/vnd.github.v3+json',
@@ -51,11 +77,8 @@ final readonly class GitHub
             ));
         }
 
-        /** @var array<int, array{monthlyPriceInDollars: int}> $content */
-        $content = $response->json('data.user.sponsorshipForViewerAsSponsorable');
+        $body = $response->json('data.user.sponsorshipForViewerAsSponsorable');
 
-        return collect($content)->filter(
-            fn (array $sponsor): bool => $sponsor['monthlyPriceInDollars'] >= 9
-        )->values()->isNotEmpty();
+        return is_array($body) ? $body : [];
     }
 }
