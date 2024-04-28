@@ -78,10 +78,44 @@ final class Index extends Component
         $link->delete();
 
         if (! $user->is_uploaded_avatar) {
-            dispatch(new UpdateUserAvatar($user));
+            UpdateUserAvatar::dispatch($user);
         }
 
         $this->dispatch('notification.created', message: 'Link deleted.');
+    }
+
+    public function follow(int $targetId): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        $target = User::findOrFail($targetId);
+
+        $this->authorize('follow', $target);
+
+        if ($target->followers()->where('follower_id', $user->id)->exists()) {
+            return;
+        }
+
+        $user->following()->attach($targetId);
+
+        $this->dispatch('user.followed');
+    }
+
+    public function unfollow(int $targetId): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        $target = User::findOrFail($targetId);
+
+        $this->authorize('unfollow', $target);
+
+        if ($target->followers()->where('follower_id', $user->id)->doesntExist()) {
+            return;
+        }
+
+        $user->following()->detach($targetId);
+
+        $this->dispatch('user.unfollowed');
     }
 
     /**
@@ -99,7 +133,11 @@ final class Index extends Component
      */
     public function render(): View
     {
-        $user = User::with(['links'])->findOrFail($this->userId);
+        $user = User::query()
+            ->with(['links'])
+            ->withCount('followers')
+            ->withCount('following')
+            ->findOrFail($this->userId);
         $sort = $user->links_sort;
 
         return view('livewire.links.index', [

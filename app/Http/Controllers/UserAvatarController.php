@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile;
+namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserAvatarRequest;
+use App\Http\Requests\UserAvatarUpdateRequest;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +16,7 @@ final readonly class UserAvatarController
     /**
      * Handles the verified refresh.
      */
-    public function update(UpdateUserAvatarRequest $request): RedirectResponse
+    public function update(UserAvatarUpdateRequest $request): RedirectResponse
     {
         $user = type($request->user())->as(User::class);
 

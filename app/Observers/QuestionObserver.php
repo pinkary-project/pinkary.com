@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
+use App\Notifications\UserMentioned;
 
 final readonly class QuestionObserver
 {
@@ -26,15 +27,14 @@ final readonly class QuestionObserver
      */
     public function updated(Question $question): void
     {
-        if ($question->is_ignored) {
-            $question->to->notifications->where('data.question_id', $question->id)->each->delete();
-            $question->from->notifications->where('data.question_id', $question->id)->each->delete();
+        if ($question->is_ignored || $question->is_reported) {
+            $this->deleted($question);
 
             return;
         }
 
-        if ($question->is_reported || $question->answer !== null) {
-            $question->to->notifications->where('data.question_id', $question->id)->each->delete();
+        if ($question->answer !== null) {
+            $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         }
 
         if ($question->isDirty('answer') === false) {
@@ -46,6 +46,7 @@ final readonly class QuestionObserver
         }
 
         $question->from->notify(new QuestionAnswered($question));
+        $question->mentions()->each->notify(new UserMentioned($question));
     }
 
     /**
@@ -53,7 +54,11 @@ final readonly class QuestionObserver
      */
     public function deleted(Question $question): void
     {
-        $question->to->notifications->where('data.question_id', $question->id)->each->delete();
-        $question->from->notifications->where('data.question_id', $question->id)->each->delete();
+        $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        $question->from->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+
+        $question->mentions()->each(function (User $user) use ($question): void {
+            $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        });
     }
 }

@@ -26,13 +26,18 @@ final readonly class QuestionsForYouFeed
     public function builder(): Builder
     {
         return Question::query()
-            ->whereHas('to', function (Builder $toQuery): void {
-                $toQuery
-                    ->whereHas('questionsSent.likes', function (Builder $questionsQuery): void {
-                        $questionsQuery->where('user_id', $this->user->id);
-                    })
-                    ->orWhereHas('questionsReceived.likes', function (Builder $questionsQuery): void {
-                        $questionsQuery->where('user_id', $this->user->id);
+            ->where(function (Builder $query): void {
+                $query->whereHas('to', function (Builder $toQuery): void {
+                    $toQuery
+                        ->whereHas('questionsSent.likes', function (Builder $questionsQuery): void {
+                            $questionsQuery->where('user_id', $this->user->id);
+                        })
+                        ->orWhereHas('questionsReceived.likes', function (Builder $questionsQuery): void {
+                            $questionsQuery->where('user_id', $this->user->id);
+                        });
+                })
+                    ->orWhereHas('to', function (Builder $toQuery): void {
+                        $toQuery->whereIn('id', $this->user->following()->pluck('users.id'));
                     });
             })
             ->orderByDesc('updated_at')

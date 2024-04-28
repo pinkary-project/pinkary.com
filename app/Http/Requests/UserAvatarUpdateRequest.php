@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Stringable;
 
-final class UpdateUserAvatarRequest extends FormRequest
+final class UserAvatarUpdateRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.

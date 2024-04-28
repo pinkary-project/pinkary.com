@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile;
+namespace App\Http\Controllers;
 
 use App\Rules\ValidTimezone;
 use Illuminate\Http\Request;
 
-final readonly class TimezoneController
+final readonly class UserTimezoneController
 {
     /**
      * Update the session's timezone.

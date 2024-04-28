@@ -46,6 +46,32 @@ test('relations', function () {
         ->and($question->likes)->each->toBeInstanceOf(Like::class);
 });
 
+test('mentions', function () {
+    User::factory()->create(['username' => 'firstuser']);
+    User::factory()->create(['username' => 'seconduser']);
+
+    $question = Question::factory()->create([
+        'content' => 'Hello @firstuser! How are you doing?',
+        'answer' => 'I am doing fine, @seconduser! @invaliduser is not doing well.',
+    ]);
+
+    expect($question->mentions()->count())->toBe(2)
+        ->and($question->mentions()->first()->username)->toBe('firstuser')
+        ->and($question->mentions()->last()->username)->toBe('seconduser');
+});
+
+test('mentions when there is no answer', function () {
+    User::factory()->create(['username' => 'firstuser']);
+    User::factory()->create(['username' => 'seconduser']);
+
+    $question = Question::factory()->create([
+        'content' => 'Hello @firstuser! How are you doing?',
+        'answer' => null,
+    ]);
+
+    expect($question->mentions()->count())->toBe(0);
+});
+
 test('increment views', function () {
     $question = Question::factory()->create([
         'answer' => 'Hello',

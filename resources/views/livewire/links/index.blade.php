@@ -42,6 +42,24 @@
             @endif
         </div>
 
+        @if(! $user->is(auth()->user()))
+            <div class="absolute right-0 top-6 flex">
+                @if($user->followers()->where('follower_id', auth()->id())->exists())
+                    <button type="button"
+                            wire:click="unfollow({{ $user->id }})"
+                            class="px-2 py-1 flex items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white">
+                        Following
+                    </button>
+                @else
+                    <button type="button"
+                            wire:click="follow({{ $user->id }})"
+                            class="px-2 py-1 flex items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white">
+                        Follow
+                    </button>
+                @endif
+            </div>
+        @endif
+
         <div class="relative mx-auto h-24 w-24">
             <img
                 src="{{ $user->avatar_url }}"
@@ -94,6 +112,22 @@
                 >Tell people about yourself</a
             >
         @endif
+
+        <div class="flex justify-center items-center space-x-4">
+            <button class="flex flex-col items-center justify-center"
+                    x-on:click.prevent="$dispatch('open-modal', 'followers')">
+                <strong class="font-bold ">{{ $user->followers_count }}</strong>
+                <span class="text-sm">Followers</span>
+            </button>
+            <button class="flex flex-col items-center justify-center"
+                    x-on:click.prevent="$dispatch('open-modal', 'following')">
+                <strong>{{ $user->following_count }}</strong>
+                <span class="text-sm">Following</span>
+            </button>
+        </div>
+
+        <x-modal-followers :user="$user"/>
+        <x-modal-following :user="$user"/>
 
         <div class="mt-2 text-sm">
             <p class="text-slate-400">

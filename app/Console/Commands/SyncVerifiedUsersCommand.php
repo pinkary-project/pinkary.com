@@ -32,6 +32,6 @@ final class SyncVerifiedUsersCommand extends Command
         User::where('is_verified', true)
             ->orWhere('is_company_verified', true)
             ->get()
-            ->each(fn (User $user) => dispatch(new SyncVerifiedUser($user)));
+            ->each(fn (User $user) => SyncVerifiedUser::dispatch($user));
     }
 }

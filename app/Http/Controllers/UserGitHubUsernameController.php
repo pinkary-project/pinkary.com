@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Profile\Connect;
+namespace App\Http\Controllers;
 
 use App\Jobs\SyncVerifiedUser;
 use App\Jobs\UpdateUserAvatar;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 
-final readonly class GitHubController
+final readonly class UserGitHubUsernameController
 {
     /**
      * Handles the GitHub connection redirect.
@@ -52,7 +52,7 @@ final readonly class GitHubController
 
         $user->update($validated);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         $user = type($user->fresh())->as(User::class);
 
@@ -79,7 +79,7 @@ final readonly class GitHubController
 
         $user->update(['github_username' => null]);
 
-        dispatch_sync(new SyncVerifiedUser($user));
+        SyncVerifiedUser::dispatchSync($user);
 
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 
