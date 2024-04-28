@@ -6,14 +6,14 @@ use App\Filament\Resources\QuestionResource;
 use App\Models\Question;
 use Livewire\Livewire;
 
-it('can list Question', function () {
+it('can be listed', function () {
     $questions = Question::factory()->count(10)->create();
 
     Livewire::test(QuestionResource\Pages\Index::class)
         ->assertCanSeeTableRecords($questions);
 });
 
-it('can filter questions by `is_reported`', function () {
+it('can filtered by reported', function () {
     $questions = Question::factory()->count(10)->create([
         'is_reported' => rand(0, 1),
     ]);
