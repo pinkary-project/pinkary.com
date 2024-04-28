@@ -64,6 +64,23 @@ it('do not render questions without answer', function () {
     expect($builder->where('answer', $answer)->count())->toBe(1);
 });
 
+it('includes questions made to users i follow', function () {
+    $user = User::factory()->create();
+
+    $follower = User::factory()->create();
+
+    $follower->following()->attach($user);
+
+    Question::factory()->create([
+        'to_id' => $user->id,
+        'answer' => 'Answer',
+    ]);
+
+    $builder = (new QuestionsForYouFeed($follower))->builder();
+
+    expect($builder->count())->toBe(1);
+});
+
 it('do not render reported questions', function () {
     $likerUser = User::factory()->create();
 
