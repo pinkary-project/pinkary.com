@@ -23,7 +23,10 @@ final readonly class RecentQuestionsFeed
             ->where('answer', '!=', null)
             ->when(
                 $user instanceof User,
-                fn (Builder $query) => $query->whereIn('to_id', $user->following()->pluck('users.id'))
+                function (Builder $query) use ($user) {
+                    assert($user instanceof User);
+                    $query->whereIn('to_id', $user->following()->pluck('users.id'));
+                }
             )
             ->where('is_ignored', false)
             ->where('is_reported', false)
