@@ -51,8 +51,10 @@ final class QuestionResource extends Resource
                 Tables\Actions\Action::make('delete')
                     ->button()
                     ->color('danger')
-                    ->action(fn (Question $record) => $record->update(['is_ignored' => true]))
-                    ->visible(fn (Question $record) => ! $record->is_ignored)
+                    ->action(function (Question $record): void {
+                        $record->update(['is_ignored' => true]);
+                    })
+                    ->visible(fn (Question $record): bool => ! $record->is_ignored)
                     ->requiresConfirmation(),
             ]);
     }
