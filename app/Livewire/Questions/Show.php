@@ -133,6 +133,16 @@ final class Show extends Component
     }
 
     /**
+     * Discuss the question.
+     */
+    public function discuss(): void
+    {
+        $question = Question::findOrFail($this->questionId);
+
+        $this->redirectRoute('discussion.show', ['question' => $question->id], navigate: true);
+    }
+
+    /**
      * Unpin a pinned question.
      */
     public function unpin(): void
