@@ -112,6 +112,16 @@ final class User extends Authenticatable implements MustVerifyEmail, Viewable
     }
 
     /**
+     * Get the user's comments.
+     *
+     * @return HasMany<Comment>
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
      * Get the user's avatar URL attribute.
      */
     public function getAvatarUrlAttribute(): string
