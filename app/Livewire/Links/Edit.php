@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Links;
 
 use App\Models\Link;
-use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -22,11 +22,6 @@ final class Edit extends Component
     public int $linkId;
 
     /**
-     * The component's link ID.
-     */
-    public ?Link $link;
-
-    /**
      * The component's description.
      */
     public string $description = '';
@@ -38,11 +33,11 @@ final class Edit extends Component
 
     /**
      * Store a new link.
+     *
+     * @throws AuthorizationException
      */
     public function update(Request $request): void
     {
-        $user = type($request->user())->as(User::class);
-
         if (! Str::startsWith($this->url, ['http://', 'https://'])) {
             $this->url = "https://{$this->url}";
         }
@@ -52,13 +47,15 @@ final class Edit extends Component
             'url' => ['required', 'max:100', 'url', 'starts_with:https'],
         ]);
 
-        $this->authorize('update', $this->link);
+        $link = Link::findOrFail($this->linkId);
 
-        if ($this->link->url !== $validated['url']) {
+        $this->authorize('update', $link);
+
+        if ($link->url !== $validated['url']) {
             $validated['click_count'] = 0;
         }
 
-        $this->link->update($validated);
+        $link->update($validated);
 
         $this->dispatch('link.updated');
     }
@@ -74,11 +71,10 @@ final class Edit extends Component
     }
 
     #[On('link.edit')]
-    public function edit(int $linkId): void
+    public function edit(Link $link): void
     {
-        $this->link = Link::findOrFail($linkId);
-
-        $this->description = $this->link->description;
-        $this->url = $this->link->url;
+        $this->linkId = $link->id;
+        $this->description = $link->description;
+        $this->url = $link->url;
     }
 }
