@@ -46,6 +46,16 @@ final class QuestionResource extends Resource
             ])
             ->filters([
                 TernaryFilter::make('is_reported'),
+            ])
+            ->actions([
+                Tables\Actions\Action::make('delete')
+                    ->button()
+                    ->color('danger')
+                    ->action(function (Question $record): void {
+                        $record->update(['is_ignored' => true]);
+                    })
+                    ->visible(fn (Question $record): bool => ! $record->is_ignored)
+                    ->requiresConfirmation(),
             ]);
     }
 
