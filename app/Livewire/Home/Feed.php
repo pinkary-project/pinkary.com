@@ -7,8 +7,6 @@ namespace App\Livewire\Home;
 use App\Jobs\IncrementViews;
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\View\View;
 use Livewire\Attributes\On;

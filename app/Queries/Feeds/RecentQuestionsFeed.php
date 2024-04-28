@@ -16,8 +16,6 @@ final readonly class RecentQuestionsFeed
      */
     public function builder(): Builder
     {
-        $user = auth()->user();
-
         return Question::query()
             ->where('answer', '!=', null)
             ->where('is_ignored', false)

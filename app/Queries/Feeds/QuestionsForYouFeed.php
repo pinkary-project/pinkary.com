@@ -26,7 +26,7 @@ final readonly class QuestionsForYouFeed
     public function builder(): Builder
     {
         return Question::query()
-            ->where(function (Builder $query) {
+            ->where(function (Builder $query): void {
                 $query->whereHas('to', function (Builder $toQuery): void {
                     $toQuery
                         ->whereHas('questionsSent.likes', function (Builder $questionsQuery): void {
