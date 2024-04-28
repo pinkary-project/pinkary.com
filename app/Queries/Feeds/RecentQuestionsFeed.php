@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class RecentQuestionsFeed
@@ -21,13 +20,6 @@ final readonly class RecentQuestionsFeed
 
         return Question::query()
             ->where('answer', '!=', null)
-            ->when(
-                $user instanceof User,
-                function (Builder $query) use ($user) {
-                    assert($user instanceof User);
-                    $query->whereIn('to_id', $user->following()->pluck('users.id'));
-                }
-            )
             ->where('is_ignored', false)
             ->where('is_reported', false)
             ->orderByDesc('updated_at');

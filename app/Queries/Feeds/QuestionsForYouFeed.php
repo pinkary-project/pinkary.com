@@ -35,6 +35,9 @@ final readonly class QuestionsForYouFeed
                         $questionsQuery->where('user_id', $this->user->id);
                     });
             })
+            ->orWhereHas('to', function (Builder $toQuery): void {
+                $toQuery->whereIn('id', $this->user->following()->pluck('users.id'));
+            })
             ->orderByDesc('updated_at')
             ->whereNotNull('answer')
             ->where('is_reported', false)
