@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
@@ -41,6 +42,7 @@ test('relations', function () {
 
     expect($question->from)->toBeInstanceOf(User::class)
         ->and($question->to)->toBeInstanceOf(User::class)
+        ->and($question->comments)->toBeInstanceOf(Comment::class)
         ->and($question->likes)->each->toBeInstanceOf(Like::class);
 });
 

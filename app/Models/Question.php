@@ -33,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property-read User $from
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
+ * @property-read Collection<int, Comment> $comments
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
@@ -119,5 +120,15 @@ final class Question extends Model implements Viewable
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get the comments for the question.
+     *
+     * @return HasMany<Comment>
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 }
