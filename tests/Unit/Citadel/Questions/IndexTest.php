@@ -31,9 +31,9 @@ it('can not see name of the questioner if anonymously', function () {
         'anonymously' => true,
     ])->create(['name' => 'Ludovic Guénet']);
 
-    $questions = Question::factory(5)->create();
+    Question::factory(5)->create();
 
     Livewire::test(QuestionResource\Pages\Index::class)
-        ->assertCanSeeTableRecords($questions)
+        ->assertCanSeeTableRecords(Question::all())
         ->assertDontSee('Ludovic Guénet');
 });
