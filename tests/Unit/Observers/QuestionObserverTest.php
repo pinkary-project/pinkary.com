@@ -61,6 +61,31 @@ test('updated', function () {
     expect($user->notifications->count())->toBe(1);
 });
 
+test('reported', function () {
+    $question = Question::factory()->create();
+    expect($question->to->notifications()->count())->toBe(1);
+
+    $question->update(['is_reported' => true]);
+
+    expect($question->to->fresh()->notifications()->count())->toBe(0);
+    expect($question->from->fresh()->notifications()->count())->toBe(0);
+    expect($question->mentions()->count())->toBe(0);
+
+    $mentionedUser = User::factory()->create([
+        'username' => 'johndoe',
+    ]);
+    $question = Question::factory()->create();
+    $question->update([
+        'answer' => 'My favourite developer is to @johndoe',
+    ]);
+
+    $question->update(['is_reported' => true]);
+
+    expect($question->to->fresh()->notifications()->count())->toBe(0);
+    expect($question->from->fresh()->notifications()->count())->toBe(0);
+    expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+});
+
 test('ignored', function () {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
@@ -73,6 +98,23 @@ test('ignored', function () {
     $question = $question->fresh();
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(0);
+
+    $mentionedUser = User::factory()->create([
+        'username' => 'johndoe',
+    ]);
+    $question = Question::factory()->create();
+    $question->update([
+        'answer' => 'My favourite developer is to @johndoe',
+    ]);
+
+    expect($question->to->notifications()->count())->toBe(0);
+    expect($question->from->notifications()->count())->toBe(1);
+    expect($mentionedUser->notifications()->count())->toBe(1);
+
+    $question->fresh()->update(['is_ignored' => true]);
+    expect($question->to->fresh()->notifications()->count())->toBe(0);
+    expect($question->from->fresh()->notifications()->count())->toBe(0);
+    expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
 });
 
 test('deleted', function () {
@@ -93,4 +135,21 @@ test('deleted', function () {
     $user = $question->from;
     $question->delete();
     expect($user->fresh()->notifications()->count())->toBe(0);
+
+    $mentionedUser = User::factory()->create([
+        'username' => 'johndoe',
+    ]);
+    $question = Question::factory()->create();
+    $question->update([
+        'answer' => 'My favourite developer is to @johndoe',
+    ]);
+
+    expect($question->to->notifications()->count())->toBe(0);
+    expect($question->from->notifications()->count())->toBe(1);
+    expect($mentionedUser->notifications()->count())->toBe(1);
+
+    $question->delete();
+    expect($question->to->fresh()->notifications()->count())->toBe(0);
+    expect($question->from->fresh()->notifications()->count())->toBe(0);
+    expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
 });

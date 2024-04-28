@@ -58,6 +58,18 @@ test('mentions', function () {
         ->and($question->mentions()->last()->username)->toBe('seconduser');
 });
 
+test('mentions when there is no answer', function () {
+    User::factory()->create(['username' => 'firstuser']);
+    User::factory()->create(['username' => 'seconduser']);
+
+    $question = Question::factory()->create([
+        'content' => 'Hello @firstuser! How are you doing?',
+        'answer' => null,
+    ]);
+
+    expect($question->mentions()->count())->toBe(0);
+});
+
 test('increment views', function () {
     $question = Question::factory()->create([
         'answer' => 'Hello',

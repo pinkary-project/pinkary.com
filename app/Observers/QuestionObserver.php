@@ -27,14 +27,13 @@ final readonly class QuestionObserver
      */
     public function updated(Question $question): void
     {
-        if ($question->is_ignored) {
-            $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
-            $question->from->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        if ($question->is_ignored || $question->is_reported) {
+            $this->deleted($question);
 
             return;
         }
 
-        if ($question->is_reported || $question->answer !== null) {
+        if ($question->answer !== null) {
             $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         }
 
@@ -57,5 +56,9 @@ final readonly class QuestionObserver
     {
         $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         $question->from->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+
+        $question->mentions()->each(function (User $user) use ($question): void {
+            $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        });
     }
 }

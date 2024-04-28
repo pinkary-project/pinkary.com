@@ -129,6 +129,13 @@ final class Question extends Model implements Viewable
      */
     public function mentions(): Collection
     {
+        if (is_null($this->answer)) {
+            /** @var Collection<int, User> $mentionedUsers */
+            $mentionedUsers = new Collection();
+
+            return $mentionedUsers;
+        }
+
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer)->asString(), $answerMatches);
 
