@@ -42,7 +42,7 @@ test('relations', function () {
 
     expect($question->from)->toBeInstanceOf(User::class)
         ->and($question->to)->toBeInstanceOf(User::class)
-        ->and($question->comments)->toBeInstanceOf(Comment::class)
+        ->and($question->comments)->each->toBeInstanceOf(Comment::class)
         ->and($question->likes)->each->toBeInstanceOf(Like::class);
 });
 
