@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Links;
 
-use App\Jobs\DownloadUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -60,8 +59,6 @@ final class Edit extends Component
         }
 
         $this->link->update($validated);
-
-        dispatch(new DownloadUserAvatar($user));
 
         $this->dispatch('link.updated');
     }
