@@ -1,3 +1,8 @@
+## Version 1.13.0
+> 28 April, 2024
+
+- Notifications system improvements; user now gets notified when someone mentions him in a answer.
+
 ## Version 1.12.1
 > 26 April, 2024
 
