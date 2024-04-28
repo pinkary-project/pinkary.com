@@ -35,6 +35,7 @@ final class QuestionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('from.name')
+                    ->formatStateUsing(fn (string $state, Question $record): string => $record->anonymously ? 'Anonymous' : $state)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('to.name')
                     ->sortable(),
