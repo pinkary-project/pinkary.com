@@ -8,6 +8,7 @@ use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 final class QuestionResource extends Resource
@@ -41,6 +42,9 @@ final class QuestionResource extends Resource
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_ignored')
                     ->boolean(),
+            ])
+            ->filters([
+                TernaryFilter::make('is_reported'),
             ]);
     }
 
