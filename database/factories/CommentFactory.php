@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Comment;
+use App\Models\Question;
 use App\Models\User;
 use Database\Factories\Concerns\RefreshOnCreate;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,6 +26,7 @@ final class CommentFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'question_id' => Question::factory(),
             'content' => $this->faker->sentence,
         ];
     }
