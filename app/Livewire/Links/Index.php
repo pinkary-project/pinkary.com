@@ -86,6 +86,12 @@ final class Index extends Component
 
     public function follow(int $targetId): void
     {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
         $user = type(auth()->user())->as(User::class);
 
         $target = User::findOrFail($targetId);
