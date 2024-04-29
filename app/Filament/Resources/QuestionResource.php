@@ -46,6 +46,7 @@ final class QuestionResource extends Resource
             ])
             ->filters([
                 TernaryFilter::make('is_reported'),
+                TernaryFilter::make('is_ignored'),
             ])
             ->actions([
                 Tables\Actions\Action::make('delete')
