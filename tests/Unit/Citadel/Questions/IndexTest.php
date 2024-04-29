@@ -26,6 +26,18 @@ it('can filtered by reported', function () {
         ->assertCanNotSeeTableRecords($questions->where('is_reported', false));
 });
 
+it('can filtered by ignored', function () {
+    $questions = Question::factory()->count(10)->create([
+        'is_ignored' => rand(0, 1),
+    ]);
+
+    Livewire::test(QuestionResource\Pages\Index::class)
+        ->assertCanSeeTableRecords($questions)
+        ->filterTable('is_ignored')
+        ->assertCanSeeTableRecords($questions->where('is_ignored', true))
+        ->assertCanNotSeeTableRecords($questions->where('is_ignored', false));
+});
+
 it('can not see name of the questioner if anonymously', function () {
     User::factory()->hasQuestionsSent([
         'anonymously' => true,
