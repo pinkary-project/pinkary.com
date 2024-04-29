@@ -217,13 +217,24 @@ test('unfollow is idempotent', function () {
     expect($user->following->count())->toBe(0);
 });
 
-test('redirects to login when user is not authenticated', function () {
+test('guest cannot follow', function () {
     $user = User::factory()->create();
     $component = Livewire::test(Index::class, [
         'userId' => $user->id,
     ]);
 
     $component->call('follow', 1);
+
+    $component->assertRedirect(route('login'));
+});
+
+test('guest cannot unfollow', function () {
+    $user = User::factory()->create();
+    $component = Livewire::test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->call('unfollow', 1);
 
     $component->assertRedirect(route('login'));
 });
