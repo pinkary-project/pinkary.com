@@ -154,6 +154,7 @@ final class Index extends Component
                 return $index;
             })->values(),
             'isFollowing' => auth()->check() ? $user->followers()->where('follower_id', auth()->id())->exists() : false,
+            'isOwner' => auth()->id() === $this->userId,
         ]);
     }
 }

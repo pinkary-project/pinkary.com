@@ -1,4 +1,4 @@
-<div @if (auth()->user()?->is($user)) x-data="{
+<div @if ($isOwner) x-data="{
     showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
     gradient: '{{ $user->gradient }}',
     link_shape: '{{ $user->link_shape }}',
@@ -29,7 +29,7 @@
             >
                 <x-icons.link class="size-5" />
             </button>
-            @if (auth()->user()?->is($user))
+            @if ($isOwner)
                 <button
                     class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     x-on:click.prevent="$dispatch('open-modal', 'show-qr-code')"
@@ -42,7 +42,7 @@
             @endif
         </div>
 
-        @if(! $user->is(auth()->user()))
+        @if(! $isOwner)
             <div class="absolute right-0 top-6 flex">
                 @if($isFollowing)
                     <button type="button"
@@ -66,7 +66,7 @@
                 alt="{{ $user->username }}"
                 class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
             />
-            @if (auth()->user()?->is($user))
+            @if ($isOwner)
                 <button
                     class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     href="{{ route('profile.edit') }}"
@@ -104,7 +104,7 @@
 
         @if ($user->bio)
             <p class="text-sm">{{ $user->bio }}</p>
-        @elseif (auth()->user()?->is($user))
+        @elseif ($isOwner)
             <a
                 href="{{ route('profile.edit') }}"
                 class="text-sm text-slate-500 hover:underline"
@@ -161,11 +161,11 @@
     </div>
     <div class="py-5">
         @if ($links->isEmpty())
-            @if (auth()->user()?->is($user))
+            @if ($isOwner)
                 <p class="mx-2 text-center text-slate-500">No links yet. Add your first link!</p>
             @endif
         @else
-            @if (auth()->user()?->is($user))
+            @if ($isOwner)
                 <ul
                     x-data="{ isDragging: false }"
                     x-sortable
@@ -235,7 +235,7 @@
         @endif
     </div>
 
-    @if (auth()->user()?->is($user))
+    @if ($isOwner)
         <div
             x-data="{
                 showLinksForm: {{ $errors->links->isEmpty() ? 'false' : 'true' }},
