@@ -323,7 +323,6 @@
         <div
             x-data="{
                 showLinksForm: {{ $errors->links->isEmpty() ? 'false' : 'true' }},
-                showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
             }"
             class="py-4"
         >
