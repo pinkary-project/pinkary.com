@@ -30,7 +30,7 @@ test('refresh', function () {
 
 test('events', function () {
     collect(($this->component->invade()->getAttributes())
-        ->filter(fn($attribute) => $attribute instanceof On))
+        ->filter(fn ($attribute) => $attribute instanceof On))
         ->each(function ($attribute) {
             if ($attribute->getName() === 'refresh') {
                 $this->assertEquals('comment.updated', $attribute->event);
