@@ -14,3 +14,18 @@ test('render', function () {
 
     $component->assertOk();
 });
+
+test('openFollowersModal', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+        'loadFollowing' => false,
+    ]);
+
+    $component->dispatch('openFollowingModal');
+
+    $component->assertSetStrict('loadFollowing', true);
+
+    $component->assertDispatched('open-modal', 'following');
+});

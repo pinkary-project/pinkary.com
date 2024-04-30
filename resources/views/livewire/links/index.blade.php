@@ -123,7 +123,7 @@
         <div class="mt-2 text-sm">
             <p class="text-slate-400">
                 @if ($user->followers_count > 0)
-                    <button x-on:click.prevent="$dispatch('open-modal', 'followers')">
+                    <button x-on:click.prevent="$dispatch('openFollowersModal')">
                         <span
                             class="cursor-help"
                             title="{{ Number::format($user->followers_count) }} {{ str('Follower')->plural($user->followers_count) }}"
@@ -137,7 +137,7 @@
                 @endif
 
                 @if ($user->following_count > 0)
-                    <button x-on:click.prevent="$dispatch('open-modal', 'following')">
+                    <button x-on:click.prevent="$dispatch('openFollowingModal')">
                         <span
                             class="cursor-help"
                             title="{{ Number::format($user->following_count) }} Following"
