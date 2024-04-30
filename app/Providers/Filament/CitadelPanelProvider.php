@@ -50,7 +50,7 @@ final class CitadelPanelProvider extends PanelProvider
             ]);
     }
 
-    /**     
+    /**
      * Bootstrap any application services.
      */
     public function boot(): void

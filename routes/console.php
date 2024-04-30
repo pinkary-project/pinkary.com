@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
 use App\Console\Commands\DeleteNonEmailVerifiedUsersCommand;
 use App\Console\Commands\PerformDatabaseBackupCommand;
 use App\Console\Commands\SendDailyEmailsCommand;
 use App\Console\Commands\SendWeeklyEmailsCommand;
 use App\Console\Commands\SyncVerifiedUsersCommand;
+use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
