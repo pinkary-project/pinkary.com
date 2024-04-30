@@ -6,6 +6,7 @@ namespace App\Queries\Feeds;
 
 use App\Models\Question;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class QuestionsForYouFeed
@@ -30,10 +31,14 @@ final readonly class QuestionsForYouFeed
                 $query->whereHas('to', function (Builder $toQuery): void {
                     $toQuery
                         ->whereHas('questionsSent.likes', function (Builder $questionsQuery): void {
-                            $questionsQuery->where('user_id', $this->user->id);
+                            $questionsQuery
+                                ->where('user_id', $this->user->id)
+                                ->where('created_at', '>=', Carbon::now()->subDays(60));
                         })
                         ->orWhereHas('questionsReceived.likes', function (Builder $questionsQuery): void {
-                            $questionsQuery->where('user_id', $this->user->id);
+                            $questionsQuery
+                                ->where('user_id', $this->user->id)
+                                ->where('created_at', '>=', Carbon::now()->subDays(60));
                         });
                 })
                     ->orWhereHas('to', function (Builder $toQuery): void {

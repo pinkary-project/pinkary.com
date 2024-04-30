@@ -35,6 +35,34 @@ it('render questions with right conditions', function () {
     expect($builder->count())->toBe(2);
 });
 
+it('do not render questions liked beyond the last 60 days', function () {
+    $likerUser = User::factory()->create();
+
+    $userTo = User::factory()->create();
+
+    $questionWithLike = Question::factory()->create([
+        'to_id' => $userTo->id,
+        'answer' => 'Answer',
+        'is_reported' => false,
+    ]);
+
+    Like::factory()->create([
+        'user_id' => $likerUser->id,
+        'question_id' => $questionWithLike->id,
+        'created_at' => now()->subDays(90),
+    ]);
+
+    Question::factory()->create([
+        'to_id' => $userTo->id,
+        'answer' => 'Answer 2',
+        'is_reported' => false,
+    ]);
+
+    $builder = (new QuestionsForYouFeed($likerUser))->builder();
+
+    expect($builder->count())->toBe(0);
+});
+
 it('do not render questions without answer', function () {
     $likerUser = User::factory()->create();
 
