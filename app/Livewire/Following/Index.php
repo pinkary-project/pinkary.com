@@ -22,7 +22,7 @@ final class Index extends Component
     public int $userId;
 
     /**
-     * Indicate whether the user's followers should be loaded.
+     * Indicate whether the user's following should be loaded.
      */
     #[Locked]
     public bool $loadFollowing = false;
