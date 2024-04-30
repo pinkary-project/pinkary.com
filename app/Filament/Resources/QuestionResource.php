@@ -24,8 +24,6 @@ final class QuestionResource extends Resource
      */
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
 
-
-
     /**
      * Configures the table for the resource.
      */
