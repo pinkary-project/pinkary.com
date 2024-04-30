@@ -19,7 +19,7 @@ final class Edit extends Component
      * The component's link ID.
      */
     #[Locked]
-    public int $linkId;
+    public ?int $linkId = null;
 
     /**
      * The component's description.
@@ -58,6 +58,7 @@ final class Edit extends Component
         $link->update($validated);
 
         $this->dispatch('link.updated');
+        $this->dispatch('notification.created', message: 'Link updated.');
     }
 
     /**
