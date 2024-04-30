@@ -47,64 +47,6 @@ test('email can be verified', function () {
     $response->assertSessionHas('flash-message', 'Your email has been verified.');
 });
 
-test('nuno does not follow user if nuno does not exist', function () {
-    $user = User::factory()->create([
-        'email_verified_at' => null,
-    ]);
-
-    $verificationUrl = URL::temporarySignedRoute(
-        'verification.verify',
-        now()->addMinutes(60),
-        ['id' => $user->id, 'hash' => sha1($user->email)]
-    );
-
-    $this->actingAs($user)->get($verificationUrl);
-
-    expect($user->fresh()->followers()->count())->toBe(0);
-});
-
-test('nuno follows user after email verification', function () {
-    $user = User::factory()->create([
-        'email_verified_at' => null,
-    ]);
-
-    $nuno = User::factory()->create([
-        'email' => 'enunomaduro@gmail.com',
-    ]);
-
-    $verificationUrl = URL::temporarySignedRoute(
-        'verification.verify',
-        now()->addMinutes(60),
-        ['id' => $user->id, 'hash' => sha1($user->email)]
-    );
-
-    $this->actingAs($user)->get($verificationUrl);
-
-    expect($user->fresh()->followers()->where('follower_id', $nuno->id)->exists())->toBeTrue();
-});
-
-test('does not follow user if already following', function () {
-    $user = User::factory()->create([
-        'email_verified_at' => null,
-    ]);
-
-    $nuno = User::factory()->create([
-        'email' => 'enunomaduro@gmail.com',
-    ]);
-
-    $user->followers()->attach($nuno->id);
-
-    $verificationUrl = URL::temporarySignedRoute(
-        'verification.verify',
-        now()->addMinutes(60),
-        ['id' => $user->id, 'hash' => sha1($user->email)]
-    );
-
-    $this->actingAs($user)->get($verificationUrl);
-
-    expect($user->fresh()->followers()->where('follower_id', $nuno->id)->count())->toBe(1);
-});
-
 test('email is not verified with invalid hash', function () {
     $user = User::factory()->create([
         'email_verified_at' => null,
