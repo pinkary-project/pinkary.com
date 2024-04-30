@@ -2570,12 +2570,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "9cd364549d8041f58f3dbcac27bf06c11f274fd5"
+                "reference": "d4eec49e30f2650c411783c65801028669188a24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/9cd364549d8041f58f3dbcac27bf06c11f274fd5",
-                "reference": "9cd364549d8041f58f3dbcac27bf06c11f274fd5",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/d4eec49e30f2650c411783c65801028669188a24",
+                "reference": "d4eec49e30f2650c411783c65801028669188a24",
                 "shasum": ""
             },
             "require": {
@@ -2678,7 +2678,7 @@
                 "league/flysystem-sftp-v3": "^3.0",
                 "mockery/mockery": "^1.6",
                 "nyholm/psr7": "^1.2",
-                "orchestra/testbench-core": "^9.0.6",
+                "orchestra/testbench-core": "^9.0.15",
                 "pda/pheanstalk": "^5.0",
                 "phpstan/phpstan": "^1.4.7",
                 "phpunit/phpunit": "^10.5|^11.0",
@@ -2767,7 +2767,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-04-29T19:37:25+00:00"
+            "time": "2024-04-30T14:59:55+00:00"
         },
         {
             "name": "laravel/pennant",
@@ -2904,16 +2904,16 @@
         },
         {
             "name": "laravel/pulse",
-            "version": "v1.0.0-beta16",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pulse.git",
-                "reference": "bd05ae7bfb9a6671c91f7eb25e742ee2497df0df"
+                "reference": "37fc7512d01de7e59b0ae9634c638849d98c3fca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pulse/zipball/bd05ae7bfb9a6671c91f7eb25e742ee2497df0df",
-                "reference": "bd05ae7bfb9a6671c91f7eb25e742ee2497df0df",
+                "url": "https://api.github.com/repos/laravel/pulse/zipball/37fc7512d01de7e59b0ae9634c638849d98c3fca",
+                "reference": "37fc7512d01de7e59b0ae9634c638849d98c3fca",
                 "shasum": ""
             },
             "require": {
@@ -2932,7 +2932,7 @@
                 "illuminate/routing": "^10.48.4|^11.0.8",
                 "illuminate/support": "^10.48.4|^11.0.8",
                 "illuminate/view": "^10.48.4|^11.0.8",
-                "livewire/livewire": "^3.2",
+                "livewire/livewire": "^3.4.9",
                 "nesbot/carbon": "^2.67|^3.0",
                 "php": "^8.1",
                 "symfony/console": "^6.0|^7.0"
@@ -2987,7 +2987,7 @@
                 "issues": "https://github.com/laravel/pulse/issues",
                 "source": "https://github.com/laravel/pulse"
             },
-            "time": "2024-03-24T15:02:27+00:00"
+            "time": "2024-04-30T14:43:29+00:00"
         },
         {
             "name": "laravel/serializable-closure",
