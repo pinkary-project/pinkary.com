@@ -29,6 +29,7 @@ final class QuestionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultsort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('content')
                     ->label('Question')
