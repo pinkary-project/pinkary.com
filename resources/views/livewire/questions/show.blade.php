@@ -62,7 +62,7 @@
     </div>
 
     @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
+        <div class="mt-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border hover:border-pink-500 hover:bg-opacity-75 p-4 answer">
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
@@ -106,7 +106,9 @@
                         width="48"
                     >
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
+                            <button
+                                title="Options"
+                                class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
                                 <x-icons.ellipsis-horizontal class="h-6 w-6" />
                             </button>
                         </x-slot>
@@ -135,7 +137,7 @@
                                     wire:confirm="Are you sure you want to delete this question?"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.trash class="h-4 w-4" />
+                                    <x-heroicon-m-trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
@@ -163,34 +165,41 @@
                         @else
                             wire:click="like()"
                         @endif
-                        class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                        @php($likesCount = $question->likes()->count())
+                        class="flex cursor-click items-center transition-colors hover:text-slate-400 focus:outline-none"
+                        title="{{ Number::format($likesCount) }} {{ str('Like')->plural($likesCount) }}"
                     >
                         @if ($question->likes()->where('user_id', auth()->id())->exists())
-                            <x-icons.heart-solid class="h-4 w-4" />
+                            <x-icons.heart-solid class="h-4 w-4"/>
                         @else
-                            <x-icons.heart class="h-4 w-4" />
+                            <x-icons.heart class="h-4 w-4"/>
                         @endif
-
-                        @php($likesCount = $question->likes()->count())
                         @if ($likesCount)
-                            <p
-                                class="cursor-click ml-1"
-                                title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
-                            >
-                                {{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}
+                            <p class="ml-1">
+                                {{ Number::abbreviate($likesCount) }}
                             </p>
                         @endif
                     </button>
                     @if ($question->views > 0)
                         <span class="mx-1">•</span>
-                        <x-icons.chart class="h-4 w-4" />
                         <p
-                            class="ml-1 cursor-help"
-                            title="{{ Number::format($question->views) }} {{ str('view')->plural($question->views) }}"
+                            class="inline-flex items-center cursor-help"
+                            title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
                         >
-                            {{ Number::abbreviate($question->views) }} {{ str('view')->plural($question->views) }}
+                            <x-icons.chart class="mr-1 h-4 w-4"/>
+                            {{ Number::abbreviate($question->views) }}
                         </p>
                     @endif
+                    @php($commentsCount = $question->comments()->where('is_reported', false)->count())
+                    <span class="mx-1">•</span>
+                    <button
+                        wire:click="discuss"
+                        class="inline-flex cursor-pointer items-center transition-colors hover:text-slate-400 focus:outline-none"
+                        title="{{ Number::format($commentsCount) }} {{ str('Comment')->plural($commentsCount) }}"
+                    >
+                        <x-heroicon-c-chat-bubble-left-right class="mr-1 h-4 w-4"/>
+                        {{ Number::abbreviate($commentsCount) }}
+                    </button>
                 </div>
                 <div class="flex items-center text-slate-500">
                     <time
@@ -209,6 +218,7 @@
                         x-cloak
                         x-data="shareProfile"
                         x-show="isVisible"
+                        title="Share"
                         x-on:click="
                             share({
                                 url: '{{
@@ -237,8 +247,9 @@
                                 }}',
                             )
                         "
+                        title="Copy link"
                         type="button"
-                        class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                        class="text-slate-500 transition-colors cursor hover:text-slate-400 focus:outline-none"
                     >
                         <x-icons.link class="size-4" />
                     </button>
