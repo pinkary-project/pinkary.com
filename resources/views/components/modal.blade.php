@@ -2,6 +2,7 @@
     'name',
     'show' => false,
     'maxWidth' => '2xl',
+    'showCloseButton' => true,
 ])
 
 @php
@@ -17,6 +18,7 @@
 <div
     x-data="{
         show: @js($show),
+        showCloseButton: @js($showCloseButton),
         focusables() {
             // All focusable element types...
             let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
@@ -75,6 +77,14 @@
         x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
         x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
     >
+        <button
+            x-show="showCloseButton == true"
+            x-on:click="show = false"
+            class="absolute top-2 right-2 text-slate-500 text-xl focus:outline-none"
+        >
+            <x-icons.close />
+        </button>
+
         {{ $slot }}
     </div>
 </div>
