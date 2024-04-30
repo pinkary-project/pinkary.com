@@ -10,7 +10,9 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Table;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -58,5 +60,25 @@ final class CitadelPanelProvider extends PanelProvider
         Table::configureUsing(function (Table $table): void {
             $table->paginationPageOptions([10, 25, 50]);
         });
+
+        $this->addFavicon();
+    }
+
+    /**
+     * Add favicon to the admin panel.
+     */
+    private function addFavicon(): void
+    {
+        FilamentView::registerRenderHook(
+            name: PanelsRenderHook::HEAD_END,
+            hook: fn () =>  <<<EOT
+            <!-- Favicon -->
+            <link
+                rel="shortcut icon"
+                href="https://pinkary.com/img/ico.svg"
+                type="image/x-icon"
+            />
+            EOT,
+        );
     }
 }
