@@ -30,6 +30,11 @@ final class QuestionResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+//                    ->hidden()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('content')
                     ->label('Question')
                     ->searchable()
