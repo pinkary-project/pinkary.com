@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -33,7 +34,9 @@ final class CitadelPanelProvider extends PanelProvider
             ->id('citadel')
             ->path('citadel')
             ->spa()
+            ->favicon(asset('/img/ico.svg'))
             ->colors(['primary' => Color::Pink])
+            ->darkMode(isForced: true)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
@@ -61,25 +64,5 @@ final class CitadelPanelProvider extends PanelProvider
         Table::configureUsing(function (Table $table): void {
             $table->paginationPageOptions([10, 25, 50]);
         });
-
-        $this->addFavicon();
-    }
-
-    /**
-     * Add favicon to the admin panel.
-     */
-    private function addFavicon(): void
-    {
-        FilamentView::registerRenderHook(
-            name: PanelsRenderHook::HEAD_END,
-            hook: fn () =>  <<<EOT
-            <!-- Favicon -->
-            <link
-                rel="shortcut icon"
-                href="https://pinkary.com/img/ico.svg"
-                type="image/x-icon"
-            />
-            EOT,
-        );
     }
 }
