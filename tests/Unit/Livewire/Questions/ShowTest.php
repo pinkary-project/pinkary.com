@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Livewire\Questions\Show;
 use App\Models\Question;
 use App\Models\User;
+use Livewire\Attributes\On;
 use Livewire\Livewire;
 
 test('render', function () {
@@ -41,6 +42,29 @@ test('refresh', function () {
     $component->dispatch('question.updated');
 
     $component->assertSee('Hello World Answer Updated');
+});
+
+test('refresh events', function () {
+    $component = Livewire::test(Show::class, [
+        'questionId' => Question::factory()->create()->id,
+    ]);
+    foreach ($component->invade()->getAttributes() as $attribute) {
+        if ($attribute instanceof On) {
+            $this->assertEquals(
+                'refresh',
+                $attribute->getName(),
+            );
+            $this->assertEquals(
+                [
+                    'question.updated',
+                    'comment.created',
+                    'comment.deleted',
+                    'comment.updated',
+                ],
+                $attribute->event,
+            );
+        }
+    }
 });
 
 test('listeners', function () {
