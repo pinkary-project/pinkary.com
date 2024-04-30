@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 final class QuestionResource extends Resource
 {
@@ -23,12 +24,15 @@ final class QuestionResource extends Resource
      */
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
 
+
+
     /**
      * Configures the table for the resource.
      */
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultsort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('content')
                     ->label('Question')
