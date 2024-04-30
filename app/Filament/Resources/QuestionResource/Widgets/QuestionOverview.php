@@ -26,16 +26,12 @@ final class QuestionOverview extends BaseWidget
             ->selectRaw('COUNT(*) AS total, SUM(is_reported) AS reported, SUM(is_ignored) AS ignored')
             ->first();
 
-        $counts ??= [
-            'total' => 0,
-            'reported' => 0,
-            'ignored' => 0,
-        ];
+        $counts = $counts !== null ? $counts->attributesToArray() : ['total' => 0, 'reported' => 0, 'ignored' => 0];
 
         return [
-            Stat::make('Total Questions', type($counts['total'])->asInt()),
-            Stat::make('Reported Questions', type($counts['reported'])->asInt()),
-            Stat::make('Ignored Questions', type($counts['ignored'])->asInt()),
+            Stat::make('Total Questions', $counts['total']),
+            Stat::make('Reported Questions', $counts['reported']),
+            Stat::make('Ignored Questions', $counts['ignored']),
         ];
     }
 }
