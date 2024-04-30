@@ -42,18 +42,22 @@
             @endif
         </div>
 
-        @if(! $user->is(auth()->user()))
+        @if (! $user->is(auth()->user()))
             <div class="absolute right-0 top-6 flex">
-                @if($user->followers()->where('follower_id', auth()->id())->exists())
-                    <button type="button"
-                            wire:click="unfollow({{ $user->id }})"
-                            class="px-2 py-1 flex items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white">
+                @if ($user->followers()->where('follower_id', auth()->id())->exists())
+                    <button
+                        type="button"
+                        wire:click="unfollow({{ $user->id }})"
+                        class="flex items-center justify-center rounded-lg bg-slate-900 px-2 py-1 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    >
                         Following
                     </button>
                 @else
-                    <button type="button"
-                            wire:click="follow({{ $user->id }})"
-                            class="px-2 py-1 flex items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white">
+                    <button
+                        type="button"
+                        wire:click="follow({{ $user->id }})"
+                        class="flex items-center justify-center rounded-lg bg-slate-900 px-2 py-1 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    >
                         Follow
                     </button>
                 @endif
@@ -113,48 +117,56 @@
             >
         @endif
 
-        <div class="flex justify-center items-center space-x-4">
-            <button class="flex flex-col items-center justify-center"
-                    x-on:click.prevent="$dispatch('open-modal', 'followers')">
-                <strong class="font-bold ">{{ $user->followers_count }}</strong>
-                <span class="text-sm">Followers</span>
-            </button>
-            <button class="flex flex-col items-center justify-center"
-                    x-on:click.prevent="$dispatch('open-modal', 'following')">
-                <strong>{{ $user->following_count }}</strong>
-                <span class="text-sm">Following</span>
-            </button>
-        </div>
-
-        <x-modal-followers :user="$user"/>
-        <x-modal-following :user="$user"/>
+        <livewire:followers.index :userId="$user->id" />
+        <livewire:following.index :userId="$user->id" />
 
         <div class="mt-2 text-sm">
             <p class="text-slate-400">
-                <span
-                    class="cursor-help"
-                    title="{{ Number::format($questionsReceivedCount) }} {{ str('Answer')->plural($questionsReceivedCount) }}"
-                >
-                    {{ Number::abbreviate($questionsReceivedCount) }}
-                    {{ str('Answer')->plural($questionsReceivedCount) }}
-                </span>
+                @if ($user->followers_count > 0)
+                    <button x-on:click.prevent="$dispatch('open-modal', 'followers')">
+                        <span
+                            class="cursor-help"
+                            title="{{ Number::format($user->followers_count) }} {{ str('Follower')->plural($user->followers_count) }}"
+                        >
+                            {{ Number::abbreviate($user->followers_count) }}
+                            {{ str('Follower')->plural($user->followers_count) }}
+                        </span>
+                    </button>
 
-                @if ($user->views > 0)
                     <span class="mx-1">•</span>
-
-                    <span
-                        class="cursor-help"
-                        title="{{ Number::format($user->views) }} {{ str('view')->plural($user->views) }}"
-                    >
-                        {{ Number::abbreviate($user->views) }} {{ str('view')->plural($user->views) }}
-                    </span>
                 @endif
 
-                <span class="mx-1">•</span>
+                @if ($user->following_count > 0)
+                    <button x-on:click.prevent="$dispatch('open-modal', 'following')">
+                        <span
+                            class="cursor-help"
+                            title="{{ Number::format($user->following_count) }} Following"
+                        >
+                            {{ Number::abbreviate($user->following_count) }}
+                            Following
+                        </span>
+                    </button>
 
-                <span>
-                    Joined
-                    {{ $user->created_at->timezone(session()->get('timezone', 'UTC'))->format('M Y') }}
+                    <span class="mx-1">•</span>
+                @endif
+
+                @if ($questionsReceivedCount > 0)
+                    <span
+                        class="cursor-help"
+                        title="{{ Number::format($questionsReceivedCount) }} {{ str('Answer')->plural($questionsReceivedCount) }}"
+                    >
+                        {{ Number::abbreviate($questionsReceivedCount) }}
+                        {{ str('Answer')->plural($questionsReceivedCount) }}
+                    </span>
+
+                    <span class="mx-1">•</span>
+                @endif
+
+                <span
+                    class="cursor-help"
+                    title="{{ Number::format($user->views) }} {{ str('view')->plural($user->views) }}"
+                >
+                    {{ Number::abbreviate($user->views) }} {{ str('view')->plural($user->views) }}
                 </span>
             </p>
         </div>

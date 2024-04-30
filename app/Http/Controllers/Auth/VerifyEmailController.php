@@ -33,6 +33,12 @@ final readonly class VerifyEmailController
             event(new Verified($user));
         }
 
+        if ($admin = User::where('email', 'enunomaduro@gmail.com')->first()) {
+            if ($user->followers()->where('follower_id', $admin->id)->doesntExist()) {
+                $user->followers()->attach($admin->id);
+            }
+        }
+
         return to_route('profile.show', [
             'username' => $user->username,
         ]);
