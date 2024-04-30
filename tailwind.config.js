@@ -19,6 +19,11 @@ export default {
             screens: {
                 xsm: '467px',
             },
+            colors: {
+                slate: {
+                    '600': '#94a3b8'
+                }
+            },
         },
     },
 
