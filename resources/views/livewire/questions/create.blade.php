@@ -38,7 +38,7 @@
 
                 <label
                     for="anonymously"
-                    class="ml-2 text-slate-600"
+                    class="ml-2 text-slate-400"
                     >Anonymously</label
                 >
             </div>

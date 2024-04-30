@@ -40,7 +40,7 @@
                         <button
                             wire:click.prevent="ignore"
                             wire:confirm="Are you sure you want to ignore this question?"
-                            class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            class="text-slate-400 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             Ignore
                         </button>
@@ -49,7 +49,7 @@
                             <button
                                 wire:click.prevent="report"
                                 wire:confirm="Are you sure you want to report this question?"
-                                class="text-slate-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                class="text-slate-400 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Report
                             </button>
