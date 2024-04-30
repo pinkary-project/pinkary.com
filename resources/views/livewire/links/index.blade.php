@@ -212,7 +212,11 @@
             </p>
         </div>
     </div>
-    <div class="py-5">
+
+    <div
+        class="py-5"
+        x-data="{ showLinksEditForm: false }"
+    >
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
                 <p class="mx-2 text-center text-slate-500">No links yet. Add your first link!</p>
@@ -256,7 +260,8 @@
                                 </div>
 
                                 <button
-                                    wire:click="editLink({{ $link->id }})"
+                                    wire:click="$dispatchTo('links.edit', 'link.edit', { link: {{ $link->id }} })"
+                                    x-on:click="showLinksEditForm = true"
                                     type="button"
                                     class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
@@ -284,7 +289,7 @@
                 </ul>
 
                 <div
-                    x-show="$wire.showLinksEditForm"
+                    x-show="showLinksEditForm"
                     x-transition:enter="transition duration-300 ease-out"
                     x-transition:enter-start="opacity-0"
                     x-transition:enter-end="opacity-100"

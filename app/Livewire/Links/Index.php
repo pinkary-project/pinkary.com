@@ -24,8 +24,6 @@ final class Index extends Component
     #[Locked]
     public int $userId;
 
-    public bool $showLinksEditForm = false;
-
     /**
      * Increment the clicks counter.
      */
