@@ -46,7 +46,7 @@
                                             />
                                         @endif
                                     </div>
-                                    <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
+                                    <p class="truncate text-left text-slate-500 transition-colors group-hover:text-slate-400">
                                         {{ '@'.$user->username }}
                                     </p>
                                 </div>
