@@ -7,6 +7,7 @@ use App\Console\Commands\PerformDatabaseBackupCommand;
 use App\Console\Commands\SendDailyEmailsCommand;
 use App\Console\Commands\SendWeeklyEmailsCommand;
 use App\Console\Commands\SyncVerifiedUsersCommand;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command(SendDailyEmailsCommand::class)->dailyAt('13:00');

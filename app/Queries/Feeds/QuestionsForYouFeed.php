@@ -37,7 +37,7 @@ final readonly class QuestionsForYouFeed
                         });
                 })
                     ->orWhereHas('to', function (Builder $toQuery): void {
-                        $toQuery->whereIn('id', $this->user->following()->pluck('users.id'));
+                        $toQuery->whereIn('id', $this->user->following()->select('users.id'));
                     });
             })
             ->orderByDesc('updated_at')

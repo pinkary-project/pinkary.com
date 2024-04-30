@@ -1,3 +1,10 @@
+## Version 1.14.0
+> 30 April, 2024
+
+- Follow and unfollow actions are now displayed in the user's profile page.
+- Following and followers count are now displayed in the user's profile page.
+- For You feed now includes questions from followed users.
+
 ## Version 1.13.0
 > 28 April, 2024
 
