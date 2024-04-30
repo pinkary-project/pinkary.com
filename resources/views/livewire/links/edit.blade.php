@@ -23,7 +23,7 @@
                 {{ __('Save') }}
             </x-primary-colorless-button>
             <button
-                @click="$dispatch('link-edit.cancelled')"
+                x-on:click="showLinksEditForm = false"
                 type="button"
                 class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
