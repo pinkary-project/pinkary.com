@@ -13,4 +13,16 @@ final class Index extends ManageRecords
      * The resource class this page is for.
      */
     protected static string $resource = QuestionResource::class;
+
+    /**
+     * Get the widgets that should be displayed on the header.
+     *
+     * @return array<class-string>
+     */
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            QuestionResource\Widgets\QuestionOverview::class,
+        ];
+    }
 }
