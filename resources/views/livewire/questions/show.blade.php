@@ -10,43 +10,7 @@
                     <p class="font-medium">Anonymously</p>
                 </div>
             @else
-                <a
-                    href="{{ route('profile.show', ['username' => $question->from->username]) }}"
-                    class="group flex items-center gap-3 px-4"
-                    wire:navigate
-                >
-                    <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
-                        <img
-                            src="{{ $question->from->avatar_url }}"
-                            alt="{{ $question->from->username }}"
-                            class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
-                        />
-                    </figure>
-
-                    <div class="overflow-hidden text-sm">
-                        <div class="flex">
-                            <p class="truncate font-medium text-slate-50">
-                                {{ $question->from->name }}
-                            </p>
-
-                            @if ($question->from->is_verified && $question->from->is_company_verified)
-                                <x-icons.verified-company
-                                    :color="$question->from->right_color"
-                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
-                                />
-                            @elseif ($question->from->is_verified)
-                                <x-icons.verified
-                                    :color="$question->from->right_color"
-                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
-                                />
-                            @endif
-                        </div>
-
-                        <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
-                            {{ '@'.$question->from->username }}
-                        </p>
-                    </div>
-                </a>
+                <x-avatar-with-name :user="$question->from" />
             @endif
             @if ($question->pinned && $pinnable)
                 <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
