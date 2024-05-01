@@ -50,7 +50,7 @@
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 bg-clip-padding backdrop-blur-sm backdrop-filter"
+    class="fixed inset-0 z-50 overflow-y-auto bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
     style="display: {{ $show ? 'block' : 'none' }}"
 >
     <div
@@ -79,7 +79,7 @@
         <button
             x-show="showCloseButton == true"
             x-on:click="show = false"
-            class="absolute top-2 right-2 text-slate-500 text-xl focus:outline-none"
+            class="absolute right-2 top-2 text-xl text-slate-500 focus:outline-none"
         >
             <x-icons.close />
         </button>

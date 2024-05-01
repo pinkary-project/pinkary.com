@@ -2570,12 +2570,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "14a6243e8b18eaa3fe0d1ec6b2c1b17254a1bd8f"
+                "reference": "3d09d6a34c7385e590231340e4aed58e8e563075"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/14a6243e8b18eaa3fe0d1ec6b2c1b17254a1bd8f",
-                "reference": "14a6243e8b18eaa3fe0d1ec6b2c1b17254a1bd8f",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/3d09d6a34c7385e590231340e4aed58e8e563075",
+                "reference": "3d09d6a34c7385e590231340e4aed58e8e563075",
                 "shasum": ""
             },
             "require": {
@@ -2767,7 +2767,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-04-30T17:40:38+00:00"
+            "time": "2024-05-01T12:43:34+00:00"
         },
         {
             "name": "laravel/pennant",

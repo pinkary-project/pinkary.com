@@ -6,8 +6,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
-use Blade;
 use App\Models\User;
+use Blade;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\Column;
@@ -49,11 +49,11 @@ final class QuestionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('from.name')
-                    ->formatStateUsing(static::resolveUserAvatarOnQuestionColumn(...))
+                    ->formatStateUsing(self::resolveUserAvatarOnQuestionColumn(...))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('to.name')
-                    ->formatStateUsing(static::resolveUserAvatarOnQuestionColumn(...))
+                    ->formatStateUsing(self::resolveUserAvatarOnQuestionColumn(...))
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_reported')
                     ->color($trueStateMeansRedElseGray)
