@@ -33,8 +33,7 @@ final class QuestionResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->toggledHiddenByDefault()
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('content')
                     ->label('Question')
                     ->searchable()
