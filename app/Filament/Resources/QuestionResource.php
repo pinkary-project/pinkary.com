@@ -58,7 +58,7 @@ final class QuestionResource extends Resource
                 TernaryFilter::make('is_ignored'),
             ])
             ->actions([
-                Tables\Actions\Action::make('Ignore')
+                Tables\Actions\Action::make('ignore')
                     ->color('gray')
                     ->action(function (Question $record): void {
                         $record->update(['is_ignored' => true]);
