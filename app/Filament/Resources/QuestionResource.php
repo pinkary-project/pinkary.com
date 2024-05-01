@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
+use App\Models\User;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\TernaryFilter;
@@ -28,6 +29,8 @@ final class QuestionResource extends Resource
      */
     public static function table(Table $table): Table
     {
+        $trueStateMeansRedElseGray = fn(bool $state): string => $state ? 'danger' : 'gray';
+
         return $table
             ->defaultsort('created_at', 'desc')
             ->columns([
@@ -44,8 +47,10 @@ final class QuestionResource extends Resource
                 Tables\Columns\TextColumn::make('to.name')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_reported')
+                    ->color($trueStateMeansRedElseGray)
                     ->boolean(),
                 Tables\Columns\IconColumn::make('is_ignored')
+                    ->color($trueStateMeansRedElseGray)
                     ->boolean(),
             ])
             ->filters([
@@ -53,14 +58,22 @@ final class QuestionResource extends Resource
                 TernaryFilter::make('is_ignored'),
             ])
             ->actions([
-                Tables\Actions\Action::make('delete')
-                    ->button()
-                    ->color('danger')
+                Tables\Actions\Action::make('Ignore')
+                    ->color('gray')
                     ->action(function (Question $record): void {
                         $record->update(['is_ignored' => true]);
                     })
                     ->visible(fn (Question $record): bool => ! $record->is_ignored)
                     ->requiresConfirmation(),
+                Tables\Actions\Action::make('visit_question')
+                    ->label('Visit')
+                    ->url(function (Question $record): string {
+                        return route('questions.show', [
+                            'username' => User::find($record->to_id)->username,
+                            'question' => $record->id,
+                        ]);
+                    })
+                    ->openUrlInNewTab(),
             ]);
     }
 
