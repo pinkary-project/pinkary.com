@@ -33,6 +33,14 @@ final class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('username')
                     ->searchable(),
+            ])
+            ->actions([
+                Tables\Actions\Action::make('visit_question')
+                    ->label('Visit Profile')
+                    ->url(fn (User $record): string => route('profile.show', [
+                        'username' => $record->username,
+                    ]))
+                    ->openUrlInNewTab(),
             ]);
     }
 
