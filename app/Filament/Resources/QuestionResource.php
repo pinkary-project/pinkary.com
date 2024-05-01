@@ -82,9 +82,9 @@ final class QuestionResource extends Resource
     }
 
     /**
-     * Let's render the HTML for the user avatar on the question column. We need to use this in two columns
-     * so that's the reason we abstract what could be a closure, into a method. Based on the column
-     * name and if the question is anonymous, we render the user avatar or the text "Anonymous".
+     * Let's render the HTML for the user avatar on the question column. We need to do this in two columns, `from`
+     * and `to`. That's the reason we abstract what could be a closure, to a method. Depending on the name and
+     * wether if the question is anonymous, we now choose to render the user avatar or the text "Anonymous".
      */
     public static function resolveUserAvatarOnQuestionColumn(Question $record, Column $column): Htmlable
     {
@@ -100,7 +100,6 @@ final class QuestionResource extends Resource
             Blade::render('<x-avatar-with-name :user="$user" />', ['user' => $user])
         );
     }
-
 
     /**
      * Configures the pages for the resource.
