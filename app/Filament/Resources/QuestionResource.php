@@ -31,7 +31,6 @@ final class QuestionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
                     ->toggledHiddenByDefault()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('content')
