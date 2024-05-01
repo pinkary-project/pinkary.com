@@ -32,6 +32,8 @@ final class CitadelPanelProvider extends PanelProvider
             ->path('citadel')
             ->spa()
             ->favicon(asset('/img/ico.svg'))
+            ->brandLogo(asset('/img/logo-text.svg'))
+            ->brandLogoHeight('1.85rem')
             ->colors(['primary' => Color::Pink])
             ->darkMode(isForced: true)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
