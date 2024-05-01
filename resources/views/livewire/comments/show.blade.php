@@ -61,7 +61,7 @@
                                 {{ __('Edit') }}
                             </x-dropdown-button>
                         @endif
-                        @if(auth()->user()->can('delete', $comment))
+                        @can('delete', $comment)
                             <x-dropdown-button
                                 class="flex text-slate-400 items-center gap-1.5"
                                 x-on:click="$dispatch('open-modal', { name: 'comment.delete.{{ $comment->id }}' })"
