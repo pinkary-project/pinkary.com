@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
+use App\Models\User;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\TernaryFilter;
@@ -50,6 +51,15 @@ final class QuestionResource extends Resource
                 TernaryFilter::make('is_ignored'),
             ])
             ->actions([
+                Tables\Actions\Action::make('visit_question')
+                    ->label('Visit Question')
+                    ->url(function (Question $record): string {
+                        return route('questions.show', [
+                            'username' => User::find($record->to_id)->username,
+                            'question' => $record->id,
+                        ]);
+                    })
+                    ->openUrlInNewTab(),
                 Tables\Actions\Action::make('delete')
                     ->button()
                     ->color('danger')
