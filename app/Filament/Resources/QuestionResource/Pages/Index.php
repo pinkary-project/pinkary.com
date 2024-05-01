@@ -17,7 +17,7 @@ final class Index extends ManageRecords
     /**
      * Get the widgets that should be displayed on the header.
      *
-     * @return array<class-string>
+     * @return array<int, class-string>
      */
     protected function getHeaderWidgets(): array
     {
