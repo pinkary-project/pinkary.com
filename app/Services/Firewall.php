@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use DeviceDetector\ClientHints;
-use DeviceDetector\DeviceDetector;
-use DeviceDetector\Parser\Device\AbstractDeviceParser;
+use DeviceDetector\Parser\Bot as BotParser;
 use Illuminate\Http\Request;
 
 final readonly class Firewall
@@ -16,23 +14,12 @@ final readonly class Firewall
      */
     public function isBot(Request $request): bool
     {
-        return $this->device($request)->isBot();
-    }
-
-    /**
-     * Get the device detector instance.
-     */
-    private function device(Request $request): DeviceDetector
-    {
         $userAgent = (string) $request->userAgent();
-        $clientHints = ClientHints::factory($request->server->all());
 
-        AbstractDeviceParser::setVersionTruncation(AbstractDeviceParser::VERSION_TRUNCATION_NONE);
+        $botParser = new BotParser();
+        $botParser->setUserAgent($userAgent);
+        $botParser->discardDetails();
 
-        $device = new DeviceDetector($userAgent, $clientHints);
-
-        $device->parse();
-
-        return $device;
+        return ! is_null($botParser->parse());
     }
 }
