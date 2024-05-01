@@ -18,7 +18,7 @@ final class QuestionOverview extends BaseWidget
     /**
      * Get the widget's stats.
      *
-     * @return array<Stat>
+     * @return array<int, Stat>
      */
     protected function getStats(): array
     {
