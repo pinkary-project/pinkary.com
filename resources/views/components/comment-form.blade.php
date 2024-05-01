@@ -29,14 +29,11 @@
             </div>
             <div class="mt-4 flex items-center justify-between gap-4">
                 <div class="ml-4 flex gap-4 items center">
-                    @php($user = auth()->user())
-                    <x-primary-colorless-button
-                        class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
-                    >
+                    <x-primary-button>
                         {{ __('Send') }}
-                    </x-primary-colorless-button>
+                    </x-primary-button>
 
-                    <x-secondary-button x-on:click="$wire.refresh(); $dispatch('close');">
+                    <x-secondary-button x-on:click="$wire.refresh(); show = false;">
                         {{ __('Cancel') }}
                     </x-secondary-button>
                 </div>

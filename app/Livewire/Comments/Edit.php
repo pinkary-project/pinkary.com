@@ -7,7 +7,6 @@ namespace App\Livewire\Comments;
 use App\Models\Comment;
 use App\Rules\NoBlankCharacters;
 use Illuminate\View\View;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -17,29 +16,21 @@ final class Edit extends Component
      * The Comment content.
      */
     #[Validate(['required', 'string', 'max:255', 'min:5', new NoBlankCharacters])]
-    public ?string $content = null;
+    public string $content = '';
 
     /**
      * The Comment ID.
      */
-    public ?string $commentId = null;
+    public string $commentId = '';
 
     /**
-     * Edit modal state.
+     * Mount the component.
      */
-    public bool $isOpen = false;
-
-    /**
-     * Open the edit modal.
-     */
-    #[On('comment.edit')]
-    public function openModal(string $commentId): void
+    public function mount(string $commentId): void
     {
         $this->commentId = $commentId;
         $comment = Comment::findOrFail($this->commentId);
-        $this->authorize('update', $comment);
-        $this->content = $comment->raw_content;
-        $this->isOpen = true;
+        $this->content = $comment->raw_content ?? '';
     }
 
     /**
@@ -47,9 +38,8 @@ final class Edit extends Component
      */
     public function refresh(): void
     {
-        $this->content = '';
         $this->resetValidation('content');
-        $this->isOpen = false;
+        $this->dispatch('close-modal', name: "comment.edit.{$this->commentId}");
     }
 
     /**
@@ -60,12 +50,15 @@ final class Edit extends Component
         $comment = Comment::findOrFail($this->commentId);
         $this->authorize('update', $comment);
 
+        $this->validate();
+
         if ($comment->content !== $this->content) {
             $comment->update([
-                'content' => $this->validate()['content'],
+                'content' => $this->content,
             ]);
 
-            $this->dispatch('comment.updated', ['commentId' => $comment->id]);
+            $this->dispatch('refresh.comments');
+            $this->dispatch("comment.updated.{$this->commentId}");
             $this->dispatch('notification.created', message: 'Comment updated.');
         }
 

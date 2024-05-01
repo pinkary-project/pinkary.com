@@ -11,26 +11,18 @@ use Livewire\Component;
 
 final class Delete extends Component
 {
-    /**
-     * Delete modal state.
-     */
-    public bool $isOpen = false;
 
     /**
      * The Comment ID.
      */
-    public ?string $commentId = null;
+    public string $commentId = '';
 
     /**
-     * Open the delete modal.
+     * Mount the component.
      */
-    #[On('comment.delete')]
-    public function openModal(string $commentId): void
+    public function mount(string $commentId): void
     {
         $this->commentId = $commentId;
-        $comment = Comment::findOrFail($this->commentId);
-        $this->authorize('delete', $comment);
-        $this->isOpen = true;
     }
 
     /**
@@ -38,8 +30,8 @@ final class Delete extends Component
      */
     public function refresh(): void
     {
-        $this->isOpen = false;
-        $this->commentId = null;
+        $this->commentId = '';
+        $this->dispatch('close-modal', name: "comment.delete.{$this->commentId}");
     }
 
     /**
@@ -50,8 +42,10 @@ final class Delete extends Component
         $comment = Comment::findOrFail($this->commentId);
         $this->authorize('delete', $comment);
         $comment->delete();
-        $this->dispatch('comment.deleted', ['commentId' => $comment->id]);
+
+        $this->dispatch('refresh.comments');
         $this->dispatch('notification.created', message: 'Comment deleted.');
+
         $this->refresh();
     }
 

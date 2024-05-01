@@ -24,11 +24,7 @@ final class Index extends Component
     /**
      * Refresh the comments for the question.
      */
-    #[On([
-        'comment.created',
-        'comment.deleted',
-        'comment.updated',
-    ])]
+    #[On(['refresh.comments'])]
     public function refresh(): void
     {
         //
@@ -46,6 +42,7 @@ final class Index extends Component
                 ->with('owner')
                 ->oldest()
                 ->simplePaginate($this->perPage),
+            'questionId' => $this->questionId,
         ]);
     }
 }

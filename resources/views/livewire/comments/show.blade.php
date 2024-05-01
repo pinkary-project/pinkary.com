@@ -52,21 +52,23 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        @if(auth()->user()->can('update', $comment))
-                        <x-dropdown-button
-                            class="flex items-center gap-1.5"
-                            x-on:click="$dispatch('comment.edit', { commentId: '{{ $comment->id }}' });"
-                        >
-                            <x-heroicon-m-pencil class="h-4 w-4"/>
-                            {{ __('Edit') }}
-                        </x-dropdown-button>
-                        <x-dropdown-button
-                            class="flex text-slate-400 items-center gap-1.5"
-                            x-on:click="$dispatch('comment.delete', { commentId: '{{ $comment->id }}' })"
-                        >
-                            <x-heroicon-m-trash class="h-4  w-4"/>
-                            {{ __('Delete') }}
-                        </x-dropdown-button>
+                        @can('update', $comment)
+                            <x-dropdown-button
+                                class="flex items-center gap-1.5"
+                                x-on:click="$dispatch('open-modal', { name: 'comment.edit.{{ $comment->id }}' })"
+                            >
+                                <x-heroicon-m-pencil class="h-4 w-4"/>
+                                {{ __('Edit') }}
+                            </x-dropdown-button>
+                        @endif
+                        @if(auth()->user()->can('delete', $comment))
+                            <x-dropdown-button
+                                class="flex text-slate-400 items-center gap-1.5"
+                                x-on:click="$dispatch('open-modal', { name: 'comment.delete.{{ $comment->id }}' })"
+                            >
+                                <x-heroicon-m-trash class="h-4  w-4"/>
+                                {{ __('Delete') }}
+                            </x-dropdown-button>
                         @endif
                     </x-slot>
                 </x-dropdown>
@@ -93,4 +95,10 @@
             </div>
         </div>
     </div>
+    @can('update', $comment)
+        <livewire:comments.edit :commentId="$comment->id" :key="$comment->id" />
+    @endcan
+    @can('delete', $comment)
+        <livewire:comments.delete :commentId="$comment->id" :key="$comment->id" />
+    @endcan
 </article>

@@ -36,9 +36,7 @@ final class Show extends Component
      */
     #[On([
         'question.updated',
-        'comment.created',
-        'comment.deleted',
-        'comment.updated',
+        'refresh.comments',
     ])]
     public function refresh(): void
     {

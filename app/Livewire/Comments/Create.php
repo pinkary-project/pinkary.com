@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -25,16 +24,16 @@ final class Create extends Component
      * The content of the comment.
      */
     #[Validate(['required', 'string', 'max:255', 'min:5', new NoBlankCharacters])]
-    public ?string $content = null;
+    public string $content = '';
 
     /**
      * Refresh the component.
      */
-    #[On('comment.created')]
     public function refresh(): void
     {
         $this->content = '';
         $this->resetValidation('content');
+        $this->dispatch('close-modal', name: 'comment.create');
     }
 
     /**
@@ -43,17 +42,19 @@ final class Create extends Component
     public function store(): void
     {
         $this->authorize('create', Comment::class);
+        $this->validate();
 
         $user = type(auth()->user())->as(User::class);
 
-        $comment = $user->comments()->create([
-            'content' => $this->validate()['content'],
+        $user->comments()->create([
+            'content' => $this->content,
             'question_id' => $this->questionId,
         ]);
 
+        $this->dispatch('refresh.comments');
         $this->dispatch('notification.created', message: 'Comment added successfully!');
 
-        $this->dispatch('comment.created', ['commentId' => $comment->id]);
+        $this->refresh();
     }
 
     /**

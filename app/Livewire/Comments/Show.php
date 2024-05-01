@@ -21,7 +21,7 @@ final class Show extends Component
     /**
      * Refresh the component.
      */
-    #[On('comment.updated')]
+    #[On('comment.updated.{commentId}')]
     public function refresh(): void
     {
         //

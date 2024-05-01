@@ -15,6 +15,5 @@
             message="There are no more comments to load, or you have scrolled too far."
         />
     </section>
-    <livewire:comments.edit />
-    <livewire:comments.delete />
+    <livewire:comments.create :questionId="$questionId" />
 </div>
