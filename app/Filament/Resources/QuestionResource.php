@@ -32,7 +32,7 @@ final class QuestionResource extends Resource
         $trueStateMeansRedElseGray = fn (bool $state): string => $state ? 'danger' : 'gray';
 
         return $table
-            ->defaultsort('created_at', 'desc')
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->toggledHiddenByDefault()
