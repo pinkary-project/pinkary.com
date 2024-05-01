@@ -49,7 +49,7 @@ test('refresh', function () {
     $component->set('isOpen', true)
         ->call('refresh')
         ->assertSet('isOpen', false);
-    $this->assertNull($component->get('commentId'));
+    $this->assertSame('', $component->get('commentId'));
 });
 
 test('delete', function () {
@@ -62,7 +62,7 @@ test('delete', function () {
         ->assertDispatched('notification.created')
         ->assertDispatched('comment.deleted')
         ->assertSet('isOpen', false);
-    $this->assertNull($component->get('commentId'));
+    $this->assertSame('', $component->get('commentId'));
 });
 
 test('delete auth', function () {

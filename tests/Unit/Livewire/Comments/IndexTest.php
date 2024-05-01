@@ -27,9 +27,7 @@ test('refresh events', function () {
         ->filter(fn ($attribute) => $attribute instanceof On)
         ->each(function ($attribute) {
             if ($attribute->getName() === 'refresh') {
-                $this->assertContains('comment.created', $attribute->event);
-                $this->assertContains('comment.deleted', $attribute->event);
-                $this->assertContains('comment.updated', $attribute->event);
+                $this->assertContains('refresh.comments', $attribute->event);
             }
         });
 });

@@ -15,7 +15,7 @@ test('properties', function () {
     $component = Livewire::test(Create::class, [
         'questionId' => '1',
     ]);
-    $this->assertNull($component->get('content'));
+    $this->assertSame('', $component->get('content'));
     $this->assertSame('1', $component->get('questionId'));
 });
 
@@ -41,18 +41,9 @@ test('refresh', function () {
         ])
         ->set('content', 'New content')
         ->call('refresh')
-        ->assertSet('content', '');
-});
-
-test('events', function () {
-    $component = Livewire::test(Create::class);
-    collect($component->invade()->getAttributes())
-        ->filter(fn ($attribute) => $attribute instanceof On)
-        ->each(function ($attribute) {
-            if ($attribute->getName() === 'refresh') {
-                $this->assertSame('comment.created', $attribute->event);
-            }
-        });
+        ->assertSet('content', '')
+        ->assertSessionDoesntHaveErrors('content')
+        ->assertDispatched('close-modal');
 });
 
 test('store', function () {
@@ -62,8 +53,8 @@ test('store', function () {
         ])
         ->set('content', 'New content')
         ->call('store')
-        ->assertDispatched('notification.created')
-        ->assertDispatched('comment.created');
+        ->assertDispatched('refresh.comments')
+        ->assertDispatched('notification.created');
 });
 
 test('store auth', function () {

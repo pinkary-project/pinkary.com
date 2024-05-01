@@ -57,9 +57,7 @@ test('refresh events', function () {
             $this->assertEquals(
                 [
                     'question.updated',
-                    'comment.created',
-                    'comment.deleted',
-                    'comment.updated',
+                    'refresh.comments',
                 ],
                 $attribute->event,
             );
