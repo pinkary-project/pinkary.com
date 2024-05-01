@@ -6,11 +6,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
+use Blade;
 use App\Models\User;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\Column;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\HtmlString;
 
 final class QuestionResource extends Resource
 {
@@ -45,9 +49,11 @@ final class QuestionResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('from.name')
-                    ->formatStateUsing(fn (string $state, Question $record): string => $record->anonymously ? 'Anonymous' : $state)
+                    ->formatStateUsing(static::resolveUserAvatarOnQuestionColumn(...))
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('to.name')
+                    ->formatStateUsing(static::resolveUserAvatarOnQuestionColumn(...))
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_reported')
                     ->color($trueStateMeansRedElseGray)
@@ -76,6 +82,26 @@ final class QuestionResource extends Resource
                     ]))
                     ->openUrlInNewTab(),
             ]);
+    }
+
+    /**
+     * Let's render the HTML for the user avatar on the question column. We need to do this in two columns, `from`
+     * and `to`. That's the reason we abstract what could be a closure, to a method. Depending on the name and
+     * wether if the question is anonymous, we now choose to render the user avatar or the text "Anonymous".
+     */
+    public static function resolveUserAvatarOnQuestionColumn(Question $record, Column $column): Htmlable
+    {
+        $isFrom = $column->getName() === 'from.name';
+
+        $user = $isFrom ? $record->from : $record->to;
+
+        if ($isFrom && $record->anonymously) {
+            return new HtmlString('Anonymous');
+        }
+
+        return new HtmlString(
+            Blade::render('<x-avatar-with-name :user="$user" />', ['user' => $user])
+        );
     }
 
     /**
