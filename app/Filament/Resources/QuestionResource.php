@@ -35,6 +35,7 @@ final class QuestionResource extends Resource
             ->defaultsort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
+                    ->toggleable()
                     ->toggledHiddenByDefault()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('content')
