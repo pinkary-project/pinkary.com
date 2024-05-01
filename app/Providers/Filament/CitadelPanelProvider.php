@@ -31,6 +31,7 @@ final class CitadelPanelProvider extends PanelProvider
             ->default()
             ->id('citadel')
             ->path('citadel')
+            ->homeUrl(fn (): string => route('welcome'))
             ->spa()
             ->favicon(asset('/img/ico.svg'))
             ->colors(['primary' => Color::Pink])
