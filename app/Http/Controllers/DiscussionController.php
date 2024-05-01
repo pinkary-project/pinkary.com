@@ -15,7 +15,7 @@ final readonly class DiscussionController
     public function __invoke(Question $question): View
     {
         return view('discussion.show', [
-            'question' => $question,
+            'questionId' => $question->id,
         ]);
     }
 }

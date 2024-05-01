@@ -9,9 +9,8 @@
                 <x-icons.chevron-left class="h-6 w-6" />
                 <span>Back</span>
             </a>
-            <livewire:questions.show :questionId="$question->id" />
-            <livewire:comments.index :questionId="$question->id" />
-            <livewire:comments.create :questionId="$question->id" />
+            <livewire:questions.show :questionId="$questionId" />
+            <livewire:comments.index :questionId="$questionId" />
         </div>
     </div>
 </x-app-layout>
