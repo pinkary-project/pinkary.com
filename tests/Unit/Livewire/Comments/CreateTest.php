@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Livewire\Comments\Create;
 use App\Models\User;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 
 beforeEach(function () {

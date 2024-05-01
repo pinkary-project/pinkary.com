@@ -53,7 +53,7 @@ test('content validation rules', function () {
         'commentId' => $this->comment->id,
     ]);
     collect($component->instance()->getAttributes())
-        ->filter(fn($attribute) => $attribute instanceof Validate)
+        ->filter(fn ($attribute) => $attribute instanceof Validate)
         ->each(function ($attribute) {
             if ($attribute->getName() === 'content') {
                 $this->assertEquals([

@@ -6,12 +6,10 @@ namespace App\Livewire\Comments;
 
 use App\Models\Comment;
 use Illuminate\View\View;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class Delete extends Component
 {
-
     /**
      * The Comment ID.
      */
