@@ -39,6 +39,8 @@ final class QuestionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('content')
                     ->label('Question')
+                    ->limit(40)
+                    ->tooltip(fn (Question $record): ?string => str($record->content)->length() > 40 ? $record->content : null)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('from.name')
