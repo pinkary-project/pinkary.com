@@ -29,7 +29,7 @@ final class QuestionResource extends Resource
      */
     public static function table(Table $table): Table
     {
-        $trueStateMeansRedElseGray = fn(bool $state): string => $state ? 'danger' : 'gray';
+        $trueStateMeansRedElseGray = fn (bool $state): string => $state ? 'danger' : 'gray';
 
         return $table
             ->defaultsort('created_at', 'desc')
@@ -67,12 +67,10 @@ final class QuestionResource extends Resource
                     ->requiresConfirmation(),
                 Tables\Actions\Action::make('visit_question')
                     ->label('Visit')
-                    ->url(function (Question $record): string {
-                        return route('questions.show', [
-                            'username' => User::find($record->to_id)->username,
-                            'question' => $record->id,
-                        ]);
-                    })
+                    ->url(fn (Question $record): string => route('questions.show', [
+                        'username' => User::findOrFail($record->to_id)->username,
+                        'question' => $record->id,
+                    ]))
                     ->openUrlInNewTab(),
             ]);
     }

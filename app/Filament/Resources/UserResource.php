@@ -37,11 +37,9 @@ final class UserResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('visit_question')
                     ->label('Visit Profile')
-                    ->url(function (User $record): string {
-                        return route('profile.show', [
-                            'username' => $record->username,
-                        ]);
-                    })
+                    ->url(fn (User $record): string => route('profile.show', [
+                        'username' => $record->username,
+                    ]))
                     ->openUrlInNewTab(),
             ]);
     }
