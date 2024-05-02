@@ -7,6 +7,7 @@
     $isUserProfileOwner = auth()->user()?->is($user);
     $isFromOurDomain = str($link->url)->startsWith(config('app.url'));
 @endphp
+
 <a
     href="{{ $link->url }}"
     @if($isFromOurDomain) wire:navigate @else target="_blank" @endif
