@@ -33,8 +33,7 @@ test('events', function () {
         ->filter(fn ($attribute) => $attribute instanceof On))
         ->each(function ($attribute) {
             if ($attribute->getName() === 'refresh') {
-                $this->assertContains('comment.updated.{commentId}', $attribute->event);
-                $this->assertContains('refresh.comments', $attribute->event);
+                $this->assertEquals('comment.updated.{commentId}', $attribute->event);
             }
         });
 });
