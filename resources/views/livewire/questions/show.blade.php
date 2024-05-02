@@ -171,12 +171,14 @@
                         title="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                         datetime="{{ $question->answered_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                     >
+                        {{  $question->updated_at > $question->answered_at ? 'Updated' : 'Answered' }}
                         {{
                             $question->answered_at
                                 ->timezone(session()->get('timezone', 'UTC'))
                                 ->diffForHumans()
                         }}
                     </time>
+
                     <span class="mx-1">•</span>
                     <button
                         x-cloak

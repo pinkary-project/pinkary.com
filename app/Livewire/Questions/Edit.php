@@ -66,7 +66,7 @@ final class Edit extends Component
 
         $question->update([
             'answer' => $this->answer,
-            'answered_at' => now(),
+            'answered_at' => $question->answered_at ?: now(),
         ]);
 
         if ($originalAnswer !== null) {
