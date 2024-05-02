@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://pinkary.com/img/logo.svg" width="600" alt="PEST">
+    <img src="https://pinkary.com/img/logo.svg" width="600" alt="Illustration of Pinkary logo. The logo is composed of stylized white text spelling out 'Pinkary' with a pink dot at the end.">
 </p>
 
 ------

@@ -1,6 +1,7 @@
 <x-modal
     name="show-qr-code"
     maxWidth="lg"
+    showCloseButton="false"
 >
     <div class="p-6">
         <img

@@ -55,7 +55,7 @@ it('can delete question', function () {
     $anotherQuestion = Question::factory()->create();
 
     Livewire::test(QuestionResource\Pages\Index::class)
-        ->callTableAction('delete', $question);
+        ->callTableAction('ignore', $question);
 
     $this->assertTrue($question->refresh()->is_ignored);
     $this->assertFalse($anotherQuestion->refresh()->is_ignored);
