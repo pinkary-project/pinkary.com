@@ -49,7 +49,6 @@ final class Edit extends Component
         $user = type($request->user())->as(User::class);
 
         $question = Question::query()
-            ->whereNull('answer')
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->find($this->questionId);
