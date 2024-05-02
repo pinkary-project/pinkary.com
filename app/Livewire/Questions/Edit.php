@@ -53,6 +53,8 @@ final class Edit extends Component
             ->where('is_ignored', false)
             ->find($this->questionId);
 
+        $originalAnswer = $question->answer;
+
         if (is_null($question)) {
             $this->dispatch('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
             $this->redirectRoute('profile.show', ['username' => $user->username], navigate: true);
