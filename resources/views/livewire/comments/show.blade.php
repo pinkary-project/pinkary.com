@@ -55,7 +55,7 @@
                         @can('update', $comment)
                             <x-dropdown-button
                                 class="flex items-center gap-1.5"
-                                x-on:click="$dispatch('open-modal', { name: 'comment.edit.{{ $comment->id }}' })"
+                                x-on:click="$dispatch('open-modal', 'comment.edit.{{ $comment->id }}')"
                             >
                                 <x-heroicon-m-pencil class="h-4 w-4"/>
                                 {{ __('Edit') }}
@@ -64,7 +64,7 @@
                         @can('delete', $comment)
                             <x-dropdown-button
                                 class="flex text-slate-400 items-center gap-1.5"
-                                x-on:click="$dispatch('open-modal', { name: 'comment.delete.{{ $comment->id }}' })"
+                                x-on:click="$dispatch('open-modal', 'comment.delete.{{ $comment->id }}')"
                             >
                                 <x-heroicon-m-trash class="h-4  w-4"/>
                                 {{ __('Delete') }}
@@ -86,6 +86,7 @@
                     title="{{ $comment->updated_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                     datetime="{{ $comment->updated_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                 >
+                    {{ $comment->updated_at > $comment->created_at ? 'Edited' : 'Posted' }}
                     {{
                         $comment->updated_at
                             ->timezone(session()->get('timezone', 'UTC'))

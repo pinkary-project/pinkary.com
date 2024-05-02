@@ -39,7 +39,7 @@ final class Edit extends Component
     public function refresh(): void
     {
         $this->resetValidation('content');
-        $this->dispatch('close-modal', name: "comment.edit.{$this->commentId}");
+        $this->dispatch('close-modal', "comment.edit.{$this->commentId}");
     }
 
     /**

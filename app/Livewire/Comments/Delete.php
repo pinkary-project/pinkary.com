@@ -24,14 +24,6 @@ final class Delete extends Component
     }
 
     /**
-     * Refresh the component.
-     */
-    public function refresh(): void
-    {
-        $this->dispatch('close-modal', name: "comment.delete.{$this->commentId}");
-    }
-
-    /**
      * Delete the comment.
      */
     public function delete(): void
@@ -41,9 +33,8 @@ final class Delete extends Component
         $comment->delete();
 
         $this->dispatch('refresh.comments');
+        $this->dispatch('close-modal', "comment.delete.{$this->commentId}");
         $this->dispatch('notification.created', message: 'Comment deleted.');
-
-        $this->refresh();
     }
 
     /**

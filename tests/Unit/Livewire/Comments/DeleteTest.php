@@ -22,15 +22,6 @@ test('properties', function () {
     $this->assertSame($this->comment->id, $component->get('commentId'));
 });
 
-test('refresh', function () {
-    $component = Livewire::actingAs($this->user)
-        ->test(Delete::class, [
-            'commentId' => $this->comment->id,
-        ])->call('refresh')
-        ->assertSet('isOpen', false);
-    $this->assertSame('', $component->get('commentId'));
-});
-
 test('delete', function () {
     Livewire::actingAs($this->user)
         ->test(Delete::class, [

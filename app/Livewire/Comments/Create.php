@@ -33,7 +33,7 @@ final class Create extends Component
     {
         $this->content = '';
         $this->resetValidation('content');
-        $this->dispatch('close-modal', name: 'comment.create');
+        $this->dispatch('close-modal', 'comment.create');
     }
 
     /**

@@ -1,7 +1,12 @@
 <div>
-    <x-comment-modal name="comment.edit.{{ $commentId }}">
-        <div class="border-l border-slate-700">
+    <x-modal
+            max-width="md"
+            show-close-button="false"
+            name="comment.edit.{{ $commentId }}"
+    >
+        <div class="p-8">
+            <h2 class="text-md font-medium text-slate-50">Edit Comment</h2>
             <x-comment-form action="update"/>
         </div>
-    </x-comment-modal>
+    </x-modal>
 </div>
