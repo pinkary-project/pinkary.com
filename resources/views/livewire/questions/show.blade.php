@@ -252,6 +252,20 @@
                 </div>
             </div>
         </div>
+        @if (! $question->is_ignored && auth()->user()->can('update', $question))
+            <x-modal
+                max-width="md"
+                name="question.edit.answer.{{ $questionId }}"
+            >
+                <div class="p-8">
+                    <h2 class="text-lg font-medium text-slate-50">Edit Answer</h2>
+                    <livewire:questions.edit
+                        :questionId="$question->id"
+                        :key="'edit-answer-'.$question->id"
+                    />
+                </div>
+            </x-modal>
+        @endif
     @elseif (auth()->user()?->is($user))
         <livewire:questions.edit
             :questionId="$question->id"
