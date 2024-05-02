@@ -119,6 +119,27 @@ test('can edit a question that has an answer', function () {
         ->assertDispatched('question.updated');
 });
 
+test('likes are reset when an answer is updated', function () {
+    $this->question->update([
+        'answer' => 'foo',
+        'answered_at' => now(),
+    ]);
+
+    $this->question->likes()->create([
+        'user_id' => $this->question->to->id,
+    ]);
+
+    expect($this->question->likes()->count())->toBe(1);
+
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->set('answer', 'Hello World')
+        ->call('update');
+
+    expect($this->question->likes()->count())->toBe(0);
+});
+
 test('cannot answer a question that has been reported or ignored', function () {
     $this->question->update([
         'is_reported' => true,

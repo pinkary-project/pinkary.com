@@ -70,6 +70,7 @@ final class Edit extends Component
         ]);
 
         if ($originalAnswer !== null) {
+            $question->likes()->delete();
             $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
             $this->dispatch('notification.created', message: 'Answer updated.');
         } else {
