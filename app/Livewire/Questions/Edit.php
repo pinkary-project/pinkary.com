@@ -26,6 +26,18 @@ final class Edit extends Component
     public string $answer = '';
 
     /**
+     * Mount the component.
+     */
+    public function mount(string $questionId): void
+    {
+        $this->questionId = $questionId;
+        $question = Question::findOrFail($questionId);
+        if ($question->answer) {
+            $this->answer = $question->answer;
+        }
+    }
+
+    /**
      * Updates the question with the given answer.
      */
     public function update(Request $request): void
