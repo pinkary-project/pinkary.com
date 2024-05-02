@@ -33,7 +33,7 @@ final class Edit extends Component
         $this->questionId = $questionId;
         $question = Question::findOrFail($questionId);
         if ($question->answer) {
-            $this->answer = $question->answer;
+            $this->answer = $question->raw_answer ?? '';
         }
     }
 
@@ -110,6 +110,7 @@ final class Edit extends Component
      */
     public function render(Request $request): View
     {
+
         return view('livewire.questions.edit', [
             'question' => Question::findOrFail($this->questionId),
             'user' => $request->user(),
