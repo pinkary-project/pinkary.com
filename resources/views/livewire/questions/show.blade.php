@@ -93,6 +93,15 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
+                            @if (! $question->is_ignored && auth()->user()->can('update', $question))
+                                <x-dropdown-button
+                                    x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
+                                    class="flex items-center gap-1.5"
+                                >
+                                    <x-heroicon-m-pencil class="h-4 w-4"/>
+                                    <span>Edit</span>
+                                </x-dropdown-button>
+                            @endif
                             @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
                                 <x-dropdown-button
                                     wire:click="ignore"
