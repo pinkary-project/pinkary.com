@@ -103,23 +103,20 @@ test('cannot update with blank characters', function () {
     ]);
 });
 
-test('cannot answer a question that has already been answered', function () {
+test('can edit a question that has an answer', function () {
     $this->question->update([
-        'answer' => 'Hello World',
+        'answer' => 'foo',
         'answered_at' => now(),
     ]);
 
-    $component = Livewire::test(Edit::class, [
+    Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
-    ]);
-
-    $component->set('answer', 'Hello World');
-
-    $component->call('update');
-
-    $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
-
-    $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
+    ])
+        ->set('answer', 'Hello World')
+        ->call('update')
+        ->assertDispatched('notification.created', message: 'Answer updated.')
+        ->assertDispatched('close-modal', "question.edit.answer.{$this->question->id}")
+        ->assertDispatched('question.updated');
 });
 
 test('cannot answer a question that has been reported or ignored', function () {
