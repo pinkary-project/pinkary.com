@@ -32,6 +32,7 @@ final class Delete extends Component
         $this->authorize('delete', $comment);
         $comment->delete();
 
+        $this->dispatch('refresh.comments');
         $this->dispatch('close-modal', "comment.delete.{$this->commentId}");
         $this->dispatch('notification.created', message: 'Comment deleted.');
     }
