@@ -69,9 +69,12 @@ final class Edit extends Component
             'answered_at' => now(),
         ]);
 
-        $this->answer = '';
-
-        $this->dispatch('notification.created', message: 'Question answered.');
+        if ($originalAnswer !== null) {
+            $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
+            $this->dispatch('notification.created', message: 'Answer updated.');
+        } else {
+            $this->dispatch('notification.created', message: 'Question answered.');
+        }
         $this->dispatch('question.updated');
     }
 
