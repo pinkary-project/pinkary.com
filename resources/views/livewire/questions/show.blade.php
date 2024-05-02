@@ -218,7 +218,7 @@
                 </div>
             </div>
         </div>
-        @if (! $question->is_ignored && auth()->user()->can('update', $question))
+        @if (! $question->is_ignored && auth()->user()?->can('update', $question))
             <x-modal
                 max-width="md"
                 name="question.edit.answer.{{ $questionId }}"

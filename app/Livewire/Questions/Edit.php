@@ -53,7 +53,7 @@ final class Edit extends Component
             ->where('is_ignored', false)
             ->find($this->questionId);
 
-        $originalAnswer = $question->answer;
+        $originalAnswer = $question->answer ?? null;
 
         if (is_null($question)) {
             $this->dispatch('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
