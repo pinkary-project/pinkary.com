@@ -86,7 +86,7 @@
                     title="{{ $comment->updated_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                     datetime="{{ $comment->updated_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                 >
-                    {{ $comment->updated_at > $comment->created_at ? 'Edited' : 'Posted' }}
+                    {{ ($comment->created_at < $comment->updated_at) ? 'Edited:' : '' }}
                     {{
                         $comment->updated_at
                             ->timezone(session()->get('timezone', 'UTC'))

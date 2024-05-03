@@ -12,23 +12,18 @@ final readonly class CommentPolicy
 {
     use HandlesAuthorization;
 
-    public function view(User $user, Comment $comment): bool
+    public function create(?User $user): bool
     {
-        return $user->id === $comment->user_id;
+        return $user?->id !== null;
     }
 
-    public function create(User $user): bool
+    public function update(?User $user, Comment $comment): bool
     {
-        return $user->id !== null;
+        return $user?->id === $comment->user_id;
     }
 
-    public function update(User $user, Comment $comment): bool
+    public function delete(?User $user, Comment $comment): bool
     {
-        return $user->id === $comment->user_id;
-    }
-
-    public function delete(User $user, Comment $comment): bool
-    {
-        return $user->id === $comment->user_id;
+        return $user?->id === $comment->user_id;
     }
 }
