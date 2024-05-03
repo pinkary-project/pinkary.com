@@ -108,9 +108,23 @@
                 @endif
             </div>
 
-            <p class="mt-3 break-words text-slate-200">
-                {!! $question->answer !!}
-            </p>
+            <div
+                x-cloak
+                x-data="{ open: false, maxLength: 255, fullAnswer: '', truncatedAnswer: '' }"
+                x-init="fullAnswer = $el.firstElementChild.textContent.trim(); truncatedAnswer = fullAnswer.slice(0, maxLength); open = truncatedAnswer === fullAnswer"
+                class="mt-3 break-words text-slate-200"
+            >
+                <p x-text="open ? fullAnswer : truncatedAnswer">
+                    {!! $question->answer !!}
+                </p>
+
+                <button
+                    @click="open = true"
+                    x-show="open === false"
+                    x-text="'read more'"
+                    class="text-pink-400 text-xs hover:text-pink-50 transition duration-150 ease-in-out focus:outline-none"
+                ></button>
+            </div>
 
             @php
                 $likeExists = $question
