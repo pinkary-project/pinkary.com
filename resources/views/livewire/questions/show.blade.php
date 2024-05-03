@@ -110,20 +110,21 @@
 
             <div
                 x-cloak
-                x-data="{ open: false, maxLength: 255, fullAnswer: '', truncatedAnswer: '' }"
-                x-init="fullAnswer = $el.firstElementChild.textContent.trim(); truncatedAnswer = fullAnswer.slice(0, maxLength); open = truncatedAnswer === fullAnswer"
+                x-data="readMore"
                 class="mt-3 break-words text-slate-200"
             >
-                <p x-text="open ? fullAnswer : truncatedAnswer">
+                <p x-text="textContent">
                     {!! $question->answer !!}
                 </p>
 
-                <button
-                    @click="open = true"
-                    x-show="open === false"
-                    x-text="'read more'"
-                    class="text-pink-400 text-xs hover:text-pink-50 transition duration-150 ease-in-out focus:outline-none"
-                ></button>
+                <div class="mt-3 flex justify-end">
+                    <button
+                        @click="toggleText"
+                        x-show="isLongText"
+                        x-text="buttonContent"
+                        class="text-pink-400 text-sm hover:text-pink-50 transition duration-150 ease-in-out focus:outline-none"
+                    ></button>
+                </div>
             </div>
 
             @php
