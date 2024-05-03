@@ -5,6 +5,7 @@
 >
     <div class="p-6">
         <img
+            loading="lazy"
             src="{{ route('qr-code.image') }}"
             class="mx-auto w-full max-w-lg"
         />
