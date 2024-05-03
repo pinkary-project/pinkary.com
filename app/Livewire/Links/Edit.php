@@ -62,6 +62,17 @@ final class Edit extends Component
     }
 
     /**
+     * Initialize the edit link form component.
+     */
+    #[On('link.edit')]
+    public function edit(Link $link): void
+    {
+        $this->linkId = $link->id;
+        $this->description = $link->description;
+        $this->url = $link->url;
+    }
+
+    /**
      * Render the component.
      */
     public function render(Request $request): View
@@ -69,13 +80,5 @@ final class Edit extends Component
         return view('livewire.links.edit', [
             'user' => $request->user(),
         ]);
-    }
-
-    #[On('link.edit')]
-    public function edit(Link $link): void
-    {
-        $this->linkId = $link->id;
-        $this->description = $link->description;
-        $this->url = $link->url;
     }
 }
