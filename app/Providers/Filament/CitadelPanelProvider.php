@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -30,6 +31,7 @@ final class CitadelPanelProvider extends PanelProvider
             ->default()
             ->id('citadel')
             ->path('citadel')
+            ->homeUrl(fn (): string => route('welcome'))
             ->spa()
             ->favicon(asset('/img/ico.svg'))
             ->brandLogo(asset('/img/logo-text.svg'))
@@ -39,6 +41,10 @@ final class CitadelPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->url(fn (): string => route('profile.edit')),
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
