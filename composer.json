@@ -3,19 +3,19 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "filament/filament": "^3.2.72",
-        "intervention/image": "^3.6.2",
+        "filament/filament": "^3.2.73",
+        "intervention/image": "^3.6.3",
         "laravel/framework": "dev-feat/exception-page as 11.5.0",
         "laravel/pennant": "^1.7",
         "laravel/pulse": "^1.0@beta",
         "laravel/socialite": "^5.13.2",
         "laravel/tinker": "^2.9.0",
-        "livewire/livewire": "^3.4.11",
+        "livewire/livewire": "^3.4.12",
         "matomo/device-detector": "^6.3.1",
         "pinkary-project/type-guard": "^0.1.0",
         "scrivo/highlight.php": "^9.18.1.10",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "spatie/laravel-mailcoach-mailer": "^1.2.0"
+        "spatie/laravel-mailcoach-mailer": "^1.3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13.5",
