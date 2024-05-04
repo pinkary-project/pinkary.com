@@ -1,3 +1,8 @@
+## Version 1.50.0
+> 4 May, 2024
+
+- Internal improvements and bug fixes.
+
 ## Version 1.14.2
 > 1 May, 2024
 
