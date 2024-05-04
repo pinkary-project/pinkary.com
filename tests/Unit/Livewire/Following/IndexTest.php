@@ -15,7 +15,7 @@ test('render', function () {
     $component->assertOk();
 });
 
-test('openFollowersModal', function () {
+test('openFollowingModal', function () {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Index::class, [
