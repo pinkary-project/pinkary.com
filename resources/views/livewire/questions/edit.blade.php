@@ -36,23 +36,23 @@
                         >
                             {{ __('Send') }}
                         </x-primary-colorless-button>
+
+                        <button
+                            wire:click.prevent="ignore"
+                            wire:confirm="Are you sure you want to ignore this question?"
+                            class="text-slate-400 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Ignore
+                        </button>
+
                         @if (! $question->is_reported)
-                            @if (! $question->answer)
-                                <button
-                                    wire:click.prevent="ignore"
-                                    wire:confirm="Are you sure you want to ignore this question?"
-                                    class="text-slate-400 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                >
-                                    Ignore
-                                </button>
-                                <button
-                                    wire:click.prevent="report"
-                                    wire:confirm="Are you sure you want to report this question?"
-                                    class="text-slate-400 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                >
-                                    Report
-                                </button>
-                            @endif
+                            <button
+                                wire:click.prevent="report"
+                                wire:confirm="Are you sure you want to report this question?"
+                                class="text-slate-400 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Report
+                            </button>
                         @endif
                     </div>
                 </div>
