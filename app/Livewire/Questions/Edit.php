@@ -26,6 +26,18 @@ final class Edit extends Component
     public string $answer = '';
 
     /**
+     * Mount the component.
+     */
+    public function mount(string $questionId): void
+    {
+        $this->questionId = $questionId;
+        $question = Question::findOrFail($questionId);
+        if ($question->answer) {
+            $this->answer = $question->raw_answer ?? '';
+        }
+    }
+
+    /**
      * Updates the question with the given answer.
      */
     public function update(Request $request): void
@@ -37,10 +49,11 @@ final class Edit extends Component
         $user = type($request->user())->as(User::class);
 
         $question = Question::query()
-            ->whereNull('answer')
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->find($this->questionId);
+
+        $originalAnswer = $question->answer ?? null;
 
         if (is_null($question)) {
             $this->dispatch('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
@@ -53,12 +66,16 @@ final class Edit extends Component
 
         $question->update([
             'answer' => $this->answer,
-            'answered_at' => now(),
+            'answered_at' => $question->answered_at ?: now(),
         ]);
 
-        $this->answer = '';
-
-        $this->dispatch('notification.created', message: 'Question answered.');
+        if ($originalAnswer !== null) {
+            $question->likes()->delete();
+            $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
+            $this->dispatch('notification.created', message: 'Answer updated.');
+        } else {
+            $this->dispatch('notification.created', message: 'Question answered.');
+        }
         $this->dispatch('question.updated');
     }
 
@@ -94,6 +111,7 @@ final class Edit extends Component
      */
     public function render(Request $request): View
     {
+
         return view('livewire.questions.edit', [
             'question' => Question::findOrFail($this->questionId),
             'user' => $request->user(),

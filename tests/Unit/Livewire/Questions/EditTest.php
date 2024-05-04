@@ -103,23 +103,41 @@ test('cannot update with blank characters', function () {
     ]);
 });
 
-test('cannot answer a question that has already been answered', function () {
+test('can edit a question that has an answer', function () {
     $this->question->update([
-        'answer' => 'Hello World',
+        'answer' => 'foo',
         'answered_at' => now(),
     ]);
 
-    $component = Livewire::test(Edit::class, [
+    Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
+    ])
+        ->set('answer', 'Hello World')
+        ->call('update')
+        ->assertDispatched('notification.created', message: 'Answer updated.')
+        ->assertDispatched('close-modal', "question.edit.answer.{$this->question->id}")
+        ->assertDispatched('question.updated');
+});
+
+test('likes are reset when an answer is updated', function () {
+    $this->question->update([
+        'answer' => 'foo',
+        'answered_at' => now(),
     ]);
 
-    $component->set('answer', 'Hello World');
+    $this->question->likes()->create([
+        'user_id' => $this->question->to->id,
+    ]);
 
-    $component->call('update');
+    expect($this->question->likes()->count())->toBe(1);
 
-    $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->set('answer', 'Hello World')
+        ->call('update');
 
-    $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
+    expect($this->question->likes()->count())->toBe(0);
 });
 
 test('cannot answer a question that has been reported or ignored', function () {

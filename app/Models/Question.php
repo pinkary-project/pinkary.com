@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property bool $anonymously
  * @property string|null $answer
  * @property Carbon|null $answered_at
+ * @property-read string $raw_answer
  * @property bool $is_reported
  * @property bool $is_ignored
  * @property int $views
@@ -71,6 +72,14 @@ final class Question extends Model implements Viewable
         $content = new ParsableContent();
 
         return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+    }
+
+    /**
+     * The attributes that should be cast.
+     */
+    public function getRawAnswerAttribute(): ?string
+    {
+        return $this->attributes['answer'];
     }
 
     /**
