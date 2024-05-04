@@ -112,12 +112,7 @@
                 {!! $question->answer !!}
             </p>
 
-            @php
-                $likeExists = $question
-                    ->likes()
-                    ->where('user_id', auth()->id())
-                    ->exists();
-            @endphp
+            @php($likeExists = $question->likes->contains('user_id', auth()->id()))
 
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <div class="flex items-center">
@@ -129,13 +124,13 @@
                         @endif
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($question->likes()->where('user_id', auth()->id())->exists())
+                        @if ($likeExists)
                             <x-icons.heart-solid class="h-4 w-4" />
                         @else
                             <x-icons.heart class="h-4 w-4" />
                         @endif
 
-                        @php($likesCount = $question->likes()->count())
+                        @php($likesCount = $question->likes_count)
                         @if ($likesCount)
                             <p
                                 class="cursor-click ml-1"
