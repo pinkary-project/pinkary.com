@@ -2,7 +2,7 @@
     name="followers"
     maxWidth="2xl"
 >
-    <div class="p-10">
+    <div class="p-10" x-on:open-modal.window="$event.detail == 'followers' ? $wire.set('isOpened', true) : null">
         <div>
             @if ($followers->count())
                 <strong> <span>@</span>{{ $user->username }} followers </strong>
