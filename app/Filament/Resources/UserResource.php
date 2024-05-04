@@ -20,7 +20,7 @@ final class UserResource extends Resource
     /**
      * The navigation icon for the resource.
      */
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     /**
      * Configures the table for the resource.
