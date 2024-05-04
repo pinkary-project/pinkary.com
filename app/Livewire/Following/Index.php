@@ -21,7 +21,7 @@ final class Index extends Component
     public int $userId;
 
     /**
-     * Indicates if the component is opened.
+     * Indicates if the modal is opened.
      */
     public $isOpened = false;
 
