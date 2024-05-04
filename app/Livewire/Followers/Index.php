@@ -21,6 +21,11 @@ final class Index extends Component
     public int $userId;
 
     /**
+     * Indicates if the modal is opened.
+     */
+    public $isOpened = false;
+
+    /**
      * Renders the user's followers.
      */
     public function render(): View
@@ -29,7 +34,7 @@ final class Index extends Component
 
         return view('livewire.followers.index', [
             'user' => $user,
-            'followers' => $user->followers()->orderBy('created_at', 'desc')->simplePaginate(10),
+            'followers' => $this->isOpened ? $user->followers()->orderBy('created_at', 'desc')->simplePaginate(10) : collect(),
         ]);
     }
 }
