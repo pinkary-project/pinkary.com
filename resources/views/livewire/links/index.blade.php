@@ -76,6 +76,28 @@
             @endif
         </div>
 
+        @if (! $user->is(auth()->user()))
+            <div class="absolute right-0 top-6 flex">
+                @if ($user->followers()->where('follower_id', auth()->id())->exists())
+                    <button
+                        type="button"
+                        wire:click="unfollow({{ $user->id }})"
+                        class="flex items-center justify-center rounded-lg bg-slate-900 px-2 py-1 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    >
+                        Following
+                    </button>
+                @else
+                    <button
+                        type="button"
+                        wire:click="follow({{ $user->id }})"
+                        class="flex items-center justify-center rounded-lg bg-slate-900 px-2 py-1 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    >
+                        Follow
+                    </button>
+                @endif
+            </div>
+        @endif
+
         <div class="relative mx-auto h-24 w-24">
             <img
                 src="{{ $user->avatar_url }}"
@@ -85,7 +107,8 @@
             @if (auth()->user()?->is($user))
                 <button
                     class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
-                    href="{{ route('profile.edit') }}" wire:navigate
+                    href="{{ route('profile.edit') }}"
+                    wire:navigate
                     title="Upload Avatar"
                 >
                     <x-icons.camera class="size-5" />
@@ -97,42 +120,87 @@
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
 
             @if ($user->is_verified && $user->is_company_verified)
-                <x-icons.verified-company :color="$user->right_color" class="ml-1.5 size-6" />
+                <x-icons.verified-company
+                    :color="$user->right_color"
+                    class="ml-1.5 size-6"
+                />
             @elseif ($user->is_verified)
-                <x-icons.verified :color="$user->right_color" class="ml-1.5 size-6" />
+                <x-icons.verified
+                    :color="$user->right_color"
+                    class="ml-1.5 size-6"
+                />
             @endif
         </div>
 
-        <a class="text-slate-400" href="{{ route('profile.show', ['username' => $user->username]) }}" wire:navigate>
+        <a
+            class="text-slate-400"
+            href="{{ route('profile.show', ['username' => $user->username]) }}"
+            wire:navigate
+        >
             <p class="text-sm">{{ '@'.$user->username }}</p>
         </a>
 
         @if ($user->bio)
             <p class="text-sm">{{ $user->bio }}</p>
         @elseif (auth()->user()?->is($user))
-            <a href="{{ route('profile.edit') }}" class="text-sm text-slate-500 hover:underline" wire:navigate>Tell people about yourself</a>
+            <a
+                href="{{ route('profile.edit') }}"
+                class="text-sm text-slate-500 hover:underline"
+                wire:navigate
+                >Tell people about yourself</a
+            >
         @endif
+
+        <livewire:followers.index :userId="$user->id" />
+        <livewire:following.index :userId="$user->id" />
 
         <div class="mt-2 text-sm">
             <p class="text-slate-400">
-                <span class="cursor-help" title="{{ Number::format($questionsReceivedCount) }} {{ str('Answer')->plural($questionsReceivedCount) }}">
-                    {{ Number::abbreviate($questionsReceivedCount) }}
-                    {{ str('Answer')->plural($questionsReceivedCount) }}
-                </span>
+                @if ($user->followers_count > 0)
+                    <button x-on:click.prevent="$dispatch('open-modal', 'followers')">
+                        <span
+                            class="cursor-help"
+                            title="{{ Number::format($user->followers_count) }} {{ str('Follower')->plural($user->followers_count) }}"
+                        >
+                            {{ Number::abbreviate($user->followers_count) }}
+                            {{ str('Follower')->plural($user->followers_count) }}
+                        </span>
+                    </button>
 
-                @if ($user->views > 0)
                     <span class="mx-1">•</span>
-
-                    <span class="cursor-help" title="{{ Number::format($user->views) }} {{ str('view')->plural($user->views) }}">
-                        {{ Number::abbreviate($user->views) }} {{ str('view')->plural($user->views) }}
-                    </span>
                 @endif
 
-                <span class="mx-1">•</span>
+                @if ($user->following_count > 0)
+                    <button x-on:click.prevent="$dispatch('open-modal', 'following')">
+                        <span
+                            class="cursor-help"
+                            title="{{ Number::format($user->following_count) }} Following"
+                        >
+                            {{ Number::abbreviate($user->following_count) }}
+                            Following
+                        </span>
+                    </button>
 
-                <span>
-                    Joined
-                    {{ $user->created_at->timezone(session()->get('timezone', 'UTC'))->format('M Y') }}
+                    <span class="mx-1">•</span>
+                @endif
+
+                @if ($questionsReceivedCount > 0)
+                    <span
+                        class="cursor-help"
+                        title="{{ Number::format($questionsReceivedCount) }} {{ str('Answer')->plural($questionsReceivedCount) }}"
+                    >
+                        {{ Number::abbreviate($questionsReceivedCount) }}
+                        {{ str('Answer')->plural($questionsReceivedCount) }}
+                    </span>
+
+                    <span class="mx-1">•</span>
+                @endif
+
+                <span
+                    class="cursor-help"
+                    title="{{ Number::format($user->views) }} {{ str('view')->plural($user->views) }}"
+                >
+                    {{ Number::abbreviate($user->views) }} {{ str('view')->plural($user->views) }}
                 </span>
             </p>
         </div>
@@ -154,8 +222,8 @@
                 >
                     @foreach ($links as $link)
                         <li
-                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient group flex bg-gradient-to-r"
-                            :class="showSettingsForm && gradient + ' ' + link_shape"
+                            class="hover:darken-gradient group flex bg-gradient-to-r"
+                            :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
                         >
@@ -166,7 +234,10 @@
                                 <x-icons.sortable-handle class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
-                            <x-links.list-item :$user :$link />
+                            <x-links.list-item
+                                :$user
+                                :$link
+                            />
 
                             <div class="flex items-center justify-center">
                                 <div
@@ -199,7 +270,10 @@
                             class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r"
                             wire:click="click({{ $link->id }})"
                         >
-                            <x-links.list-item :$user :$link />
+                            <x-links.list-item
+                                :$user
+                                :$link
+                            />
                         </div>
                     @endforeach
                 </div>
@@ -218,16 +292,16 @@
                 <div class="flex gap-2">
                     <button
                         x-on:click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
-                        class="{{ $user->gradient }} {{ $user->link_shape }} hover:darken-gradient flex w-full basis-4/5 items-center justify-center bg-gradient-to-r px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
-                        :class="showSettingsForm && gradient + ' ' + link_shape"
-                        >
+                        class="hover:darken-gradient flex w-full basis-4/5 items-center justify-center bg-gradient-to-r px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
+                        :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
+                    >
                         <x-icons.plus class="mr-1.5 size-5" />
                         Add New Link
                     </button>
                     <button
-                    x-on:click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
-                    class="bg-{{ $user->right_color }} hover:darken-gradient {{ $user->link_shape }} flex w-full basis-1/5 items-center justify-center px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
-                    :class="showSettingsForm && 'bg-' + gradient.split(' ')[1].replace('to-', '') + ' ' + link_shape"
+                        x-on:click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
+                        class="hover:darken-gradient flex w-full basis-1/5 items-center justify-center px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
+                        :class="showSettingsForm ? 'bg-' + gradient.split(' ')[1].replace('to-', '') + ' ' + link_shape : 'bg-{{ $user->right_color }} {{ $user->link_shape }}'"
                     >
                         <x-icons.cog class="size-6" />
                     </button>

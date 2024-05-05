@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\IpUtils;
 
@@ -26,6 +27,7 @@ final class Index extends Component
     /**
      * Increment the clicks counter.
      */
+    #[Renderless]
     public function click(int $linkId): void
     {
         $ipAddress = type(request()->ip())->asString();
@@ -78,10 +80,56 @@ final class Index extends Component
         $link->delete();
 
         if (! $user->is_uploaded_avatar) {
-            dispatch(new UpdateUserAvatar($user));
+            UpdateUserAvatar::dispatch($user);
         }
 
         $this->dispatch('notification.created', message: 'Link deleted.');
+    }
+
+    public function follow(int $targetId): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $user = type(auth()->user())->as(User::class);
+
+        $target = User::findOrFail($targetId);
+
+        $this->authorize('follow', $target);
+
+        if ($target->followers()->where('follower_id', $user->id)->exists()) {
+            return;
+        }
+
+        $user->following()->attach($targetId);
+
+        $this->dispatch('user.followed');
+    }
+
+    public function unfollow(int $targetId): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $user = type(auth()->user())->as(User::class);
+
+        $target = User::findOrFail($targetId);
+
+        $this->authorize('unfollow', $target);
+
+        if ($target->followers()->where('follower_id', $user->id)->doesntExist()) {
+            return;
+        }
+
+        $user->following()->detach($targetId);
+
+        $this->dispatch('user.unfollowed');
     }
 
     /**
@@ -99,7 +147,11 @@ final class Index extends Component
      */
     public function render(): View
     {
-        $user = User::with(['links'])->findOrFail($this->userId);
+        $user = User::query()
+            ->with(['links'])
+            ->withCount('followers')
+            ->withCount('following')
+            ->findOrFail($this->userId);
         $sort = $user->links_sort;
 
         return view('livewire.links.index', [

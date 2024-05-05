@@ -73,6 +73,15 @@ it('caches using session id when no user', function () {
         ->toBe($models->pluck('id')->toArray());
 });
 
+it('does not increment models when is a bot', function () {
+    $models = Question::factory()->count(3)->create(['views' => 0]);
+
+    request()->server->set('HTTP_USER_AGENT', 'Storebot-Google');
+    request()->headers->set('User-Agent', 'Storebot-Google');
+
+    expect(IncrementViews::dispatchUsingSession($models))->toBeNull();
+});
+
 it('handles empty models', function () {
     $user = User::factory()->create();
     $this->actingAs($user);

@@ -5,7 +5,10 @@
                 <h2 class="text-lg font-medium text-slate-400">
                     {{ $user->is_verified ? __('Manage Verified Badge') : __('Get Verified') }}
                 </h2>
-                <x-icons.verified :color="$user->is_verified ? $user->right_color : 'gray'" class="size-6" />
+                <x-icons.verified
+                    :color="$user->is_verified ? $user->right_color : 'gray'"
+                    class="size-6"
+                />
             </div>
         </h2>
 
@@ -44,11 +47,17 @@
                 <div class="items flex"></div>
             @elseif ($user->is_verified)
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('sponsors') }}" target="_blank">
+                    <a
+                        href="{{ route('sponsors') }}"
+                        target="_blank"
+                    >
                         <x-primary-button>{{ __('Manage Sponsorship') }}</x-primary-button>
                     </a>
 
-                    <form method="post" action="{{ route('profile.connect.github.destroy') }}">
+                    <form
+                        method="post"
+                        action="{{ route('profile.connect.github.destroy') }}"
+                    >
                         @csrf
                         @method('delete')
 
@@ -64,11 +73,17 @@
                     </div>
                 @else
                     <div class="flex items-center gap-4">
-                        <a href="{{ route('sponsors') }}" target="_blank">
+                        <a
+                            href="{{ route('sponsors') }}"
+                            target="_blank"
+                        >
                             <x-primary-button>{{ __('Sponsor Pinkary') }}</x-primary-button>
                         </a>
 
-                        <form method="post" action="{{ route('profile.verified.update') }}">
+                        <form
+                            method="post"
+                            action="{{ route('profile.verified.update') }}"
+                        >
                             @csrf
 
                             <x-secondary-button type="submit">
@@ -76,7 +91,10 @@
                             </x-secondary-button>
                         </form>
 
-                        <form method="post" action="{{ route('profile.connect.github.destroy') }}">
+                        <form
+                            method="post"
+                            action="{{ route('profile.connect.github.destroy') }}"
+                        >
                             @csrf
                             @method('delete')
 
@@ -87,6 +105,9 @@
             @endif
         </div>
 
-        <x-input-error :messages="$errors->verified->get('github_username')" class="mt-2" />
+        <x-input-error
+            :messages="$errors->verified->get('github_username')"
+            class="mt-2"
+        />
     </div>
 </section>

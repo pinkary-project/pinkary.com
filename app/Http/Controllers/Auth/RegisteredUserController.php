@@ -38,6 +38,7 @@ final readonly class RegisteredUserController
             'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'terms' => ['required', 'accepted'],
             'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
         ]);
 
@@ -52,7 +53,7 @@ final readonly class RegisteredUserController
 
         Auth::login($user);
 
-        dispatch(new UpdateUserAvatar($user));
+        UpdateUserAvatar::dispatch($user);
 
         return redirect(route('profile.show', [
             'username' => $user->username,

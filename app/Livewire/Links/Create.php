@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Links;
 
-use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -30,13 +29,15 @@ final class Create extends Component
     {
         $user = type($request->user())->as(User::class);
 
-        if ($user->links()->count() >= 10 && ! $user->is_verified) {
+        $linksCount = $user->links()->count();
+
+        if ($linksCount >= 10 && ! $user->is_verified) {
             $this->addError('url', 'You can only have 10 links at a time.');
 
             return;
         }
 
-        if ($user->links()->count() >= 20 && $user->is_verified) {
+        if ($linksCount >= 20 && $user->is_verified) {
             $this->addError('url', 'You can only have 20 links at a time.');
 
             return;
@@ -52,10 +53,6 @@ final class Create extends Component
         ]);
 
         $user->links()->create($validated);
-
-        if (! $user->is_uploaded_avatar) {
-            dispatch(new UpdateUserAvatar($user));
-        }
 
         $this->description = '';
         $this->url = '';

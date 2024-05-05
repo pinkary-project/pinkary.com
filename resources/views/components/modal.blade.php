@@ -2,6 +2,7 @@
     'name',
     'show' => false,
     'maxWidth' => '2xl',
+    'showCloseButton' => true,
 ])
 
 @php
@@ -17,6 +18,7 @@
 <div
     x-data="{
         show: @js($show),
+        showCloseButton: @js($showCloseButton),
         focusables() {
             // All focusable element types...
             let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
@@ -48,7 +50,7 @@
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
+    class="fixed inset-0 z-50 overflow-y-auto bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
     style="display: {{ $show ? 'block' : 'none' }}"
 >
     <div
@@ -62,9 +64,8 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-slate-500 opacity-75"></div>
+        <div class="absolute inset-0 bg-slate-500 bg-opacity-25"></div>
     </div>
-
     <div
         x-show="show"
         class="{{ $maxWidth }} mb-6 transform overflow-hidden rounded-lg bg-slate-950 shadow-xl transition-all sm:mx-auto sm:w-full"
@@ -75,6 +76,14 @@
         x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
         x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
     >
+        <button
+            x-show="showCloseButton == true"
+            x-on:click="show = false"
+            class="absolute right-2 top-2 text-xl text-slate-500 focus:outline-none"
+        >
+            <x-icons.close />
+        </button>
+
         {{ $slot }}
     </div>
 </div>
