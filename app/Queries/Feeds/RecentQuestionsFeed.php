@@ -16,8 +16,7 @@ final readonly class RecentQuestionsFeed
      */
     public function builder(): Builder
     {
-        return Question::query()
-            ->where('answer', '!=', null)
+        return Question::where('answer', '!=', null)
             ->where('is_ignored', false)
             ->where('is_reported', false)
             ->orderByDesc('updated_at');

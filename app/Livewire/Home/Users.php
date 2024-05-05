@@ -7,7 +7,6 @@ namespace App\Livewire\Home;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -78,7 +77,7 @@ final class Users extends Component
      */
     private function famousUsers(Collection $except): Collection
     {
-        $famousUsers = Cache::remember('top-50-users', now()->endOfDay(), fn (): array => User::query()
+        $famousUsers = User::query()
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%');
@@ -88,11 +87,10 @@ final class Users extends Component
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
-            ->limit(50)->pluck('id')->toArray()
-        );
+            ->limit(50);
 
         return User::query()
-            ->whereIn('id', $famousUsers)
+            ->fromSub($famousUsers, 'top_users')
             ->inRandomOrder()
             ->limit(10 - $except->count())
             ->get();

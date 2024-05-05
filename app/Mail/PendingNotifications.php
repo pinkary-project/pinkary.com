@@ -46,7 +46,6 @@ final class PendingNotifications extends Mailable
             with: [
                 'date' => now()->format('Y-m-d'),
                 'user' => $this->user,
-                'pendingNotificationsCount' => $this->user->notifications()->count(),
             ],
         );
     }

@@ -10,10 +10,7 @@
                     <div class="w-px border-r border-dashed border-slate-700"></div>
                 </div>
 
-                <ul
-                    role="list"
-                    class="space-y-6 sm:space-y-12"
-                >
+                <ul role="list" class="space-y-6 sm:space-y-12">
                     @foreach ($releases as $version => $release)
                         <li class="relative flex">
                             <div class="relative mr-4 mt-3.5 hidden size-6 flex-none items-center justify-center sm:flex">

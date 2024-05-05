@@ -21,12 +21,7 @@
     }
 @endphp
 
-<div
-    class="relative"
-    x-data="{ open: false }"
-    x-on:click.outside="open = false"
-    @close.stop="open = false"
->
+<div class="relative" x-data="{ open: false }" x-on:click.outside="open = false" @close.stop="open = false">
     <div x-on:click="open = ! open">
         {{ $trigger }}
     </div>

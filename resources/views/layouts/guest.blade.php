@@ -3,10 +3,7 @@
     <head>
         @include('layouts.components.head')
     </head>
-    <body
-        class="bg-gray-950 bg-center bg-repeat font-sans text-gray-50 antialiased"
-        style="background-image: url({{ asset('/img/dots.svg') }})"
-    >
+    <body class="bg-gray-950 bg-center bg-repeat font-sans text-gray-50 antialiased" style="background-image: url({{ asset('/img/dots.svg') }})">
         <livewire:flash-messages.show />
 
         <div class="flex min-h-screen flex-col">
@@ -18,11 +15,7 @@
                 </div>
 
                 <div>
-                    <a
-                        href="{{ route('welcome') }}"
-                        wire:navigate
-                        class="mt-20 flex justify-center"
-                    >
+                    <a href="{{ route('welcome') }}" wire:navigate class="mt-20 flex justify-center">
                         <x-pinkary-logo class="z-10 w-48" />
                     </a>
 

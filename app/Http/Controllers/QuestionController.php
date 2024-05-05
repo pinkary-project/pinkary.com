@@ -22,7 +22,7 @@ final readonly class QuestionController
 
         IncrementViews::dispatchUsingSession($question);
 
-        abort_unless($question->to_id === $user->id, 404);
+        abort_unless($question->to->is($user), 404);
 
         return view('questions.show', [
             'question' => $question,

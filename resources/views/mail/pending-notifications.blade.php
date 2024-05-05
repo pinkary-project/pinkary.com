@@ -1,7 +1,7 @@
 <x-mail::message>
 # Hello, {{ $user->name }}!
 
-We've noticed you have {{ $pendingNotificationsCount }} {{ Str::plural('notification', $pendingNotificationsCount) }}. You can view notifications by clicking the button below.
+We've noticed you have {{ $user->unreadNotifications->count() }} {{ Str::plural('notification', $user->unreadNotifications->count()) }}. You can view notifications by clicking the button below.
 
 <x-mail::button :url="route('notifications.index')">
 View Notifications

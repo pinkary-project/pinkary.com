@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -123,40 +121,6 @@ test('email verification status is unchanged when the email address is unchanged
         ->assertRedirect('/profile');
 
     $this->assertNotNull($user->refresh()->email_verified_at);
-});
-
-test('email verification job sent & status reset when the email address is changed', function () {
-    Notification::fake();
-    $user = User::factory()->create();
-
-    $this->actingAs($user)
-        ->patch('/profile', [
-            'name' => $user->name,
-            'username' => 'valid_username',
-            'email' => 'new@email.address',
-            'prefers_anonymous_questions' => false,
-        ])
-        ->assertSessionHasNoErrors();
-
-    expect($user->email_verified_at)->toBeNull();
-
-    Notification::assertSentTo($user, VerifyEmail::class);
-});
-
-test('only updates avatar if email changes & avatar not been uploaded', function () {
-    Queue::fake();
-    $user = User::factory()->create();
-
-    $this->actingAs($user)
-        ->patch('/profile', [
-            'name' => $user->name,
-            'username' => 'valid_username',
-            'email' => $user->email,
-            'prefers_anonymous_questions' => false,
-        ])
-        ->assertSessionHasNoErrors();
-
-    Queue::assertNotPushed(UpdateUserAvatar::class);
 });
 
 test('password can be updated', function () {
@@ -310,7 +274,7 @@ test('user can upload an avatar', function () {
         ->and(session('flash-message'))->toBe('Avatar updated.');
 });
 
-test('user can delete custom avatar and update using Gravatar', function () {
+test('user can delete custom avatar', function () {
     Storage::fake('public');
 
     $user = User::factory()->create([
@@ -332,74 +296,5 @@ test('user can delete custom avatar and update using Gravatar', function () {
     expect($user->avatar)->not->toBeNull()
         ->and($user->avatar_updated_at)->not->toBeNull()
         ->and($user->is_uploaded_avatar)->toBeFalse()
-        ->and(session('flash-message'))->toBe('Updating avatar using Gravatar.');
-});
-
-test('user can delete custom avatar and update using GitHub', function () {
-    Storage::fake('public');
-
-    $user = User::factory()->create([
-        'avatar' => 'storage/avatars/avatar.jpg',
-        'is_uploaded_avatar' => true,
-        'github_username' => 'testuser',
-    ]);
-
-    Storage::disk('public')->put('avatars/avatar.jpg', '...');
-
-    $this->actingAs($user)
-        ->delete('/profile/avatar')
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
-
-    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
-
-    $user->refresh();
-
-    expect($user->avatar)->not->toBeNull()
-        ->and($user->avatar_updated_at)->not->toBeNull()
-        ->and($user->is_uploaded_avatar)->toBeFalse()
-        ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
-});
-
-test('user can re-fetch avatar from Gravatar', function () {
-    Storage::fake('public');
-
-    $user = User::factory()->create([
-        'avatar' => 'storage/avatars/avatar.jpg',
-        'is_uploaded_avatar' => false,
-    ]);
-
-    $this->actingAs($user)
-        ->delete('/profile/avatar')
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
-
-    $user->refresh();
-
-    expect($user->avatar)->not->toBeNull()
-        ->and($user->avatar_updated_at)->not->toBeNull()
-        ->and($user->is_uploaded_avatar)->toBeFalse()
-        ->and(session('flash-message'))->toBe('Updating avatar using Gravatar.');
-});
-
-test('user can re-fetch avatar from GitHub', function () {
-    Storage::fake('public');
-
-    $user = User::factory()->create([
-        'avatar' => 'storage/avatars/avatar.jpg',
-        'is_uploaded_avatar' => false,
-        'github_username' => 'testuser',
-    ]);
-
-    $this->actingAs($user)
-        ->delete('/profile/avatar')
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
-
-    $user->refresh();
-
-    expect($user->avatar)->not->toBeNull()
-        ->and($user->avatar_updated_at)->not->toBeNull()
-        ->and($user->is_uploaded_avatar)->toBeFalse()
-        ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
+        ->and(session('flash-message'))->toBe('Avatar deleted.');
 });

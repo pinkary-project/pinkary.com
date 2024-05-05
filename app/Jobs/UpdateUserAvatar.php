@@ -24,11 +24,8 @@ final class UpdateUserAvatar implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(
-        private readonly User $user,
-        private readonly ?string $file = null,
-        private readonly ?string $service = null
-    ) {
+    public function __construct(private User $user, private ?string $file = null)
+    {
         //
     }
 
@@ -39,23 +36,13 @@ final class UpdateUserAvatar implements ShouldQueue
     {
         $disk = Storage::disk('public');
 
-        if ($this->user->avatar && $disk->exists(str_replace('storage/', '', (string) $this->user->avatar))) {
-            $disk->delete(str_replace('storage/', '', (string) $this->user->avatar));
+        if ($this->user->avatar) {
+            if ($disk->exists(str_replace('storage/', '', $this->user->avatar))) {
+                $disk->delete(str_replace('storage/', '', $this->user->avatar));
+            }
         }
 
-        $file = $this->file ?? (new Avatar($this->user))->url(
-            $this->service ?? 'gravatar',
-        );
-
-        if ($file === asset('img/default-avatar.png')) {
-            $this->user->update([
-                'avatar' => $file,
-                'avatar_updated_at' => now(),
-                'is_uploaded_avatar' => false,
-            ]);
-
-            return;
-        }
+        $file = $this->file !== null ? $this->file : (new Avatar($this->user->email))->url();
 
         $contents = (string) file_get_contents($file);
 
@@ -64,7 +51,7 @@ final class UpdateUserAvatar implements ShouldQueue
         Storage::disk('public')->put($avatar, $contents, 'public');
 
         $this->resizer()->read($disk->path($avatar))
-            ->coverDown(200, 200)
+            ->resize(200, 200)
             ->save();
 
         $this->user->update([
@@ -83,7 +70,7 @@ final class UpdateUserAvatar implements ShouldQueue
     {
         $this->ensureFileIsDeleted();
 
-        type($this->user->fresh())->as(User::class)->update([
+        $this->user->update([
             'avatar' => null,
             'avatar_updated_at' => null,
             'is_uploaded_avatar' => false,

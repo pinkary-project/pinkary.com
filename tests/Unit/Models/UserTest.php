@@ -98,23 +98,3 @@ test('custom avatar url', function () {
     expect($user->avatar)->toBe('storage/avatars/123.png')
         ->and($user->avatar_url)->toBe(asset('storage/avatars/123.png'));
 });
-
-test('following', function () {
-    $user = User::factory()->create();
-    $target = User::factory()->create();
-
-    $user->following()->attach($target->id);
-
-    expect($user->following->count())->toBe(1)
-        ->and($user->following->first()->id)->toBe($target->id);
-});
-
-test('followers', function () {
-    $user = User::factory()->create();
-    $target = User::factory()->create();
-
-    $target->following()->attach($user->id);
-
-    expect($user->followers->count())->toBe(1)
-        ->and($user->followers->first()->id)->toBe($target->id);
-});

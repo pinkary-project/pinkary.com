@@ -6,7 +6,6 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
 
 final class DeleteNonEmailVerifiedUsersCommand extends Command
 {
@@ -31,15 +30,6 @@ final class DeleteNonEmailVerifiedUsersCommand extends Command
     {
         User::where('email_verified_at', null)
             ->where('updated_at', '<', now()->subDay())
-            ->whereDoesntHave('links', function (Builder $query): void {
-                $query->where('created_at', '<', now()->subDay());
-            })
-            ->whereDoesntHave('questionsSent', function (Builder $query): void {
-                $query->where('created_at', '<', now()->subDay());
-            })
-            ->whereDoesntHave('questionsReceived', function (Builder $query): void {
-                $query->where('created_at', '<', now()->subDay());
-            })
             ->get()
             ->each
             ->delete();

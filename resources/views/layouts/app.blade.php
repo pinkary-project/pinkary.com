@@ -3,16 +3,13 @@
     <head>
         @include('layouts.components.head')
     </head>
-    <body
-        class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased"
-        style="background-image: url({{ asset('/img/dots.svg') }})"
-    >
-        @persist('flash-messages')
-            <livewire:flash-messages.show />
-        @endpersist
+    <body class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased" style="background-image: url({{ asset('/img/dots.svg') }})">
+        <livewire:flash-messages.show />
+
         <div class="flex min-h-screen flex-col">
             <div class="ml-3 mr-3 flex-grow">
                 @include('layouts.navigation')
+
                 @if (isset($title))
                     <div class="mb-6 mt-20 flex flex-col items-center sm:mb-12">
                         <div class="w-full max-w-md px-2 sm:px-0">
@@ -28,10 +25,7 @@
                 </main>
             </div>
 
-            @persist('footer')
-                <x-back-to-top :offset="300" />
-                <x-footer />
-            @endpersist
+            <x-footer />
         </div>
         @livewireScriptConfig
 

@@ -42,7 +42,7 @@ final class Index extends Component
             ->questionsReceived()
             ->where('is_ignored', false)
             ->where('is_reported', false)
-            ->when($user->isNot($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
+            ->when(! $user->is($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
                 $query->whereNotNull('answer');
             })
             ->orderByDesc('pinned')
