@@ -232,7 +232,7 @@
                                 <button
                                     x-cloak
                                     x-data="shareProfile"
-                                    x-show="isVisible"
+                                    x-show="!isVisible"
                                     x-on:click="
                                         twitter({
                                             url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',

@@ -48,7 +48,7 @@
                         <button
                             x-cloak
                             x-data="shareProfile"
-                            x-show="isVisible"
+                            x-show="!isVisible"
                             x-on:click="
                                 twitter({
                                     url: '{{ route('profile.show', ['username' => $user->username]) }}',
