@@ -5,7 +5,7 @@
 
             <h1 class="font-mona text-2xl font-medium text-slate-200">Settings</h1>
 
-            <div x-data="{ selectedTab: 'profile-info' }" class="w-full">
+            <div x-data="{ selectedTab: window.location.hash ? window.location.hash.substring(1) : 'profile-info' }" class="w-full">
 
                 <div
                     @keydown.right.prevent="$focus.wrap().next()"
@@ -16,7 +16,7 @@
                 >
 
                     <button
-                        @click="selectedTab = 'profile-info'"
+                        @click="selectedTab = 'profile-info'; window.location.hash = '#profile-info';"
                         :aria-selected="selectedTab === 'profile-info'"
                         :tabindex="selectedTab === 'profile-info' ? '0' : '-1'"
                         :class="selectedTab === 'profile-info' ? 'text-pink-500 border-b-2 border-pink-500' : 'text-slate-300 hover:border-b-slate-300 hover:border-b-slate-800 hover:text-white'"
@@ -30,7 +30,7 @@
                     </button>
 
                     <button
-                        @click="selectedTab = 'update-password'"
+                        @click="selectedTab = 'update-password'; window.location.hash = '#update-password';"
                         :aria-selected="selectedTab === 'update-password'"
                         :tabindex="selectedTab === 'update-password' ? '0' : '-1'"
                         :class="selectedTab === 'update-password' ? 'text-pink-500 border-b-2 border-pink-500' : 'text-slate-300 hover:border-b-slate-300 hover:border-b-slate-800 hover:text-white'"
@@ -44,7 +44,7 @@
                     </button>
 
                     <button
-                        @click="selectedTab = 'get-verified'"
+                        @click="selectedTab = 'get-verified'; window.location.hash = '#get-verified';"
                         :aria-selected="selectedTab === 'get-verified'"
                         :tabindex="selectedTab === 'get-verified' ? '0' : '-1'"
                         :class="selectedTab === 'get-verified' ? 'text-pink-500 border-b-2 border-pink-500' : 'text-slate-300 hover:border-b-slate-300 hover:border-b-slate-800 hover:text-white'"
@@ -58,7 +58,7 @@
                     </button>
 
                     <button
-                        @click="selectedTab = 'delete-account'"
+                        @click="selectedTab = 'delete-account'; window.location.hash = '#delete-account';"
                         :aria-selected="selectedTab === 'delete-account'"
                         :tabindex="selectedTab === 'delete-account' ? '0' : '-1'"
                         :class="selectedTab === 'delete-account' ? 'text-pink-500 border-b-2 border-pink-500' : 'text-slate-300 hover:border-b-slate-300 hover:border-b-slate-800 hover:text-white'"

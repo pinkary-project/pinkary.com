@@ -173,7 +173,7 @@ test('password can be updated', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        ->assertRedirect('/profile#update-password');
 
     $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
 });
@@ -192,7 +192,7 @@ test('correct password must be provided to update password', function () {
 
     $response
         ->assertSessionHasErrorsIn('updatePassword', 'current_password')
-        ->assertRedirect('/profile');
+        ->assertRedirect('/profile#update-password');
 });
 
 test('user can delete their account', function () {
