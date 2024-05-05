@@ -24,7 +24,7 @@ final class Index extends Component
     /**
      * Indicates if the modal is opened.
      */
-    public $isOpened = false;
+    public bool $isOpened = false;
 
     /**
      * Renders the user's followers.
