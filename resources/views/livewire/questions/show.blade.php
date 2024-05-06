@@ -182,25 +182,64 @@
                     >
                         <x-icons.paper-airplane class="h-4 w-4" />
                     </button>
-                    <button
-                        x-cloak
+                    <span
                         x-data="copyUrl"
                         x-show="isVisible"
-                        x-on:click="
-                            copyToClipboard(
-                                '{{
-                                    route('questions.show', [
-                                        'username' => $question->to->username,
-                                        'question' => $question,
-                                    ])
-                                }}',
-                            )
-                        "
-                        type="button"
-                        class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        <x-icons.link class="size-4" />
-                    </button>
+                        <x-dropdown align="left"
+                                    width="48"
+                                    dropdown-classes="top-[-3.4rem] shadow-none"
+                                    content-classes="flex flex-col space-y-2"
+                        >
+                            <x-slot name="trigger">
+                                <button
+                                    x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
+                                                    'text-slate-500 hover:text-slate-400': !open }"
+                                    class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
+                                >
+                                    <x-icons.paper-airplane class="h-4 w-4" />
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <button
+                                    x-cloak
+                                    x-data="copyUrl"
+                                    x-show="isVisible"
+                                    x-on:click="
+                                        copyToClipboard(
+                                            '{{
+                                                route('questions.show', [
+                                                    'username' => $question->to->username,
+                                                    'question' => $question,
+                                                ])
+                                            }}',
+                                        )
+                                    "
+                                    type="button"
+                                    class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                >
+                                    <x-icons.link class="size-4" />
+                                </button>
+                                <button
+                                    x-cloak
+                                    x-data="shareProfile"
+                                    x-show="!isVisible"
+                                    x-on:click="
+                                        twitter({
+                                            url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
+                                            question: '{{ $question->content }}',
+                                            message: 'See response on Pinkary',
+                                        })
+                                    "
+                                    type="button"
+                                    class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                >
+                                    <x-icons.twitter-x class="size-4" />
+                                </button>
+                            </x-slot>
+                        </x-dropdown>
+                    </span>
                 </div>
             </div>
         </div>
