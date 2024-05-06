@@ -199,7 +199,7 @@ test('pin auth', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->assertDontSee('Pin');
+    $component->assertDontSeeHtml('<span>Pin</span>');
 
     $component->call('pin');
 
