@@ -40,7 +40,7 @@ final class Index extends Component
             'followers' => $this->isOpened ? $user->followers()
                 ->when(auth()->user()?->isNot($user), function (Builder|BelongsToMany $query): void {
                     $query->withExists([
-                        'following as is_following' => function (Builder $query): void {
+                        'following as is_follower' => function (Builder $query): void {
                             $query->where('user_id', auth()->id());
                         },
                     ]);

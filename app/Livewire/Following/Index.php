@@ -37,7 +37,7 @@ final class Index extends Component
         return view('livewire.following.index', [
             'user' => $user,
             'following' => $this->isOpened ? $user->following()->withExists([
-                'following as is_following' => function (Builder $query): void {
+                'following as is_follower' => function (Builder $query): void {
                     $query->where('user_id', auth()->id());
                 },
             ])->orderBy('created_at', 'desc')->simplePaginate(10) : collect(),
