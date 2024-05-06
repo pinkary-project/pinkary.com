@@ -64,3 +64,20 @@ test('render with follows you badge', function () {
 
     $component->assertSeeInOrder($orderedText);
 });
+
+test('do not see follows you badge if user is view his profile', function () {
+    $user = User::factory()->create();
+    $followers = User::factory(10)->create();
+
+    $user->followers()->sync($followers->pluck('id'));
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->set('isOpened', true);
+
+    $component->refresh();
+
+    $component->assertDontSee('Follows you');
+});
