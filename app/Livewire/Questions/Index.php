@@ -9,6 +9,7 @@ use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -42,7 +43,7 @@ final class Index extends Component
             ->questionsReceived()
             ->where('is_ignored', false)
             ->where('is_reported', false)
-            ->when($user->isNot($request->user()), function (Builder $query, bool $_): void { // @phpstan-ignore-line
+            ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
                 $query->whereNotNull('answer');
             })
             ->orderByDesc('pinned')

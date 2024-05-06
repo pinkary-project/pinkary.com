@@ -166,7 +166,7 @@ return [
 
         Recorders\Servers::class => [
             'server_name' => env('PULSE_SERVER_NAME', gethostname()),
-            'directories' => explode(':', (string) env('PULSE_SERVER_DIRECTORIES', '/')), // @phpstan-ignore-line
+            'directories' => explode(':', type(env('PULSE_SERVER_DIRECTORIES', '/'))->asString()),
         ],
 
         Recorders\SlowJobs::class => [
