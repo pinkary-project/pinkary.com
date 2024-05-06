@@ -48,7 +48,7 @@
                                     </div>
                                     <p class="truncate text-left text-slate-500 transition-colors group-hover:text-slate-400">
                                         {{ '@'.$followerUser->username }}
-                                        @if (auth()->user()->isNot($user) && $followerUser->is_following)
+                                        @if (auth()->user()?->isNot($user) && $followerUser->is_following)
                                             <span class="inline-block ml-1 px-2 py-1 leading-none bg-slate-900 text-xs text-slate-50 rounded-full shadow-md">
                                                 Follows you
                                             </span>
