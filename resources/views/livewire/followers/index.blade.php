@@ -49,9 +49,9 @@
                                     <p class="truncate text-left text-slate-500 transition-colors group-hover:text-slate-400">
                                         {{ '@'.$follower->username }}
                                         @if (auth()->user()?->isNot($user) && $follower->is_follower)
-                                            <span class="inline-block ml-1 px-2 py-1 leading-none bg-slate-900 text-xs text-slate-50 rounded-full shadow-md">
+                                            <x-badge class="ml-1">
                                                 Follows you
-                                            </span>
+                                            </x-badge>
                                         @endif
                                     </p>
                                 </div>
