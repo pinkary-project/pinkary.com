@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'github_usernames' => collect(explode(',', (string) env('SPONSORS_GITHUB_USERNAMES', '')))->map( // @phpstan-ignore-line
+    'github_usernames' => collect(explode(',', type(env('SPONSORS_GITHUB_USERNAMES', ''))->asString()))->map(
         fn (string $username): string => trim($username)
     )->filter()->values()->all(),
 
-    'github_company_usernames' => collect(explode(',', (string) env('SPONSORS_GITHUB_COMPANY_USERNAMES', '')))->map( // @phpstan-ignore-line
+    'github_company_usernames' => collect(explode(',', type(env('SPONSORS_GITHUB_COMPANY_USERNAMES', ''))->asString()))->map(
         fn (string $username): string => trim($username)
     )->filter()->values()->all(),
 ];
