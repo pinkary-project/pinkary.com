@@ -38,7 +38,7 @@ final class Index extends Component
         return view('livewire.followers.index', [
             'user' => $user,
             'followers' => $this->isOpened ? $user->followers()
-                ->when(auth()->user()?->isNot($user), function (BelongsToMany $query): void {
+                ->when(auth()->user()?->isNot($user), function (Builder|BelongsToMany $query): void {
                     $query->withExists([
                         'following as is_following' => function (Builder $query): void {
                             $query->where('user_id', auth()->id());
