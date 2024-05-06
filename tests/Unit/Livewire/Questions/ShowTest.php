@@ -185,7 +185,7 @@ test('pin', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->assertSee('Pin');
+    $component->assertSeeHtml('<span>Pin</span>');
 
     $component->call('pin');
 
@@ -219,7 +219,7 @@ test('pin no answer', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->assertDontSee('Pin');
+    $component->assertDontSeeHtml('<span>Pin</span>');
 
     $component->call('pin');
 
@@ -238,7 +238,7 @@ test('unpin', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->assertSee('Unpin');
+    $component->assertSeeHtml('<span>Unpin</span>');
 
     $component->call('unpin');
 
@@ -254,7 +254,7 @@ test('unpin auth', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->assertDontSee('Unpin');
+    $component->assertDontSeeHtml('<span>Unpin</span>');
 
     $component->call('unpin');
 
@@ -274,7 +274,7 @@ test('unpin visitor', function () {
         'questionId' => $question->id,
     ]);
 
-    $component->assertDontSee('Unpin');
+    $component->assertDontSeeHtml('<span>Unpin</span>');
 
     $component->call('unpin');
 
