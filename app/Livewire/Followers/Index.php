@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Followers;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -35,7 +36,11 @@ final class Index extends Component
 
         return view('livewire.followers.index', [
             'user' => $user,
-            'followers' => $this->isOpened ? $user->followers()->orderBy('created_at', 'desc')->simplePaginate(10) : collect(),
+            'followers' => $this->isOpened ? $user->followers()->withExists([
+                'following as is_following' => function (Builder $query): void {
+                    $query->where('user_id', auth()->id());
+                },
+            ])->orderBy('created_at', 'desc')->simplePaginate(10) : collect(),
         ]);
     }
 }
