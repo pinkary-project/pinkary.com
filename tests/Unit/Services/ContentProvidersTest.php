@@ -182,7 +182,7 @@ test('mention', function (string $content) {
 })->with([
     ['content' => 'Hi @nunomaduro'],
     ['content' => '@nunomaduro hi'],
-    ['content' => '@w31r4_-NAME'],
+    ['content' => '@w31r4_'],
     ['content' => '@nunomaduro.'],
     ['content' => '@nunomaduro,'],
     ['content' => '@nunomaduro!'],
