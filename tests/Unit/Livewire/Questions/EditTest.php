@@ -119,6 +119,19 @@ test('can edit a question that has an answer', function () {
         ->assertDispatched('question.updated');
 });
 
+test('edited questions display raw answers in the form', function () {
+    $this->question->update([
+        'answer' => "Hello @{$this->question->from->username} - How are you doing?",
+        'answered_at' => now(),
+    ]);
+
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->assertSeeHtml("Hello @{$this->question->from->username} - How are you doing?")
+        ->assertSet('answer', "Hello @{$this->question->from->username} - How are you doing?");
+});
+
 test('likes are reset when an answer is updated', function () {
     $this->question->update([
         'answer' => 'foo',
