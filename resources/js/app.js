@@ -40,4 +40,8 @@ Alpine.data('shareProfile', shareProfile)
 import { copyUrl } from './copy-url.js'
 Alpine.data('copyUrl', copyUrl)
 
+import { questionCreate, mentionSuggestionItem } from './question-create.js'
+Alpine.data('questionCreate', questionCreate)
+Alpine.data('mentionSuggestionItem', mentionSuggestionItem)
+
 Livewire.start()

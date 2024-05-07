@@ -6,6 +6,7 @@ namespace App\Livewire\Questions;
 
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -31,6 +32,11 @@ final class Create extends Component
     public bool $anonymously = true;
 
     /**
+     * The component's mention suggestions search query.
+     */
+    public string $mentionSuggestionsSearch = '';
+
+    /**
      * Mount the component.
      */
     public function mount(Request $request): void
@@ -49,6 +55,19 @@ final class Create extends Component
     public function refresh(): void
     {
         //
+    }
+
+    /**
+     * Search for a user by username.
+     *
+     * @return Collection<int, User>
+     */
+    public function mentionSuggestions(): Collection
+    {
+        return User::query()
+            ->where('username', 'like', "%{$this->mentionSuggestionsSearch}%")
+            ->limit(10)
+            ->get();
     }
 
     /**

@@ -70,6 +70,11 @@
 />
 
 <meta
+    name="color-scheme"
+    content="dark"
+/>
+
+<meta
     content="Pinkary"
     property="og:site_name"
 />
