@@ -118,3 +118,32 @@ test('followers', function () {
     expect($user->followers->count())->toBe(1)
         ->and($user->followers->first()->id)->toBe($target->id);
 });
+
+test('scopeWithSocialLinks', function () {
+    // User with social link
+    $userWithLink = User::factory()->create(
+        [
+            'name' => 'Nuno Maduro',
+            'is_verified' => true,
+            'username' => 'nunomaduro',
+            'email_verified_at' => now(),
+
+        ]
+    );
+    $userWithLink->links()->create([
+        'url' => 'https://twitter.com/test',
+        'description' => 'twitter',
+    ]);
+
+    // User without social link
+    $userWithoutLink = User::factory()->create();
+
+    $usersWithSocialLinks = User::withSocialLinks()->get();
+
+    // Assert the user with social link is returned
+    expect($usersWithSocialLinks)->toHaveCount(1);
+    expect($usersWithSocialLinks->first()->id)->toBe($userWithLink->id);
+
+    // Assert the user without social link is not returned
+    expect($usersWithSocialLinks->pluck('id'))->not->toContain($userWithoutLink->id);
+});

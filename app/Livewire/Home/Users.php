@@ -78,17 +78,17 @@ final class Users extends Component
      */
     private function famousUsers(Collection $except): Collection
     {
-        $famousUsers = Cache::remember('top-50-users', now()->endOfDay(), fn (): array => User::query()
-            ->whereHas('links', function (Builder $query): void {
-                $query->where('url', 'like', '%twitter.com%')
-                    ->orWhere('url', 'like', '%github.com%');
-            })
-            ->whereNotIn('id', $except->pluck('id'))
-            ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
-                $query->whereNotNull('answer');
-            }])
-            ->orderBy('answered_questions_count', 'desc')
-            ->limit(50)->pluck('id')->toArray()
+        $famousUsers = Cache::remember(
+            'top-50-users',
+            now()->endOfDay(),
+            fn (): array => User::query()
+                ->withSocialLinks()
+                ->whereNotIn('id', $except->pluck('id'))
+                ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
+                    $query->whereNotNull('answer');
+                }])
+                ->orderBy('answered_questions_count', 'desc')
+                ->limit(50)->pluck('id')->toArray()
         );
 
         return User::query()
@@ -106,10 +106,7 @@ final class Users extends Component
     private function verifiedUsers(int $limit = 2): Collection
     {
         return User::query()
-            ->whereHas('links', function (Builder $query): void {
-                $query->where('url', 'like', '%twitter.com%')
-                    ->orWhere('url', 'like', '%github.com%');
-            })
+            ->withSocialLinks()
             ->where(function (Builder $query): void {
                 $query->where('is_verified', true)
                     ->orWhereIn('username', array_merge(

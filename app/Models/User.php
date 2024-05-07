@@ -9,6 +9,7 @@ use App\Enums\UserMailPreference;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -258,6 +259,20 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         }
 
         return $isCompanyVerified;
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<User>  $query
+     */
+    public function scopeWithSocialLinks(Builder $query): void
+    {
+        $query->whereHas('links', function (Builder $query): void {
+            $query->where(function (Builder $q): void {
+                $q->where('url', 'like', '%twitter.com%')
+                    ->orWhere('url', 'like', '%github.com%')
+                    ->orWhere('url', 'like', '%x.com%');
+            });
+        });
     }
 
     /**
