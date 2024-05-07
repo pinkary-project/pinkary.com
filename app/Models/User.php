@@ -81,6 +81,14 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Determine if the user can access the admin given panel.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasVerifiedEmail() && $this->email === 'enunomaduro@gmail.com';
+    }
+
+    /**
      * Get the user's links.
      *
      * @return HasMany<Link>
