@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\HasMentionSuggestions;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,6 +16,8 @@ use Livewire\Component;
 
 final class Create extends Component
 {
+    use HasMentionSuggestions;
+
     /**
      * The component's user ID.
      */
@@ -30,11 +33,6 @@ final class Create extends Component
      * The component's anonymously state.
      */
     public bool $anonymously = true;
-
-    /**
-     * The component's mention suggestions search query.
-     */
-    public string $mentionSuggestionsSearch = '';
 
     /**
      * Mount the component.
@@ -55,19 +53,6 @@ final class Create extends Component
     public function refresh(): void
     {
         //
-    }
-
-    /**
-     * Search for a user by username.
-     *
-     * @return Collection<int, User>
-     */
-    public function mentionSuggestions(): Collection
-    {
-        return User::query()
-            ->where('username', 'like', "%{$this->mentionSuggestionsSearch}%")
-            ->limit(10)
-            ->get();
     }
 
     /**

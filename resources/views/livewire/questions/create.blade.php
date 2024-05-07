@@ -2,7 +2,7 @@
     class="mb-12 pt-4"
     id="questions-create"
     x-data="questionCreate({
-        mentionSuggestionsSearch: $wire.entangle('mentionSuggestionsSearch').live,
+        mentionSuggestionsSearch: $wire.entangle('mentionSuggestionsQuery').live,
     })"
 >
     <form wire:submit="store">
@@ -24,17 +24,18 @@
                     x-ref="mentionSuggestionsList"
                     x-show="showMentionSuggestions"
                     x-cloak
-                    wire:ignore.self
                 >
                     @forelse ($this->mentionSuggestions() as $i => $user)
-                        <li wire:key="mention-suggestion-{{ $user->id }}">
+                        <li
+                            x-data="mentionSuggestionItem({
+                                index: @js($i),
+                                username: @js($user->username),
+                            })"
+                            wire:key="mention-suggestion-{{ $user->id }}"
+                        >
                             <button
                                 type="button"
                                 class="w-full"
-                                x-data="mentionSuggestionItem({
-                                    index: @js($i),
-                                    username: @js($user->username),
-                                })"
                                 x-on:click="onClick"
                                 x-on:mouseover="onMouseover"
                                 x-bind:class="{

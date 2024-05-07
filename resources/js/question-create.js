@@ -46,6 +46,7 @@ const questionCreate = ({ mentionSuggestionsSearch }) => ({
             return;
         }
 
+        this.mentionSuggestions = [];
         this.mentionSuggestionsSearch = fullMentionSearch.slice(1);
         this.highlightedMentionSuggestionIndex = 0;
     },
@@ -64,6 +65,8 @@ const questionCreate = ({ mentionSuggestionsSearch }) => ({
         if (! ['Escape', 'ArrowDown', 'ArrowUp', 'Enter'].includes($event.key)) {
             return;
         }
+
+        console.log(this.mentionSuggestions.length);
 
         $event.preventDefault();
 
@@ -120,7 +123,7 @@ const mentionSuggestionItem = ({ index, username }) => ({
 
     onMouseover() {
         this.highlightedMentionSuggestionIndex = index;
-    }
+    },
 })
 
 export { questionCreate, mentionSuggestionItem }
