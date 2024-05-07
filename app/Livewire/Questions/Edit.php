@@ -111,7 +111,6 @@ final class Edit extends Component
      */
     public function render(Request $request): View
     {
-
         return view('livewire.questions.edit', [
             'question' => Question::findOrFail($this->questionId),
             'user' => $request->user(),
