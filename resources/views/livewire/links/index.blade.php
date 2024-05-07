@@ -5,20 +5,6 @@
 }" @endif>
     <div class="relative bg-gradient-to-r p-5 text-center text-white">
         <div class="absolute left-0 top-6 flex">
-            <button
-                x-cloak
-                x-data="shareProfile"
-                x-show="isVisible"
-                x-on:click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
-                type="button"
-                class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
-            >
-                <x-icons.share class="size-5" />
-            </button>
-            <span
-                x-data="copyUrl"
-                x-show="isVisible"
-            >
                 <x-dropdown-link-profile>
                     <x-slot name="trigger">
                         <button
@@ -32,7 +18,15 @@
 
                     <x-slot name="content">
                         <button
-                            x-cloak
+                            x-data="shareProfile"
+                            x-show="isVisible"
+                            x-on:click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
+                            type="button"
+                            class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        >
+                            <x-icons.link class="size-5" />
+                        </button>
+                        <button
                             x-data="copyUrl"
                             x-show="isVisible"
                             x-on:click="
@@ -46,9 +40,7 @@
                             <x-icons.link class="size-5" />
                         </button>
                         <button
-                            x-cloak
                             x-data="shareProfile"
-                            x-show="!isVisible"
                             x-on:click="
                                 twitter({
                                     url: '{{ route('profile.show', ['username' => $user->username]) }}',
@@ -62,7 +54,6 @@
                         </button>
                     </x-slot>
                 </x-dropdown-link-profile>
-            </span>
             @if (auth()->user()?->is($user))
                 <button
                     class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
