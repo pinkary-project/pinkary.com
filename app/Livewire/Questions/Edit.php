@@ -32,9 +32,8 @@ final class Edit extends Component
     {
         $this->questionId = $questionId;
         $question = Question::findOrFail($questionId);
-        if ($question->answer) {
-            $this->answer = $question->raw_answer ?? '';
-        }
+        $rawAnswer = $question->getRawOriginal('answer');
+        $this->answer = is_string($rawAnswer) ? $rawAnswer : '';
     }
 
     /**
