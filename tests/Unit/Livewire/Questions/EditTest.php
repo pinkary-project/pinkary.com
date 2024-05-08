@@ -103,23 +103,54 @@ test('cannot update with blank characters', function () {
     ]);
 });
 
-test('cannot answer a question that has already been answered', function () {
+test('can edit a question that has an answer', function () {
     $this->question->update([
-        'answer' => 'Hello World',
+        'answer' => 'foo',
         'answered_at' => now(),
     ]);
 
-    $component = Livewire::test(Edit::class, [
+    Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
+    ])
+        ->set('answer', 'Hello World')
+        ->call('update')
+        ->assertDispatched('notification.created', message: 'Answer updated.')
+        ->assertDispatched('close-modal', "question.edit.answer.{$this->question->id}")
+        ->assertDispatched('question.updated');
+});
+
+test('edited questions display raw answers in the form', function () {
+    $this->question->update([
+        'answer' => "Hello @{$this->question->from->username} - How are you doing?",
+        'answered_at' => now(),
     ]);
 
-    $component->set('answer', 'Hello World');
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->assertSeeHtml("Hello @{$this->question->from->username} - How are you doing?")
+        ->assertSet('answer', "Hello @{$this->question->from->username} - How are you doing?");
+});
 
-    $component->call('update');
+test('likes are reset when an answer is updated', function () {
+    $this->question->update([
+        'answer' => 'foo',
+        'answered_at' => now(),
+    ]);
 
-    $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
+    $this->question->likes()->create([
+        'user_id' => $this->question->to->id,
+    ]);
 
-    $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
+    expect($this->question->likes()->count())->toBe(1);
+
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->set('answer', 'Hello World')
+        ->call('update');
+
+    expect($this->question->likes()->count())->toBe(0);
 });
 
 test('cannot answer a question that has been reported or ignored', function () {
