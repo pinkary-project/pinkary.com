@@ -61,6 +61,12 @@ final class Edit extends Component
             return;
         }
 
+        if ($question->answered_at !== null && $question->answered_at->diffInHours(now()) > 24) {
+            $this->dispatch('notification.created', message: 'Answer cannot be edited after 24 hours.');
+
+            return;
+        }
+
         $this->authorize('update', $question);
 
         $question->update([
