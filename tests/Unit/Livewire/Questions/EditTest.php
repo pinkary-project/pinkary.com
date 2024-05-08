@@ -153,6 +153,20 @@ test('likes are reset when an answer is updated', function () {
     expect($this->question->likes()->count())->toBe(0);
 });
 
+test('cannot edit an answer after 24 hours', function () {
+    $this->question->update([
+        'answer' => 'foo',
+        'answered_at' => now()->subHours(25),
+    ]);
+
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->set('answer', 'Hello World')
+        ->call('update')
+        ->assertDispatched('notification.created', message: 'Answer cannot be edited after 24 hours.');
+});
+
 test('cannot answer a question that has been reported or ignored', function () {
     $this->question->update([
         'is_reported' => true,
