@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "270e58ba18be9f9a87d12b1a916bd365",
+    "content-hash": "4bd9db4b710378a264cdb699490e0ec8",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1149,26 +1149,26 @@
         },
         {
             "name": "doctrine/sql-formatter",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/sql-formatter.git",
-                "reference": "3447381095d32a171fe3a58323749f44dbb5ac7d"
+                "reference": "d1ac84aef745c69ea034929eb6d65a6908b675cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/sql-formatter/zipball/3447381095d32a171fe3a58323749f44dbb5ac7d",
-                "reference": "3447381095d32a171fe3a58323749f44dbb5ac7d",
+                "url": "https://api.github.com/repos/doctrine/sql-formatter/zipball/d1ac84aef745c69ea034929eb6d65a6908b675cc",
+                "reference": "d1ac84aef745c69ea034929eb6d65a6908b675cc",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0"
+                "php": "^8.1"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^9.0",
-                "phpstan/phpstan": "^1.0",
-                "phpunit/phpunit": "^8.5 || ^9.6",
-                "vimeo/psalm": "^4.11"
+                "doctrine/coding-standard": "^12",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5",
+                "vimeo/psalm": "^5.24"
             },
             "bin": [
                 "bin/sql-formatter"
@@ -1198,9 +1198,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/sql-formatter/issues",
-                "source": "https://github.com/doctrine/sql-formatter/tree/1.3.0"
+                "source": "https://github.com/doctrine/sql-formatter/tree/1.4.0"
             },
-            "time": "2024-05-06T21:49:18+00:00"
+            "time": "2024-05-08T08:12:09+00:00"
         },
         {
             "name": "dragonmantank/cron-expression",
@@ -2774,16 +2774,16 @@
         },
         {
             "name": "laravel/pennant",
-            "version": "v1.7.0",
+            "version": "v1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pennant.git",
-                "reference": "401e9051a3a600296c81c3733b52949c60750f02"
+                "reference": "251d9f28e00ebf39f59e25eada71a2641d8ae40d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pennant/zipball/401e9051a3a600296c81c3733b52949c60750f02",
-                "reference": "401e9051a3a600296c81c3733b52949c60750f02",
+                "url": "https://api.github.com/repos/laravel/pennant/zipball/251d9f28e00ebf39f59e25eada71a2641d8ae40d",
+                "reference": "251d9f28e00ebf39f59e25eada71a2641d8ae40d",
                 "shasum": ""
             },
             "require": {
@@ -2794,6 +2794,7 @@
                 "illuminate/queue": "^10.0|^11.0",
                 "illuminate/support": "^10.0|^11.0",
                 "php": "^8.1",
+                "symfony/console": "^6.0|^7.0",
                 "symfony/finder": "^6.0|^7.0"
             },
             "require-dev": {
@@ -2846,7 +2847,7 @@
                 "issues": "https://github.com/laravel/pennant/issues",
                 "source": "https://github.com/laravel/pennant"
             },
-            "time": "2024-03-04T22:18:21+00:00"
+            "time": "2024-05-06T17:31:26+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -2908,20 +2909,20 @@
         },
         {
             "name": "laravel/pulse",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pulse.git",
-                "reference": "37fc7512d01de7e59b0ae9634c638849d98c3fca"
+                "reference": "16746346a6cb2cd12d9e93db206aaf2b9d792b21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pulse/zipball/37fc7512d01de7e59b0ae9634c638849d98c3fca",
-                "reference": "37fc7512d01de7e59b0ae9634c638849d98c3fca",
+                "url": "https://api.github.com/repos/laravel/pulse/zipball/16746346a6cb2cd12d9e93db206aaf2b9d792b21",
+                "reference": "16746346a6cb2cd12d9e93db206aaf2b9d792b21",
                 "shasum": ""
             },
             "require": {
-                "doctrine/sql-formatter": "^1.1",
+                "doctrine/sql-formatter": "^1.2",
                 "guzzlehttp/promises": "^1.0|^2.0",
                 "illuminate/auth": "^10.48.4|^11.0.8",
                 "illuminate/cache": "^10.48.4|^11.0.8",
@@ -2991,7 +2992,7 @@
                 "issues": "https://github.com/laravel/pulse/issues",
                 "source": "https://github.com/laravel/pulse"
             },
-            "time": "2024-04-30T14:43:29+00:00"
+            "time": "2024-05-06T17:11:35+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -3055,16 +3056,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v5.13.2",
+            "version": "v5.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "278d4615f68205722b3a129135774b3764b28a90"
+                "reference": "c7b0193a3753a29aff8ce80aa2f511917e6ed68a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/278d4615f68205722b3a129135774b3764b28a90",
-                "reference": "278d4615f68205722b3a129135774b3764b28a90",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/c7b0193a3753a29aff8ce80aa2f511917e6ed68a",
+                "reference": "c7b0193a3753a29aff8ce80aa2f511917e6ed68a",
                 "shasum": ""
             },
             "require": {
@@ -3123,7 +3124,7 @@
                 "issues": "https://github.com/laravel/socialite/issues",
                 "source": "https://github.com/laravel/socialite"
             },
-            "time": "2024-04-26T13:48:16+00:00"
+            "time": "2024-05-03T20:31:38+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -10295,16 +10296,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "b611d0d4444d5d8c7700a503d15e26b224077f22"
+                "reference": "81693823620bcb1472aef627c9e7b84c2d797caa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/b611d0d4444d5d8c7700a503d15e26b224077f22",
-                "reference": "b611d0d4444d5d8c7700a503d15e26b224077f22",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/81693823620bcb1472aef627c9e7b84c2d797caa",
+                "reference": "81693823620bcb1472aef627c9e7b84c2d797caa",
                 "shasum": ""
             },
             "require": {
-                "brianium/paratest": "^7.4.3",
+                "brianium/paratest": "^7.4.4",
                 "nunomaduro/collision": "^8.1.1",
                 "nunomaduro/termwind": "^2.0.1",
                 "pestphp/pest-plugin": "^3.0.0",
@@ -10319,7 +10320,7 @@
             "require-dev": {
                 "pestphp/pest-dev-tools": "^3.0.0",
                 "pestphp/pest-plugin-type-coverage": "^3.0.0",
-                "symfony/process": "^7.0.4"
+                "symfony/process": "^7.0.7"
             },
             "bin": [
                 "bin/pest"
@@ -10394,7 +10395,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-04-30T19:48:49+00:00"
+            "time": "2024-05-08T00:24:30+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -12822,8 +12823,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "laravel/framework": 20,
-        "laravel/pulse": 10
+        "laravel/framework": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
