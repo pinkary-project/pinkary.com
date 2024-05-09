@@ -40,4 +40,7 @@ Alpine.data('shareProfile', shareProfile)
 import { copyUrl } from './copy-url.js'
 Alpine.data('copyUrl', copyUrl)
 
+import { showMore } from './show-more.js'
+Alpine.data('showMore', showMore)
+
 Livewire.start()
