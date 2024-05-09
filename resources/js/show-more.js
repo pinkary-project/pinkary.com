@@ -1,6 +1,6 @@
 const showMore = () => ({
 
-    maxHeight: 350,
+    maxHeight: 200,
 
     initialHeight: 0,
 
