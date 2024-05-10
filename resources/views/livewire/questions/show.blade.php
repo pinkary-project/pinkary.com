@@ -131,6 +131,9 @@
                         @else
                             wire:click="like()"
                         @endif
+                        x-data="particlesEffect"
+                        x-on:click="executeParticlesEffect($event)"
+
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)

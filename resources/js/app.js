@@ -40,4 +40,7 @@ Alpine.data('shareProfile', shareProfile)
 import { copyUrl } from './copy-url.js'
 Alpine.data('copyUrl', copyUrl)
 
+import { particlesEffect } from './particles-effect.js'
+Alpine.data('particlesEffect', particlesEffect)
+
 Livewire.start()
