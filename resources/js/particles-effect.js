@@ -13,7 +13,7 @@ const particlesEffect = () => ({
 
         // Animation
         animationMinDurationInMs: 500,
-        maxAnimationDurationInMs: 1000,
+        animationMaxDurationInMs: 1000,
         particleAnimationDelayInMs: 200,
         explosionEffectRangeInPx: 60,
     },
@@ -57,7 +57,7 @@ const particlesEffect = () => ({
                         opacity: 0
                     }
                 ], {
-                    duration: Math.random() * this.config.maxAnimationDurationInMs + this.config.animationMinDurationInMs,
+                    duration: Math.random() * this.config.animationMaxDurationInMs + this.config.animationMinDurationInMs,
                     easing: 'cubic-bezier(0, .9, .57, 1)',
                     delay: Math.random() * this.config.particleAnimationDelayInMs
                 })
