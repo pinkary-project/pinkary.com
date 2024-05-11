@@ -4,7 +4,7 @@ const particlesEffect = () => ({
         // Color
         colorPalette: Math.random() * 30 + 330, // Pink
         colorSaturationInPercent: 70,
-        luminosityPercentageColorInPercent: 60,
+        colorLuminosityInPercent: 60,
 
         // Particles
         numberOfParticles: 20,
@@ -39,7 +39,7 @@ const particlesEffect = () => ({
                 particle.style.background = `hsl(
                     ${this.config.colorPalette},
                     ${this.config.colorSaturationInPercent}%,
-                    ${this.config.luminosityPercentageColorInPercent}%
+                    ${this.config.colorLuminosityInPercent}%
                 )`
 
                 const particleAnimation = particle.animate([
