@@ -14,7 +14,7 @@ const particlesEffect = () => ({
         // Animation
         animationMinDurationInMs: 500,
         animationMaxDurationInMs: 1000,
-        particleAnimationDelayInMs: 200,
+        animationParticleDelayInMs: 200,
         explosionEffectRangeInPx: 60,
     },
 
@@ -59,7 +59,7 @@ const particlesEffect = () => ({
                 ], {
                     duration: Math.random() * this.config.animationMaxDurationInMs + this.config.animationMinDurationInMs,
                     easing: 'cubic-bezier(0, .9, .57, 1)',
-                    delay: Math.random() * this.config.particleAnimationDelayInMs
+                    delay: Math.random() * this.config.animationParticleDelayInMs
                 })
 
                 particleAnimation.onfinish = () => {
