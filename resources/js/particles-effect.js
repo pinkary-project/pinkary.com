@@ -7,7 +7,7 @@ const particlesEffect = () => ({
         colorLuminosityInPercent: 60,
 
         // Particles
-        numberOfParticles: 20,
+        particleCount: 20,
         minParticleSizeInPx: 2,
         maxParticleSizeInPx: 10,
 
@@ -22,7 +22,7 @@ const particlesEffect = () => ({
         // Only when button click is with mouse/finger
         if (e.clientX !== 0 || e.clientY !== 0) {
 
-            for (let iParticle = 0; iParticle < this.config.numberOfParticles; iParticle++) {
+            for (let iParticle = 0; iParticle < this.config.particleCount; iParticle++) {
                 // Coordinates of the mouse/finger
                 let x = e.clientX,
                     y = e.clientY
