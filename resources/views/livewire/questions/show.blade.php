@@ -164,13 +164,13 @@
                     @endif
                 </div>
                 <div class="flex items-center text-slate-500">
-                    @php($timestamp = $question->answered_updated_at ?: $question->answered_at)
+                    @php($timestamp = $question->answer_updated_at ?: $question->answered_at)
                     <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                         datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                     >
-                        {{  $$question->answered_updated_at ? 'Edited:' : null }}
+                        {{  $question->answer_updated_at ? 'Edited:' : null }}
                         {{
                             $timestamp->timezone(session()->get('timezone', 'UTC'))
                                 ->diffForHumans()
