@@ -213,10 +213,7 @@
         </div>
     </div>
 
-    <div
-        class="py-5"
-        x-data="{ showLinksEditForm: false }"
-    >
+    <div class="py-5">
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
                 <p class="mx-2 text-center text-slate-500">No links yet. Add your first link!</p>
@@ -261,7 +258,7 @@
 
                                 <button
                                     wire:click="$dispatchTo('links.edit', 'link.edit', { link: {{ $link->id }} })"
-                                    x-on:click="showLinksEditForm = true"
+                                    x-on:click.prevent="$dispatch('open-modal', 'link-edit-modal')"
                                     type="button"
                                     class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
@@ -288,19 +285,14 @@
                     @endforeach
                 </ul>
 
-                <div
-                    x-show="showLinksEditForm"
-                    x-transition:enter="transition duration-300 ease-out"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition duration-300 ease-in"
-                    x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0"
-                    class="mt-4"
-                    x-cloak
+                <x-modal
+                    name="link-edit-modal"
+                    maxWidth="2xl"
                 >
-                    <livewire:links.edit />
-                </div>
+                    <div class="p-10">
+                        <livewire:links.edit />
+                    </div>
+                </x-modal>
             @else
                 <div class="space-y-3">
                     @foreach ($links as $link)

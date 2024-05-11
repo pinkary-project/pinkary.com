@@ -23,7 +23,7 @@
                 {{ __('Save') }}
             </x-primary-colorless-button>
             <button
-                x-on:click="showLinksEditForm = false"
+                x-on:click.prevent="$dispatch('close-modal', 'link-edit-modal')"
                 type="button"
                 class="text-slate-600 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
