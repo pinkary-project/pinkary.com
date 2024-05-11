@@ -8,7 +8,7 @@ const particlesEffect = () => ({
 
         // Particles
         particleCount: 20,
-        minParticleSizeInPx: 2,
+        particleMinSizeInPx: 2,
         maxParticleSizeInPx: 10,
 
         // Animation
@@ -31,7 +31,7 @@ const particlesEffect = () => ({
                 document.body.appendChild(particle)
 
                 // Calculate a random size
-                const size = Math.floor(Math.random() * this.config.maxParticleSizeInPx + this.config.minParticleSizeInPx)
+                const size = Math.floor(Math.random() * this.config.maxParticleSizeInPx + this.config.particleMinSizeInPx)
                 particle.style.width = `${size}px`
                 particle.style.height = `${size}px`
 
