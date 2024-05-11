@@ -20,14 +20,4 @@ return new class extends Migration
 
         DB::statement('UPDATE questions SET answer_updated_at = updated_at WHERE answered_at < updated_at');
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('questions', function (Blueprint $table): void {
-            $table->dropColumn('answer_updated_at');
-        });
-    }
 };
