@@ -23,6 +23,7 @@ test('to array', function () {
         'pinned',
         'is_ignored',
         'views',
+        'answer_updated_at',
     ]);
 });
 
