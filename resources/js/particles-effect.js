@@ -3,7 +3,7 @@ const particlesEffect = () => ({
     config: {
         // Color
         colorPalette: Math.random() * 30 + 330, // Pink
-        percentageColorSaturationInPercent: 70,
+        colorSaturationInPercent: 70,
         luminosityPercentageColorInPercent: 60,
 
         // Particles
@@ -38,7 +38,7 @@ const particlesEffect = () => ({
                 // Random color within the configured color palette
                 particle.style.background = `hsl(
                     ${this.config.colorPalette},
-                    ${this.config.percentageColorSaturationInPercent}%,
+                    ${this.config.colorSaturationInPercent}%,
                     ${this.config.luminosityPercentageColorInPercent}%
                 )`
 
