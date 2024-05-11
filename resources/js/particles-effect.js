@@ -15,7 +15,7 @@ const particlesEffect = () => ({
         animationMinDurationInMs: 500,
         animationMaxDurationInMs: 1000,
         animationParticleDelayInMs: 200,
-        explosionEffectRangeInPx: 60,
+        animationExplosionEffectRangeInPx: 60,
     },
 
     executeParticlesEffect(e) {
@@ -51,8 +51,8 @@ const particlesEffect = () => ({
                     // Final position
                     {
                         transform: `translate(
-                            ${x + (Math.random() - 0.5) * 2 * this.config.explosionEffectRangeInPx}px,
-                            ${y + (Math.random() - 0.5) * 2 * this.config.explosionEffectRangeInPx}px
+                            ${x + (Math.random() - 0.5) * 2 * this.config.animationExplosionEffectRangeInPx}px,
+                            ${y + (Math.random() - 0.5) * 2 * this.config.animationExplosionEffectRangeInPx}px
                         )`,
                         opacity: 0
                     }
