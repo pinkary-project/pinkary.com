@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "46583b88df5e03d92f660bfd09364836",
+    "content-hash": "1a9a0375ddd95ee2a40907b1a4127a4a",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2435,16 +2435,16 @@
         },
         {
             "name": "intervention/image",
-            "version": "3.6.3",
+            "version": "3.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "2dbfb53bf8909257e710cf6091d10a9ca7500742"
+                "reference": "193324ec88bc5ad4039e57ce9b926ae28dfde813"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/2dbfb53bf8909257e710cf6091d10a9ca7500742",
-                "reference": "2dbfb53bf8909257e710cf6091d10a9ca7500742",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/193324ec88bc5ad4039e57ce9b926ae28dfde813",
+                "reference": "193324ec88bc5ad4039e57ce9b926ae28dfde813",
                 "shasum": ""
             },
             "require": {
@@ -2491,7 +2491,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image/issues",
-                "source": "https://github.com/Intervention/image/tree/3.6.3"
+                "source": "https://github.com/Intervention/image/tree/3.6.4"
             },
             "funding": [
                 {
@@ -2503,7 +2503,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-02T09:03:18+00:00"
+            "time": "2024-05-08T13:53:15+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",

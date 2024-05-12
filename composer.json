@@ -4,7 +4,7 @@
     "require": {
         "php": "^8.3",
         "filament/filament": "^3.2.76",
-        "intervention/image": "^3.6.3",
+        "intervention/image": "^3.6.4",
         "laravel/framework": "^11.7.0",
         "laravel/pennant": "^1.7.1",
         "laravel/pulse": "^1.1.0",
