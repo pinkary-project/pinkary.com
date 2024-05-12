@@ -67,6 +67,12 @@ final class Edit extends Component
             return;
         }
 
+        if ($question->answer_updated_at !== null) {
+            $this->dispatch('notification.created', message: 'Answer cannot be edited more than once.');
+
+            return;
+        }
+
         $this->authorize('update', $question);
 
         $data['answer'] = $this->answer;
