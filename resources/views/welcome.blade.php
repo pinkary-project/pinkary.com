@@ -3,6 +3,15 @@
         <div class="absolute -top-48 -z-10 size-[400px] -rotate-45 rounded-full bg-gradient-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl lg:size-[500px]"></div>
     </div>
     <nav class="fixed top-0 z-20 flex w-full justify-end gap-2 border-b border-slate-200/10 bg-slate-950/20 p-4 shadow-2xl backdrop-blur-md">
+        <a
+            href="{{ route('home.feed') }}"
+            wire:navigate
+        >
+            <x-primary-colorless-button class="flex items-center justify-center gap-2">
+                <x-icons.home class="h-4 w-4" />
+                <span class="sr-only sm:not-sr-only">Feed</span>
+            </x-primary-colorless-button>
+        </a>
         @auth
             <a
                 href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
@@ -11,15 +20,6 @@
                 <x-primary-button>Your Profile</x-primary-button>
             </a>
         @else
-            <a
-                href="{{ route('home.feed') }}"
-                wire:navigate
-            >
-                <x-primary-colorless-button class="flex items-center justify-center gap-2">
-                    <x-icons.home class="h-4 w-4" />
-                    <span class="sr-only sm:not-sr-only">Feed</span>
-                </x-primary-colorless-button>
-            </a>
             <a
                 href="{{ route('login') }}"
                 wire:navigate
