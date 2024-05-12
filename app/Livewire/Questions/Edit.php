@@ -41,7 +41,7 @@ final class Edit extends Component
      */
     public function update(Request $request): void
     {
-        $this->validate([
+        $validated = $this->validate([
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
 
@@ -69,23 +69,21 @@ final class Edit extends Component
 
         $this->authorize('update', $question);
 
-        $data['answer'] = $this->answer;
-
         if ($originalAnswer === null) {
-            $data['answered_at'] = now();
+            $validated['answered_at'] = now();
         } else {
-            $data['answer_updated_at'] = now();
+            $validated['answer_updated_at'] = now();
         }
 
-        $question->update($data);
+        $question->update($validated);
 
         if ($originalAnswer !== null) {
             $question->likes()->delete();
+
             $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
-            $this->dispatch('notification.created', message: 'Answer updated.');
-        } else {
-            $this->dispatch('notification.created', message: 'Question answered.');
         }
+
+        $this->dispatch('notification.created', message: $originalAnswer === null ? 'Question answered.' : 'Answer updated.');
         $this->dispatch('question.updated');
     }
 
