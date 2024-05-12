@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('users can logout', function () {
+it('logs out and redirect to the root path', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post('/logout');
+    $this->be($user);
+
+    // First, navigate to a page that requires authentication to test the redirect after logout.
+    $this->get(route('profile.edit'))->assertOk();
+    $this->post(route('logout'))->assertRedirect(route('welcome'));
 
     $this->assertGuest();
-
-    $response->assertRedirect('/');
 });
 
 test('users can only logout when authenticated', function () {
