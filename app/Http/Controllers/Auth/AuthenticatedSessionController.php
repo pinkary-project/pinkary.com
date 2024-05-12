@@ -47,6 +47,6 @@ final readonly class AuthenticatedSessionController
 
         session()->regenerateToken();
 
-        return redirect('/');
+        return redirect(route('welcome'));
     }
 }
