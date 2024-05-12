@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Livewire\Questions\Edit;
+use App\Livewire\Questions\Show;
 use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
@@ -117,6 +118,15 @@ test('can edit a question that has an answer', function () {
         ->assertDispatched('notification.created', message: 'Answer updated.')
         ->assertDispatched('close-modal', "question.edit.answer.{$this->question->id}")
         ->assertDispatched('question.updated');
+
+    expect($this->question->fresh()->answer)->toBe('Hello World');
+    expect($this->question->fresh()->answer_updated_at)->not->toBeNull();
+
+    Livewire::test(Show::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->assertSee('Hello World')
+        ->assertSee('Edited');
 });
 
 test('edited questions display raw answers in the form', function () {

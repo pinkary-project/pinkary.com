@@ -69,10 +69,15 @@ final class Edit extends Component
 
         $this->authorize('update', $question);
 
-        $question->update([
-            'answer' => $this->answer,
-            'answered_at' => $question->answered_at ?: now(),
-        ]);
+        $data['answer'] = $this->answer;
+
+        if ($originalAnswer === null) {
+            $data['answered_at'] = now();
+        } else {
+            $data['answer_updated_at'] = now();
+        }
+
+        $question->update($data);
 
         if ($originalAnswer !== null) {
             $question->likes()->delete();
