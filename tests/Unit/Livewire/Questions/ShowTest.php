@@ -322,3 +322,18 @@ test('pinnable', function () {
 
     $component->assertSee('Pinned');
 });
+
+test('does not show edit if already edited once', function () {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'answer_updated_at' => now(),
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertDontSeeHtml('<span>Edit</span>');
+});
