@@ -93,7 +93,9 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
-                            @if (! $question->is_ignored && $question->answered_at->diffInHours() < 24 && auth()->user()->can('update', $question))
+                            @if (! $question->is_ignored && $question->answered_at->diffInHours() < 24 && auth()->user()->can('update', $question)
+                                && $question->answer_updated_at === null
+                            )
                                 <x-dropdown-button
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
                                     class="flex items-center gap-1.5"
