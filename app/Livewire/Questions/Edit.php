@@ -61,7 +61,7 @@ final class Edit extends Component
             return;
         }
 
-        if ($question->answered_at !== null && $question->answered_at->diffInHours(now()) > 24) {
+        if ($question->answer_created_at !== null && $question->answer_created_at->diffInHours(now()) > 24) {
             $this->dispatch('notification.created', message: 'Answer cannot be edited after 24 hours.');
 
             return;
@@ -70,7 +70,7 @@ final class Edit extends Component
         $this->authorize('update', $question);
 
         if ($originalAnswer === null) {
-            $validated['answered_at'] = now();
+            $validated['answer_created_at'] = now();
         } else {
             $validated['answer_updated_at'] = now();
         }
