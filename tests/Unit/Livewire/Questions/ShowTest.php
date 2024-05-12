@@ -212,7 +212,7 @@ test('pin no answer', function () {
     $question = Question::factory()->create([
         'to_id' => $user->id,
         'answer' => null,
-        'answered_at' => null,
+        'answer_created_at' => null,
     ]);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
