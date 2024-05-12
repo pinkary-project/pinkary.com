@@ -1,4 +1,6 @@
-<section>
+<section x-data="{
+    avatar: null,
+}">
     <header>
         <h2 class="text-lg font-medium text-slate-400">
             {{ __('Profile Photo') }}
@@ -12,8 +14,8 @@
         <div class="flex items-center justify-center">
             <figure class="h-20 w-20 flex-shrink-0">
                 <img
-                    src="{{ auth()->user()->avatar_url }}"
                     alt="{{ auth()->user()->name }}"
+                    :src="avatar ? URL.createObjectURL(avatar) : '{{ auth()->user()->avatar_url }}'"
                     class="inline-block h-full w-full rounded-full object-cover"
                 />
             </figure>
@@ -53,6 +55,7 @@
                 accept="image/*"
                 id="avatar"
                 name="avatar"
+                x-on:change="avatar = $event.target.files[0]"
                 class="mt-4 block w-full border text-sm file:mr-4 file:border-0 file:bg-pink-200 file:px-4 file:py-2 file:text-xs file:font-semibold file:tracking-widest file:text-pink-700 file:transition-colors hover:file:bg-pink-100 focus:outline-none focus:ring-0"
             />
             <x-input-error
