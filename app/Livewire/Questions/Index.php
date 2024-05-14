@@ -41,6 +41,8 @@ final class Index extends Component
 
         $questions = $user
             ->questionsReceived()
+            ->with(['to', 'from', 'likes'])
+            ->withCount('likes')
             ->where('is_ignored', false)
             ->where('is_reported', false)
             ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
