@@ -89,12 +89,27 @@
             </div>
         @endif
 
-        <div class="relative mx-auto h-24 w-24">
+        <div class="relative mx-auto h-24 w-24" x-data="{ showAvatar: false }">
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
-                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
+                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24 cursor-pointer"
+                x-on:click="showAvatar = true"
             />
+
+            <div
+                x-show="showAvatar"
+                x-on:click="showAvatar = false"
+                class="fixed inset-0 flex items-center justify-center bg-slate-900 bg-opacity-75 z-50"
+            >
+                <img
+                    src="{{ $user->avatar_url }}"
+                    alt="{{ $user->username }}"
+                    class="rounded-lg size-48 md:size-80 sm:size-64"
+                />
+            </div>
+
+
             @if (auth()->user()?->is($user))
                 <button
                     class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
