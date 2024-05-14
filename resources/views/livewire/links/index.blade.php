@@ -93,8 +93,8 @@
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
-                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24"
-                x-on:click.prevent="showAvatar = true"
+                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24 cursor-pointer"
+                x-on:click="showAvatar = true"
             />
 
             <div
@@ -105,7 +105,7 @@
                 <img
                     src="{{ $user->avatar_url }}"
                     alt="{{ $user->username }}"
-                    class="rounded-lg size-48"
+                    class="rounded-lg size-48 md:size-80 sm:size-64"
                 />
             </div>
 
