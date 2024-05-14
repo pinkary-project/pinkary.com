@@ -1,10 +1,11 @@
 <section class="mt-4 space-y-10">
     @foreach ($questions as $question)
         <livewire:questions.show
+            :question="$question"
             :questionId="$question->id"
-            :key="'question-' . $question->id"
             :inIndex="true"
             :pinnable="$pinnable"
+            :key="'question-' . $question->id"
         />
     @endforeach
 

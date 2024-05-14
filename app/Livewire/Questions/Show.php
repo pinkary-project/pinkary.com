@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -30,6 +31,25 @@ final class Show extends Component
      */
     #[Locked]
     public bool $pinnable = false;
+
+    protected Question $question;
+
+    /**
+     * Mount the component.
+     */
+    public function mount(?Question $question = null): void
+    {
+        $this->question = $question;
+    }
+
+    /**
+     * Get the question.
+     */
+    #[Computed()]
+    public function getQuestion(): Question
+    {
+        return $this->question ?? Question::findOrFail($this->questionId);
+    }
 
     /**
      * Refresh the component.
@@ -58,7 +78,7 @@ final class Show extends Component
      */
     public function redirectToProfile(): void
     {
-        $question = Question::findOrFail($this->questionId);
+        $question = $this->getQuestion;
 
         $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
     }
@@ -82,7 +102,7 @@ final class Show extends Component
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = $this->getQuestion;
 
         $this->authorize('ignore', $question);
 
@@ -102,7 +122,7 @@ final class Show extends Component
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = $this->getQuestion;
 
         $question->likes()->firstOrCreate([
             'user_id' => auth()->id(),
@@ -122,7 +142,7 @@ final class Show extends Component
 
         $user = type(auth()->user())->as(User::class);
 
-        $question = Question::findOrFail($this->questionId);
+        $question = $this->getQuestion;
 
         $this->authorize('pin', $question);
 
@@ -143,7 +163,7 @@ final class Show extends Component
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = $this->getQuestion;
 
         $this->authorize('update', $question);
 
@@ -163,7 +183,7 @@ final class Show extends Component
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
+        $question = $this->getQuestion;
 
         if ($like = $question->likes()->where('user_id', auth()->id())->first()) {
             $this->authorize('delete', $like);
@@ -177,10 +197,7 @@ final class Show extends Component
      */
     public function render(): View
     {
-        $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes'])
-            ->withCount('likes')
-            ->firstOrFail();
+        $question = $this->getQuestion;
 
         return view('livewire.questions.show', [
             'user' => $question->to,
