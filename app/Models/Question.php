@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string $content
  * @property bool $anonymously
  * @property string|null $answer
- * @property Carbon|null $answered_at
+ * @property Carbon|null $answer_created_at
  * @property Carbon|null $answer_updated_at
  * @property bool $is_reported
  * @property bool $is_ignored
@@ -84,7 +84,7 @@ final class Question extends Model implements Viewable
         return [
             'is_reported' => 'boolean',
             'anonymously' => 'boolean',
-            'answered_at' => 'datetime',
+            'answer_created_at' => 'datetime',
             'answer_updated_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',

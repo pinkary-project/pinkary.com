@@ -45,7 +45,7 @@ test('only renders questions with answers if user is not auth user', function ()
         'from_id' => $userA->id,
         'to_id' => $userB->id,
         'answer' => null,
-        'answered_at' => null,
+        'answer_created_at' => null,
     ]);
 
     $component->dispatch('question.created');
@@ -54,7 +54,7 @@ test('only renders questions with answers if user is not auth user', function ()
 
     $question->update([
         'answer' => 'Hello World',
-        'answered_at' => now(),
+        'answer_created_at' => now(),
     ]);
 
     $component->dispatch('question.updated');
@@ -151,7 +151,7 @@ test('pinned question is displayed at the top', function () {
         'to_id' => $user->id,
     ]);
 
-    $otherQuestions = Question::factory()->count(10)->create(['to_id' => $user->id, 'answered_at' => now()]);
+    $otherQuestions = Question::factory()->count(10)->create(['to_id' => $user->id, 'answer_created_at' => now()]);
 
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,

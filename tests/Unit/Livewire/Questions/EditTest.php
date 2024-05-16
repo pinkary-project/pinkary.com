@@ -11,7 +11,7 @@ use Livewire\Livewire;
 beforeEach(function () {
     $this->question = Question::factory()->create([
         'answer' => null,
-        'answered_at' => null,
+        'answer_created_at' => null,
     ]);
 
     $this->actingAs($this->question->to);
@@ -107,7 +107,7 @@ test('cannot update with blank characters', function () {
 test('can edit a question that has an answer', function () {
     $this->question->update([
         'answer' => 'foo',
-        'answered_at' => now(),
+        'answer_created_at' => now(),
     ]);
 
     Livewire::test(Edit::class, [
@@ -132,7 +132,7 @@ test('can edit a question that has an answer', function () {
 test('edited questions display raw answers in the form', function () {
     $this->question->update([
         'answer' => "Hello @{$this->question->from->username} - How are you doing?",
-        'answered_at' => now(),
+        'answer_created_at' => now(),
     ]);
 
     Livewire::test(Edit::class, [
@@ -145,7 +145,7 @@ test('edited questions display raw answers in the form', function () {
 test('likes are reset when an answer is updated', function () {
     $this->question->update([
         'answer' => 'foo',
-        'answered_at' => now(),
+        'answer_created_at' => now(),
     ]);
 
     $this->question->likes()->create([
@@ -166,7 +166,7 @@ test('likes are reset when an answer is updated', function () {
 test('cannot edit an answer after 24 hours', function () {
     $this->question->update([
         'answer' => 'foo',
-        'answered_at' => now()->subHours(25),
+        'answer_created_at' => now()->subHours(25),
     ]);
 
     Livewire::test(Edit::class, [

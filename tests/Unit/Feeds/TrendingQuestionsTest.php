@@ -16,7 +16,7 @@ it('render questions with right conditions', function () {
         'answer' => 'By modifying the likes in the database :-)',
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'answered_at' => now()->subDays(7),
+        'answer_created_at' => now()->subDays(7),
     ]);
 
     Like::factory()->create([
@@ -35,7 +35,7 @@ it('do not render questions without likes', function () {
     Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'answered_at' => now()->subDays(12),
+        'answer_created_at' => now()->subDays(12),
     ]);
 
     $builder = (new TrendingQuestionsFeed())->builder();
@@ -49,7 +49,7 @@ it('do not render questions older than 7 days', function () {
     $question = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'answered_at' => now()->subDays(8),
+        'answer_created_at' => now()->subDays(8),
     ]);
 
     Like::factory()->create([

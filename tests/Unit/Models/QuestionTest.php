@@ -15,7 +15,7 @@ test('to array', function () {
         'to_id',
         'content',
         'answer',
-        'answered_at',
+        'answer_created_at',
         'anonymously',
         'is_reported',
         'created_at',

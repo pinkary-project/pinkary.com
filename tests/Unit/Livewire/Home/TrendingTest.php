@@ -16,7 +16,7 @@ test('renders trending questions', function () {
     $question = Question::factory()->create([
         'content' => $questionContent,
         'answer' => 'This is the answer',
-        'answered_at' => now()->subDays(7),
+        'answer_created_at' => now()->subDays(7),
         'from_id' => $user->id,
         'to_id' => $user->id,
     ]);

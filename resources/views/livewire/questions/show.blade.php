@@ -93,7 +93,7 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
-                            @if (! $question->is_ignored && $question->answered_at->diffInHours() < 24 && auth()->user()->can('update', $question))
+                            @if (! $question->is_ignored && $question->answer_created_at->diffInHours() < 24 && auth()->user()->can('update', $question))
                                 <x-dropdown-button
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
                                     class="flex items-center gap-1.5"
@@ -164,7 +164,7 @@
                     @endif
                 </div>
                 <div class="flex items-center text-slate-500">
-                    @php($timestamp = $question->answer_updated_at ?: $question->answered_at)
+                    @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
                     <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
