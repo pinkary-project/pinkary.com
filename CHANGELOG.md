@@ -1,9 +1,10 @@
-## Version 1.50.1
+## Version 1.16.0
 > 16 May, 2024
 
+- Users may now expand profile photos by clicking on them.
 - Internal improvements and bug fixes.
 
-## Version 1.50.0
+## Version 1.15.0
 > 4 May, 2024
 
 - Internal improvements and bug fixes.
