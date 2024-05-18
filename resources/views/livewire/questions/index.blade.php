@@ -1,7 +1,7 @@
 <section class="mt-4 space-y-10">
     @foreach ($questions as $question)
         <livewire:questions.show
-            :question="$question"
+            :questionFromParent="$question"
             :questionId="$question->id"
             :inIndex="true"
             :pinnable="$pinnable"

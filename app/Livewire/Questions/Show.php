@@ -32,23 +32,23 @@ final class Show extends Component
     #[Locked]
     public bool $pinnable = false;
 
-    protected Question $question;
+    private Question $questionFromParent;
 
     /**
      * Mount the component.
      */
-    public function mount(?Question $question = null): void
+    public function mount(?Question $questionFromParent = null): void
     {
-        $this->question = $question;
+        $this->questionFromParent = $questionFromParent;
     }
 
     /**
      * Get the question.
      */
     #[Computed()]
-    public function getQuestion(): Question
+    public function question(): Question
     {
-        return $this->question ?? Question::findOrFail($this->questionId);
+        return $this->questionFromParent ?? Question::findOrFail($this->questionId);
     }
 
     /**
@@ -78,7 +78,7 @@ final class Show extends Component
      */
     public function redirectToProfile(): void
     {
-        $question = $this->getQuestion;
+        $question = $this->question;
 
         $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
     }
@@ -102,7 +102,7 @@ final class Show extends Component
             return;
         }
 
-        $question = $this->getQuestion;
+        $question = $this->question;
 
         $this->authorize('ignore', $question);
 
@@ -122,7 +122,7 @@ final class Show extends Component
             return;
         }
 
-        $question = $this->getQuestion;
+        $question = $this->question;
 
         $question->likes()->firstOrCreate([
             'user_id' => auth()->id(),
@@ -142,7 +142,7 @@ final class Show extends Component
 
         $user = type(auth()->user())->as(User::class);
 
-        $question = $this->getQuestion;
+        $question = $this->question;
 
         $this->authorize('pin', $question);
 
@@ -163,7 +163,7 @@ final class Show extends Component
             return;
         }
 
-        $question = $this->getQuestion;
+        $question = $this->question;
 
         $this->authorize('update', $question);
 
@@ -183,7 +183,7 @@ final class Show extends Component
             return;
         }
 
-        $question = $this->getQuestion;
+        $question = $this->question;
 
         if ($like = $question->likes()->where('user_id', auth()->id())->first()) {
             $this->authorize('delete', $like);
@@ -197,7 +197,7 @@ final class Show extends Component
      */
     public function render(): View
     {
-        $question = $this->getQuestion;
+        $question = $this->question;
 
         return view('livewire.questions.show', [
             'user' => $question->to,
