@@ -68,6 +68,19 @@ test('email must be valid', function () {
         ->assertSessionHasErrors(['email' => 'The email field must be a valid email address.']);
 });
 
+test('email provider must be authorized', function () {
+    $response = $this->from('/register')->post('/register', [
+        'name' => 'Tomás López',
+        'username' => 'tomloprod',
+        'email' => 'tomloprod@0-mail.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    $response->assertRedirect('/register')
+        ->assertSessionHasErrors(['email' => 'The email belongs to an unauthorized email provider.']);
+});
+
 test('password must be confirmed', function () {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',

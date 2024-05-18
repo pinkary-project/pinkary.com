@@ -55,6 +55,26 @@ test('profile information can be updated', function () {
     $this->assertFalse($user->prefers_anonymous_questions);
 });
 
+test('email provider must be authorized', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Tomás López',
+            'username' => 'tomloprod',
+            'email' => 'tomloprod@0-mail.com',
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response
+        ->assertStatus(302)
+        ->assertSessionHasErrors([
+            'email' => 'The email belongs to an unauthorized email provider.',
+        ]);
+});
+
 test('username can be updated to uppercase', function () {
     $user = User::factory()->create([
         'username' => 'testuser',

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Auth;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use App\Rules\Recaptcha;
+use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -36,7 +37,7 @@ final readonly class RegisteredUserController
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, new UnauthorizedEmailProviders()],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
             'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
