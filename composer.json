@@ -28,7 +28,7 @@
         "pestphp/pest": "^3.0.0",
         "pestphp/pest-plugin-laravel": "^3.0.0",
         "pestphp/pest-plugin-type-coverage": "^3.0.0",
-        "rector/rector": "^1.0.5"
+        "rector/rector": "^1.1.0"
     },
     "autoload": {
         "psr-4": {
