@@ -1,3 +1,8 @@
+## Version 1.17.0
+> 18 May, 2024
+
+- Improves fight against spam and bots.
+
 ## Version 1.16.0
 > 16 May, 2024
 
