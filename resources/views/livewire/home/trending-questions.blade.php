@@ -8,10 +8,11 @@
             @foreach ($trendingQuestions as $question)
                 <livewire:questions.show
                     :questionId="$question->id"
-                    :key="'question-' . $question->id"
+                    :question="$question"
                     :inIndex="true"
                     :pinnable="false"
                     :trending="true"
+                    :key="'question-' . $question->id"
                 />
             @endforeach
         </section>

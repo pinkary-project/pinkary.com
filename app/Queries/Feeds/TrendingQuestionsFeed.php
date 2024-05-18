@@ -17,6 +17,7 @@ final readonly class TrendingQuestionsFeed
     public function builder(): Builder
     {
         return Question::query()
+            ->with(['to', 'from', 'likes'])
             ->withCount('likes')
             ->orderBy('likes_count', 'desc')
             ->where('is_reported', false)

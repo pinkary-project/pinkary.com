@@ -16,7 +16,7 @@ final readonly class RecentQuestionsFeed
      */
     public function builder(): Builder
     {
-        return Question::query()\
+        return Question::query()
             ->with(['to', 'from', 'likes'])
             ->withCount('likes')
             ->where('answer', '!=', null)
