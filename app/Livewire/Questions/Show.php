@@ -40,9 +40,9 @@ final class Show extends Component
     /**
      * Mount the component.
      */
-    public function mount(?Question $questionFromParent = null): void
+    public function mount(?Question $question = null): void
     {
-        $this->questionFromParent = $questionFromParent;
+        $this->questionFromParent = $question;
     }
 
     /**
