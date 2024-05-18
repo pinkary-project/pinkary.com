@@ -12,6 +12,9 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
+/**
+ * @property-read Question $question
+ */
 final class Show extends Component
 {
     /**
@@ -32,7 +35,7 @@ final class Show extends Component
     #[Locked]
     public bool $pinnable = false;
 
-    private Question $questionFromParent;
+    private ?Question $questionFromParent;
 
     /**
      * Mount the component.
