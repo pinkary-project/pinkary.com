@@ -3,8 +3,9 @@
         @forelse ($questions as $question)
             <livewire:questions.show
                 :questionId="$question->id"
-                :key="'question-' . $question->id"
+                :question="$question"
                 :inIndex="true"
+                :key="'question-' . $question->id"
             />
         @empty
             <div class="text-center text-slate-400">There are no questions to show.</div>
