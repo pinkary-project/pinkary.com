@@ -35,14 +35,14 @@ final class Show extends Component
     #[Locked]
     public bool $pinnable = false;
 
-    private ?Question $questionFromParent;
+    private ?Question $inheritedQuestion = null;
 
     /**
      * Mount the component.
      */
     public function mount(?Question $question = null): void
     {
-        $this->questionFromParent = $question;
+        $this->inheritedQuestion = $question;
     }
 
     /**
@@ -51,7 +51,7 @@ final class Show extends Component
     #[Computed()]
     public function question(): Question
     {
-        return $this->questionFromParent ?? Question::findOrFail($this->questionId);
+        return $this->inheritedQuestion ?? Question::findOrFail($this->questionId);
     }
 
     /**
