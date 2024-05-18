@@ -134,6 +134,8 @@ final class Show extends Component
         $question->likes()->firstOrCreate([
             'user_id' => auth()->id(),
         ]);
+
+        unset($this->question);
     }
 
     /**
@@ -197,6 +199,8 @@ final class Show extends Component
 
             $like->delete();
         }
+
+        unset($this->question);
     }
 
     /**
