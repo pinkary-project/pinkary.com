@@ -10,9 +10,10 @@
             @foreach ($forYouQuestions as $question)
                 <livewire:questions.show
                     :questionId="$question->id"
-                    :key="'question-' . $question->id"
+                    :question="$question"
                     :inIndex="true"
                     :pinnable="false"
+                    :key="'question-' . $question->id"
                 />
             @endforeach
 

@@ -44,6 +44,8 @@ final readonly class QuestionsForYouFeed
                         $toQuery->whereIn('id', $this->user->following()->select('users.id'));
                     });
             })
+            ->with(['to', 'from', 'likes'])
+            ->withCount('likes')
             ->orderByDesc('updated_at')
             ->whereNotNull('answer')
             ->where('is_reported', false)
