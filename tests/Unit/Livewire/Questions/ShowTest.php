@@ -129,6 +129,8 @@ test('like', function () {
     $component->call('like');
     $component->call('like');
 
+    $component->assertSeeHtml('wire:click="unlike()"');
+
     expect($question->likes()->count())->toBe(1);
 });
 
@@ -158,6 +160,8 @@ test('unlike', function () {
     expect($question->likes()->count())->toBe(1);
 
     $component->call('unlike');
+
+    $component->assertSeeHtml('wire:click="like()"');
 
     expect($question->likes()->count())->toBe(0);
 });
