@@ -7,6 +7,7 @@ namespace App\Http\Requests;
 use App\Enums\UserMailPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
+use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\ValidatorAwareRule;
@@ -33,6 +34,7 @@ final class UserUpdateRequest extends FormRequest
             ],
             'email' => [
                 'required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id),
+                new UnauthorizedEmailProviders(),
             ],
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
             'bio' => ['nullable', 'string', 'max:255'],
