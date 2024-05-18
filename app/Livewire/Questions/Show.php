@@ -42,16 +42,20 @@ final class Show extends Component
      */
     public function mount(?Question $question = null): void
     {
-        $this->inheritedQuestion = $question;
+        $this->inheritedQuestion = $question?->getKey() === null ? null : $question;
     }
 
     /**
      * Get the question.
      */
-    #[Computed()]
+    #[Computed]
     public function question(): Question
     {
-        return $this->inheritedQuestion ?? Question::findOrFail($this->questionId);
+        return $this->inheritedQuestion ?? Question::query()
+            ->where('id', $this->questionId)
+            ->with(['to', 'from', 'likes'])
+            ->withCount('likes')
+            ->firstOrFail();
     }
 
     /**
