@@ -16,6 +16,16 @@
             wire:navigate
         >
             <div class="group overflow-hidden rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900">
+                <div
+                    class="cursor-help text-right text-xs text-slate-400"
+                    title="{{ $notification->created_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
+                    datetime="{{ $notification->created_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
+                >
+                    {{
+                        $notification->created_at->timezone(session()->get('timezone', 'UTC'))
+                            ->diffForHumans()
+                    }}
+                </div>
                 @if (! $isMention)
                     @if ($question->from->is(auth()->user()) && $question->answer !== null)
                         <div class="flex items-center gap-3 text-sm text-slate-500">
