@@ -1,3 +1,8 @@
+## Version 1.18.0
+> 24 May, 2024
+
+- Internal improvements and bug fixes.
+
 ## Version 1.17.0
 > 18 May, 2024
 
