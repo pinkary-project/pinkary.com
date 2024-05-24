@@ -99,6 +99,7 @@
 
             <div
                 x-show="showAvatar"
+                x-cloak
                 x-on:click="showAvatar = false"
                 class="fixed inset-0 flex items-center justify-center bg-slate-900 bg-opacity-75 z-50"
             >
