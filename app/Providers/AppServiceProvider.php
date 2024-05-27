@@ -22,10 +22,17 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->configureModels();
         $this->configurePasswordValidation();
-
-        Date::use(CarbonImmutable::class);
+        $this->configureDates();
 
         Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
+    }
+
+    /**
+     * Configure the dates.
+     */
+    private function configureDates(): void
+    {
+        Date::use(CarbonImmutable::class);
     }
 
     /**
