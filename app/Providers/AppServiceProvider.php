@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -20,8 +22,17 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->configureModels();
         $this->configurePasswordValidation();
+        $this->configureDates();
 
         Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
+    }
+
+    /**
+     * Configure the dates.
+     */
+    private function configureDates(): void
+    {
+        Date::use(CarbonImmutable::class);
     }
 
     /**
