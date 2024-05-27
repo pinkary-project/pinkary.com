@@ -20,11 +20,20 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->configureCommands();
         $this->configureModels();
         $this->configurePasswordValidation();
         $this->configureDates();
 
         Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
+    }
+
+    /**
+     * Configure the commands.
+     */
+    private function configureCommands(): void
+    {
+        DB::prohibitDestructiveCommands($this->app->isProduction());
     }
 
     /**
