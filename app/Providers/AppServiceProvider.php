@@ -29,11 +29,13 @@ final class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Configure the commands.
+     * Configure the application's commands.
      */
     private function configureCommands(): void
     {
-        app()->isProduction() && DB::prohibitDestructiveCommands();
+        DB::prohibitDestructiveCommands(
+            $this->app->isProduction()
+        );
     }
 
     /**
