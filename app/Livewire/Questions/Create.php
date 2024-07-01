@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -78,9 +79,11 @@ final class Create extends Component
 
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
-            'anonymously' => ['boolean'],
+            'anonymously' => ['boolean', Rule::excludeIf($user->id === $this->toId)],
             'content' => ['required', 'string', 'max:255', new NoBlankCharacters],
         ]);
+
+        $validated['anonymously'] ??= false;
 
         $user->questionsSent()->create([
             ...$validated,
