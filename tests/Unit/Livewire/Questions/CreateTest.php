@@ -274,7 +274,7 @@ test('show "Share an update..." if user is viewing his own profile', function ()
         'toId' => $user2->id,
     ]);
 
-    $component->assertSee('Send');
+    $component->assertSee('Ask a question...');
 });
 
 test('user don\'t see the anonymous checkbox if the user is viewing his own profile', function () {

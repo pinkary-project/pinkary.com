@@ -6,7 +6,7 @@
         <div>
             <x-textarea
                 wire:model="content"
-                placeholder="Ask a question..."
+                placeholder="{{$user->is(auth()?->user()) ? 'Share an update...' : 'Ask a question...'}}"
                 maxlength="255"
                 rows="3"
                 required
@@ -27,7 +27,7 @@
                     class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
                     type="submit"
                 >
-                    {{ $user->is(auth()?->user()) ? __('Share an update...') : __('Send') }}
+                    {{ __('Send') }}
                 </x-primary-button>
             </div>
             @if ($user->isNot(auth()?->user()))
