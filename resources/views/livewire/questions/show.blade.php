@@ -265,7 +265,7 @@
                 </div>
             </x-modal>
         @endif
-    @elseif (auth()->user()?->is($user))
+    @elseif (auth()->user()?->is($user) && $question->from->isNot($user))
         <livewire:questions.edit
             :questionId="$question->id"
             :key="$question->id"
