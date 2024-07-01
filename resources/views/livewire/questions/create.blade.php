@@ -30,18 +30,20 @@
                     {{ $user->is(auth()?->user()) ? __('Share an update...') : __('Send') }}
                 </x-primary-button>
             </div>
-            <div class="flex items-center">
-                <x-checkbox
-                    wire:model="anonymously"
-                    id="anonymously"
-                />
+            @if ($user->isNot(auth()?->user()))
+                <div class="flex items-center">
+                    <x-checkbox
+                        wire:model="anonymously"
+                        id="anonymously"
+                    />
 
-                <label
-                    for="anonymously"
-                    class="ml-2 text-slate-400"
-                    >Anonymously</label
-                >
-            </div>
+                    <label
+                        for="anonymously"
+                        class="ml-2 text-slate-400"
+                        >Anonymously</label
+                    >
+                </div>
+            @endif
         </div>
     </form>
 </div>
