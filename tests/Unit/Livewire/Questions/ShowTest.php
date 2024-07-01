@@ -322,3 +322,19 @@ test('pinnable', function () {
 
     $component->assertSee('Pinned');
 });
+
+test('edit option not available for own question', function () {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+        'answer' => null,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertDontSeeHtml('id="answer_question_'.$question->id.'"');
+});
