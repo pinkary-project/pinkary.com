@@ -27,7 +27,7 @@
                     class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
                     type="submit"
                 >
-                    {{ __('Send') }}
+                    {{ $user->is(auth()?->user()) ? __('Share an update...') : __('Send') }}
                 </x-primary-button>
             </div>
             <div class="flex items-center">
