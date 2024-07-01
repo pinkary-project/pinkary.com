@@ -1,31 +1,34 @@
 <article class="block">
-    <div>
-        <div class="flex justify-between">
-            @if ($question->anonymously)
-                <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                    <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
-                        <span>?</span>
+    @unless ($question->from->is($question->to) && !$question->answer)
+        <div>
+            <div class="flex justify-between">
+                @if ($question->anonymously)
+                    <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
+                        <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
+                            <span>?</span>
+                        </div>
+
+                        <p class="font-medium">Anonymously</p>
                     </div>
+                @else
+                    <x-avatar-with-name :user="$question->from" />
+                @endif
+                @if ($question->pinned && $pinnable)
+                    <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
+                        <x-icons.pin class="h-4 w-4 text-slate-400" />
+                        <span class="text-slate-400">Pinned</span>
+                    </div>
+                @endif
+            </div>
 
-                    <p class="font-medium">Anonymously</p>
-                </div>
-            @else
-                <x-avatar-with-name :user="$question->from" />
-            @endif
-            @if ($question->pinned && $pinnable)
-                <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                    <x-icons.pin class="h-4 w-4 text-slate-400" />
-                    <span class="text-slate-400">Pinned</span>
-                </div>
-            @endif
+            <p class="mb-4 mt-3 px-4 text-slate-200">
+                {!! $question->content !!}
+            </p>
         </div>
+    @endunless
 
-        <p class="mb-4 mt-3 px-4 text-slate-200">
-            {!! $question->content !!}
-        </p>
-    </div>
-
-    @if ($question->answer)
+    @if ($question->answer || $question->from->is($question->to))
+        @php($showQuestion = $question->answer ? false : true)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
                 <a
@@ -93,7 +96,7 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
-                            @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
+                            @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question) && ! $showQuestion)
                                 <x-dropdown-button
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
                                     class="flex items-center gap-1.5"
@@ -111,14 +114,14 @@
                                     <x-icons.trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
-                            @endif
-                        </x-slot>
-                    </x-dropdown>
-                @endif
-            </div>
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
+                        @endif
+                    </div>
 
             <p class="mt-3 break-words text-slate-200">
-                {!! $question->answer !!}
+                {!! $showQuestion ? $question->content : $question->answer !!}
             </p>
 
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))
@@ -164,34 +167,38 @@
                     @endif
                 </div>
                 <div class="flex items-center text-slate-500">
-                    @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
-                    <time
+                    @if ($showQuestion)
+                        @php($timestamp = $question->updated_at)
+                    @else
+                        @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
+                    @endif
+                        <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                         datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
-                    >
+                        >
                         {{  $question->answer_updated_at ? 'Edited:' : null }}
                         {{
                             $timestamp->timezone(session()->get('timezone', 'UTC'))
                                 ->diffForHumans()
-                        }}
+                            }}
                     </time>
 
                     <span class="mx-1">•</span>
                     <x-dropdown align="left"
-                                width="48"
-                                dropdown-classes="top-[-3.4rem] shadow-none"
-                                content-classes="flex flex-col space-y-1"
+                    width="48"
+                    dropdown-classes="top-[-3.4rem] shadow-none"
+                    content-classes="flex flex-col space-y-1"
                     >
                         <x-slot name="trigger">
                             <button
-                                x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
-                                                'text-slate-500 hover:text-slate-400': !open }"
-                                class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
+                            x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
+                            'text-slate-500 hover:text-slate-400': !open }"
+                            class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
-                                <x-icons.paper-airplane class="h-4 w-4" />
-                            </button>
-                        </x-slot>
+                            <x-icons.paper-airplane class="h-4 w-4" />
+                        </button>
+                    </x-slot>
 
                         <x-slot name="content">
                             <button
@@ -251,7 +258,7 @@
                 </div>
             </div>
         </div>
-        @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()?->can('update', $question))
+        @if (! $question->is_ignored && auth()->user()?->can('update', $question) && !$showQuestion)
             <x-modal
                 max-width="md"
                 name="question.edit.answer.{{ $questionId }}"
