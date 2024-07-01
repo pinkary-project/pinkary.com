@@ -6,7 +6,6 @@ use App\Livewire\Questions\Create;
 use App\Models\User;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
-use function Pest\Laravel\assertDatabaseHas;
 
 test('render', function () {
     $userA = User::factory()->create();
@@ -300,7 +299,7 @@ test('user cannot share update anonymously', function () {
 
     $component->call('store');
 
-    assertDatabaseHas('questions', [
+    $this->assertDatabaseHas('questions', [
         'from_id' => $user->id,
         'to_id' => $user->id,
         'content' => 'Hello World',
