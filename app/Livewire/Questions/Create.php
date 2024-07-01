@@ -83,8 +83,6 @@ final class Create extends Component
             'content' => ['required', 'string', 'max:255', new NoBlankCharacters],
         ]);
 
-        $validated['anonymously'] ??= false;
-
         $user->questionsSent()->create([
             ...$validated,
             'to_id' => $this->toId,
