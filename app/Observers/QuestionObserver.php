@@ -17,9 +17,10 @@ final readonly class QuestionObserver
      */
     public function created(Question $question): void
     {
-        $user = type(User::find($question->to_id))->as(User::class);
-
-        $user->notify(new QuestionCreated($question));
+        if ($question->from_id !== $question->to_id) {
+            $user = type(User::find($question->to_id))->as(User::class);
+            $user->notify(new QuestionCreated($question));
+        }
     }
 
     /**
