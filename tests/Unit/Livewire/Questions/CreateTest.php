@@ -6,6 +6,7 @@ use App\Livewire\Questions\Create;
 use App\Models\User;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
+use function Pest\Laravel\assertDatabaseHas;
 
 test('render', function () {
     $userA = User::factory()->create();
@@ -285,4 +286,24 @@ test('user don\'t see the anonymous checkbox if the user is viewing his own prof
     ]);
 
     $component->assertDontSeeHtml('for="anonymously"');
+});
+
+test('user cannot share update anonymously', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Hello World');
+    $component->set('anonymously', true);
+
+    $component->call('store');
+
+    assertDatabaseHas('questions', [
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'content' => 'Hello World',
+        'anonymously' => false,
+    ]);
 });
