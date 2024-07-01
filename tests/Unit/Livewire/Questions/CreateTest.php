@@ -258,3 +258,21 @@ test('anonymous set back to user\'s preference after sending a question', functi
         ->and($question->content)->toBe('Hello World')
         ->and($question->anonymously)->toBeTrue();
 });
+
+test('show "Share an update..." if user is viewing his own profile', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->assertSee('Share an update...');
+
+    $user2 = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user2->id,
+    ]);
+
+    $component->assertSee('Send');
+});
