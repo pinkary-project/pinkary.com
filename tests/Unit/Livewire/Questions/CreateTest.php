@@ -276,3 +276,13 @@ test('show "Share an update..." if user is viewing his own profile', function ()
 
     $component->assertSee('Send');
 });
+
+test('user don\'t see the anonymous checkbox if the user is viewing his own profile', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->assertDontSeeHtml('for="anonymously"');
+});
