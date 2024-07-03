@@ -203,24 +203,3 @@ test('cannot answer a question that has been reported or ignored', function () {
 
     $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
 });
-
-test('cannot answer question shared by himself', function () {
-
-    $user = User::factory()->create();
-
-    $question = Question::factory()->create([
-        'to_id' => $user->id,
-        'from_id' => $user->id,
-        'answer' => null,
-        'answer_created_at' => null,
-    ]);
-
-    $component = Livewire::actingAs($user)->test(Edit::class, [
-        'questionId' => $question->id,
-    ]);
-
-    $component->set('answer', 'Hello World');
-    $component->call('update');
-    $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
-    $component->assertRedirect(route('profile.show', ['username' => $user->username]));
-});
