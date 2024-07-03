@@ -1,5 +1,6 @@
 <article class="block">
-    @unless ($question->from->is($question->to) && !$question->answer)
+    @php($isSharedUpdate = $question->from->is($question->to) && $question->getRawOriginal('content') === '__UPDATE__')
+    @unless ($isSharedUpdate)
         <div>
             <div class="flex justify-between">
                 @if ($question->anonymously)
@@ -27,8 +28,7 @@
         </div>
     @endunless
 
-    @if ($question->answer || $question->from->is($question->to))
-        @php($showQuestion = $question->answer ? false : true)
+    @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
             <div class="flex justify-between">
                 <a
@@ -96,7 +96,7 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
-                            @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question) && ! $showQuestion)
+                            @if (! $question->is_ignored && $question->answer_created_at->diffInHours() < 24 && auth()->user()->can('update', $question))
                                 <x-dropdown-button
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
                                     class="flex items-center gap-1.5"
@@ -121,7 +121,7 @@
             </div>
 
             <p class="mt-3 break-words text-slate-200">
-                {!! $showQuestion ? $question->content : $question->answer !!}
+                {!! $question->answer !!}
             </p>
 
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))
@@ -167,33 +167,29 @@
                     @endif
                 </div>
                 <div class="flex items-center text-slate-500">
-                    @if ($showQuestion)
-                        @php($timestamp = $question->updated_at)
-                    @else
-                        @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
-                    @endif
-                        <time
+                    @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
+                    <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                         datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
-                        >
+                    >
                         {{  $question->answer_updated_at ? 'Edited:' : null }}
                         {{
                             $timestamp->timezone(session()->get('timezone', 'UTC'))
                                 ->diffForHumans()
-                            }}
+                        }}
                     </time>
 
                     <span class="mx-1">•</span>
                     <x-dropdown align="left"
-                        width="48"
-                        dropdown-classes="top-[-3.4rem] shadow-none"
-                        content-classes="flex flex-col space-y-1"
+                                width="48"
+                                dropdown-classes="top-[-3.4rem] shadow-none"
+                                content-classes="flex flex-col space-y-1"
                     >
                         <x-slot name="trigger">
                             <button
                                 x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
-                                'text-slate-500 hover:text-slate-400': !open }"
+                                                'text-slate-500 hover:text-slate-400': !open }"
                                 class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
                                 <x-icons.paper-airplane class="h-4 w-4" />
@@ -258,7 +254,7 @@
                 </div>
             </div>
         </div>
-        @if (! $question->is_ignored && auth()->user()?->can('update', $question) && !$showQuestion)
+        @if (! $question->is_ignored && auth()->user()?->can('update', $question))
             <x-modal
                 max-width="md"
                 name="question.edit.answer.{{ $questionId }}"
@@ -272,10 +268,11 @@
                 </div>
             </x-modal>
         @endif
-    @elseif (auth()->user()?->is($user) && $question->from->isNot($user))
+    @elseif (auth()->user()?->is($user))
         <livewire:questions.edit
             :questionId="$question->id"
             :key="$question->id"
         />
     @endif
 </article>
+
