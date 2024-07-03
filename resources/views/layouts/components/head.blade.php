@@ -118,11 +118,14 @@
 
         $content = $toMeta($question->content);
         $answer = $question->answer ? $toMeta($question->answer) : null;
+        $isSharedUpdate = $question->isSharedUpdate();
+        $ogTitle = ($isSharedUpdate ? $question->to->name.' On Pinkary' : $question->to->name.': "'.$answer.'" / Pinkary');
+        $ogDescription = ($isSharedUpdate ? $answer : ($question->anonymously ? 'Question' : 'Question from '.$question->from->name).': "'.$content.'"');
     @endphp
 
     <meta
         property="og:description"
-        content="{{ ($question->anonymously ? 'Question' : 'Question from '.$question->from->name).': "'.$content.'"' }}"
+        content="{{ $ogDescription }}"
         data-rh="true"
     />
     <meta
@@ -145,7 +148,7 @@
         <title>{{ $question->to->name }}: "{{ $answer }}" / Pinkary</title>
         <meta
             property="og:title"
-            content='{{ $question->to->name }}: "{{ $answer }}" / Pinkary'
+            content='{{ $ogTitle }}'
             data-rh="true"
         />
     @else
