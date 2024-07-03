@@ -1,6 +1,5 @@
 <article class="block">
-    @php($isSharedUpdate = $question->from->is($question->to) && $question->getRawOriginal('content') === '__UPDATE__')
-    @unless ($isSharedUpdate)
+    @unless ($question->isSharedUpdate())
         <div>
             <div class="flex justify-between">
                 @if ($question->anonymously)

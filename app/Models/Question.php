@@ -145,4 +145,12 @@ final class Question extends Model implements Viewable
 
         return User::whereIn('username', $mentions)->get();
     }
+
+    /**
+     * check if the question is "Update Shared By User".
+     */
+    public function isSharedUpdate(): bool
+    {
+        return $this->from_id === $this->to_id && $this->content === '__UPDATE__';
+    }
 }
