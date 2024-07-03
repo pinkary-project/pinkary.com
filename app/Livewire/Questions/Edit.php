@@ -83,7 +83,7 @@ final class Edit extends Component
             $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
         }
 
-        $this->dispatch('notification.created', message: $originalAnswer === null ? 'Question answered.' : 'Answer updated.');
+        $this->dispatch('notification.created', message: $originalAnswer === null ? 'Question answered.' : ($question->isSharedUpdate() ? 'Post updated.' : 'Answer updated.'));
         $this->dispatch('question.updated');
     }
 
