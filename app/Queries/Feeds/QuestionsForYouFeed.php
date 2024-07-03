@@ -7,7 +7,6 @@ namespace App\Queries\Feeds;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 final readonly class QuestionsForYouFeed
 {
@@ -45,9 +44,7 @@ final readonly class QuestionsForYouFeed
                     });
             })
             ->orderByDesc('updated_at')
-            ->where(function (Builder $query): void {
-                $query->whereNotNull('answer')->orWhere('from_id', DB::raw('`to_id`'));
-            })
+            ->whereNotNull('answer')
             ->where('is_reported', false)
             ->where('is_ignored', false);
     }
