@@ -70,12 +70,6 @@ final class Edit extends Component
         $this->authorize('update', $question);
 
         if ($originalAnswer === null) {
-            if ($question->from_id === $user->id) {
-                $this->dispatch('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
-                $this->redirectRoute('profile.show', ['username' => $user->username], navigate: true);
-
-                return;
-            }
             $validated['answer_created_at'] = now();
         } else {
             $validated['answer_updated_at'] = now();
