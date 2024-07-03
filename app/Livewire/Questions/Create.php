@@ -103,7 +103,7 @@ final class Create extends Component
         if ($this->isSharingUpdate) {
             $validated['answer_created_at'] = now();
             $validated['answer'] = $validated['content'];
-            unset($validated['content']);
+            $validated['content'] = '__UPDATE__';
         }
 
         $user->questionsSent()->create([

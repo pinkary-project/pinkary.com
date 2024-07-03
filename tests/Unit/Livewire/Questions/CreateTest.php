@@ -302,7 +302,8 @@ test('user cannot share update anonymously', function () {
     $this->assertDatabaseHas('questions', [
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'content' => 'Hello World',
+        'answer' => 'Hello World',
+        'content' => '__UPDATE__', // This is the content for an update
         'anonymously' => false,
     ]);
 });
