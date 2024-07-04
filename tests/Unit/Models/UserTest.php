@@ -118,3 +118,42 @@ test('followers', function () {
     expect($user->followers->count())->toBe(1)
         ->and($user->followers->first()->id)->toBe($target->id);
 });
+
+test('purge followers with user', function () {
+    $user = User::factory()->create();
+    $target = User::factory()->create();
+
+    $user->followers()->attach($target->id);
+
+    $target->following()->attach(User::factory()->create()->id);
+
+    $user->purge();
+
+    expect($target->following()->count())->toBe(1);
+});
+
+test('purge following with user', function () {
+    $user = User::factory()->create();
+    $target = User::factory()->create();
+
+    $user->following()->attach($target->id);
+
+    $target->followers()->attach(User::factory()->create()->id);
+
+    $user->purge();
+
+    expect($target->followers()->count())->toBe(1);
+});
+
+test('purge links with user', function () {
+    $user = User::factory()->hasLinks(2)->create();
+    $this->assertDatabaseCount('links', 2);
+
+    $this->actingAs($user)
+        ->delete(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+    $this->assertNull($user->fresh());
+    $this->assertDatabaseCount('links', 0);
+});

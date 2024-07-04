@@ -229,6 +229,9 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             );
         }
 
+        $this->followers()->detach();
+        $this->following()->detach();
+
         $this->delete();
     }
 

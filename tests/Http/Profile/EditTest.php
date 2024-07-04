@@ -255,6 +255,44 @@ test('avatar is deleted when account is deleted', function () {
     $this->assertFileDoesNotExist(storage_path('app/public/avatars/default.png'));
 });
 
+it('user can delete their account with followers', function () {
+    $user = User::factory()->create([
+        'password' => 'password',
+    ]);
+
+    User::factory()->count(3)->create()->each(function ($follower) use ($user) {
+        $follower->following()->attach($user);
+    });
+    expect($user->followers()->count())->toBe(3);
+
+    $response = $this->actingAs($user)
+        ->delete(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+    $response->assertRedirect(url('/'));
+    $this->assertNull($user->fresh());
+});
+
+it('user can delete their account with following', function () {
+    $user = User::factory()->create([
+        'password' => 'password',
+    ]);
+
+    User::factory()->count(3)->create()->each(function ($following) use ($user) {
+        $user->following()->attach($following);
+    });
+    expect($user->following()->count())->toBe(3);
+
+    $response = $this->actingAs($user)
+        ->delete(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+    $response->assertRedirect(url('/'));
+    $this->assertNull($user->fresh());
+});
+
 test('correct password must be provided to delete account', function () {
     $user = User::factory()->create();
 
