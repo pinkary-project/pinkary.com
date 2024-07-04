@@ -1,3 +1,8 @@
+## Version 1.20.2
+> 4 July, 2024
+
+- Fixed on sharing updates
+
 ## Version 1.20.1
 > 4 July, 2024
 
