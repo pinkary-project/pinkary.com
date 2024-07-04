@@ -17,6 +17,18 @@ test('created', function () {
     });
 });
 
+test('do not send notification if asked himself', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+    ]);
+
+    Notification::assertNotSentTo($question->to, QuestionCreated::class);
+});
+
 test('updated', function () {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);

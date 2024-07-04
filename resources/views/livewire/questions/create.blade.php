@@ -6,13 +6,13 @@
         <div>
             <x-textarea
                 wire:model="content"
-                placeholder="Ask a question..."
-                maxlength="255"
+                placeholder="{{ $this->isSharingUpdate ? 'Share an update...' : 'Ask a question...' }}"
+                maxlength="{{ $this->maxContentLength }}"
                 rows="3"
                 required
             />
 
-            <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / 255</p>
+            <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
 
             @error('content')
                 <x-input-error
@@ -30,18 +30,20 @@
                     {{ __('Send') }}
                 </x-primary-button>
             </div>
-            <div class="flex items-center">
-                <x-checkbox
-                    wire:model="anonymously"
-                    id="anonymously"
-                />
+            @if (! $this->isSharingUpdate)
+                <div class="flex items-center">
+                    <x-checkbox
+                        wire:model="anonymously"
+                        id="anonymously"
+                    />
 
-                <label
-                    for="anonymously"
-                    class="ml-2 text-slate-400"
-                    >Anonymously</label
-                >
-            </div>
+                    <label
+                        for="anonymously"
+                        class="ml-2 text-slate-400"
+                        >Anonymously</label
+                    >
+                </div>
+            @endif
         </div>
     </form>
 </div>

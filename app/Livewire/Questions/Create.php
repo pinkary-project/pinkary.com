@@ -7,11 +7,17 @@ namespace App\Livewire\Questions;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
+/**
+ * @property-read bool $isSharingUpdate
+ * @property-read int $maxContentLength
+ */
 final class Create extends Component
 {
     /**
@@ -40,6 +46,24 @@ final class Create extends Component
 
             $this->anonymously = $user->prefers_anonymous_questions;
         }
+    }
+
+    /**
+     * Determine if the user is sharing an update.
+     */
+    #[Computed]
+    public function isSharingUpdate(): bool
+    {
+        return $this->toId === auth()->id();
+    }
+
+    /**
+     * Get the maximum content length.
+     */
+    #[Computed]
+    public function maxContentLength(): int
+    {
+        return $this->isSharingUpdate ? 1000 : 255;
     }
 
     /**
@@ -78,9 +102,15 @@ final class Create extends Component
 
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
-            'anonymously' => ['boolean'],
-            'content' => ['required', 'string', 'max:255', new NoBlankCharacters],
+            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
+            'content' => ['required', 'string', 'max:'.$this->maxContentLength, new NoBlankCharacters],
         ]);
+
+        if ($this->isSharingUpdate) {
+            $validated['answer_created_at'] = now();
+            $validated['answer'] = $validated['content'];
+            $validated['content'] = '__UPDATE__';
+        }
 
         $user->questionsSent()->create([
             ...$validated,

@@ -1,29 +1,31 @@
 <article class="block">
-    <div>
-        <div class="flex justify-between">
-            @if ($question->anonymously)
-                <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                    <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
-                        <span>?</span>
+    @unless ($question->isSharedUpdate())
+        <div>
+            <div class="flex justify-between">
+                @if ($question->anonymously)
+                    <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
+                        <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
+                            <span>?</span>
+                        </div>
+
+                        <p class="font-medium">Anonymously</p>
                     </div>
+                @else
+                    <x-avatar-with-name :user="$question->from" />
+                @endif
+                @if ($question->pinned && $pinnable)
+                    <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
+                        <x-icons.pin class="h-4 w-4 text-slate-400" />
+                        <span class="text-slate-400">Pinned</span>
+                    </div>
+                @endif
+            </div>
 
-                    <p class="font-medium">Anonymously</p>
-                </div>
-            @else
-                <x-avatar-with-name :user="$question->from" />
-            @endif
-            @if ($question->pinned && $pinnable)
-                <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                    <x-icons.pin class="h-4 w-4 text-slate-400" />
-                    <span class="text-slate-400">Pinned</span>
-                </div>
-            @endif
+            <p class="mb-4 mt-3 px-4 text-slate-200">
+                {!! $question->content !!}
+            </p>
         </div>
-
-        <p class="mb-4 mt-3 px-4 text-slate-200">
-            {!! $question->content !!}
-        </p>
-    </div>
+    @endunless
 
     @if ($question->answer)
         <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
@@ -272,3 +274,4 @@
         />
     @endif
 </article>
+

@@ -258,3 +258,52 @@ test('anonymous set back to user\'s preference after sending a question', functi
         ->and($question->content)->toBe('Hello World')
         ->and($question->anonymously)->toBeTrue();
 });
+
+test('show "Share an update..." if user is viewing his own profile', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->assertSee('Share an update...');
+
+    $user2 = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user2->id,
+    ]);
+
+    $component->assertSee('Ask a question...');
+});
+
+test('user don\'t see the anonymous checkbox if the user is viewing his own profile', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->assertDontSeeHtml('for="anonymously"');
+});
+
+test('user cannot share update anonymously', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Hello World');
+    $component->set('anonymously', true);
+
+    $component->call('store');
+
+    $this->assertDatabaseHas('questions', [
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => 'Hello World',
+        'content' => '__UPDATE__', // This is the content for an update
+        'anonymously' => false,
+    ]);
+});

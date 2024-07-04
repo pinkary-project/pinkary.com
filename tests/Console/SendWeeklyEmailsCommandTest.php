@@ -17,10 +17,19 @@ test('sends weekly emails', function () {
         'mail_preference_time' => 'never',
     ]);
 
-    User::all()->each(fn (User $user) => $user->questionsSent()->create([
+    $questioner = User::factory()->create([
+        'mail_preference_time' => 'never',
+    ]);
+
+    User::all()->each(fn (User $user) => $questioner->questionsSent()->create([
         'to_id' => $user->id,
         'content' => 'What is the meaning of life?',
     ]));
+
+    $questioner->questionsSent()->create([
+        'to_id' => $questioner->id,
+        'content' => 'Sharing updates will not create a new notification.',
+    ]);
 
     Mail::fake();
 
