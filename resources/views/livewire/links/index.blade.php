@@ -194,10 +194,10 @@
                 @if ($questionsReceivedCount > 0)
                     <span
                         class="cursor-help"
-                        title="{{ Number::format($questionsReceivedCount) }} {{ str('Answer')->plural($questionsReceivedCount) }}"
+                        title="{{ Number::format($questionsReceivedCount) }} {{ str('Post')->plural($questionsReceivedCount) }}"
                     >
                         {{ Number::abbreviate($questionsReceivedCount) }}
-                        {{ str('Answer')->plural($questionsReceivedCount) }}
+                        {{ str('Post')->plural($questionsReceivedCount) }}
                     </span>
 
                     <span class="mx-1">•</span>
@@ -205,9 +205,9 @@
 
                 <span
                     class="cursor-help"
-                    title="{{ Number::format($user->views) }} {{ str('view')->plural($user->views) }}"
+                    title="{{ Number::format($user->views) }} {{ str('View')->plural($user->views) }}"
                 >
-                    {{ Number::abbreviate($user->views) }} {{ str('view')->plural($user->views) }}
+                    {{ Number::abbreviate($user->views) }} {{ str('View')->plural($user->views) }}
                 </span>
             </p>
         </div>
