@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Question;
 use App\Models\User;
 
 test('to array', function () {
@@ -117,4 +118,53 @@ test('followers', function () {
 
     expect($user->followers->count())->toBe(1)
         ->and($user->followers->first()->id)->toBe($target->id);
+});
+
+test('purge followers with user', function () {
+    $user = User::factory()->create();
+    $target = User::factory()->create();
+
+    $user->following()->attach($target->id);
+
+    $user->purge();
+
+    expect($target->followers->count())->toBe(0);
+});
+
+test('purge following with user', function () {
+    $user = User::factory()->create();
+    $target = User::factory()->create();
+
+    $user->following()->attach($target->id);
+
+    $target->purge();
+
+    expect($user->following->count())->toBe(0);
+});
+
+test('purge notifications with user', function () {
+    $user = User::factory()->create();
+    Question::factory(2)->create([
+        'to_id' => $user->id,
+    ]);
+
+    $this->assertDatabaseCount('notifications', 2);
+
+    $user->purge();
+
+    $this->assertNull($user->fresh());
+    $this->assertDatabaseCount('notifications', 0);
+});
+
+test('purge links with user', function () {
+    $user = User::factory()->hasLinks(2)->create();
+    $this->assertDatabaseCount('links', 2);
+
+    $this->actingAs($user)
+        ->delete(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+    $this->assertNull($user->fresh());
+    $this->assertDatabaseCount('links', 0);
 });
