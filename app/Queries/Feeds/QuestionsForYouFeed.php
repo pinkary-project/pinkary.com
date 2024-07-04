@@ -15,8 +15,7 @@ final readonly class QuestionsForYouFeed
      */
     public function __construct(
         private User $user,
-    ) {
-    }
+    ) {}
 
     /**
      * Get the query builder for the feed.

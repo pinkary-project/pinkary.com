@@ -15,9 +15,7 @@ final class QuestionAnswered extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(private Question $question)
-    {
-    }
+    public function __construct(private Question $question) {}
 
     /**
      * Get the notification's delivery channels.
