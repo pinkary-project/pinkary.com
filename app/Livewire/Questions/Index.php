@@ -64,7 +64,9 @@ final class Index extends Component
     #[On('question.created')]
     #[On('question.updated')]
     #[On('question.reported')]
-    public function refresh(): void {}
+    public function refresh(): void
+    {
+    }
 
     /**
      * Ignore the given question.

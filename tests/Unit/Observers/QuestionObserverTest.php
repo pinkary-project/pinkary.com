@@ -6,7 +6,6 @@ use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionCreated;
 use App\Notifications\UserMentioned;
-use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Notification;
 
 test('created', function () {
