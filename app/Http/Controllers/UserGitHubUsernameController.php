@@ -73,14 +73,11 @@ final readonly class UserGitHubUsernameController
     /**
      * Handles the GitHub connection destroy.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(): RedirectResponse
     {
         $user = type(request()->user())->as(User::class);
-
         $user->update(['github_username' => null]);
-
         SyncVerifiedUser::dispatchSync($user);
-
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 
         return to_route('profile.edit');

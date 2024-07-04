@@ -39,12 +39,10 @@ final readonly class AuthenticatedSessionController
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(): RedirectResponse
     {
         auth()->guard('web')->logout();
-
         session()->invalidate();
-
         session()->regenerateToken();
 
         return back();
