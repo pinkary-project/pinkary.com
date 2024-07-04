@@ -239,8 +239,8 @@
                                 x-on:click="
                                     twitter({
                                         url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
-                                        question: '{{ $question->content }}',
-                                        message: 'See response on Pinkary',
+                                        question: '{{ $question->isSharedUpdate() ? $question->answer : $question->content }}',
+                                        message: '{{ $question->isSharedUpdate() ? 'See it on Pinkary' : 'See response on Pinkary' }}',
                                     })
                                 "
                                 type="button"
