@@ -42,6 +42,6 @@ final class DeleteNonEmailVerifiedUsersCommand extends Command
             })
             ->get()
             ->each
-            ->delete();
+            ->purge();
     }
 }
