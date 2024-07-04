@@ -17,7 +17,9 @@ final readonly class QuestionObserver
      */
     public function created(Question $question): void
     {
-        if ($question->from_id !== $question->to_id) {
+        if ($question->isSharedUpdate()) {
+            $question->mentions()->each->notify(new UserMentioned($question));
+        } else {
             $user = type(User::find($question->to_id))->as(User::class);
             $user->notify(new QuestionCreated($question));
         }
