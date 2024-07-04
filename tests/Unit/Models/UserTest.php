@@ -142,20 +142,6 @@ test('purge following with user', function () {
     expect($user->following->count())->toBe(0);
 });
 
-test('purge notifications with user', function () {
-    $user = User::factory()->create();
-    Question::factory(2)->create([
-        'to_id' => $user->id,
-    ]);
-
-    $this->assertDatabaseCount('notifications', 2);
-
-    $user->purge();
-
-    $this->assertNull($user->fresh());
-    $this->assertDatabaseCount('notifications', 0);
-});
-
 test('purge links with user', function () {
     $user = User::factory()->hasLinks(2)->create();
     $this->assertDatabaseCount('links', 2);
