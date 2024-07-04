@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Question;
 use App\Models\User;
 
 test('to array', function () {
@@ -124,11 +123,13 @@ test('purge followers with user', function () {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
-    $user->following()->attach($target->id);
+    $user->followers()->attach($target->id);
+
+    $target->following()->attach(User::factory()->create()->id);
 
     $user->purge();
 
-    expect($target->followers->count())->toBe(0);
+    expect($target->following()->count())->toBe(1);
 });
 
 test('purge following with user', function () {
@@ -137,9 +138,11 @@ test('purge following with user', function () {
 
     $user->following()->attach($target->id);
 
-    $target->purge();
+    $target->followers()->attach(User::factory()->create()->id);
 
-    expect($user->following->count())->toBe(0);
+    $user->purge();
+
+    expect($target->followers()->count())->toBe(1);
 });
 
 test('purge links with user', function () {
