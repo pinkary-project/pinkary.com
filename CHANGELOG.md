@@ -1,3 +1,8 @@
+## Version 1.20.0
+> 4 July, 2024
+
+- Allows users to share an update
+
 ## Version 1.19.0
 > 4 July, 2024
 
