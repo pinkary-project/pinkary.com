@@ -48,12 +48,18 @@ final class Create extends Component
         }
     }
 
+    /**
+     * Determine if the user is sharing an update.
+     */
     #[Computed]
     public function isSharingUpdate(): bool
     {
         return $this->toId === auth()->id();
     }
 
+    /**
+     * Get the maximum content length.
+     */
     #[Computed]
     public function maxContentLength(): int
     {

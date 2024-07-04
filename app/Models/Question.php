@@ -147,7 +147,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * check if the question is "Update Shared By User".
+     * Determine if the question is shared update.
      */
     public function isSharedUpdate(): bool
     {
