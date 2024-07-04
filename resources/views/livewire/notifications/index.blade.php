@@ -60,11 +60,13 @@
                         @endif
                     @endif
                 @else
-                    <p class="text-sm text-slate-500">You have been mentioned in a question:</p>
+                    <p class="text-sm text-slate-500">You have been mentioned in a {{ $question->isSharedUpdate() ? 'update by @'.$question->to->username : 'question:'}}</p>
                 @endif
-                <p class="mt-2 text-slate-200">
-                    {!! $question->content !!}
-                </p>
+                @if(!$question->isSharedUpdate())
+                    <p class="mt-2 text-slate-200">
+                        {!! $question->content !!}
+                    </p>
+                @endif
             </div>
         </a>
     @endforeach

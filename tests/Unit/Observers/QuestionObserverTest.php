@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionCreated;
+use App\Notifications\UserMentioned;
 use Illuminate\Support\Facades\Notification;
 
 test('created', function () {
@@ -24,9 +25,33 @@ test('do not send notification if asked himself', function () {
     $question = Question::factory()->create([
         'to_id' => $user->id,
         'from_id' => $user->id,
+        'content' => '__UPDATE__',
     ]);
 
     Notification::assertNotSentTo($question->to, QuestionCreated::class);
+});
+
+test('send mentioned notification if shared update', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $mentionedUser = User::factory()->create([
+        'username' => 'johndoe',
+    ]);
+
+    $question = Question::factory()->create([
+        'content' => '__UPDATE__',
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+        'answer' => 'this update is for @johndoe!',
+        'answer_created_at' => now(),
+    ]);
+
+    expect($question->mentions()->count())->toBe(1);
+
+    Notification::assertSentTo($mentionedUser, UserMentioned::class, function ($notification) use ($question) {
+        return expect($notification->toDatabase($question->to))->toBe(['question_id' => $question->id]);
+    });
 });
 
 test('updated', function () {
@@ -50,7 +75,7 @@ test('updated', function () {
     ]);
 
     $question->update(['answer' => 'answer']);
-    expect($question->from->notifications->count())->toBe(0);
+    expect($question->from->notifications()->count())->toBe(0);
 
     // Question answered and user mentioned in the question content
     $user = User::factory()->create([
@@ -61,7 +86,7 @@ test('updated', function () {
     ]);
 
     $question->update(['answer' => 'answer']);
-    expect($user->notifications->count())->toBe(1);
+    expect($user->notifications()->count())->toBe(1);
 
     // Question answered and user mentioned in the question answer
     $user = User::factory()->create([
@@ -70,7 +95,7 @@ test('updated', function () {
     $question = Question::factory()->create(['answer' => null]);
 
     $question->update(['answer' => 'Im fine @doejohn!']);
-    expect($user->notifications->count())->toBe(1);
+    expect($user->notifications()->count())->toBe(1);
 });
 
 test('reported', function () {
