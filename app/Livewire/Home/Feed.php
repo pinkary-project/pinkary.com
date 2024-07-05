@@ -31,10 +31,12 @@ final class Feed extends Component
         $this->dispatch('question.ignored');
     }
 
+    #[On('question.created')]
+    public function refresh(): void {}
+
     /**
      * Render the component.
      */
-    #[On('question.created')]
     public function render(): View
     {
         $questions = (new RecentQuestionsFeed())->builder()->simplePaginate($this->perPage);
