@@ -34,6 +34,7 @@ final class Feed extends Component
     /**
      * Render the component.
      */
+    #[On('question.created')]
     public function render(): View
     {
         $questions = (new RecentQuestionsFeed())->builder()->simplePaginate($this->perPage);
