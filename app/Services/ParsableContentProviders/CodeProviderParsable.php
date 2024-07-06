@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\ParsableContentProviders;
 
 use App\Contracts\Services\ParsableContentProvider;
+use Exception;
 use Highlight\Highlighter;
 
 final readonly class CodeProviderParsable implements ParsableContentProvider
@@ -26,7 +27,11 @@ final readonly class CodeProviderParsable implements ParsableContentProvider
 
                 $code = htmlspecialchars_decode($code, ENT_QUOTES);
 
-                $highlighted = $highlighter->highlight($language, $code);
+                try {
+                    $highlighted = $highlighter->highlight($language, $code);
+                } catch (Exception) {
+                    $highlighted = $highlighter->highlight('plaintext', $code);
+                }
 
                 $highlightedCode = $highlighted->value;
                 $highlightedLanguage = $highlighted->language;
