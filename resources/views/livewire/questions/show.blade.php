@@ -137,8 +137,18 @@
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))
 
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
-                <div class="flex items-center">
+                <div class="flex items-center gap-2">
                     @if(! $isBeingRepliedTo)
+                        @if($question->isSharedUpdate() && auth()->check())
+                            <button
+                                wire:click="$dispatch('reply-to', ['{{ $questionId }}'])"
+                                title="Reply"
+                                class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                            >
+                                <x-icons.reply class="size-4" />
+                            </button>
+                        @endif
+
                         <button
                             @if ($likeExists)
                                 wire:click="unlike()"
