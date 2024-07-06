@@ -59,6 +59,16 @@ final class Create extends Component
         return $this->toId === auth()->id();
     }
 
+    #[Computed]
+    public function placeholder(): string
+    {
+        return match(true) {
+            $this->replyTo !== null => 'Write your reply...',
+            $this->isSharingUpdate() => 'Share an update...',
+            default => 'Ask a question...'
+        };
+    }
+
     /**
      * Get the maximum content length.
      */
