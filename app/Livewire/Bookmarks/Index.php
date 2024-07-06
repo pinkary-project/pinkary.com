@@ -20,7 +20,10 @@ final class Index extends Component
 
         return view('livewire.bookmarks.index', [
             'user' => $user,
-            'bookmarks' => collect([]),
+            'bookmarks' => $user->bookmarks()
+                ->with('question')
+                ->orderBy('created_at', 'desc')
+                ->get(),
         ]);
     }
 }

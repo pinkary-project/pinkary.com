@@ -1,6 +1,10 @@
-<div class="mb-20 flex flex-col gap-2">
+<div class="mb-20 space-y-10">
     @foreach ($bookmarks as $bookmark)
-        <!--  -->
+        <livewire:questions.show
+            :questionId="$bookmark->question->id"
+            :key="'question-' . $bookmark->question->id"
+            :inIndex="true"
+        />
     @endforeach
 
     @if ($bookmarks->count() === 0)
