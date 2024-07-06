@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Like;
 use App\Models\Question;
+use App\Models\Tag;
 use App\Models\User;
 
 test('to array', function () {
@@ -91,4 +92,13 @@ test('does not increment views without answer', function () {
     Question::incrementViews([$question->id]);
 
     expect($question->fresh()->views)->toBe(0);
+});
+
+test('tag relationship', function () {
+    $question = Question::factory()->create();
+    $tags = Tag::factory(2)->isTrending()->create();
+
+    $question->tags()->attach($tags->pluck('id'));
+
+    expect($question->tags->first())->toBeInstanceOf(Tag::class);
 });
