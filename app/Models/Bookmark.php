@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read User $user
  * @property-read Question $question
  */
-class Bookmark extends Model
+final class Bookmark extends Model
 {
     use HasFactory;
 

@@ -44,7 +44,7 @@ Route::prefix('/@{username}')->group(function () {
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('bookmarks', [BookmarksController::class, 'index'])->name('bookmarks.index');
-    
+
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('notifications/{notification}', [NotificationController::class, 'show'])
         ->name('notifications.show');
