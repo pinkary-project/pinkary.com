@@ -127,6 +127,8 @@
 
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))
 
+            @php($bookmarkExists = $question->bookmarks->contains('user_id', auth()->id()))
+
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <div class="flex items-center">
                     <button
@@ -182,6 +184,21 @@
                     </time>
 
                     <span class="mx-1">•</span>
+                    <button
+                        @if ($bookmarkExists)
+                            wire:click="unbookmark()"
+                        @else
+                            wire:click="bookmark()"
+                        @endif
+
+                        class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                    >
+                        @if ($bookmarkExists)
+                            <x-icons.bookmark-solid class="h-4 w-4" />
+                        @else
+                            <x-icons.bookmark class="h-4 w-4" />
+                        @endif
+                    </button>
                     <x-dropdown align="left"
                                 width="48"
                                 dropdown-classes="top-[-3.4rem] shadow-none"

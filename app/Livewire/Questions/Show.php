@@ -92,6 +92,24 @@ final class Show extends Component
     }
 
     /**
+     * Bookmark the question.
+     */
+    public function bookmark(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $question->bookmarks()->firstOrCreate([
+            'user_id' => auth()->id(),
+        ]);
+    }
+
+    /**
      * Like the question.
      */
     public function like(): void
@@ -153,6 +171,26 @@ final class Show extends Component
     }
 
     /**
+     * Unbookmark the question.
+     */
+    public function unbookmark(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        if ($bookmark = $question->bookmarks()->where('user_id', auth()->id())->first()) {
+            $this->authorize('delete', $bookmark);
+
+            $bookmark->delete();
+        }
+    }
+
+    /**
      * Unlike the question.
      */
     public function unlike(): void
@@ -178,7 +216,7 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes'])
+            ->with(['to', 'from', 'bookmarks', 'likes'])
             ->withCount('likes')
             ->firstOrFail();
 

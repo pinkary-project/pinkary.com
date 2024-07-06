@@ -115,6 +115,16 @@ final class Question extends Model implements Viewable
     }
 
     /**
+     * Get the bookmarks for the question.
+     *
+     * @return HasMany<Bookmark>
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    /**
      * Get the likes for the question.
      *
      * @return HasMany<Like>
