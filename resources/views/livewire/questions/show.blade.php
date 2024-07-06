@@ -68,7 +68,16 @@
                         </p>
                     </div>
                 </a>
-                @if (auth()->check() && auth()->user()->can('update', $question))
+                @if($isBeingRepliedTo)
+                    <button
+                        wire:click="$dispatch('stop-replying')"
+                        title="Stop replying"
+                        type="button"
+                        class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none"
+                    >
+                        <x-icons.close class="!size-4" />
+                    </button>
+                @elseif (auth()->check() && auth()->user()->can('update', $question))
                     <x-dropdown
                         align="right"
                         width="48"

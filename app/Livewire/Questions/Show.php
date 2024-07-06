@@ -32,6 +32,12 @@ final class Show extends Component
     public bool $pinnable = false;
 
     /**
+     * Determine if this is currently being used to render the reply-to preview.
+     */
+    #[Locked]
+    public bool $isBeingRepliedTo = false;
+
+    /**
      * Refresh the component.
      */
     #[On('question.updated')]
