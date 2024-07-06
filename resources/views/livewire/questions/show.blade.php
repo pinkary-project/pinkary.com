@@ -138,45 +138,48 @@
 
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <div class="flex items-center">
-                    <button
-                        @if ($likeExists)
-                            wire:click="unlike()"
-                        @else
-                            wire:click="like()"
-                        @endif
-                        x-data="particlesEffect"
-                        x-on:click="executeParticlesEffect($event)"
+                    @if(! $isBeingRepliedTo)
+                        <button
+                            @if ($likeExists)
+                                wire:click="unlike()"
+                            @else
+                                wire:click="like()"
+                            @endif
+                            x-data="particlesEffect"
+                            x-on:click="executeParticlesEffect($event)"
+                            title="Like"
+                            class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                        >
+                            @if ($likeExists)
+                                <x-icons.heart-solid class="h-4 w-4" />
+                            @else
+                                <x-icons.heart class="h-4 w-4" />
+                            @endif
 
-                        class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
-                    >
-                        @if ($likeExists)
-                            <x-icons.heart-solid class="h-4 w-4" />
-                        @else
-                            <x-icons.heart class="h-4 w-4" />
-                        @endif
-
-                        @php($likesCount = $question->likes_count)
-                        @if ($likesCount)
+                            @php($likesCount = $question->likes_count)
+                            @if ($likesCount)
+                                <p
+                                    class="cursor-click ml-1"
+                                    title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
+                                >
+                                    {{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}
+                                </p>
+                            @endif
+                        </button>
+                        @if ($question->views > 0)
+                            <span class="mx-1">•</span>
+                            <x-icons.chart class="h-4 w-4" />
                             <p
-                                class="cursor-click ml-1"
-                                title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
+                                class="ml-1 cursor-help"
+                                title="{{ Number::format($question->views) }} {{ str('view')->plural($question->views) }}"
                             >
-                                {{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}
+                                {{ Number::abbreviate($question->views) }} {{ str('view')->plural($question->views) }}
                             </p>
                         @endif
-                    </button>
-                    @if ($question->views > 0)
-                        <span class="mx-1">•</span>
-                        <x-icons.chart class="h-4 w-4" />
-                        <p
-                            class="ml-1 cursor-help"
-                            title="{{ Number::format($question->views) }} {{ str('view')->plural($question->views) }}"
-                        >
-                            {{ Number::abbreviate($question->views) }} {{ str('view')->plural($question->views) }}
-                        </p>
                     @endif
                 </div>
-                <div class="flex items-center text-slate-500">
+
+                <div class="flex items-center text-slate-500 ">
                     @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
                     <time
                         class="cursor-help"
@@ -190,77 +193,80 @@
                         }}
                     </time>
 
-                    <span class="mx-1">•</span>
-                    <x-dropdown align="left"
-                                width="48"
-                                dropdown-classes="top-[-3.4rem] shadow-none"
-                                content-classes="flex flex-col space-y-1"
-                    >
-                        <x-slot name="trigger">
-                            <button
-                                x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
-                                                'text-slate-500 hover:text-slate-400': !open }"
-                                class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
-                            >
-                                <x-icons.paper-airplane class="h-4 w-4" />
-                            </button>
-                        </x-slot>
+                    @if(! $isBeingRepliedTo)
+                        <span class="mx-1">•</span>
+                        <x-dropdown align="left"
+                                    width="48"
+                                    dropdown-classes="top-[-3.4rem] shadow-none"
+                                    content-classes="flex flex-col space-y-1"
+                        >
+                            <x-slot name="trigger">
+                                <button
+                                    x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
+                                                    'text-slate-500 hover:text-slate-400': !open }"
+                                    title="Share"
+                                    class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
+                                >
+                                    <x-icons.paper-airplane class="h-4 w-4" />
+                                </button>
+                            </x-slot>
 
-                        <x-slot name="content">
-                            <button
-                                x-cloak
-                                x-data="copyUrl"
-                                x-show="isVisible"
-                                x-on:click="
-                                    copyToClipboard(
-                                        '{{
-                                            route('questions.show', [
-                                                'username' => $question->to->username,
-                                                'question' => $question,
-                                            ])
-                                        }}',
-                                    )
-                                "
-                                type="button"
-                                class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
-                            >
-                                <x-icons.link class="size-4" />
-                            </button>
-                            <button
-                                x-cloak
-                                x-data="shareProfile"
-                                x-show="isVisible"
-                                x-on:click="
-                                    share({
-                                        url: '{{
-                                            route('questions.show', [
-                                                'username' => $question->to->username,
-                                                'question' => $question,
-                                            ])
-                                        }}',
-                                    })
-                                "
-                                class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
-                            >
-                                <x-icons.link class="size-4" />
-                            </button>
-                            <button
-                                x-cloak
-                                x-data="shareProfile"
-                                x-on:click="
-                                    twitter({
-                                        url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
-                                        question: '{{ str_replace("'", "\'", $question->isSharedUpdate() ? $question->answer : $question->content) }}',
-                                        message: '{{ $question->isSharedUpdate() ? 'See it on Pinkary' : 'See response on Pinkary' }}',
-                                    })
-                                "
-                                type="button"
-                                class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
-                            >
-                                <x-icons.twitter-x class="size-4" />
-                            </button>
-                        </x-slot>
-                    </x-dropdown>
+                            <x-slot name="content">
+                                <button
+                                    x-cloak
+                                    x-data="copyUrl"
+                                    x-show="isVisible"
+                                    x-on:click="
+                                        copyToClipboard(
+                                            '{{
+                                                route('questions.show', [
+                                                    'username' => $question->to->username,
+                                                    'question' => $question,
+                                                ])
+                                            }}',
+                                        )
+                                    "
+                                    type="button"
+                                    class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                >
+                                    <x-icons.link class="size-4" />
+                                </button>
+                                <button
+                                    x-cloak
+                                    x-data="shareProfile"
+                                    x-show="isVisible"
+                                    x-on:click="
+                                        share({
+                                            url: '{{
+                                                route('questions.show', [
+                                                    'username' => $question->to->username,
+                                                    'question' => $question,
+                                                ])
+                                            }}',
+                                        })
+                                    "
+                                    class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                >
+                                    <x-icons.link class="size-4" />
+                                </button>
+                                <button
+                                    x-cloak
+                                    x-data="shareProfile"
+                                    x-on:click="
+                                        twitter({
+                                            url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
+                                            question: '{{ str_replace("'", "\'", $question->isSharedUpdate() ? $question->answer : $question->content) }}',
+                                            message: '{{ $question->isSharedUpdate() ? 'See it on Pinkary' : 'See response on Pinkary' }}',
+                                        })
+                                    "
+                                    type="button"
+                                    class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                >
+                                    <x-icons.twitter-x class="size-4" />
+                                </button>
+                            </x-slot>
+                        </x-dropdown>
+                    @endif
                 </div>
             </div>
         </div>
