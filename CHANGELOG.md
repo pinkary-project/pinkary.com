@@ -1,12 +1,19 @@
+## Version 1.21.0
+> 4 July, 2024
+
+- Adds create "update" on home feed
+- Fixes 500s errors on home feed
+- Fixes on sharing updates
+
 ## Version 1.20.2
 > 4 July, 2024
 
-- Fixed on sharing updates
+- Fixes on sharing updates
 
 ## Version 1.20.1
 > 4 July, 2024
 
-- Fixed on sharing updates
+- Fixes on sharing updates
 
 ## Version 1.20.0
 > 4 July, 2024
