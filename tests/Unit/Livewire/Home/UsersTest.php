@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Home\Users;
+use App\Livewire\Home\Search;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
 test('lists no users when there are no users', function () {
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $component->assertSee('No users found.');
 });
@@ -19,7 +19,7 @@ test('lists by default users with GitHub or Twitter links', function () {
         'url' => 'twitter.com/nunomaduro',
     ]);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $users = User::all();
     expect($users->count())->toBe(3);
@@ -43,7 +43,7 @@ test('search by name', function () {
         'email_verified_at' => now(),
     ]);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $component->assertDontSee('Nuno Maduro')
         ->assertDontSee('Taylor Otwell');
@@ -91,7 +91,7 @@ test('order by the number of answered questions', function () {
         'answer' => 'Livewire',
     ]);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $component->set('query', 'Artisan');
 
@@ -126,7 +126,7 @@ test('default users should have 2 verified users', function () {
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create();
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $component->assertSee('Nuno Maduro')
         ->assertSee('Punyapal Shah');
@@ -149,7 +149,7 @@ test('default users should be from top 50 famous users', function () {
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create(['name' => 'Adam Lee']);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     foreach (range(1, 50) as $index) {
         $component->refresh();
@@ -167,7 +167,7 @@ test('famous users are cached for a day', function () {
 
     Cache::forget('top-50-users');
 
-    Livewire::test(Users::class);
+    Livewire::test(Search::class);
 
     $this->assertTrue(Cache::has('top-50-users'));
 
@@ -186,7 +186,7 @@ test('cached famous users are refreshed after a day', function () {
 
     Cache::forget('top-50-users');
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $this->assertTrue(Cache::has('top-50-users'));
 

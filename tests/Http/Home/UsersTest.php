@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Home\Users;
+use App\Livewire\Home\Search;
 
-it('can see the "users" view', function () {
-    $response = $this->get(route('home.users'));
+it('can see the "search" view', function () {
+    $response = $this->get(route('home.search'));
 
     $response->assertOk()
         ->assertSee('Search')
-        ->assertSeeLivewire(Users::class);
+        ->assertSeeLivewire(Search::class);
 });
