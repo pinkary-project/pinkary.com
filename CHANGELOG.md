@@ -1,3 +1,8 @@
+## Version 1.21.1
+> 4 July, 2024
+
+- Fix the delete button in feed
+  
 ## Version 1.21.0
 > 4 July, 2024
 
