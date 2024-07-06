@@ -30,7 +30,7 @@
     </div>
 
     @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
+        <div class="answer mt-3 rounded-2xl {{ $from === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"

@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 final class Show extends Component
@@ -42,6 +43,13 @@ final class Show extends Component
      */
     #[Locked]
     public bool $threadView = false;
+
+    /**
+     * Which update we've come from to get here.
+     */
+    #[Url]
+    public ?string $from;
+
     /**
      * Refresh the component.
      */
