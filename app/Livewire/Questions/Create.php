@@ -12,6 +12,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 /**
@@ -26,6 +27,7 @@ final class Create extends Component
     #[Locked]
     public int $toId;
 
+    #[Url]
     public ?string $replyTo = null;
 
     /**

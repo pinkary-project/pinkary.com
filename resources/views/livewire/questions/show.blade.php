@@ -155,7 +155,7 @@
                     @if(! $isBeingRepliedTo)
                         @if($question->isSharedUpdate() && auth()->check())
                             <button
-                                wire:click="$dispatch('reply-to', ['{{ $questionId }}'])"
+                                wire:click="replyTo"
                                 title="Reply"
                                 class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                             >

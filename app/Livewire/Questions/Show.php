@@ -183,6 +183,14 @@ final class Show extends Component
         }
     }
 
+    public function replyTo(): void
+    {
+        if ($this->threadView) {
+            $this->redirectRoute('home.feed', ['replyTo' => $this->questionId]);
+        }
+        $this->dispatch('reply-to', $this->questionId);
+    }
+
     /**
      * Render the component.
      */
