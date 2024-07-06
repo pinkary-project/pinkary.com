@@ -25,7 +25,7 @@ final class Bookmark extends Model
     /**
      * The question that the bookmark belongs to.
      *
-     * @return BelongsTo<Question, Like>
+     * @return BelongsTo<Question, Bookmark>
      */
     public function question(): BelongsTo
     {
@@ -35,7 +35,7 @@ final class Bookmark extends Model
     /**
      * The user that the bookmark belongs to.
      *
-     * @return BelongsTo<User, Like>
+     * @return BelongsTo<User, Bookmark>
      */
     public function user(): BelongsTo
     {
