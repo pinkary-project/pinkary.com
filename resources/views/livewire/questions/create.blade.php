@@ -2,7 +2,11 @@
     class="mb-12 pt-4"
     id="questions-create"
 >
-    <form wire:submit="store">
+    <form
+        wire:submit="store"
+        wire:keydown.cmd.enter="store"
+        wire:keydown.ctrl.enter="store"
+    >
         <div>
             <x-textarea
                 wire:model="content"
