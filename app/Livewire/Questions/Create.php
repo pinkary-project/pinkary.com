@@ -26,6 +26,8 @@ final class Create extends Component
     #[Locked]
     public int $toId;
 
+    public ?string $replyTo = null;
+
     /**
      * The component's content.
      */
@@ -75,6 +77,18 @@ final class Create extends Component
         //
     }
 
+    #[On('reply-to')]
+    public function setReplyTo(string $id): void
+    {
+        $this->replyTo = $id;
+    }
+
+    #[On('stop-replying')]
+    public function removeReplyTo(): void
+    {
+        $this->replyTo = null;
+    }
+
     /**
      * Stores a new question.
      */
@@ -112,12 +126,16 @@ final class Create extends Component
             $validated['content'] = '__UPDATE__';
         }
 
+        if ($this->replyTo) {
+            $validated['parent_id'] = $this->replyTo;
+        }
+
         $user->questionsSent()->create([
             ...$validated,
             'to_id' => $this->toId,
         ]);
 
-        $this->reset(['content']);
+        $this->reset(['content', 'replyTo']);
 
         $this->anonymously = $user->prefers_anonymous_questions;
 
