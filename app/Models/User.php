@@ -86,6 +86,16 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Get the user's bookmarks.
+     *
+     * @return HasMany<Bookmark>
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    /**
      * Get the user's links.
      *
      * @return HasMany<Link>
