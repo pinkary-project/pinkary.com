@@ -7,7 +7,7 @@ namespace App\Policies;
 use App\Models\Bookmark;
 use App\Models\User;
 
-final class BookmarkPolicy
+final readonly class BookmarkPolicy
 {
     /**
      * Determine whether the user can delete the model.
