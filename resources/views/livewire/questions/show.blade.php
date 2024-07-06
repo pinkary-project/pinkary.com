@@ -68,6 +68,7 @@
                         </p>
                     </div>
                 </a>
+
                 @if($isBeingRepliedTo)
                     <button
                         wire:click="$dispatch('stop-replying')"
@@ -299,6 +300,16 @@
             :questionId="$question->id"
             :key="$question->id"
         />
+    @endif
+
+    @if($threadView && $question->children->isNotEmpty())
+        <div class="pl-3">
+            @foreach($question->children as $reply)
+                @break($loop->depth > 5)
+
+                <livewire:questions.show :question-id="$reply->id" :thread-view="true" />
+            @endforeach
+        </div>
     @endif
 </article>
 

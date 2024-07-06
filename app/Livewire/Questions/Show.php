@@ -38,6 +38,11 @@ final class Show extends Component
     public bool $isBeingRepliedTo = false;
 
     /**
+     * Determine if this is currently being viewed in thread view.
+     */
+    #[Locked]
+    public bool $threadView = false;
+    /**
      * Refresh the component.
      */
     #[On('question.updated')]
@@ -184,7 +189,7 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes'])
+            ->with(['to', 'from', 'likes', 'parent', 'children'])
             ->withCount('likes')
             ->firstOrFail();
 

@@ -153,4 +153,20 @@ final class Question extends Model implements Viewable
     {
         return $this->from_id === $this->to_id && $this->content === '__UPDATE__';
     }
+
+    /**
+     * @return BelongsTo<Question, Question>
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * @return HasMany<Question>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
 }
