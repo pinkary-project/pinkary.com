@@ -16,7 +16,7 @@ final class PulseServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('viewPulse', fn (User $user): bool => $user->email === 'enunomaduro@gmail.com');
+        Gate::define('viewPulse', fn (User $user): bool => $user->email === 'enunomaduro@gmail.com' || $user->email === 'mrpunyapal@gmail.com');
 
         Pulse::user(fn (User $user): array => [
             'name' => $user->name,
