@@ -26,6 +26,9 @@ final class Create extends Component
     #[Locked]
     public int $toId;
 
+    /**
+     * Which question this question is replying to.
+     */
     #[Locked]
     public ?string $replyTo = null;
 
@@ -60,6 +63,9 @@ final class Create extends Component
         return $this->toId === auth()->id();
     }
 
+    /**
+     * Choose appropriate placeholder copy.
+     */
     #[Computed]
     public function placeholder(): string
     {

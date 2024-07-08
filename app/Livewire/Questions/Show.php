@@ -192,6 +192,9 @@ final class Show extends Component
         }
     }
 
+    /**
+     * Show the reply screen.
+     */
     public function reply(): void
     {
         $question = Question::with(['to'])->findOrFail($this->questionId);
@@ -218,6 +221,9 @@ final class Show extends Component
         ]);
     }
 
+    /**
+     * Determine if the reply box should be shown.
+     */
     #[Computed]
     public function shouldShowReplyBox(): bool
     {
@@ -226,6 +232,9 @@ final class Show extends Component
             && auth()->check();
     }
 
+    /**
+     * Determine if the replies should be shown.
+     */
     #[Computed]
     public function shouldShowReplies(Question $question): bool
     {
