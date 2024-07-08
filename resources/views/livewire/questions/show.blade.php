@@ -121,9 +121,24 @@
                 @endif
             </div>
 
-            <p class="mt-3 break-words text-slate-200">
-                {!! $question->answer !!}
-            </p>
+            <div x-data="showMore">
+                <div
+                    class="mt-3 break-words text-slate-200 overflow-hidden"
+                    x-ref="parentDiv"
+                >
+                    <p>
+                        {!! $question->answer !!}
+                    </p>
+                </div>
+
+                <div x-show="showMore === true" class="mt-1">
+                    <button
+                        @click="showButtonAction"
+                        class="text-sm text-pink-500 flex ml-auto"
+                        x-text="showMoreButtonText"
+                    ></button>
+                </div>
+            </div>
 
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))
 
