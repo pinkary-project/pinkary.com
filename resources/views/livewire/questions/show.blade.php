@@ -1,4 +1,4 @@
-<article class="block">
+<article class="block" id="{{ $questionId }}">
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
