@@ -190,12 +190,26 @@ final class Show extends Component
         }
     }
 
-    public function replyTo(): void
+    public function shouldShowReplyBox(): bool
     {
-        if ($this->threadView) {
-            $this->redirectRoute('home.feed', ['replyTo' => $this->questionId]);
-        }
-        $this->dispatch('reply-to', $this->questionId);
+        return $this->replying && $this->threadView;
+    }
+
+    public function shouldShowReplies(): bool
+    {
+        $question = Question::with(['children'])->findOrFail($this->questionId);
+
+        return $question->children->isNotEmpty() && $this->threadView;
+    }
+
+    public function reply(): void
+    {
+        $question = Question::with(['to'])->findOrFail($this->questionId);
+
+        $this->redirectRoute('questions.show', [
+            'question' => $this->questionId,
+            'username' => $question->to->username,
+        ]);
     }
 
     /**

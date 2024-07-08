@@ -18,14 +18,6 @@
 
             <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
 
-            @if($replyTo)
-                <p class="text-xs text-slate-400">
-                    In reply to...
-                </p>
-
-                <livewire:questions.show :question-id="$replyTo" :is-being-replied-to="true" />
-            @endif
-
             @error('content')
                 <x-input-error
                     :messages="$message"

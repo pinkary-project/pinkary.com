@@ -302,12 +302,16 @@
         />
     @endif
 
-    @if($threadView && $question->children->isNotEmpty())
+    @if($this->shouldShowReplyBox())
+        <livewire:questions.create :reply-to="$questionId" :to-id="$user->id" />
+    @endif
+
+    @if($this->shouldShowReplies())
         <div class="pl-3">
             @foreach($question->children as $reply)
                 @break($loop->depth > 5)
 
-                <livewire:questions.show :question-id="$reply->id" :thread-view="true" />
+                <livewire:questions.show :question-id="$reply->id" :$threadView :wire:key="$reply->id" />
             @endforeach
         </div>
     @endif

@@ -27,7 +27,7 @@ final class Create extends Component
     #[Locked]
     public int $toId;
 
-    #[Url]
+    #[Locked]
     public ?string $replyTo = null;
 
     /**
@@ -64,8 +64,8 @@ final class Create extends Component
     #[Computed]
     public function placeholder(): string
     {
-        return match(true) {
-            $this->replyTo !== null => 'Write your reply...',
+        return match (true) {
+            $this->replyTo !== null => 'Write a reply...',
             $this->isSharingUpdate() => 'Share an update...',
             default => 'Ask a question...'
         };
@@ -87,18 +87,6 @@ final class Create extends Component
     public function refresh(): void
     {
         //
-    }
-
-    #[On('reply-to')]
-    public function setReplyTo(string $id): void
-    {
-        $this->replyTo = $id;
-    }
-
-    #[On('stop-replying')]
-    public function removeReplyTo(): void
-    {
-        $this->replyTo = null;
     }
 
     /**
@@ -147,7 +135,7 @@ final class Create extends Component
             'to_id' => $this->toId,
         ]);
 
-        $this->reset(['content', 'replyTo']);
+        $this->reset(['content']);
 
         $this->anonymously = $user->prefers_anonymous_questions;
 
