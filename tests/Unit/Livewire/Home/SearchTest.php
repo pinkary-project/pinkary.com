@@ -8,10 +8,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
-test('lists no users when there are no users', function () {
+test('lists no result when there are no users', function () {
     $component = Livewire::test(Search::class);
 
-    $component->assertSee('No users found.');
+    $component->assertSee('No matching users or content found.');
 });
 
 test('lists by default users with GitHub or Twitter links', function () {
