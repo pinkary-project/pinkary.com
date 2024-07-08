@@ -127,8 +127,10 @@
                         route('questions.show', [
                             'username' => $question->parent->to->username,
                             'question' => $question->parent,
+                            'fromId' => $questionId,
                         ])
-                    }}?fromId={{ $questionId }}"
+                    }}"
+                   wire:navigate
                    class="truncate text-xs text-slate-500 transition-colors hover:text-slate-400"
                 >
                     In response to {{ '@'.$question->parent->to->username }}
