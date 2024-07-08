@@ -145,7 +145,7 @@ test('store reply', function () {
     $component->call('store');
     $component->assertSet('content', '');
 
-    $component->assertDispatched('notification.created', message: 'Question sent.');
+    $component->assertDispatched('notification.created', message: 'Reply sent.');
     $component->assertDispatched('question.created');
 
     $reply = App\Models\Question::latest()->limit(1)->first();
