@@ -134,7 +134,7 @@ test('store reply', function () {
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
-        'toId' => $userB->id,
+        'toId' => $userA->id,
         'replyTo' => $question->id,
     ]);
 
@@ -151,8 +151,8 @@ test('store reply', function () {
     $reply = App\Models\Question::latest()->limit(1)->first();
 
     expect($reply->from_id)->toBe($userA->id)
-        ->and($reply->to_id)->toBe($userB->id)
-        ->and($reply->content)->toBe('My reply')
+        ->and($reply->to_id)->toBe($userA->id)
+        ->and($reply->answer)->toBe('My reply')
         ->and($reply->parent_id)->toBe($question->id);
 });
 
