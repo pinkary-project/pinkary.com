@@ -304,7 +304,7 @@
         />
     @endif
 
-    @if($replying && $threadView && auth()->check()
+    @if($replying && $threadView && auth()->check())
         <livewire:questions.create :reply-to="$questionId" :to-id="$user->id" />
     @endif
 
