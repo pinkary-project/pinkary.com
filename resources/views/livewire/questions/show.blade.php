@@ -149,7 +149,7 @@
                             title="Reply"
                             class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                         >
-                            <x-icons.reply class="size-4" />
+                            <x-heroicon-o-chat-bubble-left-right class="size-4" />
                         </button>
                     @endif
 
