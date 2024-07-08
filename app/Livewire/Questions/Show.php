@@ -53,6 +53,7 @@ final class Show extends Component
      * Refresh the component.
      */
     #[On('question.updated')]
+    #[On('question.created')]
     public function refresh(): void
     {
         //
