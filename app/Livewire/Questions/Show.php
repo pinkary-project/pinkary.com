@@ -235,7 +235,6 @@ final class Show extends Component
     /**
      * Determine if the replies should be shown.
      */
-    #[Computed]
     public function shouldShowReplies(Question $question): bool
     {
         return $this->threadView && $question->children->isNotEmpty();
