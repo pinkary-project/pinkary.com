@@ -131,8 +131,8 @@ final class Create extends Component
             $validated['content'] = '__UPDATE__';
         }
 
-        if (filled($this->replyTo)) {
-            $validated['parent_id'] = $this->replyTo;
+        if (filled($this->parentId)) {
+            $validated['parent_id'] = $this->parentId;
         }
 
         $user->questionsSent()->create([
