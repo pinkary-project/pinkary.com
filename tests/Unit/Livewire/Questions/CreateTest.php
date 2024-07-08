@@ -135,7 +135,7 @@ test('store reply', function () {
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
         'toId' => $userA->id,
-        'replyTo' => $question->id,
+        'parentId' => $question->id,
     ]);
 
     sleep(1);

@@ -30,7 +30,7 @@ final class Create extends Component
      * Which question this question is replying to.
      */
     #[Locked]
-    public ?string $replyTo = null;
+    public ?string $parentId = null;
 
     /**
      * The component's content.
