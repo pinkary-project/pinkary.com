@@ -304,11 +304,11 @@
         />
     @endif
 
-    @if($this->shouldShowReplyBox)
+    @if($replying && $threadView && auth()->check()
         <livewire:questions.create :reply-to="$questionId" :to-id="$user->id" />
     @endif
 
-    @if($this->shouldShowReplies($question))
+    @if($threadView && $question->children->isNotEmpty())
         <div class="pl-3">
             @foreach($question->children as $reply)
                 @break($loop->depth > 5)

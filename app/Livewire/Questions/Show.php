@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\View\View;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
@@ -226,24 +225,5 @@ final class Show extends Component
             'user' => $question->to,
             'question' => $question,
         ]);
-    }
-
-    /**
-     * Determine if the reply box should be shown.
-     */
-    #[Computed]
-    public function shouldShowReplyBox(): bool
-    {
-        return $this->replying
-            && $this->threadView
-            && auth()->check();
-    }
-
-    /**
-     * Determine if the replies should be shown.
-     */
-    public function shouldShowReplies(Question $question): bool
-    {
-        return $this->threadView && $question->children->isNotEmpty();
     }
 }
