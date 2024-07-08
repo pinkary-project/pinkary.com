@@ -12,7 +12,6 @@ use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 
 /**
@@ -126,7 +125,7 @@ final class Create extends Component
             $validated['content'] = '__UPDATE__';
         }
 
-        if ($this->replyTo) {
+        if (filled($this->replyTo)) {
             $validated['parent_id'] = $this->replyTo;
         }
 
