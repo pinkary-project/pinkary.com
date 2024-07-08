@@ -193,7 +193,9 @@ final class Show extends Component
 
     public function shouldShowReplyBox(): bool
     {
-        return $this->replying && $this->threadView;
+        return $this->replying
+            && $this->threadView
+            && auth()->check();
     }
 
     public function shouldShowReplies(): bool
