@@ -37,8 +37,8 @@ final class Search extends Component
     public function render(): View
     {
         return view('livewire.home.search', [
-            'users' => $this->query !== ''
-                ? $this->usersByQuery()
+            'results' => $this->query !== ''
+                ? $this->searchByQuery()
                 : $this->defaultUsers(),
         ]);
     }
