@@ -192,26 +192,6 @@ final class Show extends Component
         }
     }
 
-    #[Computed]
-    protected function shouldShowReplyBox(): bool
-    {
-        return $this->replying
-            && $this->threadView
-            && auth()->check();
-    }
-
-    #[Computed]
-    protected function shouldShowReplies(): bool
-    {
-        if (! $this->threadView) {
-            return false;
-        }
-
-        $question = Question::with(['children'])->findOrFail($this->questionId);
-
-        return $question->children->isNotEmpty();
-    }
-
     public function reply(): void
     {
         $question = Question::with(['to'])->findOrFail($this->questionId);
@@ -236,5 +216,25 @@ final class Show extends Component
             'user' => $question->to,
             'question' => $question,
         ]);
+    }
+
+    #[Computed]
+    public function shouldShowReplyBox(): bool
+    {
+        return $this->replying
+            && $this->threadView
+            && auth()->check();
+    }
+
+    #[Computed]
+    public function shouldShowReplies(): bool
+    {
+        if (! $this->threadView) {
+            return false;
+        }
+
+        $question = Question::with(['children'])->findOrFail($this->questionId);
+
+        return $question->children->isNotEmpty();
     }
 }
