@@ -306,7 +306,7 @@
         <livewire:questions.create :reply-to="$questionId" :to-id="$user->id" />
     @endif
 
-    @if($this->shouldShowReplies)
+    @if($this->shouldShowReplies($question))
         <div class="pl-3">
             @foreach($question->children as $reply)
                 @break($loop->depth > 5)

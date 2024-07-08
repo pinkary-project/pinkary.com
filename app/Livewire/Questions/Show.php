@@ -227,14 +227,8 @@ final class Show extends Component
     }
 
     #[Computed]
-    public function shouldShowReplies(): bool
+    public function shouldShowReplies(Question $question): bool
     {
-        if (! $this->threadView) {
-            return false;
-        }
-
-        $question = Question::with(['children'])->findOrFail($this->questionId);
-
-        return $question->children->isNotEmpty();
+        return $this->threadView && $question->children->isNotEmpty();
     }
 }
