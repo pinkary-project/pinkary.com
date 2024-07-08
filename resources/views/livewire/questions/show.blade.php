@@ -30,7 +30,7 @@
     </div>
 
     @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl {{ $from === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
+        <div class="answer mt-3 rounded-2xl {{ $fromId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
@@ -128,7 +128,7 @@
                             'username' => $question->parent->to->username,
                             'question' => $question->parent,
                         ])
-                    }}?from={{ $questionId }}"
+                    }}?fromId={{ $questionId }}"
                    class="truncate text-xs text-slate-500 transition-colors hover:text-slate-400"
                 >
                     In response to {{ '@'.$question->parent->to->username }}

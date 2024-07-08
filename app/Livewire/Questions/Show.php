@@ -48,7 +48,7 @@ final class Show extends Component
      * Which update we've come from to get here.
      */
     #[Url]
-    public ?string $from = null;
+    public ?string $fromId = null;
 
     /**
      * Refresh the component.
