@@ -6,6 +6,8 @@ namespace App\Livewire\Questions;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
@@ -211,7 +213,12 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes', 'parent', 'children'])
+            ->with(['to', 'from', 'likes', 'parent'])
+            ->when($this->threadView, function (Builder $query): void {
+                $query->with(['children' => function (Builder|HasMany $query): void {
+                    $query->limit(3);
+                }]);
+            })
             ->withCount('likes')
             ->firstOrFail();
 
