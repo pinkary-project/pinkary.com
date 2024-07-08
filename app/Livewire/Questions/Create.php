@@ -70,7 +70,7 @@ final class Create extends Component
     public function placeholder(): string
     {
         return match (true) {
-            $this->replyTo !== null => 'Write a reply...',
+            filled($this->parentId) => 'Write a reply...',
             $this->isSharingUpdate() => 'Share an update...',
             default => 'Ask a question...'
         };
@@ -146,7 +146,11 @@ final class Create extends Component
 
         $this->dispatch('question.created');
 
-        $message = filled($this->replyTo) ? 'Reply sent.' : 'Question sent.';
+        $message = match (true) {
+            filled($this->parentId) => 'Reply sent.',
+            $this->isSharingUpdate => 'Update sent.',
+            default => 'Question sent.'
+        };
 
         $this->dispatch('notification.created', message: $message);
     }
