@@ -147,8 +147,8 @@
                 <div class="flex items-center gap-2">
                     @if($question->isSharedUpdate() && auth()->check())
                         <button
-                            wire:click="reply"
-                            title="Reply"
+                            wire:click="comment"
+                            title="Comment"
                             class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                         >
                             <x-heroicon-o-chat-bubble-left-right class="size-4" />
@@ -304,16 +304,16 @@
         />
     @endif
 
-    @if($replying && $threadView && auth()->check())
         <livewire:questions.create :reply-to="$questionId" :to-id="$user->id" />
+    @if($commenting && $threadView && auth()->check())
     @endif
 
     @if($threadView && $question->children->isNotEmpty())
         <div class="pl-3">
-            @foreach($question->children as $reply)
+            @foreach($question->children as $comment)
                 @break($loop->depth > 5)
 
-                <livewire:questions.show :question-id="$reply->id" :$threadView :wire:key="$reply->id" />
+                <livewire:questions.show :question-id="$comment->id" :$threadView :wire:key="$comment->id" />
             @endforeach
         </div>
     @endif

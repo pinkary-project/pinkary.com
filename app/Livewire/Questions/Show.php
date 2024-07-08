@@ -35,9 +35,10 @@ final class Show extends Component
     public bool $pinnable = false;
 
     /**
-     * Indicate that the reply box should be shown.
+     * Indicate that the comment box should be shown.
      */
-    public bool $replying = false;
+    #[Locked]
+    public bool $commenting = false;
 
     /**
      * Determine if this is currently being viewed in thread view.
@@ -194,9 +195,9 @@ final class Show extends Component
     }
 
     /**
-     * Show the reply screen.
+     * Show the comment form.
      */
-    public function reply(): void
+    public function comment(): void
     {
         $question = Question::with(['to'])->findOrFail($this->questionId);
 

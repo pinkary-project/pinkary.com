@@ -27,7 +27,7 @@ final class Create extends Component
     public int $toId;
 
     /**
-     * Which question this question is replying to.
+     * Which question this question is commenting on.
      */
     #[Locked]
     public ?string $parentId = null;
@@ -70,7 +70,7 @@ final class Create extends Component
     public function placeholder(): string
     {
         return match (true) {
-            filled($this->parentId) => 'Write a reply...',
+            filled($this->parentId) => 'Write a comment...',
             $this->isSharingUpdate() => 'Share an update...',
             default => 'Ask a question...'
         };
@@ -147,7 +147,7 @@ final class Create extends Component
         $this->dispatch('question.created');
 
         $message = match (true) {
-            filled($this->parentId) => 'Reply sent.',
+            filled($this->parentId) => 'Comment sent.',
             $this->isSharingUpdate => 'Update sent.',
             default => 'Question sent.'
         };
