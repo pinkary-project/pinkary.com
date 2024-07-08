@@ -33,10 +33,9 @@ final class Show extends Component
     public bool $pinnable = false;
 
     /**
-     * Determine if this is currently being used to render the reply-to preview.
+     * Indicate that the reply box should be shown.
      */
-    #[Locked]
-    public bool $isBeingRepliedTo = false;
+    public bool $replying = false;
 
     /**
      * Determine if this is currently being viewed in thread view.
