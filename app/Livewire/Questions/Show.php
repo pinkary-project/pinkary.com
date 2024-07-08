@@ -199,7 +199,7 @@ final class Show extends Component
         $this->redirectRoute('questions.show', [
             'question' => $this->questionId,
             'username' => $question->to->username,
-        ]);
+        ], navigate: true);
     }
 
     /**
