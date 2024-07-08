@@ -17,14 +17,4 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->after('id');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('questions', function (Blueprint $table): void {
-            $table->dropForeign('parent_id');
-        });
-    }
 };
