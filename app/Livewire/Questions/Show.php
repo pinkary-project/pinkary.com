@@ -203,9 +203,13 @@ final class Show extends Component
     #[Computed]
     protected function shouldShowReplies(): bool
     {
+        if (! $this->threadView) {
+            return false;
+        }
+
         $question = Question::with(['children'])->findOrFail($this->questionId);
 
-        return $question->children->isNotEmpty() && $this->threadView;
+        return $question->children->isNotEmpty();
     }
 
     public function reply(): void
