@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Home;
 
 use App\Livewire\Concerns\Followable;
+use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,6 +17,8 @@ use Livewire\Component;
 final class Search extends Component
 {
     use Followable;
+
+    private const int MIN_CONTENT_SEARCH_QUERY_LENGTH = 1;
 
     /**
      * The component's search query.
@@ -38,6 +41,15 @@ final class Search extends Component
                 ? $this->usersByQuery()
                 : $this->defaultUsers(),
         ]);
+    }
+
+    private function searchByQuery(): Collection
+    {
+        return $this->usersByQuery()
+            ->when(
+                mb_strlen($this->query) >= self::MIN_CONTENT_SEARCH_QUERY_LENGTH,
+                fn (Collection $collection): Collection => $collection->merge($this->questionsByQuery()),
+            );
     }
 
     /**
@@ -64,6 +76,24 @@ final class Search extends Component
                     },
                 ]);
             })
+            ->limit(10)
+            ->get();
+    }
+
+    /**
+     * Returns the questions by query, ordered by the number of likes received.
+     *
+     * @return Collection<int, User>
+     */
+    private function questionsByQuery(): Collection
+    {
+        return Question::query()
+            ->withCount('likes')
+            ->orderBy('likes_count', 'desc')
+            ->with(['to', 'from', 'likes'])
+            ->whereAny(['question', 'answer'], 'like', "%{$this->query}%")
+            ->where('is_reported', false)
+            ->where('is_ignored', false)
             ->limit(10)
             ->get();
     }
