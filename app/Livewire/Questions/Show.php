@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
@@ -191,14 +192,16 @@ final class Show extends Component
         }
     }
 
-    public function shouldShowReplyBox(): bool
+    #[Computed]
+    protected function shouldShowReplyBox(): bool
     {
         return $this->replying
             && $this->threadView
             && auth()->check();
     }
 
-    public function shouldShowReplies(): bool
+    #[Computed]
+    protected function shouldShowReplies(): bool
     {
         $question = Question::with(['children'])->findOrFail($this->questionId);
 
