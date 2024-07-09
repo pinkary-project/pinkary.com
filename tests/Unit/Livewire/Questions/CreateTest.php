@@ -126,6 +126,36 @@ test('store rate limit', function () {
     ]);
 });
 
+test('store comment', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    $question = App\Models\Question::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userA->id,
+        'parentId' => $question->id,
+    ]);
+
+    sleep(1);
+
+    $component->set('content', 'My comment');
+
+    $component->call('store');
+    $component->assertSet('content', '');
+
+    $component->assertDispatched('notification.created', message: 'Comment sent.');
+    $component->assertDispatched('question.created');
+
+    $comment = App\Models\Question::latest()->limit(1)->first();
+
+    expect($comment->from_id)->toBe($userA->id)
+        ->and($comment->to_id)->toBe($userA->id)
+        ->and($comment->answer)->toBe('My comment')
+        ->and($comment->parent_id)->toBe($question->id);
+});
+
 test('max 30 questions per day', function () {
     $user = User::factory()->create();
 

@@ -35,6 +35,8 @@ use Illuminate\Support\Carbon;
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
  * @property-read Collection<int, User> $mentions
+ * @property-read Question|null $parent
+ * @property-read Collection<int, Question> $children
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
@@ -152,5 +154,21 @@ final class Question extends Model implements Viewable
     public function isSharedUpdate(): bool
     {
         return $this->from_id === $this->to_id && $this->content === '__UPDATE__';
+    }
+
+    /**
+     * @return BelongsTo<Question, Question>
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * @return HasMany<Question>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
     }
 }

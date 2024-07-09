@@ -6,9 +6,11 @@ namespace App\Livewire\Questions;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 final class Show extends Component
@@ -20,10 +22,16 @@ final class Show extends Component
     public string $questionId;
 
     /**
-     * The component's in index state.
+     * Determine if this is currently being viewed in the index (list) view.
      */
     #[Locked]
     public bool $inIndex = false;
+
+    /**
+     * Determine if this is currently being viewed in thread view.
+     */
+    #[Locked]
+    public bool $inThread = false;
 
     /**
      * Whether the pinned label should be displayed or not.
@@ -32,9 +40,22 @@ final class Show extends Component
     public bool $pinnable = false;
 
     /**
+     * Enable the comment box.
+     */
+    #[Locked]
+    public bool $commenting = false;
+
+    /**
+     * The previous question ID, where the user came from.
+     */
+    #[Url]
+    public ?string $previousQuestionId = null;
+
+    /**
      * Refresh the component.
      */
     #[On('question.updated')]
+    #[On('question.created')]
     public function refresh(): void
     {
         //
@@ -173,12 +194,31 @@ final class Show extends Component
     }
 
     /**
+     * Show the comment form.
+     */
+    public function comment(): void
+    {
+        $question = Question::with(['to'])->findOrFail($this->questionId);
+
+        $this->redirectRoute('questions.show', [
+            'question' => $this->questionId,
+            'username' => $question->to->username,
+        ], navigate: true);
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
             ->with(['to', 'from', 'likes'])
+            ->when(!$this->inThread || $this->commenting, function (Builder $query): void {
+                $query->with('parent');
+            })
+            ->when($this->inThread, function (Builder $query): void {
+                $query->with(['children']);
+            })
             ->withCount('likes')
             ->firstOrFail();
 

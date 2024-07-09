@@ -10,7 +10,7 @@
                 <span>Back</span>
             </a>
 
-            <livewire:questions.show :questionId="$question->id" />
+            <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" />
         </div>
     </div>
 </x-app-layout>

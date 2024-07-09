@@ -1,4 +1,4 @@
-<article class="block">
+<article class="block" id="q-{{ $questionId }}">
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
@@ -30,7 +30,7 @@
     </div>
 
     @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl bg-slate-900 p-4">
+        <div class="answer mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
@@ -68,6 +68,7 @@
                         </p>
                     </div>
                 </a>
+
                 @if (auth()->check() && auth()->user()->can('update', $question))
                     <x-dropdown
                         align="right"
@@ -121,6 +122,21 @@
                 @endif
             </div>
 
+            @if((! $inThread || $commenting) && $question->parent)
+                <a href="{{
+                        route('questions.show', [
+                            'username' => $question->parent->to->username,
+                            'question' => $question->parent,
+                            'previousQuestionId' => $questionId,
+                        ])
+                    }}"
+                   wire:navigate
+                   class="truncate text-xs text-slate-500 transition-colors hover:text-slate-400"
+                >
+                    In response to {{ '@'.$question->parent->to->username }}
+                </a>
+            @endif
+
             <div x-data="showMore">
                 <div
                     class="mt-3 break-words text-slate-200 overflow-hidden"
@@ -143,7 +159,15 @@
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))
 
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
-                <div class="flex items-center">
+                <div class="flex items-center gap-2">
+                    <button
+                        wire:click="comment"
+                        title="Comment"
+                        class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                    >
+                        <x-heroicon-o-chat-bubble-left-right class="size-4" />
+                    </button>
+
                     <button
                         @if ($likeExists)
                             wire:click="unlike()"
@@ -152,7 +176,7 @@
                         @endif
                         x-data="particlesEffect"
                         x-on:click="executeParticlesEffect($event)"
-
+                        title="Like"
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)
@@ -182,7 +206,8 @@
                         </p>
                     @endif
                 </div>
-                <div class="flex items-center text-slate-500">
+
+                <div class="flex items-center text-slate-500 ">
                     @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
                     <time
                         class="cursor-help"
@@ -206,6 +231,7 @@
                             <button
                                 x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
                                                 'text-slate-500 hover:text-slate-400': !open }"
+                                title="Share"
                                 class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
                                 <x-icons.paper-airplane class="h-4 w-4" />
@@ -289,6 +315,20 @@
             :questionId="$question->id"
             :key="$question->id"
         />
+    @endif
+
+    @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
+        <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
+    @endif
+
+    @if($inThread && $question->children->isNotEmpty())
+        <div class="pl-3">
+            @foreach($question->children as $comment)
+                @break($loop->depth > 5)
+
+                <livewire:questions.show :question-id="$comment->id" :$inThread :wire:key="$comment->id" />
+            @endforeach
+        </div>
     @endif
 </article>
 

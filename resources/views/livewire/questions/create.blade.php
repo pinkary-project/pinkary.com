@@ -10,7 +10,7 @@
         <div>
             <x-textarea
                 wire:model="content"
-                placeholder="{{ $this->isSharingUpdate ? 'Share an update...' : 'Ask a question...' }}"
+                placeholder="{{ $this->placeholder }}"
                 maxlength="{{ $this->maxContentLength }}"
                 rows="3"
                 required
@@ -34,7 +34,7 @@
                     {{ __('Send') }}
                 </x-primary-button>
             </div>
-            @if (! $this->isSharingUpdate)
+            @if (! $this->parentId && ! $this->isSharingUpdate)
                 <div class="flex items-center">
                     <x-checkbox
                         wire:model="anonymously"

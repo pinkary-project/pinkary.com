@@ -59,6 +59,8 @@
                             </div>
                         @endif
                     @endif
+                @elseif ($question->parent !== null)
+                    <p class="text-sm text-slate-500">You have been mentioned in a comment by {{ '@' . $question->to->username }}</p>
                 @else
                     <p class="text-sm text-slate-500">You have been mentioned in a {{ $question->isSharedUpdate() ? 'update by @'.$question->to->username : 'question:'}}</p>
                 @endif
