@@ -127,7 +127,7 @@
                         route('questions.show', [
                             'username' => $question->parent->to->username,
                             'question' => $question->parent,
-                            'previousQuestionId' => $question->id,
+                            'previousQuestionId' => $questionId,
                         ])
                     }}"
                    wire:navigate
