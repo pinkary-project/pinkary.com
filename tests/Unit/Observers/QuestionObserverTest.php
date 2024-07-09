@@ -199,10 +199,14 @@ test('deleted', function () {
 
     Question::factory(3)
         ->sharedUpdate()
+        ->has(Question::factory()->sharedUpdate()->count(3)->state([
+            'answer' => 'grandchild',
+        ]), 'children')
         ->for($question, 'parent')
         ->create();
 
     expect($question->children()->count())->toBe(3);
+    expect(Question::where('answer', 'grandchild')->count())->toBe(9);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -212,4 +216,5 @@ test('deleted', function () {
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
     expect($question->children()->count())->toBe(0);
+    expect(Question::where('answer', 'grandchild')->count())->toBe(0);
 });
