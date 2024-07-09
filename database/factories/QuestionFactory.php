@@ -36,16 +36,12 @@ final class QuestionFactory extends Factory
 
     /**
      * Indicate that the question is shared Update.
-     *
-     * @return \Database\Factories\QuestionFactory
      */
-    public function sharedUpdate(): QuestionFactory
+    public function sharedUpdate(): self
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'content' => '__UPDATE__',
-                'answer' => $this->faker->sentence,
-            ];
-        });
+        return $this->state(fn (array $attributes): array => [
+            'content' => '__UPDATE__',
+            'answer' => $this->faker->sentence,
+        ]);
     }
 }
