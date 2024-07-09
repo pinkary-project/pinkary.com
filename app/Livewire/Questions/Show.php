@@ -215,9 +215,7 @@ final class Show extends Component
         $question = Question::where('id', $this->questionId)
             ->with(['to', 'from', 'likes', 'parent'])
             ->when($this->inThread, function (Builder $query): void {
-                $query->with(['children' => function (Builder|HasMany $query): void {
-                    $query->limit(3);
-                }]);
+                $query->with(['children']);
             })
             ->withCount('likes')
             ->firstOrFail();
