@@ -47,10 +47,10 @@ final class Show extends Component
     public bool $commenting = false;
 
     /**
-     * The child questionId we travelled from.
+     * The previous question ID, where the user came from.
      */
     #[Url]
-    public ?string $commentId = null;
+    public ?string $previousQuestionId = null;
 
     /**
      * Refresh the component.

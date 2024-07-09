@@ -30,7 +30,7 @@
     </div>
 
     @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl {{ $commentId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
+        <div class="answer mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
@@ -127,7 +127,7 @@
                         route('questions.show', [
                             'username' => $question->parent->to->username,
                             'question' => $question->parent,
-                            'commentId' => $questionId,
+                            'previousQuestionId' => $question->id,
                         ])
                     }}"
                    wire:navigate
