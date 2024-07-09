@@ -126,7 +126,7 @@ test('store rate limit', function () {
     ]);
 });
 
-test('store reply', function () {
+test('store comment', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -140,20 +140,20 @@ test('store reply', function () {
 
     sleep(1);
 
-    $component->set('content', 'My reply');
+    $component->set('content', 'My comment');
 
     $component->call('store');
     $component->assertSet('content', '');
 
-    $component->assertDispatched('notification.created', message: 'Reply sent.');
+    $component->assertDispatched('notification.created', message: 'Comment sent.');
     $component->assertDispatched('question.created');
 
-    $reply = App\Models\Question::latest()->limit(1)->first();
+    $comment = App\Models\Question::latest()->limit(1)->first();
 
-    expect($reply->from_id)->toBe($userA->id)
-        ->and($reply->to_id)->toBe($userA->id)
-        ->and($reply->answer)->toBe('My reply')
-        ->and($reply->parent_id)->toBe($question->id);
+    expect($comment->from_id)->toBe($userA->id)
+        ->and($comment->to_id)->toBe($userA->id)
+        ->and($comment->answer)->toBe('My comment')
+        ->and($comment->parent_id)->toBe($question->id);
 });
 
 test('max 30 questions per day', function () {

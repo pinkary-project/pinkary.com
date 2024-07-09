@@ -34,7 +34,7 @@
                     {{ __('Send') }}
                 </x-primary-button>
             </div>
-            @if (! $this->isSharingUpdate)
+            @if (! $this->parentId && ! $this->isSharingUpdate)
                 <div class="flex items-center">
                     <x-checkbox
                         wire:model="anonymously"

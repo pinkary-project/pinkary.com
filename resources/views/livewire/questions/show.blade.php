@@ -160,15 +160,13 @@
 
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <div class="flex items-center gap-2">
-                    @if($question->isSharedUpdate() && auth()->check())
-                        <button
-                            wire:click="comment"
-                            title="Comment"
-                            class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
-                        >
-                            <x-heroicon-o-chat-bubble-left-right class="size-4" />
-                        </button>
-                    @endif
+                    <button
+                        wire:click="comment"
+                        title="Comment"
+                        class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                    >
+                        <x-heroicon-o-chat-bubble-left-right class="size-4" />
+                    </button>
 
                     <button
                         @if ($likeExists)
@@ -319,7 +317,7 @@
         />
     @endif
 
-    @if($commenting && $threadView && auth()->check())
+    @if($commenting && $threadView)
         <livewire:questions.create :parent-id="$questionId" :to-id="$user->id" />
     @endif
 
