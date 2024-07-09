@@ -116,11 +116,19 @@ test('reported', function () {
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
+
     $question->update(['is_reported' => true]);
 
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
 });
 
 test('ignored', function () {
@@ -144,6 +152,12 @@ test('ignored', function () {
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -152,6 +166,7 @@ test('ignored', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
 });
 
 test('deleted', function () {
@@ -176,11 +191,22 @@ test('deleted', function () {
     $mentionedUser = User::factory()->create([
         'username' => 'johndoe',
     ]);
+
     $question = Question::factory()->create();
     $question->update([
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->has(Question::factory()->sharedUpdate()->count(3)->state([
+            'answer' => 'grandchild',
+        ]), 'children')
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
+    expect(Question::where('answer', 'grandchild')->count())->toBe(9);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -189,4 +215,6 @@ test('deleted', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
+    expect(Question::where('answer', 'grandchild')->count())->toBe(0);
 });

@@ -169,6 +169,8 @@ final class Question extends Model implements Viewable
      */
     public function children(): HasMany
     {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id')
+            ->where('is_ignored', false)
+            ->where('is_reported', false);
     }
 }

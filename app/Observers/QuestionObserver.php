@@ -63,5 +63,7 @@ final readonly class QuestionObserver
         $question->mentions()->each(function (User $user) use ($question): void {
             $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         });
+
+        $question->children->each->delete();
     }
 }
