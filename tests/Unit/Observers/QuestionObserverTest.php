@@ -121,6 +121,7 @@ test('reported', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
 });
 
 test('ignored', function () {
@@ -152,6 +153,7 @@ test('ignored', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
 });
 
 test('deleted', function () {
@@ -176,6 +178,7 @@ test('deleted', function () {
     $mentionedUser = User::factory()->create([
         'username' => 'johndoe',
     ]);
+
     $question = Question::factory()->create();
     $question->update([
         'answer' => 'My favourite developer is to @johndoe',
@@ -189,5 +192,5 @@ test('deleted', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
-    expect($question->fresh()->children()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
 });
