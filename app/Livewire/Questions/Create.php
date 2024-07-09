@@ -24,7 +24,7 @@ final class Create extends Component
      * The component's user ID.
      */
     #[Locked]
-    public int $toId;
+    public ?int $toId = null;
 
     /**
      * Which question this question is commenting on.
@@ -160,7 +160,11 @@ final class Create extends Component
      */
     public function render(): View
     {
-        $user = User::findOrFail($this->toId);
+        $user = new User;
+
+        if (filled($this->toId)) {
+            $user = $user->findOrFail($this->toId);
+        }
 
         return view('livewire.questions.create', [
             'user' => $user,

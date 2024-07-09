@@ -318,7 +318,7 @@
     @endif
 
     @if($commenting && $inThread)
-        <livewire:questions.create :parent-id="$questionId" :to-id="$user->id" />
+        <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
     @endif
 
     @if($inThread && $question->children->isNotEmpty())
