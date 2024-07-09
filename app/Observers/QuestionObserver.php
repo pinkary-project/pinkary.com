@@ -64,6 +64,6 @@ final readonly class QuestionObserver
             $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         });
 
-        $question->children->each->update(['is_ignored' => true]);
+        $question->children->each->delete();
     }
 }
