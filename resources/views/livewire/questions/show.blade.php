@@ -317,16 +317,16 @@
         />
     @endif
 
-    @if($commenting && $threadView)
+    @if($commenting && $inThread)
         <livewire:questions.create :parent-id="$questionId" :to-id="$user->id" />
     @endif
 
-    @if($threadView && $question->children->isNotEmpty())
+    @if($inThread && $question->children->isNotEmpty())
         <div class="pl-3">
             @foreach($question->children as $comment)
                 @break($loop->depth > 5)
 
-                <livewire:questions.show :question-id="$comment->id" :$threadView :wire:key="$comment->id" />
+                <livewire:questions.show :question-id="$comment->id" :$inThread :wire:key="$comment->id" />
             @endforeach
         </div>
     @endif

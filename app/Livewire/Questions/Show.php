@@ -23,10 +23,16 @@ final class Show extends Component
     public string $questionId;
 
     /**
-     * The component's in index state.
+     * Determine if this is currently being viewed in the index (list) view.
      */
     #[Locked]
     public bool $inIndex = false;
+
+    /**
+     * Determine if this is currently being viewed in thread view.
+     */
+    #[Locked]
+    public bool $inThread = false;
 
     /**
      * Whether the pinned label should be displayed or not.
@@ -39,12 +45,6 @@ final class Show extends Component
      */
     #[Locked]
     public bool $commenting = false;
-
-    /**
-     * Enable thread view.
-     */
-    #[Locked]
-    public bool $threadView = false;
 
     /**
      * The child questionId we travelled from.
@@ -214,7 +214,7 @@ final class Show extends Component
     {
         $question = Question::where('id', $this->questionId)
             ->with(['to', 'from', 'likes', 'parent'])
-            ->when($this->threadView, function (Builder $query): void {
+            ->when($this->inThread, function (Builder $query): void {
                 $query->with(['children' => function (Builder|HasMany $query): void {
                     $query->limit(3);
                 }]);
