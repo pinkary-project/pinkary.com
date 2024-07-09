@@ -116,6 +116,13 @@ test('reported', function () {
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
+
     $question->update(['is_reported' => true]);
 
     expect($question->to->fresh()->notifications()->count())->toBe(0);
@@ -145,6 +152,12 @@ test('ignored', function () {
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -184,6 +197,12 @@ test('deleted', function () {
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
