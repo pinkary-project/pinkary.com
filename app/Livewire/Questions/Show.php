@@ -50,7 +50,7 @@ final class Show extends Component
      * Which update we've come from to get here.
      */
     #[Url]
-    public ?string $fromId = null;
+    public ?string $commentId = null;
 
     /**
      * Refresh the component.
