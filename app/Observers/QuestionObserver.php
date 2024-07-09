@@ -20,8 +20,8 @@ final readonly class QuestionObserver
         if ($question->isSharedUpdate()) {
             if ($question->parent_id !== null) {
                 $question->loadMissing('parent.to');
-                if ($question->parent->to_id !== $question->to_id) {
-                    $question->parent->to->notify(new QuestionCreated($question));
+                if ($question->parent?->to_id !== $question->to_id) {
+                    $question->parent?->to->notify(new QuestionCreated($question));
                 }
             }
 
