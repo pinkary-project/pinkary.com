@@ -213,7 +213,7 @@ final class Show extends Component
     {
         $question = Question::where('id', $this->questionId)
             ->with(['to', 'from', 'likes'])
-            ->when(!$this->inThread || $this->commenting, function (Builder $query): void {
+            ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
             ->when($this->inThread, function (Builder $query): void {
