@@ -189,4 +189,5 @@ test('deleted', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->fresh()->children()->count())->toBe(0);
 });
