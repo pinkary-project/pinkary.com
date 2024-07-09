@@ -212,7 +212,10 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes', 'parent'])
+            ->with(['to', 'from', 'likes'])
+            ->when(!$this->inThread || $this->commenting, function (Builder $query): void {
+                $query->with('parent');
+            })
             ->when($this->inThread, function (Builder $query): void {
                 $query->with(['children']);
             })
