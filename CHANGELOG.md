@@ -1,3 +1,8 @@
+## Version 1.22.0
+> 9 July, 2024
+
+- Adds comments
+
 ## Version 1.21.1
 > 6 July, 2024
 
