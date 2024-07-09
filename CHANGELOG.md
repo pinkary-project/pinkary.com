@@ -1,3 +1,9 @@
+## Version 1.22.1
+> 9 July, 2024
+
+- Adds notifications for commenents
+- Fixes on comments
+
 ## Version 1.22.0
 > 9 July, 2024
 
