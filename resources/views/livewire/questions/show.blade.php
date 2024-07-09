@@ -156,17 +156,27 @@
                 </div>
             </div>
 
-            @php($likeExists = $question->likes->contains('user_id', auth()->id()))
-
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1">
                     <button
                         wire:click="comment"
-                        title="Comment"
-                        class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                        title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
+                        class="flex items-center cursor-pointer transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         <x-heroicon-o-chat-bubble-left-right class="size-4" />
+                        @if ($question->children_count > 0)
+                            <span class="ml-1">
+                                {{ Number::abbreviate($question->children_count) }}
+                            </span>
+                        @endif
                     </button>
+
+                    <span>•</span>
+
+                    @php
+                        $likeExists = $question->likes->contains('user_id', auth()->id());
+                        $likesCount = $question->likes_count;
+                    @endphp
 
                     <button
                         @if ($likeExists)
@@ -176,35 +186,32 @@
                         @endif
                         x-data="particlesEffect"
                         x-on:click="executeParticlesEffect($event)"
-                        title="Like"
+                        title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)
-                            <x-icons.heart-solid class="h-4 w-4" />
+                            <x-icons.heart-solid class="h-4 w-4"/>
                         @else
-                            <x-icons.heart class="h-4 w-4" />
+                            <x-icons.heart class="h-4 w-4"/>
                         @endif
-
-                        @php($likesCount = $question->likes_count)
                         @if ($likesCount)
-                            <p
-                                class="cursor-click ml-1"
-                                title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
-                            >
-                                {{ Number::abbreviate($likesCount) }} {{ str('like')->plural($likesCount) }}
-                            </p>
+                            <span class="ml-1">
+                                {{ Number::abbreviate($likesCount) }}
+                            </span>
                         @endif
                     </button>
-                    @if ($question->views > 0)
-                        <span class="mx-1">•</span>
-                        <x-icons.chart class="h-4 w-4" />
-                        <p
-                            class="ml-1 cursor-help"
-                            title="{{ Number::format($question->views) }} {{ str('view')->plural($question->views) }}"
-                        >
-                            {{ Number::abbreviate($question->views) }} {{ str('view')->plural($question->views) }}
-                        </p>
-                    @endif
+                    <span>•</span>
+                    <p
+                        class="inline-flex cursor-help items-center"
+                        title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
+                    >
+                        <x-icons.chart class="h-4 w-4"/>
+                        @if ($question->views > 0)
+                            <span class="mx-1">
+                                {{ Number::abbreviate($question->views) }}
+                            </span>
+                        @endif
+                    </p>
                 </div>
 
                 <div class="flex items-center text-slate-500 ">
