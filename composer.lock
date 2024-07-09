@@ -10283,12 +10283,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "eac7abebcbd86fce56f949953f6b038363cdee6b"
+                "reference": "d3be6b72dd28e6003e6826a4b0d5cfbc1d32d73d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/eac7abebcbd86fce56f949953f6b038363cdee6b",
-                "reference": "eac7abebcbd86fce56f949953f6b038363cdee6b",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/d3be6b72dd28e6003e6826a4b0d5cfbc1d32d73d",
+                "reference": "d3be6b72dd28e6003e6826a4b0d5cfbc1d32d73d",
                 "shasum": ""
             },
             "require": {
@@ -10383,7 +10383,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-07-07T21:47:49+00:00"
+            "time": "2024-07-09T14:58:14+00:00"
         },
         {
             "name": "pestphp/pest-plugin",

@@ -54,6 +54,56 @@ test('send mentioned notification if shared update', function () {
     });
 });
 
+test('send comment notification', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $commenter = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'content' => '__UPDATE__',
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+        'answer' => 'this is update!',
+        'answer_created_at' => now(),
+    ]);
+
+    $comment = $question->children()->create([
+        'content' => '__UPDATE__',
+        'answer' => 'this is a comment',
+        'from_id' => $commenter->id,
+        'to_id' => $user->id,
+        'answer_created_at' => now(),
+    ]);
+
+    Notification::assertSentTo($question->from, QuestionCreated::class, function ($notification) use ($comment) {
+        return expect($notification->toDatabase($comment->to))->toBe(['question_id' => $comment->id]);
+    });
+});
+
+test('do not send notification if comment to himself', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'content' => '__UPDATE__',
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+        'answer' => 'this is update!',
+        'answer_created_at' => now(),
+    ]);
+
+    $question->children()->create([
+        'content' => '__UPDATE__',
+        'answer' => 'this is a comment',
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer_created_at' => now(),
+    ]);
+
+    Notification::assertNotSentTo($question->from, QuestionCreated::class);
+});
+
 test('updated', function () {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
