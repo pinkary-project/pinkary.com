@@ -35,19 +35,19 @@ final class Show extends Component
     public bool $pinnable = false;
 
     /**
-     * Indicate that the comment box should be shown.
+     * Enable the comment box.
      */
     #[Locked]
     public bool $commenting = false;
 
     /**
-     * Determine if this is currently being viewed in thread view.
+     * Enable thread view.
      */
     #[Locked]
     public bool $threadView = false;
 
     /**
-     * Which update we've come from to get here.
+     * The child questionId we travelled from.
      */
     #[Url]
     public ?string $commentId = null;
