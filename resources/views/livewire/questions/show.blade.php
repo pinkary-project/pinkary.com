@@ -304,8 +304,8 @@
         />
     @endif
 
-        <livewire:questions.create :reply-to="$questionId" :to-id="$user->id" />
     @if($commenting && $threadView && auth()->check())
+        <livewire:questions.create :parent-id="$questionId" :to-id="$user->id" />
     @endif
 
     @if($threadView && $question->children->isNotEmpty())
