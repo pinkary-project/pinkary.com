@@ -122,7 +122,7 @@
                 @endif
             </div>
 
-            @if($question->parent)
+            @if((! $inThread || $commenting) && $question->parent)
                 <a href="{{
                         route('questions.show', [
                             'username' => $question->parent->to->username,
