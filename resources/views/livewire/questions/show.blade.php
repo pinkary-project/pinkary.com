@@ -140,6 +140,7 @@
             <div x-data="showMore">
                 <div
                     class="mt-3 break-words text-slate-200 overflow-hidden"
+                    wire:ignore.self
                     x-ref="parentDiv"
                 >
                     <p>
