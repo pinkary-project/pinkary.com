@@ -40,7 +40,7 @@ final class Index extends Component
                 'following as is_follower' => function (Builder $query): void {
                     $query->where('user_id', auth()->id());
                 },
-            ])->orderBy('created_at', 'desc')->simplePaginate(10) : collect(),
+            ])->latest('followers.id')->simplePaginate(10) : collect(),
         ]);
     }
 }
