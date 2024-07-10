@@ -3,10 +3,9 @@
         <div class="flex w-full max-w-md flex-col gap-12 overflow-hidden">
             <a
                 x-data="{
-                 hasHistory: history.length,
                  fallback: '{{ session('_previous.url', route('profile.show', ['username' => $question->to->username]))  }}',
                  back: function() {
-                        if (this.hasHistory > 1) {
+                        if (history.length > 1) {
                             history.back();
                         } else {
                             window.location.href = this.fallback;
