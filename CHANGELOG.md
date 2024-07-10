@@ -1,3 +1,9 @@
+## Version 1.22.2
+> 10 July, 2024
+
+- Fixes on avatar upload
+- Fixes on posts
+
 ## Version 1.22.1
 > 9 July, 2024
 
