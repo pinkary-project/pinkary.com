@@ -44,7 +44,7 @@ final class Index extends Component
                             $query->where('user_id', auth()->id());
                         },
                     ]);
-                })->orderBy('created_at', 'desc')->simplePaginate(10) : collect(),
+                })->latest('pivot_follower_id')->simplePaginate(10) : collect(),
         ]);
     }
 }
