@@ -1,6 +1,18 @@
-<section x-data="{
+<section x-data='{
     avatar: null,
-}">
+    errors: @json($errors->get('avatar')),
+    checkFileSize(target) {
+        const maxFileSize = 2 * 1024 * 1024;
+        if (target.files[0].size > maxFileSize) {
+            this.errors = ["The avatar may not be greater than 2MB."];
+            target.value = null;
+            this.avatar = null;
+        } else {
+            this.errors = [];
+            this.avatar = target.files[0];
+        }
+    }
+}'>
     <header>
         <h2 class="text-lg font-medium text-slate-400">
             {{ __('Profile Photo') }}
