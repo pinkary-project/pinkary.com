@@ -158,10 +158,19 @@
 
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <div class="flex items-center gap-1">
-                    <button
-                        wire:click="comment"
+                    <a
+                        @if (! $commenting)
+                            href="{{Route('questions.show', [
+                                'question' => $question->id,
+                                'username' => $question->to->username,
+                            ])}}"
+                            wire:navigate
+                        @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
-                        class="flex items-center cursor-pointer transition-colors hover:text-slate-400 focus:outline-none"
+                        @class([
+                            "flex items-center transition-colors hover:text-slate-400 focus:outline-none",
+                            "cursor-pointer" => ! $commenting,
+                        ])
                     >
                         <x-heroicon-o-chat-bubble-left-right class="size-4" />
                         @if ($question->children_count > 0)
@@ -169,7 +178,7 @@
                                 {{ Number::abbreviate($question->children_count) }}
                             </span>
                         @endif
-                    </button>
+                    </a>
 
                     <span>•</span>
 
