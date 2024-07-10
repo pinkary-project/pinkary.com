@@ -194,19 +194,6 @@ final class Show extends Component
     }
 
     /**
-     * Show the comment form.
-     */
-    public function comment(): void
-    {
-        $question = Question::with(['to'])->findOrFail($this->questionId);
-
-        $this->redirectRoute('questions.show', [
-            'question' => $this->questionId,
-            'username' => $question->to->username,
-        ], navigate: true);
-    }
-
-    /**
      * Render the component.
      */
     public function render(): View
