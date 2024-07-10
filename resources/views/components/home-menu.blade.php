@@ -5,7 +5,7 @@
         wire:navigate
         wire:transition
     >
-        <x-heroicon-c-home
+        <x-heroicon-o-home
             class="h-6 w-6 xsm:mr-2" />
         <span class="hidden xsm:inline">{{ __('Feed') }}</span>
     </a>
@@ -16,7 +16,7 @@
         wire:navigate
         wire:transition
     >
-        <x-heroicon-c-heart
+        <x-heroicon-o-heart
             class="h-6 w-6 xsm:mr-2" />
         <span class="hidden xsm:inline">{{ __('For you') }}</span>
     </a>
@@ -27,7 +27,7 @@
         wire:navigate
         wire:transition
     >
-        <x-heroicon-c-fire
+        <x-heroicon-m-fire
             color="currentColor"
             class="h-6 w-6 xsm:mr-2"
         />
@@ -40,7 +40,7 @@
         wire:navigate
         wire:transition
     >
-        <x-heroicon-c-magnifying-glass class="h-6 w-6 xsm:mr-2" />
+        <x-heroicon-o-magnifying-glass class="h-6 w-6 xsm:mr-2" />
         <span class="hidden xsm:inline">{{ __('Search') }}</span>
     </a>
 </div>
