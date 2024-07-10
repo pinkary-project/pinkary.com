@@ -1,6 +1,18 @@
-<section x-data="{
+<section x-data='{
     avatar: null,
-}">
+    errors: @json($errors->get('avatar')),
+    checkFileSize(target) {
+        const maxFileSize = 2 * 1024 * 1024;
+        if ((target.files[0]?.size ?? 0) > maxFileSize) {
+            this.errors = ["The avatar may not be greater than 2MB."];
+            target.value = null;
+            this.avatar = null;
+        } else {
+            this.errors = [];
+            this.avatar = target.files[0];
+        }
+    }
+}'>
     <header>
         <h2 class="text-lg font-medium text-slate-400">
             {{ __('Profile Photo') }}
@@ -55,16 +67,17 @@
                 accept="image/*"
                 id="avatar"
                 name="avatar"
-                x-on:change="avatar = $event.target.files[0]"
+                x-on:change="checkFileSize($event.target)"
                 class="mt-4 block w-full border text-sm file:mr-4 file:border-0 file:bg-pink-200 file:px-4 file:py-2 file:text-xs file:font-semibold file:tracking-widest file:text-pink-700 file:transition-colors hover:file:bg-pink-100 focus:outline-none focus:ring-0"
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('avatar')"
-            />
+            <div x-show="errors.length > 0" class="mt-4">
+                <template x-for="(error, index) in errors" :key="index">
+                    <span class="mt-2 text-sm text-red-600" x-text="error"></span>
+                </template>
+            </div>
         </div>
 
-        <div class="mt-7 flex items-center gap-2">
+        <div class="mt-6 flex items-center gap-2">
             <x-primary-button>{{ __('Upload') }}</x-primary-button>
         </div>
     </form>

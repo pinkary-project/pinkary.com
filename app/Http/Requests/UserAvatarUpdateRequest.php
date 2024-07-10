@@ -22,4 +22,16 @@ final class UserAvatarUpdateRequest extends FormRequest
             'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'avatar.max' => 'The avatar may not be greater than 2MB.',
+        ];
+    }
 }
