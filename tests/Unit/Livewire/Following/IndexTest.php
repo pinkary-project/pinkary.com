@@ -51,7 +51,6 @@ test('render with follows you badge', function () {
         'userId' => $user->id,
     ]);
 
-
     $component->set('isOpened', true);
 
     $component->refresh();
