@@ -77,7 +77,7 @@
             </div>
         </div>
 
-        <div class="mt-7 flex items-center gap-2">
+        <div class="mt-6 flex items-center gap-2">
             <x-primary-button>{{ __('Upload') }}</x-primary-button>
         </div>
     </form>
