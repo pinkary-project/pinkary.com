@@ -70,10 +70,11 @@
                 x-on:change="checkFileSize($event.target)"
                 class="mt-4 block w-full border text-sm file:mr-4 file:border-0 file:bg-pink-200 file:px-4 file:py-2 file:text-xs file:font-semibold file:tracking-widest file:text-pink-700 file:transition-colors hover:file:bg-pink-100 focus:outline-none focus:ring-0"
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('avatar')"
-            />
+            <div x-show="errors.length > 0" class="mt-4">
+                <template x-for="(error, index) in errors" :key="index">
+                    <span class="mt-2 text-sm text-red-600" x-text="error"></span>
+                </template>
+            </div>
         </div>
 
         <div class="mt-7 flex items-center gap-2">
