@@ -2,7 +2,18 @@
     <div class="flex flex-col items-center py-10">
         <div class="flex w-full max-w-md flex-col gap-12 overflow-hidden">
             <a
-                x-on:click.prevent="history.back()"
+                x-data="{
+                 hasHistory: history.length,
+                 fallback: '{{ session('_previous.url') }}',
+                 back: function() {
+                        if (this.hasHistory > 1) {
+                            history.back();
+                        } else {
+                            window.location.href = this.fallback;
+                        }
+                    }
+                 }"
+                x-on:click.prevent="back()"
                 class="flex text-slate-400 hover:underline"
             >
                 <x-icons.chevron-left class="h-6 w-6" />
