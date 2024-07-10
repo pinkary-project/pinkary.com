@@ -4,7 +4,7 @@
             <a
                 x-data="{
                  hasHistory: history.length,
-                 fallback: '{{ session('_previous.url') }}',
+                 fallback: '{{ session('_previous.url') ?? route('profile.show', ['username' => $question->to->username]) }}',
                  back: function() {
                         if (this.hasHistory > 1) {
                             history.back();
