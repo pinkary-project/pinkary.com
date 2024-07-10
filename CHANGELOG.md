@@ -1,3 +1,9 @@
+## Version 1.23
+> 10 July, 2024
+
+- Improves design of feeds
+- Improves following / followers sorting
+
 ## Version 1.22.2
 > 10 July, 2024
 
