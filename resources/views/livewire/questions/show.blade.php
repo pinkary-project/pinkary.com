@@ -164,6 +164,7 @@
 
                 <div x-show="showMore === true" class="mt-1">
                     <button
+                        data-navigate-ignore="true"
                         @click="showButtonAction"
                         class="text-sm text-pink-500 flex ml-auto"
                         x-text="showMoreButtonText"
