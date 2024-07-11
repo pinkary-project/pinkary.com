@@ -2,6 +2,10 @@ const clickHandler = () => ({
 
     handleNavigation(event)
     {
+        if(window.getSelection().toString().length !== 0) {
+            return;
+        }
+
         const hasDataNavigateIgnore = (el) => {
             if (!el || el.dataset.parent === 'true') {
                 return false;
