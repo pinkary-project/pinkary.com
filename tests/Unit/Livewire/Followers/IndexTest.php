@@ -46,6 +46,8 @@ test('render with follows you badge', function () {
 
     $viewer->followers()->sync($following->pluck('id'));
 
+    $orderedFollowers = $user->followers()->latest('followers.id')->get();
+
     $component = Livewire::actingAs($viewer)->test(Index::class, [
         'userId' => $user->id,
     ]);
@@ -55,7 +57,7 @@ test('render with follows you badge', function () {
     $component->refresh();
 
     $orderedText = [];
-    $followers->each(function (User $user) use (&$orderedText, $following): void {
+    $orderedFollowers->each(function (User $user) use (&$orderedText, $following): void {
         $orderedText[] = $user->username;
         if ($following->contains($user)) {
             $orderedText[] = 'Follows you';

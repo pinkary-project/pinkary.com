@@ -27,7 +27,18 @@
                     }}
                 </div>
                 @if (! $isMention)
-                    @if ($question->from->is(auth()->user()) && $question->answer !== null)
+                    @if ($question->parent_id !== null)
+                        <div class="flex items center gap-3 text-sm text-slate-500">
+                            <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
+                                <img
+                                    src="{{ $question->from->avatar_url }}"
+                                    alt="{{ $question->from->username }}"
+                                    class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                                />
+                            </figure>
+                            <p>{{ $question->from->name }} commented on your {{ $question->parent->parent_id !== null ? 'comment' : ($question->parent->isSharedUpdate() ? 'Update' : 'Answer') }}:
+                        </div>
+                    @elseif ($question->from->is(auth()->user()) && $question->answer !== null)
                         <div class="flex items-center gap-3 text-sm text-slate-500">
                             <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
                                 <img
@@ -59,6 +70,8 @@
                             </div>
                         @endif
                     @endif
+                @elseif ($question->parent !== null)
+                    <p class="text-sm text-slate-500">You have been mentioned in a comment by {{ '@' . $question->to->username }}</p>
                 @else
                     <p class="text-sm text-slate-500">You have been mentioned in a {{ $question->isSharedUpdate() ? 'update by @'.$question->to->username : 'question:'}}</p>
                 @endif

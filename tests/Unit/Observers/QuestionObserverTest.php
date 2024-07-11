@@ -54,6 +54,56 @@ test('send mentioned notification if shared update', function () {
     });
 });
 
+test('send comment notification', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $commenter = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'content' => '__UPDATE__',
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+        'answer' => 'this is update!',
+        'answer_created_at' => now(),
+    ]);
+
+    $comment = $question->children()->create([
+        'content' => '__UPDATE__',
+        'answer' => 'this is a comment',
+        'from_id' => $commenter->id,
+        'to_id' => $user->id,
+        'answer_created_at' => now(),
+    ]);
+
+    Notification::assertSentTo($question->from, QuestionCreated::class, function ($notification) use ($comment) {
+        return expect($notification->toDatabase($comment->to))->toBe(['question_id' => $comment->id]);
+    });
+});
+
+test('do not send notification if comment to himself', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'content' => '__UPDATE__',
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+        'answer' => 'this is update!',
+        'answer_created_at' => now(),
+    ]);
+
+    $question->children()->create([
+        'content' => '__UPDATE__',
+        'answer' => 'this is a comment',
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer_created_at' => now(),
+    ]);
+
+    Notification::assertNotSentTo($question->from, QuestionCreated::class);
+});
+
 test('updated', function () {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
@@ -116,11 +166,19 @@ test('reported', function () {
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
+
     $question->update(['is_reported' => true]);
 
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
 });
 
 test('ignored', function () {
@@ -144,6 +202,12 @@ test('ignored', function () {
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -152,6 +216,7 @@ test('ignored', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
 });
 
 test('deleted', function () {
@@ -176,11 +241,22 @@ test('deleted', function () {
     $mentionedUser = User::factory()->create([
         'username' => 'johndoe',
     ]);
+
     $question = Question::factory()->create();
     $question->update([
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
+    Question::factory(3)
+        ->sharedUpdate()
+        ->has(Question::factory()->sharedUpdate()->count(3)->state([
+            'answer' => 'grandchild',
+        ]), 'children')
+        ->for($question, 'parent')
+        ->create();
+
+    expect($question->children()->count())->toBe(3);
+    expect(Question::where('answer', 'grandchild')->count())->toBe(9);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -189,4 +265,6 @@ test('deleted', function () {
     expect($question->to->fresh()->notifications()->count())->toBe(0);
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
+    expect($question->children()->count())->toBe(0);
+    expect(Question::where('answer', 'grandchild')->count())->toBe(0);
 });

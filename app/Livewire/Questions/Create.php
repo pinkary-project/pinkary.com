@@ -24,7 +24,13 @@ final class Create extends Component
      * The component's user ID.
      */
     #[Locked]
-    public int $toId;
+    public ?int $toId = null;
+
+    /**
+     * Which question this question is commenting on.
+     */
+    #[Locked]
+    public ?string $parentId = null;
 
     /**
      * The component's content.
@@ -55,6 +61,19 @@ final class Create extends Component
     public function isSharingUpdate(): bool
     {
         return $this->toId === auth()->id();
+    }
+
+    /**
+     * Choose appropriate placeholder copy.
+     */
+    #[Computed]
+    public function placeholder(): string
+    {
+        return match (true) {
+            filled($this->parentId) => 'Write a comment...',
+            $this->isSharingUpdate() => 'Share an update...',
+            default => 'Ask a question...'
+        };
     }
 
     /**
@@ -112,6 +131,10 @@ final class Create extends Component
             $validated['content'] = '__UPDATE__';
         }
 
+        if (filled($this->parentId)) {
+            $validated['parent_id'] = $this->parentId;
+        }
+
         $user->questionsSent()->create([
             ...$validated,
             'to_id' => $this->toId,
@@ -122,7 +145,14 @@ final class Create extends Component
         $this->anonymously = $user->prefers_anonymous_questions;
 
         $this->dispatch('question.created');
-        $this->dispatch('notification.created', message: 'Question sent.');
+
+        $message = match (true) {
+            filled($this->parentId) => 'Comment sent.',
+            $this->isSharingUpdate => 'Update sent.',
+            default => 'Question sent.'
+        };
+
+        $this->dispatch('notification.created', message: $message);
     }
 
     /**
@@ -130,7 +160,11 @@ final class Create extends Component
      */
     public function render(): View
     {
-        $user = User::findOrFail($this->toId);
+        $user = new User;
+
+        if (filled($this->toId)) {
+            $user = $user->findOrFail($this->toId);
+        }
 
         return view('livewire.questions.create', [
             'user' => $user,

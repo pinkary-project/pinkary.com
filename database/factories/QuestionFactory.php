@@ -33,4 +33,15 @@ final class QuestionFactory extends Factory
             'views' => $this->faker->numberBetween(0, 1000),
         ];
     }
+
+    /**
+     * Indicate that the question is shared Update.
+     */
+    public function sharedUpdate(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'content' => '__UPDATE__',
+            'answer' => $this->faker->sentence,
+        ]);
+    }
 }

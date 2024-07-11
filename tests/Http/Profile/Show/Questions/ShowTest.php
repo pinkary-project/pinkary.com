@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Livewire\Questions\Create;
 use App\Livewire\Questions\Show;
 use App\Models\Question;
 use App\Models\User;
@@ -42,6 +43,7 @@ test('auth', function () {
     ]);
 
     $response->assertSeeLivewire(Show::class);
+    $response->assertSeeLivewire(Create::class);
 });
 
 test('reported question is not visible', function () {

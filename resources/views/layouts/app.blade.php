@@ -11,7 +11,7 @@
             <livewire:flash-messages.show />
         @endpersist
         <div class="flex min-h-screen flex-col">
-            <div class="ml-3 mr-3 flex-grow">
+            <div class="mx-auto ml-3 mr-3 flex-grow">
                 @include('layouts.navigation')
                 @if (isset($title))
                     <div class="mb-6 mt-20 flex flex-col items-center sm:mb-12">
@@ -22,8 +22,7 @@
                         </div>
                     </div>
                 @endif
-
-                <main>
+                <main class="mt-16">
                     {{ $slot }}
                 </main>
             </div>

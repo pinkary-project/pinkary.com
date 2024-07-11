@@ -24,6 +24,7 @@ test('to array', function () {
         'is_ignored',
         'views',
         'answer_updated_at',
+        'parent_id',
     ]);
 });
 
