@@ -158,6 +158,7 @@ test('unbookmark', function () {
 
     $component->call('unbookmark');
 
+    $component->assertDispatched('question.unbookmarked');
     expect($question->bookmarks()->count())->toBe(0);
 });
 
