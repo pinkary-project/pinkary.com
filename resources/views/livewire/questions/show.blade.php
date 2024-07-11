@@ -31,7 +31,7 @@
 
     @if ($question->answer)
         <div
-            data-parent="{{ $question->id }}"
+            data-parent=true
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
             class="group answer p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
@@ -206,9 +206,9 @@
                     <button
                         data-navigate-ignore="true"
                         @if ($likeExists)
-                            x-on:click="$wire.unlike(); $dispatch('reapply.styles', { question: '{{ $question->id }}' })"
+                            wire:click="unlike"
                         @else
-                            x-on:click="$wire.like(); $nextTick(() => $dispatch('reapply.styles', { question: '{{ $question->id }}' })) "
+                            wire:click="like"
                         @endif
                         x-data="particlesEffect"
                         x-on:click="executeParticlesEffect($event)"
