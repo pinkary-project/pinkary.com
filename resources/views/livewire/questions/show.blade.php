@@ -157,8 +157,6 @@
                 </div>
             </div>
 
-            @php($bookmarkExists = $question->bookmarks->contains('user_id', auth()->id()))
-
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <div class="flex items-center gap-1">
                     <a
@@ -244,6 +242,11 @@
                     </time>
 
                     <span class="mx-1">•</span>
+
+                    @php
+                        $bookmarkExists = $question->bookmarks->contains('user_id', auth()->id());
+                    @endphp
+
                     <button
                         @if ($bookmarkExists)
                             wire:click="unbookmark()"
