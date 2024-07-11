@@ -227,7 +227,10 @@
                 </div>
 
                 <div class="flex items-center text-slate-500 ">
-                    @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
+                    @php
+                        $timestamp = $question->answer_updated_at ?: $question->answer_created_at
+                    @endphp
+
                     <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
