@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Bookmarks;
 
+use App\Livewire\Concerns\HasLoadMore;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -11,6 +12,8 @@ use Livewire\Component;
 
 final class Index extends Component
 {
+    use HasLoadMore;
+
     /**
      * Render the component.
      */
@@ -23,7 +26,7 @@ final class Index extends Component
             'bookmarks' => $user->bookmarks()
                 ->with('question')
                 ->orderBy('created_at', 'desc')
-                ->get(),
+                ->simplePaginate($this->perPage),
         ]);
     }
 }
