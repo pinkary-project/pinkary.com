@@ -41,3 +41,24 @@ test('displays bookmarks', function () {
             'Question content 3',
         ]);
 });
+
+test('load more', function () {
+    $user = User::factory()->create();
+
+    Question::factory(120)->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $component->call('loadMore');
+    $component->assertSet('perPage', 10);
+
+    $component->call('loadMore');
+    $component->assertSet('perPage', 15);
+
+    foreach (range(1, 25) as $i) {
+        $component->call('loadMore');
+    }
+
+    $component->assertSet('perPage', 100);
+});
