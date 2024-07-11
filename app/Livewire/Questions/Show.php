@@ -209,6 +209,8 @@ final class Show extends Component
 
             $bookmark->delete();
         }
+
+        $this->dispatch('question.unbookmarked');
     }
 
     /**

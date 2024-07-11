@@ -8,11 +8,18 @@ use App\Livewire\Concerns\HasLoadMore;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class Index extends Component
 {
     use HasLoadMore;
+
+    /**
+     * Refresh the component.
+     */
+    #[On('question.unbookmarked')]
+    public function refresh(): void {}
 
     /**
      * Render the component.
