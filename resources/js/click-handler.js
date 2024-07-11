@@ -13,9 +13,9 @@ const clickHandler = () => ({
         };
 
         if (! hasDataNavigateIgnore(event.target)) {
-            const commentLink = this.$refs.commentLink;
-            if (commentLink) {
-                commentLink.click();
+            const parentLink = this.$refs.parentLink
+            if (parentLink) {
+                parentLink.click();
             }
 
         }

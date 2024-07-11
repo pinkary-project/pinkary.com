@@ -175,7 +175,7 @@
                 <div class="flex items-center gap-1">
                     <a
                         @if (! $commenting)
-                            x-ref="commentLink"
+                            x-ref="parentLink"
                             href="{{Route('questions.show', [
                                 'question' => $question->id,
                                 'username' => $question->to->username,
