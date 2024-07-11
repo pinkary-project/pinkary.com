@@ -1,7 +1,13 @@
 <nav>
     <div class="fixed right-0 top-0 z-50 mx-auto px-4">
         <div class="flex h-16 justify-between">
-            <div class="flex"></div>
+            <a
+                href="https://github.com/sponsors/nunomaduro"
+                target="_blank"
+                class="flex items-center text-xs underline text-slate-500 hover:text-slate-100 mr-2"
+            >
+                Source Code
+            </a>
             <div
                 class="flex items-center"
                 x-data
