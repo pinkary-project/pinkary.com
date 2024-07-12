@@ -24,7 +24,6 @@ const copyCode = () => ({
                 'bg-pink-900',
                 'bg-opacity-50',
                 'text-white',
-                'opacity-0',
                 'transition-opacity',
                 'duration-200',
             );
