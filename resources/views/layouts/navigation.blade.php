@@ -1,19 +1,13 @@
 <nav>
     <div class="fixed right-0 top-0 z-50 mx-auto px-4">
         <div class="flex h-16 justify-between">
-            <a
-                href="https://github.com/sponsors/nunomaduro"
-                target="_blank"
-                class="flex items-center text-xs underline text-slate-500 hover:text-slate-100 mr-2"
-            >
-                Source Code
-            </a>
             <div
                 class="flex items-center"
                 x-data
             >
                 @auth
                     <a
+                        title="Home"
                         href="{{ route('home.feed') }}"
                         class="mr-2"
                         wire:navigate
@@ -27,6 +21,21 @@
                     </a>
 
                     <a
+                        title="Source code"
+                        target="_blank"
+                        href="https://github.com/sponsors/nunomaduro"
+                        class="mr-2"
+                    >
+                        <button
+                            type="button"
+                            class="text-slate-500 hover:text-slate-100 inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                        >
+                            <x-heroicon-o-code-bracket class="h-6 w-6" />
+                        </button>
+                    </a>
+
+                    <a
+                        title="Profile"
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
                         class="mr-2"
                         wire:navigate
@@ -40,6 +49,7 @@
                     </a>
 
                     <a
+                        title="Notifications"
                         href="{{ route('notifications.index') }}"
                         class="mr-2"
                         wire:navigate
@@ -61,6 +71,7 @@
                 >
                     <x-slot name="trigger">
                         <button
+                            title="Menu"
                             class="inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 text-slate-500 transition duration-150 ease-in-out hover:text-slate-100 focus:outline-none"
                         >
                             <x-icons.bars class="size-6" />
