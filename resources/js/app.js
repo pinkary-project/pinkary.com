@@ -49,4 +49,7 @@ Alpine.data('clickHandler', clickHandler)
 import { particlesEffect } from './particles-effect.js'
 Alpine.data('particlesEffect', particlesEffect)
 
+import { copyCode } from './copy-code.js'
+Alpine.data('copyCode', copyCode)
+
 Livewire.start()
