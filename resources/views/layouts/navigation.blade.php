@@ -32,7 +32,7 @@
                         >
                             <x-heroicon-o-code-bracket class="h-6 w-6" />
                         </button>
-
+                    </a>
 
                     <a
                         title="Profile"
