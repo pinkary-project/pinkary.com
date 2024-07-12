@@ -23,7 +23,7 @@
         </div>
 
         @unless ($question->isSharedUpdate())
-        <p class="mb-4 mt-3 px-4 text-slate-200">
+        <p class="mt-3 px-4 text-slate-200">
             {!! $question->content !!}
         </p>
         @endunless
@@ -34,7 +34,7 @@
             data-parent=true
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
-            class="group answer p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
+            class="group p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
             {{ $commenting ?: "cursor-pointer transition-colors duration-100 ease-in-out hover:bg-slate-700/60" }}"
         >
             <div class="flex justify-between">
@@ -153,7 +153,7 @@
 
             <div x-data="showMore">
                 <div
-                    class="mt-3 break-words text-slate-200 overflow-hidden"
+                    class="mt-3 break-words text-slate-200 overflow-hidden answer"
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
@@ -162,7 +162,7 @@
                     </p>
                 </div>
 
-                <div x-show="showMore === true" class="mt-1">
+                <div x-show="showMore === true" class="mt-1 answer">
                     <button
                         data-navigate-ignore="true"
                         @click="showButtonAction"
