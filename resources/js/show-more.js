@@ -9,7 +9,7 @@ const showMore = () => ({
     showMore: false,
 
     init() {
-        this.initialHeight = this.$refs.parentDiv.offsetHeight;
+        this.initialHeight = this.$refs.parentDiv.scrollHeight;
 
         if (this.initialHeight > this.maxHeight) {
             this.$refs.parentDiv.style.maxHeight = this.maxHeight + 'px';
