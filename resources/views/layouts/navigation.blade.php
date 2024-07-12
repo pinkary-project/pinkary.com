@@ -14,6 +14,7 @@
             >
                 @auth
                     <a
+                        title="Home"
                         href="{{ route('home.feed') }}"
                         class="mr-2"
                         wire:navigate
@@ -27,6 +28,7 @@
                     </a>
 
                     <a
+                        title="Profile"
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
                         class="mr-2"
                         wire:navigate
@@ -40,6 +42,7 @@
                     </a>
 
                     <a
+                        title="Notifications"
                         href="{{ route('notifications.index') }}"
                         class="mr-2"
                         wire:navigate
@@ -61,6 +64,7 @@
                 >
                     <x-slot name="trigger">
                         <button
+                            title="Menu"
                             class="inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 text-slate-500 transition duration-150 ease-in-out hover:text-slate-100 focus:outline-none"
                         >
                             <x-icons.bars class="size-6" />
