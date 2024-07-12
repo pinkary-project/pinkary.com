@@ -35,7 +35,7 @@ const copyCode = () => ({
                 'group-hover/code:opacity-100',
             );
 
-            // to make the button stick to the bottom right corner
+            // to make the button stick to the top right corner
             button.style.position = 'sticky';
             button.style.left = 'calc(100% - 1.5rem)';
             button.style.bottom = '100%';
