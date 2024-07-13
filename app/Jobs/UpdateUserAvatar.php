@@ -96,7 +96,12 @@ final class UpdateUserAvatar implements ShouldQueue
     private function ensureFileIsDeleted(): void
     {
         if ($this->file !== null) {
-            File::delete($this->file);
+            if (windows_os()) {
+                unlink($this->file);
+            } else {
+                // this is not working on windows
+                File::delete($this->file);
+            }
         }
     }
 
