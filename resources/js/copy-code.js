@@ -17,7 +17,7 @@ const copyCode = () => ({
         const codeElements = this.$el.querySelectorAll('code');
         codeElements.forEach((codeElement) => {
             if (codeElement.querySelector('button')) {
-                return;
+                codeElement.querySelector('button').remove();
             }
 
             let button = document.createElement('button');
