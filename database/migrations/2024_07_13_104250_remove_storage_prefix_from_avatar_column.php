@@ -12,9 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        User::each(function (User $user) {
-            User::withoutEvents(function () use ($user) {
-                User::withoutTimestamps(function () use ($user) {
+        User::each(function (User $user): void {
+            User::withoutEvents(function () use ($user): void {
+                User::withoutTimestamps(function () use ($user): void {
                     if ($user->avatar && str_starts_with($user->avatar, 'storage/')) {
                         $user->update([
                             'avatar' => str_replace('storage/', '', $user->avatar),
@@ -29,6 +29,6 @@ return new class extends Migration
                     }
                 });
             });
-        });
+        }, 100);
     }
 };
