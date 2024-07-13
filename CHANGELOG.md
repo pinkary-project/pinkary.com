@@ -1,3 +1,8 @@
+## Version 1.23.4
+> 13 July, 2024
+
+- Internal improvements and bug fixes.
+- 
 ## Version 1.23.3
 > 12 July, 2024
 
