@@ -57,7 +57,7 @@ const copyCode = () => ({
 
             button.addEventListener('click', () => {
                 let text = codeElement.innerText;
-                // removing the last 5 characters which are the word 'Copy'
+                // removing the last 4 characters which are the word 'Copy'
                 text = text.substring(0, text.length - 4);
                 navigator.clipboard.writeText(text);
                 button.style.left = 'calc(100% - 2.3rem)';
