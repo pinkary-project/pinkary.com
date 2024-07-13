@@ -224,9 +224,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function purge(): void
     {
         if ($this->avatar) {
-            Storage::disk('public')->delete(
-                str_replace('storage/', '', $this->avatar)
-            );
+            Storage::disk('public')->delete($this->avatar);
         }
 
         $this->followers()->detach();
