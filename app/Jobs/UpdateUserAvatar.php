@@ -49,7 +49,7 @@ final class UpdateUserAvatar implements ShouldQueue
 
         if ($file === asset('img/default-avatar.png')) {
             $this->user->update([
-                'avatar' => $file,
+                'avatar' => null,
                 'avatar_updated_at' => now(),
                 'is_uploaded_avatar' => false,
             ]);
