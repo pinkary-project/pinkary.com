@@ -18,7 +18,7 @@ it('stores a file base avatar', function () {
     $user = $user->fresh();
 
     expect($user->avatar)->toBeString();
-    Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
+    Storage::disk('public')->assertExists($user->avatar);
 });
 
 it('returns default avatar if not service or file passed', function () {
@@ -48,7 +48,7 @@ it('deletes the given avatar file', function () {
     $user = $user->fresh();
 
     expect($user->avatar)->toBeString();
-    Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
+    Storage::disk('public')->assertExists($user->avatar);
 
     Storage::disk('public')->assertMissing('avatars/1.png');
 });
@@ -84,7 +84,7 @@ it('accepts different services to download avatar', function () {
     expect($user->avatar)
         ->toBeString()
         ->and(Storage::disk('public')
-            ->exists(str_replace('storage/', '', $user->avatar))
+            ->exists($user->avatar)
         )
         ->toBeTrue();
 });
