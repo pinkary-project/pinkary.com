@@ -11,7 +11,7 @@ const showMore = () => ({
     init() {
         this.initialHeight = this.$refs.parentDiv.scrollHeight;
 
-        if (this.initialHeight > this.maxHeight) {
+        if (this.initialHeight > this.maxHeight + 40) {
             this.$refs.parentDiv.style.maxHeight = this.maxHeight + 'px';
             this.showMore = true;
         }
