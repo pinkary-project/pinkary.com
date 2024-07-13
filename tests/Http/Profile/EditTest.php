@@ -373,6 +373,7 @@ test('user can delete custom avatar and update using Gravatar', function () {
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
         'is_uploaded_avatar' => true,
+        'email' => 'jitewaboh@lagify.com', // test Gravatar email
     ]);
 
     Storage::disk('public')->put('avatars/avatar.jpg', '...');
@@ -424,6 +425,7 @@ test('user can re-fetch avatar from Gravatar', function () {
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
         'is_uploaded_avatar' => false,
+        'email' => 'jitewaboh@lagify.com', // test Gravatar email
     ]);
 
     $this->actingAs($user)
