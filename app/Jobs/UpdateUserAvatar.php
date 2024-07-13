@@ -39,8 +39,8 @@ final class UpdateUserAvatar implements ShouldQueue
     {
         $disk = Storage::disk('public');
 
-        if ($this->user->avatar && $disk->exists(str_replace('storage/', '', (string) $this->user->avatar))) {
-            $disk->delete(str_replace('storage/', '', (string) $this->user->avatar));
+        if ($this->user->avatar && $disk->exists($this->user->avatar)) {
+            $disk->delete($this->user->avatar);
         }
 
         $file = $this->file ?? (new Avatar($this->user))->url(
@@ -68,7 +68,7 @@ final class UpdateUserAvatar implements ShouldQueue
             ->save();
 
         $this->user->update([
-            'avatar' => "storage/$avatar",
+            'avatar' => "$avatar",
             'avatar_updated_at' => now(),
             'is_uploaded_avatar' => $this->file !== null,
         ]);
