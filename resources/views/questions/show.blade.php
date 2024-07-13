@@ -33,7 +33,7 @@
             @php $parentQuestions = collect($parentQuestions)->filter()->reverse(); @endphp
 
             @foreach($parentQuestions as $parentQuestion)
-                <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" lazy />
+                <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" />
             @endforeach
 
             <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" />
