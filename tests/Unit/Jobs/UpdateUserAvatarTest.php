@@ -31,7 +31,8 @@ it('returns default avatar if not service or file passed', function () {
     $user = $user->fresh();
 
     expect($user->avatar)
-        ->toBeString()
+        ->toBe(null)
+        ->and($user->avatar_url)
         ->toBe(asset('img/default-avatar.png'));
 });
 
@@ -99,7 +100,8 @@ it('defers to the default image if service avatar not found', function () {
     $user->refresh();
 
     expect($user->avatar)
-        ->toBeString()
+        ->toBe(null)
+        ->and($user->avatar_url)
         ->toBe(asset('img/default-avatar.png'));
 
     $user->update(['avatar' => null]);
@@ -109,6 +111,7 @@ it('defers to the default image if service avatar not found', function () {
     $user->refresh();
 
     expect($user->avatar)
-        ->toBeString()
+        ->toBe(null)
+        ->and($user->avatar_url)
         ->toBe(asset('img/default-avatar.png'));
 });
