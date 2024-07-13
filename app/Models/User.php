@@ -149,7 +149,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getAvatarUrlAttribute(): string
     {
-        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
+        return $this->avatar ? Storage::disk('public')->url($this->avatar) : asset('img/default-avatar.png');
     }
 
     /**
@@ -224,9 +224,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function purge(): void
     {
         if ($this->avatar) {
-            Storage::disk('public')->delete(
-                str_replace('storage/', '', $this->avatar)
-            );
+            Storage::disk('public')->delete($this->avatar);
         }
 
         $this->followers()->detach();
