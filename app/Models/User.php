@@ -149,7 +149,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getAvatarUrlAttribute(): string
     {
-        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
+        return $this->avatar ? Storage::disk('public')->url($this->avatar) : asset('img/default-avatar.png');
     }
 
     /**
