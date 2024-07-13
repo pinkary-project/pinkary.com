@@ -1,14 +1,25 @@
 const copyCode = () => ({
 
-    codeElements: [],
-
     init() {
-        this.codeElements = this.$el.querySelectorAll('code');
         this.addCopyButtons();
+        Livewire.hook('commit', (event) => {
+            event.succeed((e) => {
+                if (event.component.el.getAttribute('id') === this.$el.getAttribute('id')) {
+                    requestAnimationFrame(() => {
+                        this.addCopyButtons();
+                    });
+                }
+            });
+        });
     },
 
     addCopyButtons() {
-        this.codeElements.forEach((codeElement) => {
+        const codeElements = this.$el.querySelectorAll('code');
+        codeElements.forEach((codeElement) => {
+            if (codeElement.querySelector('button')) {
+                return;
+            }
+
             let button = document.createElement('button');
             button.innerHTML = 'Copy';
             button.classList.add(
