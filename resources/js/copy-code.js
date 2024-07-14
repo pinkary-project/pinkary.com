@@ -87,7 +87,7 @@ const copyCode = () => ({
             );
 
             button.addEventListener('click', () => {
-                this.copyToClipboard(codeElement.textContent.trim());
+                this.copyToClipboard(codeElement.innerText.trim());
             });
 
             codeElement.appendChild(button);
