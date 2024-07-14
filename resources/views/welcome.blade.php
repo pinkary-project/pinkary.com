@@ -8,7 +8,7 @@
             wire:navigate
         >
             <x-primary-colorless-button class="flex items-center justify-center gap-2">
-                <x-icons.home class="h-4 w-4" />
+                <x-heroicon-o-home class="h-4 w-4" />
                 <span class="sr-only sm:not-sr-only">Feed</span>
             </x-primary-colorless-button>
         </a>
@@ -65,7 +65,7 @@
             <div class="grid w-full gap-4 md:grid-cols-2">
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 transition-colors md:aspect-video">
                     <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
-                        <x-icons.bolt class="h-5 w-5" />
+                        <x-heroicon-o-bolt class="h-5 w-5" />
                     </div>
 
                     <h3>Create a profile</h3>
@@ -74,7 +74,7 @@
 
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
                     <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
-                        <x-icons.link class="h-5 w-5" />
+                        <x-heroicon-o-link class="h-5 w-5" />
                     </div>
 
                     <h3>Share your links</h3>
@@ -83,7 +83,7 @@
 
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
                     <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
-                        <x-icons.chat-bubble class="h-5 w-5" />
+                        <x-heroicon-o-chat-bubble-oval-left class="h-5 w-5" />
                     </div>
 
                     <h3>Ask and answer questions</h3>
@@ -92,7 +92,7 @@
 
                 <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
                     <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
-                        <x-icons.globe class="h-5 w-5" />
+                        <x-heroicon-o-globe-americas class="h-5 w-5" />
                     </div>
 
                     <h3>Discover</h3>
@@ -176,7 +176,7 @@
 
         <div class="mt-28 flex max-w-2xl flex-col items-center gap-4 py-4 text-2xl font-light">
             <div class="animate-pulse">
-                <x-icons.light-bulb class="h-8 w-8" />
+                <x-heroicon-o-light-bulb class="h-8 w-8" />
             </div>
 
             <h2 class="text-center">

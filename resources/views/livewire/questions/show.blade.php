@@ -85,7 +85,7 @@
                             <button
                                 data-navigate-ignore="true"
                                 class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
-                                <x-icons.ellipsis-horizontal class="h-6 w-6" />
+                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
                             </button>
                         </x-slot>
 
@@ -126,7 +126,7 @@
                                     wire:confirm="Are you sure you want to delete this question?"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.trash class="h-4 w-4" />
+                                    <x-heroicon-o-trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
@@ -217,9 +217,9 @@
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)
-                            <x-icons.heart-solid class="h-4 w-4"/>
+                            <x-heroicon-s-heart class="h-4 w-4"/>
                         @else
-                            <x-icons.heart class="h-4 w-4"/>
+                            <x-heroicon-o-heart class="h-4 w-4"/>
                         @endif
                         @if ($likesCount)
                             <span class="ml-1">
@@ -269,7 +269,7 @@
                                 title="Share"
                                 class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
-                                <x-icons.paper-airplane class="h-4 w-4" />
+                                <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
                         </x-slot>
 
@@ -292,7 +292,7 @@
                                 type="button"
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
                                 data-navigate-ignore="true"
@@ -311,7 +311,7 @@
                                 "
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
                                 data-navigate-ignore="true"

@@ -12,7 +12,7 @@
                                         'bg-slate-900 hover:bg-slate-800': !open }"
                                     class="mr-2 flex size-10 items-center justify-center rounded-lg text-slate-300 hover:text-white transition duration-150 ease-in-out "
                     >
-                        <x-icons.share class="size-5" />
+                        <x-heroicon-o-share class="size-5" />
                     </button>
                 </x-slot>
 
@@ -24,7 +24,7 @@
                         type="button"
                         class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     >
-                        <x-icons.link class="size-5" />
+                        <x-heroicon-o-link class="size-5" />
                     </button>
                     <button
                         x-data="copyUrl"
@@ -37,7 +37,7 @@
                         type="button"
                         class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     >
-                        <x-icons.link class="size-5" />
+                        <x-heroicon-o-link class="size-5" />
                     </button>
                     <button
                         x-data="shareProfile"
@@ -118,7 +118,7 @@
                     wire:navigate
                     title="Upload Avatar"
                 >
-                    <x-icons.camera class="size-5" />
+                    <x-heroicon-o-camera class="size-5" />
                 </button>
             @endif
         </div>
@@ -238,7 +238,7 @@
                                 x-sortable-handle
                                 class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
-                                <x-icons.sortable-handle class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
+                                <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
                             <x-links.list-item
@@ -260,7 +260,7 @@
                                         type="submit"
                                         class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
-                                        <x-icons.trash
+                                        <x-heroicon-o-trash
                                             class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
                                             x-bind:class="{ 'invisible': isDragging }"
                                         />
@@ -310,7 +310,7 @@
                         class="hover:darken-gradient flex w-full basis-1/5 items-center justify-center px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
                         :class="showSettingsForm ? 'bg-' + gradient.split(' ')[1].replace('to-', '') + ' ' + link_shape : 'bg-{{ $user->right_color }} {{ $user->link_shape }}'"
                     >
-                        <x-icons.cog class="size-6" />
+                        <x-heroicon-o-cog-6-tooth class="size-6" />
                     </button>
                 </div>
 
