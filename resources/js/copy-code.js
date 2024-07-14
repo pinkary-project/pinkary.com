@@ -1,5 +1,3 @@
-// import { copyToClipboard } from 'copy-to-clipboard-util';
-
 const copyCode = () => ({
 
     init() {
