@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -56,6 +57,7 @@ use Illuminate\Support\Facades\Storage;
  */
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
