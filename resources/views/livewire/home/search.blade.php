@@ -21,15 +21,15 @@
         </section>
     @else
         <section class="max-w-2xl">
-            <ul class="flex flex-col gap-2">
+            <ul class="flex flex-col gap-3">
                 @foreach ($results as $result)
                     @if ($result instanceof App\Models\Question)
-                        <li>
+                        <div class="group rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 pt-4 transition-colors">
                             <livewire:questions.show
-                                :questionId="$result->id"
+                                    :questionId="$result->id"
                                 :key="'question-' . $result->id"
                             />
-                        </li>
+                        </div>
                     @elseif ($result instanceof App\Models\User)
                         @php($user = $result)
                         <li
@@ -80,8 +80,8 @@
                                     class="ml-auto"
                                     wire:key="follow-button-{{ $user->id }}"
                                 />
-                        </div>
-                    </li>
+                            </div>
+                        </li>
                     @endif
                 @endforeach
             </ul>
