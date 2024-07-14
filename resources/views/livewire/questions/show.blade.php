@@ -85,7 +85,7 @@
                             <button
                                 data-navigate-ignore="true"
                                 class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
-                                <x-icons.ellipsis-horizontal class="h-6 w-6" />
+                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
                             </button>
                         </x-slot>
 
@@ -292,7 +292,7 @@
                                 type="button"
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
                                 data-navigate-ignore="true"
@@ -311,7 +311,7 @@
                                 "
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
                                 data-navigate-ignore="true"
