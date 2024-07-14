@@ -260,7 +260,7 @@
                                         type="submit"
                                         class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
-                                        <x-icons.trash
+                                        <x-heroicon-o-trash
                                             class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
                                             x-bind:class="{ 'invisible': isDragging }"
                                         />
