@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Question;
 use App\Models\User;
 use Database\Factories\Concerns\RefreshOnCreate;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -14,6 +15,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 final class QuestionFactory extends Factory
 {
     use RefreshOnCreate;
+
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<Question>
+     */
+    protected $model = Question::class;
 
     /**
      * Define the model's default state.

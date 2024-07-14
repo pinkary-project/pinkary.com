@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Link;
 use App\Models\User;
 use Database\Factories\Concerns\RefreshOnCreate;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -14,6 +15,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 final class LinkFactory extends Factory
 {
     use RefreshOnCreate;
+
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<Link>
+     */
+    protected $model = Link::class;
 
     /**
      * Define the model's default state.
