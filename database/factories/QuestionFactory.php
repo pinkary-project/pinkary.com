@@ -44,4 +44,56 @@ final class QuestionFactory extends Factory
             'answer' => $this->faker->sentence,
         ]);
     }
+
+    /**
+     * Indicate that the question is pinned.
+     */
+    public function pinned(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'pinned' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the question was asked anonymously.
+     */
+    public function anonymously(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'anonymously' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the question was reported.
+     */
+    public function reported(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_reported' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the question is ignored.
+     */
+    public function ignored(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_ignored' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the question has no answer.
+     */
+    public function unanswered(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'answer' => null,
+            'answer_created_at' => null,
+            'answer_updated_at' => null,
+        ]);
+    }
 }
