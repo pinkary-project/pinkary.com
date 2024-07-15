@@ -265,6 +265,7 @@
                     @endphp
 
                     <button
+                        data-navigate-ignore="true"
                         @if ($bookmarkExists)
                             wire:click="unbookmark()"
                         @else
