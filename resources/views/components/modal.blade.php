@@ -81,7 +81,7 @@
             x-on:click="show = false"
             class="absolute right-2 top-2 text-xl text-slate-500 focus:outline-none"
         >
-            <x-icons.close />
+            <x-heroicon-o-x-mark class="h-6 w-6" />
         </button>
 
         {{ $slot }}

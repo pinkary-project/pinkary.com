@@ -43,7 +43,13 @@ Alpine.data('copyUrl', copyUrl)
 import { showMore } from './show-more.js'
 Alpine.data('showMore', showMore)
 
+import { clickHandler } from './click-handler.js'
+Alpine.data('clickHandler', clickHandler)
+
 import { particlesEffect } from './particles-effect.js'
 Alpine.data('particlesEffect', particlesEffect)
+
+import { copyCode } from './copy-code.js'
+Alpine.data('copyCode', copyCode)
 
 Livewire.start()

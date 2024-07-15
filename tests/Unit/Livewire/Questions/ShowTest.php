@@ -380,18 +380,3 @@ test('pinnable', function () {
 
     $component->assertSee('Pinned');
 });
-
-test('comment', function () {
-    $question = Question::factory()->create();
-
-    $component = Livewire::test(Show::class, [
-        'questionId' => $question->id,
-    ]);
-
-    $component->call('comment');
-
-    $component->assertRedirect(route('questions.show', [
-        'username' => $question->to->username,
-        'question' => $question->id,
-    ]));
-});

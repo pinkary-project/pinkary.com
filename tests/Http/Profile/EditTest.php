@@ -234,7 +234,7 @@ test('user can delete their account', function () {
 
 test('avatar is deleted when account is deleted', function () {
     $user = User::factory()->create([
-        'avatar' => 'storage/avatars/default.png',
+        'avatar' => 'avatars/default.png',
     ]);
 
     Storage::disk('public')->put('avatars/default.png', '...');
@@ -362,7 +362,6 @@ test('user can upload an avatar', function () {
 
     expect($user->avatar)->toContain('avatars/')
         ->and($user->avatar)->toContain('.png')
-        ->and($user->avatar)->toContain('storage/')
         ->and($user->avatar_updated_at)->not()->toBeNull()
         ->and($user->is_uploaded_avatar)->toBeTrue()
         ->and(session('flash-message'))->toBe('Avatar updated.');
@@ -372,8 +371,9 @@ test('user can delete custom avatar and update using Gravatar', function () {
     Storage::fake('public');
 
     $user = User::factory()->create([
-        'avatar' => 'storage/avatars/avatar.jpg',
+        'avatar' => 'avatars/avatar.jpg',
         'is_uploaded_avatar' => true,
+        'email' => 'jitewaboh@lagify.com', // test Gravatar email
     ]);
 
     Storage::disk('public')->put('avatars/avatar.jpg', '...');
@@ -397,7 +397,7 @@ test('user can delete custom avatar and update using GitHub', function () {
     Storage::fake('public');
 
     $user = User::factory()->create([
-        'avatar' => 'storage/avatars/avatar.jpg',
+        'avatar' => 'avatars/avatar.jpg',
         'is_uploaded_avatar' => true,
         'github_username' => 'testuser',
     ]);
@@ -423,8 +423,9 @@ test('user can re-fetch avatar from Gravatar', function () {
     Storage::fake('public');
 
     $user = User::factory()->create([
-        'avatar' => 'storage/avatars/avatar.jpg',
+        'avatar' => 'avatars/avatar.jpg',
         'is_uploaded_avatar' => false,
+        'email' => 'jitewaboh@lagify.com', // test Gravatar email
     ]);
 
     $this->actingAs($user)
@@ -444,7 +445,7 @@ test('user can re-fetch avatar from GitHub', function () {
     Storage::fake('public');
 
     $user = User::factory()->create([
-        'avatar' => 'storage/avatars/avatar.jpg',
+        'avatar' => 'avatars/avatar.jpg',
         'is_uploaded_avatar' => false,
         'github_username' => 'testuser',
     ]);

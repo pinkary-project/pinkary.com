@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -56,6 +57,7 @@ use Illuminate\Support\Facades\Storage;
  */
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -159,7 +161,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getAvatarUrlAttribute(): string
     {
-        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
+        return $this->avatar ? Storage::disk('public')->url($this->avatar) : asset('img/default-avatar.png');
     }
 
     /**
@@ -234,9 +236,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function purge(): void
     {
         if ($this->avatar) {
-            Storage::disk('public')->delete(
-                str_replace('storage/', '', $this->avatar)
-            );
+            Storage::disk('public')->delete($this->avatar);
         }
 
         $this->followers()->detach();

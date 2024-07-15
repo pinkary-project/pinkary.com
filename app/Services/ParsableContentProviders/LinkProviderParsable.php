@@ -26,7 +26,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
 
                 $url = $isMail ? 'mailto:'.$humanUrl : $url;
 
-                return '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
+                return '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
             },
             str_replace('&amp;', '&', $content)
         );
