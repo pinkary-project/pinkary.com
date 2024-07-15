@@ -18,7 +18,7 @@ it('stores a file base avatar', function () {
     $user = $user->fresh();
 
     expect($user->avatar)->toBeString();
-    Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
+    Storage::disk('public')->assertExists($user->avatar);
 });
 
 it('returns default avatar if not service or file passed', function () {
@@ -31,7 +31,8 @@ it('returns default avatar if not service or file passed', function () {
     $user = $user->fresh();
 
     expect($user->avatar)
-        ->toBeString()
+        ->toBe(null)
+        ->and($user->avatar_url)
         ->toBe(asset('img/default-avatar.png'));
 });
 
@@ -48,7 +49,7 @@ it('deletes the given avatar file', function () {
     $user = $user->fresh();
 
     expect($user->avatar)->toBeString();
-    Storage::disk('public')->assertExists(str_replace('storage/', '', $user->avatar));
+    Storage::disk('public')->assertExists($user->avatar);
 
     Storage::disk('public')->assertMissing('avatars/1.png');
 });
@@ -84,7 +85,7 @@ it('accepts different services to download avatar', function () {
     expect($user->avatar)
         ->toBeString()
         ->and(Storage::disk('public')
-            ->exists(str_replace('storage/', '', $user->avatar))
+            ->exists($user->avatar)
         )
         ->toBeTrue();
 });
@@ -99,7 +100,8 @@ it('defers to the default image if service avatar not found', function () {
     $user->refresh();
 
     expect($user->avatar)
-        ->toBeString()
+        ->toBe(null)
+        ->and($user->avatar_url)
         ->toBe(asset('img/default-avatar.png'));
 
     $user->update(['avatar' => null]);
@@ -109,6 +111,7 @@ it('defers to the default image if service avatar not found', function () {
     $user->refresh();
 
     expect($user->avatar)
-        ->toBeString()
+        ->toBe(null)
+        ->and($user->avatar_url)
         ->toBe(asset('img/default-avatar.png'));
 });

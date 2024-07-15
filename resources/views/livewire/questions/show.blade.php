@@ -1,4 +1,4 @@
-<article class="block" id="q-{{ $questionId }}">
+<article class="block" id="q-{{ $questionId }}" x-data="copyCode">
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
@@ -23,21 +23,28 @@
         </div>
 
         @unless ($question->isSharedUpdate())
-        <p class="mb-4 mt-3 px-4 text-slate-200">
+        <p class="mt-3 px-4 text-slate-200">
             {!! $question->content !!}
         </p>
         @endunless
     </div>
 
     @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
+        <div
+            data-parent=true
+            x-data="clickHandler"
+            x-on:click="handleNavigation($event)"
+            class="group p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
+            {{ $commenting ?: "cursor-pointer transition-colors duration-100 ease-in-out hover:bg-slate-700/60" }}"
+        >
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                    class="group flex items-center gap-3"
+                    class="group/profile flex items-center gap-3"
+                    data-navigate-ignore="true"
                     wire:navigate
                 >
-                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
+                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover/profile:opacity-90">
                         <img
                             src="{{ $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
@@ -63,7 +70,7 @@
                             @endif
                         </div>
 
-                        <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
+                        <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-400">
                             {{ '@'.$question->to->username }}
                         </p>
                     </div>
@@ -75,14 +82,17 @@
                         width="48"
                     >
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
-                                <x-icons.ellipsis-horizontal class="h-6 w-6" />
+                            <button
+                                data-navigate-ignore="true"
+                                class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
+                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
                             @if (! $question->pinned && auth()->user()->can('pin', $question))
                                 <x-dropdown-button
+                                    data-navigate-ignore="true"
                                     wire:click="pin"
                                     class="flex items-center gap-1.5"
                                 >
@@ -91,6 +101,7 @@
                                 </x-dropdown-button>
                             @elseif ($question->pinned)
                                 <x-dropdown-button
+                                    data-navigate-ignore="true"
                                     wire:click="unpin"
                                     class="flex items-center gap-1.5"
                                 >
@@ -100,6 +111,7 @@
                             @endif
                             @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
                                 <x-dropdown-button
+                                    data-navigate-ignore="true"
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
                                     class="flex items-center gap-1.5"
                                 >
@@ -109,11 +121,12 @@
                             @endif
                             @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
                                 <x-dropdown-button
+                                    data-navigate-ignore="true"
                                     wire:click="ignore"
                                     wire:confirm="Are you sure you want to delete this question?"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.trash class="h-4 w-4" />
+                                    <x-heroicon-o-trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
@@ -130,6 +143,7 @@
                             'previousQuestionId' => $questionId,
                         ])
                     }}"
+                   data-navigate-ignore="true"
                    wire:navigate
                    class="truncate text-xs text-slate-500 transition-colors hover:text-slate-400"
                 >
@@ -139,7 +153,7 @@
 
             <div x-data="showMore">
                 <div
-                    class="mt-3 break-words text-slate-200 overflow-hidden"
+                    class="mt-3 break-words text-slate-200 overflow-hidden answer"
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
@@ -148,8 +162,9 @@
                     </p>
                 </div>
 
-                <div x-show="showMore === true" class="mt-1">
+                <div x-show="showMore === true" class="mt-1 answer">
                     <button
+                        data-navigate-ignore="true"
                         @click="showButtonAction"
                         class="text-sm text-pink-500 flex ml-auto"
                         x-text="showMoreButtonText"
@@ -161,6 +176,7 @@
                 <div class="flex items-center gap-1">
                     <a
                         @if (! $commenting)
+                            x-ref="parentLink"
                             href="{{Route('questions.show', [
                                 'question' => $question->id,
                                 'username' => $question->to->username,
@@ -169,7 +185,7 @@
                         @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
                         @class([
-                            "flex items-center transition-colors hover:text-slate-400 focus:outline-none",
+                            "flex items-center transition-colors group-hover:text-pink-500 hover:text-slate-400 focus:outline-none",
                             "cursor-pointer" => ! $commenting,
                         ])
                     >
@@ -189,10 +205,11 @@
                     @endphp
 
                     <button
+                        data-navigate-ignore="true"
                         @if ($likeExists)
-                            wire:click="unlike()"
+                            wire:click="unlike"
                         @else
-                            wire:click="like()"
+                            wire:click="like"
                         @endif
                         x-data="particlesEffect"
                         x-on:click="executeParticlesEffect($event)"
@@ -200,9 +217,9 @@
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)
-                            <x-icons.heart-solid class="h-4 w-4"/>
+                            <x-heroicon-s-heart class="h-4 w-4"/>
                         @else
-                            <x-icons.heart class="h-4 w-4"/>
+                            <x-heroicon-o-heart class="h-4 w-4"/>
                         @endif
                         @if ($likesCount)
                             <span class="ml-1">
@@ -269,17 +286,19 @@
                     >
                         <x-slot name="trigger">
                             <button
+                                data-navigate-ignore="true"
                                 x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
                                                 'text-slate-500 hover:text-slate-400': !open }"
                                 title="Share"
                                 class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
-                                <x-icons.paper-airplane class="h-4 w-4" />
+                                <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
                             <button
+                                data-navigate-ignore="true"
                                 x-cloak
                                 x-data="copyUrl"
                                 x-show="isVisible"
@@ -296,9 +315,10 @@
                                 type="button"
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
+                                data-navigate-ignore="true"
                                 x-cloak
                                 x-data="shareProfile"
                                 x-show="isVisible"
@@ -314,9 +334,10 @@
                                 "
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
+                                data-navigate-ignore="true"
                                 x-cloak
                                 x-data="shareProfile"
                                 x-on:click="
@@ -371,4 +392,3 @@
         </div>
     @endif
 </article>
-
