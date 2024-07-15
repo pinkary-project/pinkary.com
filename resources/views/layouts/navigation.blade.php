@@ -49,6 +49,7 @@
                     </a>
 
                     <a
+                        title="Bookmarks"
                         href="{{ route('bookmarks.index') }}"
                         class="mr-2"
                         wire:navigate
