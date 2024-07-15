@@ -57,7 +57,7 @@
                             type="button"
                             class="{{ request()->routeIs('bookmarks.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-icons.bookmark class="h-6 w-6" />
+                            <x-heroicon-o-bookmark class="h-6 w-6" />
                         </button>
                     </a>
 

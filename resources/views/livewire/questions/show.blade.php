@@ -274,9 +274,9 @@
                         class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($bookmarkExists)
-                            <x-icons.bookmark-solid class="h-4 w-4" />
+                            <x-heroicon-s-bookmark class="h-4 w-4" />
                         @else
-                            <x-icons.bookmark class="h-4 w-4" />
+                            <x-heroicon-o-bookmark class="h-4 w-4" />
                         @endif
                     </button>
                     <x-dropdown align="left"
