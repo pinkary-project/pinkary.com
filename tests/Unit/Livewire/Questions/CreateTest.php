@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Livewire\Questions\Create;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Livewire\Attributes\Validate;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
@@ -336,4 +338,63 @@ test('user cannot share update anonymously', function () {
         'content' => '__UPDATE__', // This is the content for an update
         'anonymously' => false,
     ]);
+});
+
+it('has a property for storing the images', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+        ]);
+
+    expect($component->images)->toBeArray();
+});
+
+test('image property has correct validation attributes', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+        ]);
+
+    collect($component->invade()->getAttributes())
+        ->filter(fn($attribute) => $attribute instanceof Validate)
+        ->each(function (Validate $validate) {
+            if ($validate->getName() === 'images') {
+                expect($validate->rule)->toBeArray()
+                    ->and($validate->rule['images.*'])->toBeArray()
+                    ->and($validate->rule['images.*'])->toContain('image')
+                    ->and($validate->rule['images.*'])->toContain('max:2048')
+                    ->and($validate->rule['images.*'])->toContain('mimes:jpg,png,jpeg,gif');
+            }
+        });
+});
+
+test('updated lifecycle method', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+        ]);
+    expect($component->invade()->updated('images'))->toBeNull();
+})->note('checks if images prop was updated');
+
+
+test('updated method invokes handleUploads', function () {
+    $user = User::factory()->create();
+    $file = UploadedFile::fake()->image('photo1.jpg');
+
+    $component = Livewire::actingAs($user)->test(Create::class);
+
+    $component->set('images', [$file]);
+
+    expect(session('images'))->toBeArray()
+        ->and(session('images'))->toContain($file->store('images', 'public'));
+
+     $component->assertDispatched('image.uploaded');
+
+    $component->assertSet('images', []);
 });
