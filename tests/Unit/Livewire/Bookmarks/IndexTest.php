@@ -42,6 +42,25 @@ test('displays bookmarks', function () {
         ]);
 });
 
+test('refresh', function () {
+    $user = User::factory()->create();
+
+    Question::factory()
+        ->has(Bookmark::factory()->for($user))
+        ->create([
+            'content' => 'Some Question',
+        ]);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $component->assertSee('Some Question');
+
+    $component->dispatch('question.unbookmarked');
+
+    $component->assertDontSee('Some Question');
+});
+
 test('load more', function () {
     $user = User::factory()->create();
 
