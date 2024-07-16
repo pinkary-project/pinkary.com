@@ -7,12 +7,16 @@ namespace App\Livewire\Questions;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * @property-read bool $isSharingUpdate
@@ -20,6 +24,8 @@ use Livewire\Component;
  */
 final class Create extends Component
 {
+    use WithFileUploads;
+
     /**
      * The component's user ID.
      */
@@ -36,6 +42,14 @@ final class Create extends Component
      * The component's content.
      */
     public string $content = '';
+
+    /**
+     * Property to temporarily store the uploaded images.
+     *
+     * @var array<string, UploadedFile>
+     */
+    #[Validate(['images.*' => ['image', 'max:2048', 'mimes:jpg,png,jpeg,gif']])]
+    public array $images = [];
 
     /**
      * The component's anonymously state.
