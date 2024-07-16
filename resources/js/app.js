@@ -52,4 +52,7 @@ Alpine.data('particlesEffect', particlesEffect)
 import { copyCode } from './copy-code.js'
 Alpine.data('copyCode', copyCode)
 
+import { imageUpload } from './image-upload.js'
+Alpine.data('imageUpload', imageUpload)
+
 Livewire.start()
