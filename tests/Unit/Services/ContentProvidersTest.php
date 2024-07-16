@@ -206,14 +206,8 @@ test('image', function (string $content) {
 
     expect($provider->parse($content))->toMatchSnapshot();
 })->with([
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Jpg Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Jpeg Example](/storage/images/pathtoimage.jpeg)'],
+    ['content' => '![Png Example](/storage/images/pathtoimage.png)'],
+    ['content' => '![Png Example](/storage/images/pathtoimage.gif)'],
 ]);
