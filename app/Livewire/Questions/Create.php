@@ -57,6 +57,16 @@ final class Create extends Component
     public bool $anonymously = true;
 
     /**
+     * The updated lifecycle hook.
+     */
+    public function updated(mixed $property): void
+    {
+        if ($property === 'images') {
+            $this->handleUploads();
+        }
+    }
+
+    /**
      * Mount the component.
      */
     public function mount(Request $request): void
