@@ -18,6 +18,13 @@ final class BookmarkFactory extends Factory
     use RefreshOnCreate;
 
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var class-string<Like>
+     */
+    protected $model = Bookmark::class;
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
