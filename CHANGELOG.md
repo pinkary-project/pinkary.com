@@ -1,4 +1,9 @@
 ## Version 1.23.5
+> 16 July, 2024
+
+- Adds bookmarks
+
+## Version 1.23.5
 > 14 July, 2024
 
 - Internal improvements and bug fixes.
