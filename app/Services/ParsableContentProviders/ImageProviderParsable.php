@@ -18,7 +18,7 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
             static function ($match): string {
                 $altText = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '', $match[1]);
 
-                return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem]' src=\"/storage/$match[2]\" alt=\"{$altText}\">";
+                return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"/storage/$match[2]\" alt=\"{$altText}\">";
             },
             $content
         );
