@@ -5,12 +5,12 @@
         "php": "^8.3",
         "filament/filament": "^3.2.93",
         "intervention/image": "^3.7.2",
-        "laravel/framework": "^11.15.0",
+        "laravel/framework": "^11.16.0",
         "laravel/pennant": "^1.9.0",
         "laravel/pulse": "^1.2.4",
         "laravel/socialite": "^5.15.1",
         "laravel/tinker": "^2.9.0",
-        "livewire/livewire": "^3.5.2",
+        "livewire/livewire": "^3.5.4",
         "matomo/device-detector": "^6.3.2",
         "pinkary-project/type-guard": "^0.1.0",
         "scrivo/highlight.php": "^9.18.1.10",
@@ -28,7 +28,7 @@
         "pestphp/pest": "^3.0.0",
         "pestphp/pest-plugin-laravel": "^3.0.0",
         "pestphp/pest-plugin-type-coverage": "^3.0.0",
-        "rector/rector": "^1.2.0"
+        "rector/rector": "^1.2.1"
     },
     "autoload": {
         "psr-4": {
