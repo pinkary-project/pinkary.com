@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
@@ -42,6 +43,8 @@ Route::prefix('/@{username}')->group(function () {
 });
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::get('bookmarks', [BookmarksController::class, 'index'])->name('bookmarks.index');
+
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('notifications/{notification}', [NotificationController::class, 'show'])
         ->name('notifications.show');

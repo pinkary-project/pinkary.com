@@ -242,7 +242,10 @@
                 </div>
 
                 <div class="flex items-center text-slate-500 ">
-                    @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
+                    @php
+                        $timestamp = $question->answer_updated_at ?: $question->answer_created_at
+                    @endphp
+
                     <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
@@ -256,6 +259,27 @@
                     </time>
 
                     <span class="mx-1">•</span>
+
+                    @php
+                        $bookmarkExists = $question->bookmarks->contains('user_id', auth()->id());
+                    @endphp
+
+                    <button
+                        data-navigate-ignore="true"
+                        @if ($bookmarkExists)
+                            wire:click="unbookmark()"
+                        @else
+                            wire:click="bookmark()"
+                        @endif
+
+                        class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                    >
+                        @if ($bookmarkExists)
+                            <x-heroicon-s-bookmark class="h-4 w-4" />
+                        @else
+                            <x-heroicon-o-bookmark class="h-4 w-4" />
+                        @endif
+                    </button>
                     <x-dropdown align="left"
                                 width="48"
                                 dropdown-classes="top-[-3.4rem] shadow-none"

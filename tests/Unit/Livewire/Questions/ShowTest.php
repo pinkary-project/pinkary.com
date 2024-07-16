@@ -116,6 +116,64 @@ test('ignore auth', function () {
     $component->assertRedirect(route('login'));
 });
 
+test('bookmark', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('bookmark');
+    $component->call('bookmark');
+
+    expect($question->bookmarks()->count())->toBe(1);
+});
+
+test('bookmark auth', function () {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('bookmark');
+
+    $component->assertRedirect(route('login'));
+});
+
+test('unbookmark', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('bookmark');
+
+    expect($question->bookmarks()->count())->toBe(1);
+
+    $component->call('unbookmark');
+
+    $component->assertDispatched('question.unbookmarked');
+    expect($question->bookmarks()->count())->toBe(0);
+});
+
+test('unbookmark auth', function () {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('unbookmark');
+
+    $component->assertRedirect(route('login'));
+});
+
 test('like', function () {
     $question = Question::factory()->create();
 
