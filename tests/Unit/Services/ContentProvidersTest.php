@@ -75,6 +75,17 @@ test('links with mail', function (string $content, string $parsed) {
     ],
 ]);
 
+test('link parser doesnt ignores the src attribute in am image tag, only the alt attribute', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => '<img src="/storage/images/pathtoimage.jpg" alt="Example">',
+        'parsed' => '<img src="/storage/images/pathtoimage.jpg" alt="Example">',
+    ],
+])->note('The dot in the path was causing a anchor tag to be parsed so we added the src attribute to the REGEX');
+
 test('links with ports in the url', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
@@ -188,4 +199,21 @@ test('mention', function (string $content) {
     ['content' => '@nunomaduro!'],
     ['content' => '@nunomaduro?'],
     ['content' => '@nunomaduro/'],
+]);
+
+test('image', function (string $content) {
+    $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
+
+    expect($provider->parse($content))->toMatchSnapshot();
+})->with([
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
+    ['content' => '![Example](/storage/images/pathtoimage.jpg)'],
 ]);
