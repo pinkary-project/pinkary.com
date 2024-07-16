@@ -194,4 +194,25 @@ final class Create extends Component
             'user' => $user,
         ]);
     }
+
+    /**
+     * Handle the image uploads.
+     */
+    protected function handleUploads(): void
+    {
+        $this->validateOnly('images');
+
+        collect($this->images)->each(
+            function (UploadedFile $image): void {
+                $path = $image->store('images', 'public');
+                session()->push('images', $path);
+                $this->dispatch(
+                    'image.uploaded',
+                    path: $path,
+                    originalName: $image->getClientOriginalName(),
+                );
+            });
+
+        $this->reset('images');
+    }
 }
