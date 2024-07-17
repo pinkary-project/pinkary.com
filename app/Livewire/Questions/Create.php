@@ -46,7 +46,7 @@ final class Create extends Component
     /**
      * Property to temporarily store the uploaded images.
      *
-     * @var array<string, UploadedFile>
+     * @var array<int, UploadedFile>
      */
     #[Validate(['images.*' => ['image', 'max:2048', 'mimes:jpg,png,jpeg,gif']])]
     public array $images = [];
@@ -112,7 +112,10 @@ final class Create extends Component
     /**
      * Refresh the component.
      */
-    #[On('link-settings.updated')]
+    #[On([
+        'link-settings.updated',
+        'question.created',
+    ])]
     public function refresh(): void
     {
         //
@@ -191,6 +194,37 @@ final class Create extends Component
     }
 
     /**
+     * Handle the image uploads.
+     */
+    public function handleUploads(): void
+    {
+        $this->validateOnly('images');
+
+        collect($this->images)->each(
+            function (UploadedFile $image): void {
+                /** @var string $path */
+                $path = $image->store('images', 'public');
+                session()->push('images', $path);
+                $this->dispatch(
+                    'image.uploaded',
+                    path: Storage::url($path),
+                    originalName: $image->getClientOriginalName(),
+                );
+            });
+
+        $this->reset('images');
+    }
+
+    /**
+     * Handle the image deletes.
+     */
+    #[On('image.delete')]
+    public function handleDeletes($image): void
+    {
+        logger($image);
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
@@ -206,24 +240,4 @@ final class Create extends Component
         ]);
     }
 
-    /**
-     * Handle the image uploads.
-     */
-    protected function handleUploads(): void
-    {
-        $this->validateOnly('images');
-
-        collect($this->images)->each(
-            function (UploadedFile $image): void {
-                $path = $image->store('images', 'public');
-                session()->push('images', $path);
-                $this->dispatch(
-                    'image.uploaded',
-                    path: $path,
-                    originalName: $image->getClientOriginalName(),
-                );
-            });
-
-        $this->reset('images');
-    }
 }
