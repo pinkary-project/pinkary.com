@@ -360,7 +360,7 @@ test('image property has correct validation attributes', function () {
         ]);
 
     collect($component->invade()->getAttributes())
-        ->filter(fn($attribute) => $attribute instanceof Validate)
+        ->filter(fn ($attribute) => $attribute instanceof Validate)
         ->each(function (Validate $validate) {
             if ($validate->getName() === 'images') {
                 expect($validate->rule)->toBeArray()
@@ -380,8 +380,7 @@ test('updated lifecycle method', function () {
             'toId' => $user->id,
         ]);
     expect($component->invade()->updated('images'))->toBeNull();
-})->note('checks if images prop was updated');
-
+});
 
 test('updated method invokes handleUploads', function () {
     $user = User::factory()->create();
@@ -394,7 +393,29 @@ test('updated method invokes handleUploads', function () {
     expect(session('images'))->toBeArray()
         ->and(session('images'))->toContain($file->store('images', 'public'));
 
-     $component->assertDispatched('image.uploaded');
+    $component->assertDispatched('image.uploaded');
 
     $component->assertSet('images', []);
+});
+
+
+test('delete image', function () {
+    $user = User::factory()->create();
+    $file = UploadedFile::fake()->image('photo1.jpg');
+    $path = $file->store('images', 'public');
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    Storage::disk('public')->assertExists($path);
+
+    $component->dispatch('image.delete', ['path' => $path]);
+
+    $pathAgain = $file->store('images', 'public');
+    Storage::disk('public')->assertExists($pathAgain);
+
+    $component->call('deleteImage', ['path' => $pathAgain]);
+
+    Storage::disk('public')->assertMissing($pathAgain);
 });
