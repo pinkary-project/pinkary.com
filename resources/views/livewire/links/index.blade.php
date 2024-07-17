@@ -212,7 +212,6 @@
             </p>
         </div>
     </div>
-
     <div class="py-5">
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
@@ -221,7 +220,7 @@
         @else
             @if (auth()->user()?->is($user))
                 <ul
-                    x-data="{isDragging: false}"
+                    x-data="{ isDragging: false }"
                     x-sortable
                     x-on:choose.stop="isDragging = true"
                     x-on:unchoose.stop="isDragging = false"
