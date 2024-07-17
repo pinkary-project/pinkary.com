@@ -62,7 +62,7 @@ final class Create extends Component
     public function updated(mixed $property): void
     {
         if ($property === 'images') {
-            $this->handleUploads();
+            $this->uploadImages();
         }
     }
 
@@ -196,7 +196,7 @@ final class Create extends Component
     /**
      * Handle the image uploads.
      */
-    public function handleUploads(): void
+    public function uploadImages(): void
     {
         $this->validateOnly('images');
 
