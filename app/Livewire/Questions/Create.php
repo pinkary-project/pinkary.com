@@ -196,17 +196,18 @@ final class Create extends Component
     {
         $this->validateOnly('images');
 
-        collect($this->images)->each(
-            function (UploadedFile $image): void {
-                /** @var string $path */
-                $path = $image->store('images', 'public');
-                session()->push('images', $path);
-                $this->dispatch(
-                    'image.uploaded',
-                    path: Storage::url($path),
-                    originalName: $image->getClientOriginalName(),
-                );
-            });
+        $today = now()->format('Y-m-d');
+
+        collect($this->images)->each(function (UploadedFile $image) use ($today): void {
+            /** @var string $path */
+            $path = $image->store("images/{$today}", 'public');
+            session()->push('images', $path);
+            $this->dispatch(
+                'image.uploaded',
+                path: Storage::url($path),
+                originalName: $image->getClientOriginalName()
+            );
+        });
 
         $this->reset('images');
     }
