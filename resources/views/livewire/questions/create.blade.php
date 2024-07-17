@@ -7,7 +7,10 @@
         wire:keydown.cmd.enter="store"
         wire:keydown.ctrl.enter="store"
     >
-        <div>
+        <div
+            x-data="imageUpload"
+            x-init='addErrors(@json($errors->all()))'
+            class="relative group/menu">
             <x-textarea
                 wire:model="content"
                 placeholder="{{ $this->placeholder }}"
