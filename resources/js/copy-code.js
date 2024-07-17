@@ -50,8 +50,6 @@ const copyCode = () => ({
             const button = document.createElement('button');
             const setupButton = () => {
                 button.classList.add(
-                    'size-7',
-                    'items-center',
                     'opacity-0',
                     'group-hover/code:opacity-100',
                     'group-hover/code:bg-opacity-50',
