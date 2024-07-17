@@ -254,6 +254,18 @@
                                     {{ Number::abbreviate($link->click_count) }}
                                     {{ str('click')->plural($link->click_count) }}
                                 </div>
+
+                                <button
+                                    wire:click="$dispatchTo('links.edit', 'link.edit', { link: {{ $link->id }} })"
+                                    type="button"
+                                    class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                >
+                                    <x-heroicon-o-pencil
+                                        class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                        x-bind:class="{ 'invisible': isDragging }"
+                                    />
+                                </button>
+
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
@@ -270,6 +282,15 @@
                         </li>
                     @endforeach
                 </ul>
+
+                <x-modal
+                    name="link-edit-modal"
+                    maxWidth="2xl"
+                >
+                    <div class="p-10">
+                        <livewire:links.edit />
+                    </div>
+                </x-modal>
             @else
                 <div class="space-y-3">
                     @foreach ($links as $link)

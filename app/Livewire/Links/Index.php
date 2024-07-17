@@ -136,6 +136,7 @@ final class Index extends Component
      * Refresh the component.
      */
     #[On('link.created')]
+    #[On('link.updated')]
     #[On('link-settings.updated')]
     public function refresh(): void
     {
