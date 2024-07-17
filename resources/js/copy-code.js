@@ -38,7 +38,6 @@ const copyCode = () => ({
             button.style.position = 'absolute';
             button.style.right = `${m}px`;
             button.style.top = `${m}px`;
-            button.style.bottom = `100%`;
         }
 
         codeElements.forEach((codeElement) => {
