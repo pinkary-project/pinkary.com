@@ -14,6 +14,8 @@
                 maxlength="{{ $this->maxContentLength }}"
                 rows="3"
                 required
+                x-autosize
+                x-ref="content"
             />
 
             <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
