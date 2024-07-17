@@ -13,12 +13,12 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
      */
     public function parse(string $content): string
     {
-        return (string)preg_replace_callback(
+        return (string) preg_replace_callback(
             '/!\[(.*?)\]\((.*?)\)/',
             static function ($match): string {
                 $altText = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '', $match[1]);
 
-                return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"/storage/$match[2]\" alt=\"{$altText}\">";
+                return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"$match[2]\" alt=\"{$altText}\">";
             },
             $content
         );

@@ -164,6 +164,17 @@ final class Create extends Component
             'to_id' => $this->toId,
         ]);
 
+        /** @var array<string> $imagePaths */
+        $imagePaths = session()->get('images', []);
+        collect($imagePaths)
+            ->reject(fn (string $path): bool => str_contains($this->content, Storage::url($path)))
+            ->each(fn (string $path): bool => Storage::disk('public')->delete($path));
+
+        session()->remove('images');
+            //->forget('images');
+
+        logger(session()->get('images', 'no images'));
+
         $this->reset(['content']);
 
         $this->anonymously = $user->prefers_anonymous_questions;
