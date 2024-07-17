@@ -32,13 +32,12 @@ const copyCode = () => ({
         ).documentElement;
 
         const positionButton = (button, el) => {
-            const rect = el.getBoundingClientRect();
-            const m = 8;
-            button.style.position = 'sticky';
-            button.style.left = `${rect.width - button.offsetWidth - (m * 2)}px`;
-            button.style.top = `-${m * 5}px`;
-            button.style.bottom = `100%`;
-            button.style.margin = `-${m}px`;
+            el.parentNode.style.position = 'relative';
+
+            const m = 6;
+            button.style.position = 'absolute';
+            button.style.right = `${m}px`;
+            button.style.top = `${m}px`;
         }
 
         codeElements.forEach((codeElement) => {
@@ -82,8 +81,8 @@ const copyCode = () => ({
             });
 
             window.addEventListener(
-                'resize',
-                positionButton.bind(null, button, codeElement)
+                'resize', () =>
+                    positionButton(button, codeElement)
             );
 
             button.addEventListener('click', () => {
