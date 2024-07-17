@@ -32,6 +32,20 @@
             </div>
             <input class="hidden" type="file" x-ref="imageInput" accept="image/*" multiple />
             <input class="hidden" type="file" x-ref="imageUpload" accept="image/*" multiple wire:model="images" />
+
+            <div x-show="images.length > 0" class="relative mt-2 flex h-20 flex-wrap gap-2">
+                <template x-for="(image, index) in images" :key="index">
+                    <div class="relative h-20 w-20">
+                        <img :src="image.path" :alt="image.originalName"
+                             x-on:click="createMarkdownImage(index)"
+                             title="Reinsert the image"
+                             class="h-full w-full rounded-lg object-cover cursor-pointer"/>
+                        <button @click="removeImage($event, index)"
+                                class="absolute top-0.5 right-0.5 p-1 rounded-md bg-slate-800 bg-opacity-75 text-slate-400 hover:text-pink-500">
+                            <x-icons.close class="size-4"/>
+                        </button>
+                    </div>
+                </template>
             </div>
 
             <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
