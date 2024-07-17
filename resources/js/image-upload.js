@@ -50,14 +50,7 @@ const imageUpload = () => ({
     handleUploading(files) {
         if ((files.length + this.images.length) > this.uploadLimit) {
             this.uploading = false;
-            // TODO: work out if we want an error or a notification here
             this.addErrors([`Maximum of ${this.uploadLimit} images per post.`]);
-            // this.$notify(`Maximum of ${this.uploadLimit} images per post.`, {
-            //     wrapperId: 'flashMessageWrapper',
-            //     templateId: 'flashMessageTemplate',
-            //     autoClose: 3000,
-            //     autoRemove: 4000
-            // });
         } else {
             this.uploading = true;
             this.$refs.imageUpload.files = files;
@@ -109,10 +102,11 @@ const imageUpload = () => ({
 
     removeMarkdownImage(index) {
         let {path, originalName} = this.images[index];
-        let content = this.$refs.content.value;
+        let textarea = this.$refs.content;
+        let content = textarea.value;
         let regex = new RegExp(`!\\[${originalName}\\]\\(${path}\\)\\n?`, 'g');
         this.$refs.content.value = content.replace(regex, '');
-        this.$refs.content.dispatchEvent(new Event('input'));
+        this.resizeTextarea(textarea);
     },
 
 })
