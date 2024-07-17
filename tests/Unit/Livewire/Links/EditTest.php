@@ -64,10 +64,9 @@ test('link click count reset on url update', function () {
 
     $component = Livewire::actingAs($user)->test(Edit::class);
 
-    $component
-        ->call('edit', $link->id)
-        ->set('url', 'https://example.com')
-        ->call('update');
+    $component->call('edit', $link->id);
+    $component->set('url', 'https://example.com');
+    $component->call('update');
 
     $link->refresh();
 
@@ -90,10 +89,9 @@ test('link click count does not reset on only description update', function () {
 
     $component = Livewire::actingAs($user)->test(Edit::class);
 
-    $component
-        ->call('edit', $link->id)
-        ->set('description', 'Example')
-        ->call('update');
+    $component->call('edit', $link->id);
+    $component->set('description', 'Example');
+    $component->call('update');
 
     $link->refresh();
 
