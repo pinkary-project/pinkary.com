@@ -258,7 +258,6 @@
 
                                 <button
                                     wire:click="$dispatchTo('links.edit', 'link.edit', { link: {{ $link->id }} })"
-                                    x-on:click.prevent="$dispatch('open-modal', 'link-edit-modal')"
                                     type="button"
                                     class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
