@@ -35,15 +35,17 @@ const imageUpload = () => ({
     },
 
     checkFileSize(files) {
-        this.errors = [];
-        Array.from(files).forEach((file) => {
-            if (file.size > this.maxFileSize) {
-                const sizeInMb = this.maxFileSize / (1024 * 1024);
-                this.addErrors([`${file.name} is too large. Max file size is ${sizeInMb}MB.`]);
+        if (files.length) {
+            this.errors = [];
+            Array.from(files).forEach((file) => {
+                if (file.size > this.maxFileSize) {
+                    const sizeInMb = this.maxFileSize / (1024 * 1024);
+                    this.addErrors([`${file.name} is too large. Max file size is ${sizeInMb}MB.`]);
+                }
+            });
+            if (this.errors.length === 0) {
+                this.handleUploading(files);
             }
-        });
-        if (this.errors.length === 0) {
-            this.handleUploading(files);
         }
     },
 
@@ -78,8 +80,8 @@ const imageUpload = () => ({
     resizeTextarea(textarea) {
         this.$nextTick(() => {
             textarea.dispatchEvent(new Event('input'));
-            textarea.resize();
-            textarea.focus();
+            //textarea.resize();
+            //textarea.focus();
         });
     },
 
@@ -111,7 +113,14 @@ const imageUpload = () => ({
         let content = textarea.value;
         let regex = new RegExp(`!\\[${originalName}\\]\\(${path}\\)\\n?`, 'g');
         this.$refs.content.value = content.replace(regex, '');
-        this.resizeTextarea(textarea);
+        //textarea.dispatchEvent(new Event('input'));
+        this.$nextTick(() => {
+            textarea.dispatchEvent(new Event('input'));
+            setTimeout(() => {
+                textarea.resize();
+                textarea.focus();
+            }, 100);
+        });
     },
 
 })
