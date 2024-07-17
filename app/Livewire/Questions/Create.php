@@ -172,11 +172,7 @@ final class Create extends Component
         collect($imagePaths)
             ->reject(fn (string $path): bool => str_contains($this->content, Storage::url($path)))
             ->each(fn (string $path): bool => Storage::disk('public')->delete($path));
-
-        session()->remove('images');
-            //->forget('images');
-
-        logger(session()->get('images', 'no images'));
+        session()->forget('images');
 
         $this->reset(['content']);
 
@@ -217,11 +213,13 @@ final class Create extends Component
 
     /**
      * Handle the image deletes.
+     *
+     * @param  array<string, string>  $image
      */
     #[On('image.delete')]
-    public function handleDeletes($image): void
+    public function deleteImage(array $image): void
     {
-        logger($image);
+        Storage::disk('public')->delete($image['path']);
     }
 
     /**
