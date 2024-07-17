@@ -20,6 +20,19 @@
                 x-autosize
                 x-ref="content"
             />
+            <div
+                class="absolute top-0 right-0 mt-2 mr-2 group-hover/menu:inline-block hidden">
+                <button title="Upload an image" x-ref="imageButton"
+                        :disabled="images.length >= 3 || uploading"
+                        class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
+                        :class="{'cursor-not-allowed text-pink-500': images.length >= 3 || uploading}"
+                >
+                    <x-heroicon-o-camera class="h-5 w-5"/>
+                </button>
+            </div>
+            <input class="hidden" type="file" x-ref="imageInput" accept="image/*" multiple />
+            <input class="hidden" type="file" x-ref="imageUpload" accept="image/*" multiple wire:model="images" />
+            </div>
 
             <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
 
