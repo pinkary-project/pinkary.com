@@ -18,12 +18,12 @@
 
             <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
 
-            @error('content')
-                <x-input-error
-                    :messages="$message"
-                    class="my-2"
-                />
-            @enderror
+            <ul>
+                <template x-for="(error, index) in errors" :key="index">
+                    <li class="py-2 text-sm text-red-600 w-full"><span x-text="error"></span></li>
+                </template>
+            </ul>
+
         </div>
         <div class="mt-4 flex items-center justify-between gap-4">
             <div class="flex items-center gap-4">
