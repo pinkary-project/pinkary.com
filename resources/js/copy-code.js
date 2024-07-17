@@ -32,11 +32,11 @@ const copyCode = () => ({
         ).documentElement;
 
         const positionButton = (button, el) => {
-            el.style.position = 'relative';
+            el.parentNode.style.position = 'relative';
 
             const m = 6;
             button.style.position = 'absolute';
-            button.style.left = `${el.offsetWidth - button.offsetWidth - m + el.scrollLeft}px`;
+            button.style.right = `${m}px`;
             button.style.top = `${m}px`;
             button.style.bottom = `100%`;
         }
@@ -82,11 +82,6 @@ const copyCode = () => ({
             this.$nextTick(() => {
                 setupButton();
             });
-
-            codeElement.addEventListener(
-                'scroll', () =>
-                    positionButton(button, codeElement)
-            );
 
             window.addEventListener(
                 'resize', () =>
