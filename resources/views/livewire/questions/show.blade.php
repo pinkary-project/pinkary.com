@@ -254,7 +254,7 @@
                         {{  $question->answer_updated_at ? 'Edited:' : null }}
                         {{
                             $timestamp->timezone(session()->get('timezone', 'UTC'))
-                                ->diffForHumans()
+                                ->diffForHumans(short: true)
                         }}
                     </time>
 
