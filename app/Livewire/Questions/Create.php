@@ -219,7 +219,8 @@ final class Create extends Component
     #[On('image.delete')]
     public function deleteImage(array $image): void
     {
-        Storage::disk('public')->delete($image['path']);
+        $path = str_replace('/storage', '', $image['path']);
+        Storage::disk('public')->delete($path);
     }
 
     /**
