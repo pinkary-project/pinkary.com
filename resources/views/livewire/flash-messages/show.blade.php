@@ -10,7 +10,7 @@
 >
     <div
         id="flashMessageWrapper"
-        class="fixed right-4 top-4 z-[55] w-64 space-y-2"
+        class="fixed right-4 top-4 z-50 w-64 space-y-2"
     ></div>
 
     @if (session('flash-message'))
