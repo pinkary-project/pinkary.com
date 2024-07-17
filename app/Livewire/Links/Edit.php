@@ -58,6 +58,7 @@ final class Edit extends Component
         $link->update($validated);
 
         $this->dispatch('link.updated');
+        $this->dispatch('close-modal', 'link-edit-modal');
         $this->dispatch('notification.created', message: 'Link updated.');
     }
 
@@ -70,6 +71,7 @@ final class Edit extends Component
         $this->linkId = $link->id;
         $this->description = $link->description;
         $this->url = $link->url;
+        $this->dispatch('open-modal', 'link-edit-modal');
     }
 
     /**
