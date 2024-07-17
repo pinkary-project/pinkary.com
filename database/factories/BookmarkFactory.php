@@ -20,7 +20,7 @@ final class BookmarkFactory extends Factory
     /**
      * The name of the factory's corresponding model.
      *
-     * @var class-string<Like>
+     * @var class-string<Bookmark>
      */
     protected $model = Bookmark::class;
 
