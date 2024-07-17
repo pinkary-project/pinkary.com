@@ -132,25 +132,6 @@ final class Index extends Component
         $this->dispatch('user.unfollowed');
     }
 
-    public function editLink(int $linkId): void
-    {
-        $this->showLinksEditForm = true;
-        $this->dispatch('link.edit', $linkId);
-    }
-
-    #[On('link-edit.cancelled')]
-    public function cancelEditLinkForm(): void
-    {
-        $this->showLinksEditForm = false;
-    }
-
-    #[On('link.updated')]
-    public function linkUpdated(): void
-    {
-        $this->showLinksEditForm = false;
-        $this->dispatch('notification.created', message: 'Link updated.');
-    }
-
     /**
      * Refresh the component.
      */
