@@ -32,13 +32,13 @@ const copyCode = () => ({
         ).documentElement;
 
         const positionButton = (button, el) => {
-            const rect = el.getBoundingClientRect();
-            const m = 8;
-            button.style.position = 'sticky';
-            button.style.left = `${rect.width - button.offsetWidth - (m * 2)}px`;
-            button.style.top = `-${m * 5}px`;
+            el.style.position = 'relative';
+
+            const m = 6;
+            button.style.position = 'absolute';
+            button.style.left = `${el.offsetWidth - button.offsetWidth - m + el.scrollLeft}px`;
+            button.style.top = `${m}px`;
             button.style.bottom = `100%`;
-            button.style.margin = `-${m}px`;
         }
 
         codeElements.forEach((codeElement) => {
@@ -51,6 +51,8 @@ const copyCode = () => ({
             const button = document.createElement('button');
             const setupButton = () => {
                 button.classList.add(
+                    'size-7',
+                    'items-center',
                     'opacity-0',
                     'group-hover/code:opacity-100',
                     'group-hover/code:bg-opacity-50',
@@ -81,9 +83,14 @@ const copyCode = () => ({
                 setupButton();
             });
 
+            codeElement.addEventListener(
+                'scroll', () =>
+                    positionButton(button, codeElement)
+            );
+
             window.addEventListener(
-                'resize',
-                positionButton.bind(null, button, codeElement)
+                'resize', () =>
+                    positionButton(button, codeElement)
             );
 
             button.addEventListener('click', () => {
