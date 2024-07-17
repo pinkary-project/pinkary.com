@@ -32,7 +32,6 @@ const imageUpload = () => ({
 
     addErrors(errors) {
         this.errors = [...new Set(this.errors), ...errors].filter(Boolean);
-        console.log(this.errors);
     },
 
     checkFileSize(files) {
@@ -80,24 +79,41 @@ const imageUpload = () => ({
             content = '\n' + content;
         }
         textarea.value = existingContent + content;
-        this.resizeTextarea(textarea);
-    },
-
-    resizeTextarea(textarea) {
+        textarea.dispatchEvent(new Event('input'));
         this.$nextTick(() => {
             textarea.resize();
         });
     },
 
-    createMarkdownImage(event) {
-        const {path, originalName} = event;
-        this.images.push({path, originalName});
+    removeImage(event, index) {
+        event.preventDefault();
+        this.$dispatch('image.delete', { image: this.images[index] });
+        this.removeMarkdownImage(index);
+        this.images.splice(index, 1);
+    },
+
+    createMarkdownImage(item) {
+        let path, originalName;
+        if (item instanceof Object) {
+            ({path, originalName} = item);
+            this.images.push({path, originalName});
+        } else if (typeof item === 'number') {
+            ({path, originalName} = this.images[item]);
+        }
         this.insertAtCorrectPosition(
             `![${originalName}](${path})`,
             this.$refs.content
         );
         this.uploading = false;
-    }
+    },
+
+    removeMarkdownImage(index) {
+        let {path, originalName} = this.images[index];
+        let content = this.$refs.content.value;
+        let regex = new RegExp(`!\\[${originalName}\\]\\(${path}\\)\\n?`, 'g');
+        this.$refs.content.value = content.replace(regex, '');
+        this.$refs.content.dispatchEvent(new Event('input'));
+    },
 
 })
 
