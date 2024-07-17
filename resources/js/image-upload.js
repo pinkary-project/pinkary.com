@@ -23,6 +23,11 @@ const imageUpload = () => ({
         Livewire.on('image.uploaded', (event) => {
             this.createMarkdownImage(event);
         });
+
+        Livewire.on('question.created', () => {
+            this.images = [];
+            this.errors = [];
+        });
     },
 
     addErrors(errors) {
