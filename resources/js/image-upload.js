@@ -72,9 +72,14 @@ const imageUpload = () => ({
             content = '\n' + content;
         }
         textarea.value = existingContent + content;
-        textarea.dispatchEvent(new Event('input'));
+        this.resizeTextarea(textarea);
+    },
+
+    resizeTextarea(textarea) {
         this.$nextTick(() => {
+            textarea.dispatchEvent(new Event('input'));
             textarea.resize();
+            textarea.focus();
         });
     },
 
