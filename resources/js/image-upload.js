@@ -28,6 +28,12 @@ const imageUpload = () => ({
             this.images = [];
             this.errors = [];
         });
+
+        Livewire.hook('commit', (event) => {
+            event.succeed(() => {
+                this.resizeTextarea(this.$refs.content);
+            });
+        });
     },
 
     addErrors(errors) {
@@ -80,8 +86,9 @@ const imageUpload = () => ({
     resizeTextarea(textarea) {
         this.$nextTick(() => {
             textarea.dispatchEvent(new Event('input'));
-            //textarea.resize();
-            //textarea.focus();
+            textarea.resize();
+            textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+            textarea.focus();
         });
     },
 
@@ -113,14 +120,7 @@ const imageUpload = () => ({
         let content = textarea.value;
         let regex = new RegExp(`!\\[${originalName}\\]\\(${path}\\)\\n?`, 'g');
         this.$refs.content.value = content.replace(regex, '');
-        //textarea.dispatchEvent(new Event('input'));
-        this.$nextTick(() => {
-            textarea.dispatchEvent(new Event('input'));
-            setTimeout(() => {
-                textarea.resize();
-                textarea.focus();
-            }, 100);
-        });
+        this.resizeTextarea(textarea);
     },
 
 })
