@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class MaxUploads implements ValidationRule
+final readonly class MaxUploads implements ValidationRule
 {
-
     public function __construct(private readonly int $maxUploads = 2)
     {
         //

@@ -250,7 +250,7 @@ final class Create extends Component
     /**
      * Optimize the images.
      */
-    public function optimizeImage($path): void
+    public function optimizeImage(string $path): void
     {
         $imagePath = Storage::disk('public')->path($path);
         $manager = ImageManager::imagick();

@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Rules\MaxUploads;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rules\ImageFile;
-use Livewire\Attributes\Validate;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
