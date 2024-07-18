@@ -107,6 +107,7 @@ const imageUpload = () => ({
         } else if (typeof item === 'number') {
             ({path, originalName} = this.images[item]);
         }
+        path = path.replace(/\/storage\//, '/');
         this.insertAtCorrectPosition(
             `![${originalName}](${path})`,
             this.$refs.content
@@ -116,6 +117,7 @@ const imageUpload = () => ({
 
     removeMarkdownImage(index) {
         let {path, originalName} = this.images[index];
+        path = path.replace(/\/storage\//, '/');
         let textarea = this.$refs.content;
         let content = textarea.value;
         let regex = new RegExp(`!\\[${originalName}\\]\\(${path}\\)\\n?`, 'g');

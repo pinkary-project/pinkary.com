@@ -146,8 +146,6 @@ final class Create extends Component
             return;
         }
 
-        $this->removeStoragePrefix();
-
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
@@ -187,45 +185,15 @@ final class Create extends Component
     }
 
     /**
-     * Delete any unused images.
-     */
-    private function deleteUnusedImages(): void
-    {
-        /** @var array<string> $imagePaths */
-        $imagePaths = session()->get('images', []);
-        collect($imagePaths)
-            ->reject(fn(string $path): bool => str_contains($this->content, $path))
-            ->each(fn(string $path): bool => Storage::disk('public')->delete($path));
-        session()->forget('images');
-    }
-
-    /**
-     * Remove the storage prefix from the content.
-     */
-    private function removeStoragePrefix(): void
-    {
-        preg_match_all('/!\[.*?]\((.*?)\)/', $this->content, $matches);
-        $this->content = str_replace(
-            $matches[1],
-            collect($matches[1])->map(
-                fn(string $path):
-                string => str_replace('/storage/', '', $path)
-            )->toArray(),
-            $this->content
-        );
-    }
-
-    /**
      * Handle the image uploads.
      */
     public function uploadImages(): void
     {
         $this->validateOnly('images');
 
-        $today = now()->format('Y-m-d');
-
-        collect($this->images)->each(function (UploadedFile $image) use ($today): void {
+        collect($this->images)->each(function (UploadedFile $image): void {
             /** @var string $path */
+            $today = now()->format('Y-m-d');
             $path = $image->store("images/{$today}", 'public');
             session()->push('images', $path);
             $this->dispatch(
@@ -241,13 +209,27 @@ final class Create extends Component
     /**
      * Handle the image deletes.
      *
-     * @param array<string, string> $image
+     * @param  array<string, string>  $image
      */
     #[On('image.delete')]
     public function deleteImage(array $image): void
     {
-        $path = str_replace('/storage', '', $image['path']);
-        Storage::disk('public')->delete($path);
+        Storage::disk('public')->delete(
+            ltrim($image['path'], '/storage')
+        );
+    }
+
+    /**
+     * Delete any unused images.
+     */
+    private function deleteUnusedImages(): void
+    {
+        /** @var array<string> $imagePaths */
+        $imagePaths = session()->get('images', []);
+        collect($imagePaths)
+            ->reject(fn (string $path): bool => str_contains($this->content, $path))
+            ->each(fn (string $path): ?bool => $this->deleteImage(['path' => $path]));
+        session()->forget('images');
     }
 
     /**
