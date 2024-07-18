@@ -21,6 +21,7 @@ final readonly class TrendingQuestionsFeed
 
         return Question::query()
             ->withCount('likes')
+            ->where('likes_count', '>', 1)
             ->orderByRaw('((`likes_count` * 0.5) + (`views` * 0.2)) / ((strftime("%s", "now") - strftime("%s", `answer_created_at`)) / 60 + 1) desc')
             ->where('is_reported', false)
             ->where('is_ignored', false)
