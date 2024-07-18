@@ -101,7 +101,7 @@ test('renders trending questions orderby trending score', function () {
             'content' => 'trending question 6',
             'answer_created_at' => now()->subMinutes(30),
             'views' => 700,
-        ]); // score = (50 * 0.8 + 700 * 0.2) / (30 + 1) = 55.36
+        ]); // score = (50 * 0.8 + 700 * 0.2) / (30 + 1) = 5.36
 
     $component = Livewire::test(TrendingQuestions::class);
     $component->assertSeeInOrder([
