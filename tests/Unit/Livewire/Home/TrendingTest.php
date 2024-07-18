@@ -53,7 +53,7 @@ test('do not renders trending questions', function () {
 });
 
 test('renders trending questions orderby trending score', function () {
-    // (likes * 0.5 + views * 0.2) / (minutes since answered + 1) = trending score
+    // (likes * 0.8 + views * 0.2) / (minutes since answered + 1) = trending score
 
     Question::factory()
         ->hasLikes(5)
@@ -61,7 +61,7 @@ test('renders trending questions orderby trending score', function () {
             'content' => 'trending question 1',
             'answer_created_at' => now()->subMinutes(10),
             'views' => 20,
-        ]); // score = (5 * 0.5 + 20 * 0.2) / (10 + 1) = 0.59
+        ]); // score = (5 * 0.8 + 20 * 0.2) / (10 + 1) = 0.72
 
     Question::factory()
         ->hasLikes(5)
@@ -69,7 +69,7 @@ test('renders trending questions orderby trending score', function () {
             'content' => 'trending question 2',
             'answer_created_at' => now()->subMinutes(20),
             'views' => 20,
-        ]); // score = (5 * 0.5 + 20 * 0.2) / (20 + 1) = 0.30
+        ]); // score = (5 * 0.8 + 20 * 0.2) / (20 + 1) = 0.38
 
     Question::factory()
         ->hasLikes(15)
@@ -77,7 +77,7 @@ test('renders trending questions orderby trending score', function () {
             'content' => 'trending question 3',
             'answer_created_at' => now()->subMinutes(20),
             'views' => 100,
-        ]); // score = (15 * 0.5 + 100 * 0.2) / (20 + 1) = 1.30
+        ]); // score = (15 * 0.8 + 100 * 0.2) / (20 + 1) = 1.52
 
     Question::factory()
         ->hasLikes(20)
@@ -85,7 +85,7 @@ test('renders trending questions orderby trending score', function () {
             'content' => 'trending question 4',
             'answer_created_at' => now()->subMinutes(20),
             'views' => 100,
-        ]); // score = (20 * 0.5 + 100 * 0.2) / (20 + 1) = 1.42
+        ]); // score = (20 * 0.8 + 100 * 0.2) / (20 + 1) = 1.71
 
     Question::factory()
         ->hasLikes(50)
@@ -93,7 +93,7 @@ test('renders trending questions orderby trending score', function () {
             'content' => 'trending question 5',
             'answer_created_at' => now()->subMinutes(30),
             'views' => 500,
-        ]); // score = (50 * 0.5 + 500 * 0.2) / (30 + 1) = 4.03
+        ]); // score = (50 * 0.8 + 500 * 0.2) / (30 + 1) = 4.51
 
     Question::factory()
         ->hasLikes(50)
@@ -101,7 +101,7 @@ test('renders trending questions orderby trending score', function () {
             'content' => 'trending question 6',
             'answer_created_at' => now()->subMinutes(30),
             'views' => 700,
-        ]); // score = (50 * 0.5 + 700 * 0.2) / (30 + 1) = 5.32
+        ]); // score = (50 * 0.8 + 700 * 0.2) / (30 + 1) = 55.36
 
     $component = Livewire::test(TrendingQuestions::class);
     $component->assertSeeInOrder([
