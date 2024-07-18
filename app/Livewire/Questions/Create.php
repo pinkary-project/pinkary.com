@@ -156,7 +156,7 @@ final class Create extends Component
      */
     public function store(Request $request): void
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -164,13 +164,13 @@ final class Create extends Component
 
         $user = type($request->user())->as(User::class);
 
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
+        if (!app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');
 
             return;
         }
 
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
+        if (!app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
             $this->addError('content', 'You can only send 30 questions per day.');
 
             return;
@@ -179,7 +179,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+            'content' => ['required', 'string', 'min: 3', 'max:' . $this->maxContentLength, new NoBlankCharacters],
         ]);
 
         if ($this->isSharingUpdate) {
@@ -256,19 +256,20 @@ final class Create extends Component
         $manager = ImageManager::imagick();
 
         $image = $manager->read($imagePath);
-        $image->scaleDown(500, 500);
+        $image->scaleDown(1000, 1000);
 
-        if (! $image->isAnimated()) {
+        if (!$image->isAnimated()) {
             $image->toWebp();
+            $imagePath = preg_replace('/\.\w+$/', '.webp', $imagePath);
         }
 
-        $image->save($imagePath, quality: 85);
+        $image->save($imagePath, quality: 80);
     }
 
     /**
      * Handle the image deletes.
      *
-     * @param  array<string, string>  $image
+     * @param array<string, string> $image
      */
     #[On('image.delete')]
     public function deleteImage(array $image): void
@@ -302,8 +303,8 @@ final class Create extends Component
         /** @var array<string> $imagePaths */
         $imagePaths = session()->get('images', []);
         collect($imagePaths)
-            ->reject(fn (string $path): bool => str_contains($this->content, $path))
-            ->each(fn (string $path): ?bool => $this->deleteImage(['path' => $path]));
+            ->reject(fn(string $path): bool => str_contains($this->content, $path))
+            ->each(fn(string $path): ?bool => $this->deleteImage(['path' => $path]));
         session()->forget('images');
     }
 }
