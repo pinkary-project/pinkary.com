@@ -43,7 +43,6 @@ final class CleanupImages implements ShouldQueue
         $recentlyUsedImages = $this->extractImagesFrom(
             $this->getRecentQuestions($lastRunTime, $fiveMinutesAgo)
         );
-        logger('recentlyUsedImages', $recentlyUsedImages);
 
         $recentFiles = [];
         foreach ($this->getDateRange($lastRunTime, $fiveMinutesAgo) as $date) {
@@ -55,12 +54,8 @@ final class CleanupImages implements ShouldQueue
                 }
             }
         }
-        logger('recentFiles', $recentFiles);
 
-        $unusedImages = array_diff($recentFiles, $recentlyUsedImages);
-        logger('unusedImages', $unusedImages);
-
-        foreach ($unusedImages as $imagePath) {
+        foreach (array_diff($recentFiles, $recentlyUsedImages) as $imagePath) {
             $disk->delete($imagePath);
         }
 
