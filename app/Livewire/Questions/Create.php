@@ -146,6 +146,8 @@ final class Create extends Component
             return;
         }
 
+        $this->removeStoragePrefix();
+
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
@@ -167,12 +169,7 @@ final class Create extends Component
             'to_id' => $this->toId,
         ]);
 
-        /** @var array<string> $imagePaths */
-        $imagePaths = session()->get('images', []);
-        collect($imagePaths)
-            ->reject(fn (string $path): bool => str_contains($this->content, Storage::url($path)))
-            ->each(fn (string $path): bool => Storage::disk('public')->delete($path));
-        session()->forget('images');
+        $this->deleteUnusedImages();
 
         $this->reset(['content']);
 
@@ -187,6 +184,35 @@ final class Create extends Component
         };
 
         $this->dispatch('notification.created', message: $message);
+    }
+
+    /**
+     * Delete any unused images.
+     */
+    private function deleteUnusedImages(): void
+    {
+        /** @var array<string> $imagePaths */
+        $imagePaths = session()->get('images', []);
+        collect($imagePaths)
+            ->reject(fn(string $path): bool => str_contains($this->content, $path))
+            ->each(fn(string $path): bool => Storage::disk('public')->delete($path));
+        session()->forget('images');
+    }
+
+    /**
+     * Remove the storage prefix from the content.
+     */
+    private function removeStoragePrefix(): void
+    {
+        preg_match_all('/!\[.*?]\((.*?)\)/', $this->content, $matches);
+        $this->content = str_replace(
+            $matches[1],
+            collect($matches[1])->map(
+                fn(string $path):
+                string => str_replace('/storage/', '', $path)
+            )->toArray(),
+            $this->content
+        );
     }
 
     /**
@@ -215,7 +241,7 @@ final class Create extends Component
     /**
      * Handle the image deletes.
      *
-     * @param  array<string, string>  $image
+     * @param array<string, string> $image
      */
     #[On('image.delete')]
     public function deleteImage(array $image): void
