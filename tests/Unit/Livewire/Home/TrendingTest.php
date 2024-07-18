@@ -13,7 +13,7 @@ test('renders trending questions', function () {
 
     $questionContent = 'This is a trending question!';
 
-    $question = Question::factory()->create([
+    $question = Question::factory()->hasLikes(2)->create([
         'content' => $questionContent,
         'answer' => 'This is the answer',
         'answer_created_at' => now()->subDays(7),
