@@ -385,13 +385,17 @@ test('updated lifecycle method', function () {
 test('updated method invokes handleUploads', function () {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
+    $date = now()->format('Y-m-d');
+    $path = $file->store("images/{$date}", 'public');
 
     $component = Livewire::actingAs($user)->test(Create::class);
 
     $component->set('images', [$file]);
 
+    $component->invade()->updated('images');
+
     expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($file->store('images', 'public'));
+        ->and(session('images'))->toContain($path);
 
     $component->assertDispatched('image.uploaded');
 
@@ -401,6 +405,8 @@ test('updated method invokes handleUploads', function () {
 test('unused image cleanup when store is called', function () {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
+    $date = now()->format('Y-m-d');
+    $path = $file->store("images/{$date}", 'public');
 
     $component = Livewire::actingAs($user)->test(Create::class, [
         'toId' => $user->id,
@@ -408,15 +414,15 @@ test('unused image cleanup when store is called', function () {
     $component->set('images', [$file]);
     $component->call('uploadImages');
 
-    Storage::disk('public')->assertExists('images/'.$file->hashName());
+    Storage::disk('public')->assertExists($path);
 
     expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($file->store('images', 'public'));
+        ->and(session('images'))->toContain($path);
 
     $component->set('content', 'Hello World');
     $component->call('store');
 
-    Storage::disk('public')->assertMissing('images/'.$file->hashName());
+    Storage::disk('public')->assertMissing($path);
     expect(session('images'))->toBeNull();
 });
 
@@ -424,6 +430,8 @@ test('used images are NOT cleanup when store is called', function () {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $name = $file->hashName();
+    $date = now()->format('Y-m-d');
+    $path = 'images/'.$date.'/'.$name;
 
     $component = Livewire::actingAs($user)->test(Create::class, [
         'toId' => $user->id,
@@ -431,17 +439,17 @@ test('used images are NOT cleanup when store is called', function () {
     $component->set('images', [$file]);
     $component->call('uploadImages');
 
-    Storage::disk('public')->assertExists('images/'.$name);
+    Storage::disk('public')->assertExists($path);
 
     expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain('images/'.$name);
+        ->and(session('images'))->toContain($path);
 
-    $url = Storage::disk('public')->url('images/'.$name);
+    $url = Storage::disk('public')->url($path);
 
     $component->set('content', "![Image Alt Text]({$url})");
     $component->call('store');
 
-    Storage::disk('public')->assertExists('images/'.$name);
+    Storage::disk('public')->assertExists($path);
     expect(session('images'))->toBeNull();
 });
 
