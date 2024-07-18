@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Models\User;
+use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -25,6 +26,18 @@ use Livewire\WithFileUploads;
 final class Create extends Component
 {
     use WithFileUploads;
+
+    /**
+     * Max number of images allowed.
+     */
+    #[Locked]
+    public int $maxImages = 1;
+
+    #[Locked]
+    /**
+     * Max file size allowed.
+     */
+    public int $maxFileSize = 2024;
 
     /**
      * The component's user ID.
@@ -44,11 +57,10 @@ final class Create extends Component
     public string $content = '';
 
     /**
-     * Property to temporarily store the uploaded images.
+     * Uploaded images.
      *
      * @var array<int, UploadedFile>
      */
-    #[Validate(['images.*' => ['image', 'max:2048', 'mimes:jpg,png,jpeg,gif']])]
     public array $images = [];
 
     /**
@@ -62,8 +74,25 @@ final class Create extends Component
     public function updated(mixed $property): void
     {
         if ($property === 'images') {
+            $this->validateOnly('images');
             $this->uploadImages();
         }
+    }
+
+    /**
+     * The validation rules.
+     *
+     * @return array<string, mixed>
+     */
+    public function rules(): array
+    {
+        return [
+            'images' => [new MaxUploads($this->maxImages)],
+            'images.*' => [
+                File::image()->max($this->maxFileSize)
+                    ->types(['jpeg', 'png', 'gif', 'webp', 'jpg']),
+            ],
+        ];
     }
 
     /**
@@ -189,7 +218,6 @@ final class Create extends Component
      */
     public function uploadImages(): void
     {
-        $this->validateOnly('images');
 
         collect($this->images)->each(function (UploadedFile $image): void {
             $today = now()->format('Y-m-d');

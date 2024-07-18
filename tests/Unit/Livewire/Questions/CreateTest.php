@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use App\Livewire\Questions\Create;
 use App\Models\User;
+use App\Rules\MaxUploads;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rules\ImageFile;
 use Livewire\Attributes\Validate;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -351,7 +353,7 @@ it('has a property for storing the images', function () {
     expect($component->images)->toBeArray();
 });
 
-test('image property has correct validation attributes', function () {
+test('image property has correct validation rules', function () {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)
@@ -359,17 +361,11 @@ test('image property has correct validation attributes', function () {
             'toId' => $user->id,
         ]);
 
-    collect($component->invade()->getAttributes())
-        ->filter(fn ($attribute) => $attribute instanceof Validate)
-        ->each(function (Validate $validate) {
-            if ($validate->getName() === 'images') {
-                expect($validate->rule)->toBeArray()
-                    ->and($validate->rule['images.*'])->toBeArray()
-                    ->and($validate->rule['images.*'])->toContain('image')
-                    ->and($validate->rule['images.*'])->toContain('max:2048')
-                    ->and($validate->rule['images.*'])->toContain('mimes:jpg,png,jpeg,gif');
-            }
-        });
+    $rules = $component->invade()->rules();
+
+    expect($rules)->toBeArray()
+        ->and($rules['images'][0])->toBeInstanceOf(MaxUploads::class)
+        ->and($rules['images.*'][0])->toBeInstanceOf(ImageFile::class);
 });
 
 test('updated lifecycle method', function () {

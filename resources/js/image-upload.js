@@ -1,8 +1,8 @@
 const imageUpload = () => ({
 
     uploading: false,
-    uploadLimit: 2,
-    maxFileSize: 2 * 1024 * 1024,
+    uploadLimit: null,
+    maxFileSize: null,
     images: [],
     errors: [],
 
@@ -27,6 +27,13 @@ const imageUpload = () => ({
         Livewire.on('question.created', () => {
             this.images = [];
             this.errors = [];
+        });
+
+        this.$watch('errors', (value) => {
+            if (value.length) {
+                this.uploading = false;
+                this.replaceUploadingText(this.$refs.content);
+            }
         });
 
         Livewire.hook('commit', (event) => {
@@ -58,7 +65,7 @@ const imageUpload = () => ({
     handleUploading(files) {
         if ((files.length + this.images.length) > this.uploadLimit) {
             this.uploading = false;
-            this.addErrors([`Maximum of ${this.uploadLimit} images per post.`]);
+            this.addErrors([`You can only upload ${this.uploadLimit} images.`]);
         } else {
             this.uploading = true;
             this.$refs.imageUpload.files = files;
@@ -70,11 +77,15 @@ const imageUpload = () => ({
         }
     },
 
-    insertAtCorrectPosition(content, textarea) {
+    replaceUploadingText(textarea) {
         textarea.value = textarea.value.replace(
             /Uploading image\.\.\./g,
             ''
         );
+    },
+
+    insertAtCorrectPosition(content, textarea) {
+        this.replaceUploadingText(textarea);
         let existingContent = textarea.value;
         if (existingContent && !existingContent.endsWith('\n')) {
             content = '\n' + content;

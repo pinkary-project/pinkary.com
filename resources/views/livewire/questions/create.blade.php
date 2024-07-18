@@ -9,7 +9,11 @@
     >
         <div
             x-data="imageUpload"
-            x-init='addErrors(@json($errors->all()))'
+            x-init='() => {
+                addErrors(@json($errors->all()));
+                uploadLimit = {{ $this->maxImages }};
+                maxFileSize = {{ $this->maxFileSize }};
+            }'
             class="relative group/menu">
             <x-textarea
                 wire:model="content"
