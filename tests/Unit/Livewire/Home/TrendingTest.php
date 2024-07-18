@@ -59,7 +59,7 @@ test('renders trending questions orderby trending score', function () {
         ->hasLikes(5)
         ->create([
             'content' => 'trending question 1',
-            'answered_at' => now()->subMinutes(10),
+            'answer_created_at' => now()->subMinutes(10),
             'views' => 20,
         ]); // score = (5 * 0.5 + 20 * 0.2) / (10 + 1) = 0.59
 
@@ -67,7 +67,7 @@ test('renders trending questions orderby trending score', function () {
         ->hasLikes(5)
         ->create([
             'content' => 'trending question 2',
-            'answered_at' => now()->subMinutes(20),
+            'answer_created_at' => now()->subMinutes(20),
             'views' => 20,
         ]); // score = (5 * 0.5 + 20 * 0.2) / (20 + 1) = 0.30
 
@@ -75,7 +75,7 @@ test('renders trending questions orderby trending score', function () {
         ->hasLikes(15)
         ->create([
             'content' => 'trending question 3',
-            'answered_at' => now()->subMinutes(20),
+            'answer_created_at' => now()->subMinutes(20),
             'views' => 100,
         ]); // score = (15 * 0.5 + 100 * 0.2) / (20 + 1) = 1.30
 
@@ -83,7 +83,7 @@ test('renders trending questions orderby trending score', function () {
         ->hasLikes(20)
         ->create([
             'content' => 'trending question 4',
-            'answered_at' => now()->subMinutes(20),
+            'answer_created_at' => now()->subMinutes(20),
             'views' => 100,
         ]); // score = (20 * 0.5 + 100 * 0.2) / (20 + 1) = 1.42
 
@@ -91,7 +91,7 @@ test('renders trending questions orderby trending score', function () {
         ->hasLikes(50)
         ->create([
             'content' => 'trending question 5',
-            'answered_at' => now()->subMinutes(30),
+            'answer_created_at' => now()->subMinutes(30),
             'views' => 500,
         ]); // score = (50 * 0.5 + 500 * 0.2) / (30 + 1) = 4.03
 
@@ -99,7 +99,7 @@ test('renders trending questions orderby trending score', function () {
         ->hasLikes(50)
         ->create([
             'content' => 'trending question 6',
-            'answered_at' => now()->subMinutes(30),
+            'answer_created_at' => now()->subMinutes(30),
             'views' => 700,
         ]); // score = (50 * 0.5 + 700 * 0.2) / (30 + 1) = 5.32
 
