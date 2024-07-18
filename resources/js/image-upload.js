@@ -51,8 +51,8 @@ const imageUpload = () => ({
         if (files.length) {
             this.errors = [];
             Array.from(files).forEach((file) => {
-                if (file.size > this.maxFileSize) {
-                    const sizeInMb = this.maxFileSize / (1024 * 1024);
+                if ((file.size / 1024) > this.maxFileSize) {
+                    const sizeInMb = this.maxFileSize / 1024;
                     this.addErrors([`${file.name} is too large. Max file size is ${sizeInMb}MB.`]);
                 }
             });

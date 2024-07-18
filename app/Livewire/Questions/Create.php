@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
+use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -224,18 +225,44 @@ final class Create extends Component
             $path = $image->store("images/{$today}", 'public');
             if ($path) {
                 session()->push('images', $path);
+                $this->optimizeImage($path);
                 $this->dispatch(
                     'image.uploaded',
                     path: Storage::url($path),
                     originalName: $image->getClientOriginalName()
                 );
             } else {
-                $this->addError('images', 'The image could not be uploaded.');
-                $this->dispatch('notification.created', message: 'The image could not be uploaded.');
+                $this->addError(
+                    'images',
+                    'The image could not be uploaded.'
+                );
+                $this->dispatch(
+                    'notification.created',
+                    message: 'The image could not be uploaded.'
+                );
+                $this->dispatch('uploading.failed');
             }
         });
 
         $this->reset('images');
+    }
+
+    /**
+     * Optimize the images.
+     */
+    public function optimizeImage($path): void
+    {
+        $imagePath = Storage::disk('public')->path($path);
+        $manager = ImageManager::imagick();
+
+        $image = $manager->read($imagePath);
+        $image->scaleDown(500, 500);
+
+        if (! $image->isAnimated()) {
+            $image->toWebp();
+        }
+
+        $image->save($imagePath, quality: 85);
     }
 
     /**
