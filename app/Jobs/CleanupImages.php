@@ -35,7 +35,8 @@ final class CleanupImages implements ShouldQueue
 
         /** @var string $time */
         $time = cache($key, now()->subHour()->toDateTimeString());
-        $lastRunTime = CarbonImmutable::parse($time);
+        $lastRunTime = $time instanceof CarbonImmutable
+            ? $time : CarbonImmutable::parse($time);
         /** @var CarbonImmutable $fiveMinutesAgo */
         $fiveMinutesAgo = now()->subMinutes(5);
 
@@ -123,7 +124,7 @@ final class CleanupImages implements ShouldQueue
 
         while ($start->lte($end)) {
             $dates[] = $start->format('Y-m-d');
-            $start->addDay();
+            $start = $start->addDay();
         }
 
         return $dates;
