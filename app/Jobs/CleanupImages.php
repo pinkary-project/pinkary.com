@@ -33,15 +33,14 @@ final class CleanupImages implements ShouldQueue
         $disk = Storage::disk($this->disk);
         $key = 'cleanup_images_last_run_time';
 
-        /** @var string $time */
-        $time = cache($key, now()->subHour()->toDateTimeString());
-        $lastRunTime = $time instanceof CarbonImmutable
-            ? $time : CarbonImmutable::parse($time);
+        /** @var ?CarbonImmutable $lastRun */
+        $lastRun = cache()->get($key);
+        $lastRunTime = $lastRun ?: now()->subHour();
         /** @var CarbonImmutable $fiveMinutesAgo */
         $fiveMinutesAgo = now()->subMinutes(5);
 
         $recentlyUsedImages = $this->extractImagesFrom(
-            $this->getRecentQuestions($lastRunTime, $fiveMinutesAgo)
+            $this->recentQuestions($lastRunTime, $fiveMinutesAgo)
         );
 
         $recentFiles = [];
@@ -55,7 +54,9 @@ final class CleanupImages implements ShouldQueue
             }
         }
 
-        foreach (array_diff($recentFiles, $recentlyUsedImages) as $imagePath) {
+        $imagesToDelete = array_diff($recentFiles, $recentlyUsedImages);
+
+        foreach ($imagesToDelete as $imagePath) {
             $disk->delete($imagePath);
         }
 
@@ -100,7 +101,7 @@ final class CleanupImages implements ShouldQueue
      *
      * @return Collection<int, Question>
      */
-    public function getRecentQuestions(CarbonImmutable $lastRunTime, CarbonImmutable $fiveMinutesAgo): Collection
+    public function recentQuestions(CarbonImmutable $lastRunTime, CarbonImmutable $fiveMinutesAgo): Collection
     {
         return Question::where(static fn (Builder $query): Builder => $query
             ->whereBetween('created_at', [$lastRunTime, $fiveMinutesAgo])
