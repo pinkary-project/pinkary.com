@@ -192,15 +192,19 @@ final class Create extends Component
         $this->validateOnly('images');
 
         collect($this->images)->each(function (UploadedFile $image): void {
-            /** @var string $path */
             $today = now()->format('Y-m-d');
             $path = $image->store("images/{$today}", 'public');
-            session()->push('images', $path);
-            $this->dispatch(
-                'image.uploaded',
-                path: Storage::url($path),
-                originalName: $image->getClientOriginalName()
-            );
+            if ($path) {
+                session()->push('images', $path);
+                $this->dispatch(
+                    'image.uploaded',
+                    path: Storage::url($path),
+                    originalName: $image->getClientOriginalName()
+                );
+            } else {
+                $this->addError('images', 'The image could not be uploaded.');
+                $this->dispatch('notification.created', message: 'The image could not be uploaded.');
+            }
         });
 
         $this->reset('images');
@@ -220,19 +224,6 @@ final class Create extends Component
     }
 
     /**
-     * Delete any unused images.
-     */
-    private function deleteUnusedImages(): void
-    {
-        /** @var array<string> $imagePaths */
-        $imagePaths = session()->get('images', []);
-        collect($imagePaths)
-            ->reject(fn (string $path): bool => str_contains($this->content, $path))
-            ->each(fn (string $path): ?bool => $this->deleteImage(['path' => $path]));
-        session()->forget('images');
-    }
-
-    /**
      * Render the component.
      */
     public function render(): View
@@ -248,4 +239,16 @@ final class Create extends Component
         ]);
     }
 
+    /**
+     * Delete any unused images.
+     */
+    private function deleteUnusedImages(): void
+    {
+        /** @var array<string> $imagePaths */
+        $imagePaths = session()->get('images', []);
+        collect($imagePaths)
+            ->reject(fn (string $path): bool => str_contains($this->content, $path))
+            ->each(fn (string $path): ?bool => $this->deleteImage(['path' => $path]));
+        session()->forget('images');
+    }
 }

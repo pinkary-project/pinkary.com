@@ -383,6 +383,7 @@ test('updated lifecycle method', function () {
 });
 
 test('updated method invokes handleUploads', function () {
+    Storage::fake('public');
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $date = now()->format('Y-m-d');
@@ -391,7 +392,6 @@ test('updated method invokes handleUploads', function () {
     $component = Livewire::actingAs($user)->test(Create::class);
 
     $component->set('images', [$file]);
-
     $component->invade()->updated('images');
 
     expect(session('images'))->toBeArray()
@@ -403,6 +403,7 @@ test('updated method invokes handleUploads', function () {
 });
 
 test('unused image cleanup when store is called', function () {
+    Storage::fake('public');
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $date = now()->format('Y-m-d');
@@ -427,6 +428,7 @@ test('unused image cleanup when store is called', function () {
 });
 
 test('used images are NOT cleanup when store is called', function () {
+    Storage::fake('public');
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $name = $file->hashName();
@@ -437,7 +439,6 @@ test('used images are NOT cleanup when store is called', function () {
         'toId' => $user->id,
     ]);
     $component->set('images', [$file]);
-    $component->call('uploadImages');
 
     Storage::disk('public')->assertExists($path);
 
@@ -454,6 +455,7 @@ test('used images are NOT cleanup when store is called', function () {
 });
 
 test('delete image', function () {
+    Storage::fake('public');
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $path = $file->store('images', 'public');
