@@ -39,6 +39,11 @@ final class CleanupImages implements ShouldQueue
         /** @var CarbonImmutable $fiveMinutesAgo */
         $fiveMinutesAgo = now()->subMinutes(5);
 
+        if (app()->environment('testing')) {
+            $lastRunTime = now()->subHour();
+            $fiveMinutesAgo = now();
+        }
+
         $recentlyUsedImages = $this->extractImagesFrom(
             $this->recentQuestions($lastRunTime, $fiveMinutesAgo)
         );
