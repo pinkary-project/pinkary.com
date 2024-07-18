@@ -107,9 +107,8 @@ const imageUpload = () => ({
         } else if (typeof item === 'number') {
             ({path, originalName} = this.images[item]);
         }
-        path = path.replace(/\/storage\//, '/');
         this.insertAtCorrectPosition(
-            `![${originalName}](${path})`,
+            `![${originalName}](${this.normalizePath(path)})`,
             this.$refs.content
         );
         this.uploading = false;
@@ -117,13 +116,16 @@ const imageUpload = () => ({
 
     removeMarkdownImage(index) {
         let {path, originalName} = this.images[index];
-        path = path.replace(/\/storage\//, '/');
         let textarea = this.$refs.content;
         let content = textarea.value;
-        let regex = new RegExp(`!\\[${originalName}\\]\\(${path}\\)\\n?`, 'g');
+        let regex = new RegExp(`!\\[${originalName}\\]\\(${this.normalizePath(path)}\\)\\n?`, 'g');
         this.$refs.content.value = content.replace(regex, '');
         this.resizeTextarea(textarea);
     },
+
+    normalizePath(path) {
+        return path.replace(/\/storage\//, '');
+    }
 
 })
 
