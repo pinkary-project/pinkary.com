@@ -16,9 +16,12 @@ final readonly class TrendingQuestionsFeed
      */
     public function builder(): Builder
     {
+        // (likes * 0.5 + views * 0.2) / (minutes since answered + 1) = trending score
+        // the +1 is to prevent division by zero
+
         return Question::query()
             ->withCount('likes')
-            ->orderBy('likes_count', 'desc')
+            ->orderByRaw('((`likes_count` * 0.5) + (`views` * 0.2)) / ((strftime("%s", "now") - strftime("%s", `answer_created_at`)) / 60 + 1) desc')
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->where('answer_created_at', '>=', now()->subDays(7))
