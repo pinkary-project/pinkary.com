@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Livewire\Questions\Create;
 use App\Models\User;
 use App\Rules\MaxUploads;
+use App\Rules\VerifiedOnly;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rules\ImageFile;
 use Intervention\Image\ImageManager;
@@ -365,7 +366,8 @@ test('image property has correct validation rules', function () {
 
     expect($rules)->toBeArray()
         ->and($rules['images'][0])->toBeInstanceOf(MaxUploads::class)
-        ->and($rules['images.*'][0])->toBeInstanceOf(ImageFile::class);
+        ->and($rules['images.*'][0])->toBeInstanceOf(VerifiedOnly::class)
+        ->and($rules['images.*'][1])->toBeInstanceOf(ImageFile::class);
 });
 
 test('updated lifecycle method', function () {

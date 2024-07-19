@@ -9,11 +9,17 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 final readonly class MaxUploads implements ValidationRule
 {
-    public function __construct(private readonly int $maxUploads = 2)
+    /**
+     * Create a new rule instance.
+     */
+    public function __construct(private readonly int $maxUploads = 1)
     {
         //
     }
 
+    /**
+     * Determine if the validation rule passes.
+     */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (is_array($value) && count($value) > $this->maxUploads) {

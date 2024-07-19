@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Jobs\CleanupImages;
+use App\Jobs\CleanUnusedUploadedImages;
 use App\Models\Question;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\UploadedFile;
@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 it('caches the last run time', function () {
-    CleanupImages::dispatchSync();
-    expect(Cache::get('cleanup_images_last_run_time'))
+    CleanUnusedUploadedImages::dispatchSync();
+    expect(Cache::get('clean_unused_uploaded_images_last_run'))
         ->toBeInstanceOf(CarbonImmutable::class);
 });
 
@@ -39,7 +39,7 @@ it('cleans up unused images', function () {
         ],
     )->create();
 
-    CleanupImages::dispatchSync();
+    CleanUnusedUploadedImages::dispatchSync();
 
     expect(Storage::disk('public')->allFiles())->not->toContain($path3);
 

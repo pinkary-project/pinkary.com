@@ -1,5 +1,4 @@
 const imageUpload = () => ({
-
     uploading: false,
     uploadLimit: null,
     maxFileSize: null,
@@ -137,7 +136,6 @@ const imageUpload = () => ({
     normalizePath(path) {
         return path.replace(/\/storage\//, '');
     }
-
 })
 
-export {imageUpload}
+export { imageUpload }

@@ -14,12 +14,21 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
-final class CleanupImages implements ShouldQueue
+final class CleanUnusedUploadedImages implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * The name of the cache key.
+     */
+    private const string LAST_RUN_KEY = 'clean_unused_uploaded_images_last_run';
+
+    /**
+     * Create a new job instance.
+     */
     public function __construct(private readonly string $disk = 'public')
     {
         //
@@ -31,52 +40,35 @@ final class CleanupImages implements ShouldQueue
     public function handle(): void
     {
         $disk = Storage::disk($this->disk);
-        $key = 'cleanup_images_last_run_time';
 
-        /** @var ?CarbonImmutable $lastRun */
-        $lastRun = cache()->get($key);
-        $lastRunTime = $lastRun ?: now()->subHour();
-        /** @var CarbonImmutable $fiveMinutesAgo */
-        $fiveMinutesAgo = now()->subMinutes(5);
-
-        if (app()->environment('testing')) {
-            $lastRunTime = now()->subHour();
-            $fiveMinutesAgo = now();
-        }
+        [$lastRunTime, $fiveMinutesAgo] = $this->getLastRunTime();
 
         $recentlyUsedImages = $this->extractImagesFrom(
             $this->recentQuestions($lastRunTime, $fiveMinutesAgo)
         );
 
-        $recentFiles = [];
-        foreach ($this->getDateRange($lastRunTime, $fiveMinutesAgo) as $date) {
-            $allFiles = $disk->allFiles("images/{$date}");
-            foreach ($allFiles as $file) {
+        collect($this->getDateRange($lastRunTime, $fiveMinutesAgo))
+            ->flatMap(fn (string $date): array => $disk->allFiles("images/{$date}"))
+            ->filter(function (string $file) use ($disk, $lastRunTime, $fiveMinutesAgo): bool {
                 $lastModified = Carbon::createFromTimestamp($disk->lastModified($file));
-                if ($lastModified->between($lastRunTime, $fiveMinutesAgo)) {
-                    $recentFiles[] = $file;
-                }
-            }
-        }
 
-        $imagesToDelete = array_diff($recentFiles, $recentlyUsedImages);
+                return $lastModified->between($lastRunTime, $fiveMinutesAgo);
+            })
+            ->reject(fn (string $file): bool => in_array($file, $recentlyUsedImages, true))
+            ->each(fn (string $file) => $disk->delete($file));
 
-        foreach ($imagesToDelete as $imagePath) {
-            $disk->delete($imagePath);
-        }
-
-        cache()->put($key, now());
+        Cache::put(self::LAST_RUN_KEY, now());
     }
 
     /**
      * Extract images from the recent questions
      *
      * @param  Collection<int, Question>  $questions
-     * @return array<string>
+     * @return array<int, string>
      */
     public function extractImagesFrom(Collection $questions): array
     {
-        /** @var array<string> $images */
+        /** @var array<int, string> $images */
         $images = $questions
             ->map(function (Question $question): array {
                 /** @var string $questionContent */
@@ -111,7 +103,7 @@ final class CleanupImages implements ShouldQueue
         return Question::where(static fn (Builder $query): Builder => $query
             ->whereBetween('created_at', [$lastRunTime, $fiveMinutesAgo])
             ->orWhereBetween('updated_at', [$lastRunTime, $fiveMinutesAgo])
-        )->where('is_ignored', false)->get();
+        )->get();
     }
 
     /**
@@ -129,5 +121,28 @@ final class CleanupImages implements ShouldQueue
         }
 
         return $dates;
+    }
+
+    /**
+     * Get the last run time.
+     *
+     * @return array{CarbonImmutable, CarbonImmutable}
+     */
+    private function getLastRunTime(): array
+    {
+        if (app()->environment('testing')) {
+            return [
+                now()->subHour(),
+                now(),
+            ];
+        }
+
+        /** @var CarbonImmutable $lastRun */
+        $lastRun = Cache::get(self::LAST_RUN_KEY, now()->subHour());
+
+        return [
+            $lastRun,
+            now()->subMinutes(5),
+        ];
     }
 }

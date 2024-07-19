@@ -23,7 +23,7 @@ final readonly class TrendingQuestionsFeed
         return Question::query()
             ->withCount('likes')
             ->where('likes_count', '>', 1)
-            ->orderByRaw(<<<SQL
+            ->orderByRaw(<<<'SQL'
                 ((`likes_count` * 0.8) + (`views` * 0.2))
                 / ( IIF(
                     strftime("%s", "now") - strftime("%s", `answer_created_at`) > 6000,

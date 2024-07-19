@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
+use App\Rules\VerifiedOnly;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -90,6 +91,7 @@ final class Create extends Component
         return [
             'images' => [new MaxUploads($this->maxImages)],
             'images.*' => [
+                new VerifiedOnly(),
                 File::image()->max($this->maxFileSize)
                     ->types(['jpeg', 'png', 'gif', 'webp', 'jpg']),
             ],
@@ -219,28 +221,24 @@ final class Create extends Component
      */
     public function uploadImages(): void
     {
-
         collect($this->images)->each(function (UploadedFile $image): void {
             $today = now()->format('Y-m-d');
+
             /** @var string $path */
             $path = $image->store("images/{$today}", 'public');
             $this->optimizeImage($path);
+
             if ($path) {
                 session()->push('images', $path);
+
                 $this->dispatch(
                     'image.uploaded',
                     path: Storage::url($path),
                     originalName: $image->getClientOriginalName()
                 );
             } else {
-                $this->addError(
-                    'images',
-                    'The image could not be uploaded.'
-                );
-                $this->dispatch(
-                    'notification.created',
-                    message: 'The image could not be uploaded.'
-                );
+                $this->addError('images', 'The image could not be uploaded.');
+                $this->dispatch('notification.created', message: 'The image could not be uploaded.');
                 $this->dispatch('uploading.failed');
             }
         });
@@ -296,11 +294,13 @@ final class Create extends Component
      */
     private function deleteUnusedImages(): void
     {
-        /** @var array<string> $imagePaths */
-        $imagePaths = session()->get('images', []);
-        collect($imagePaths)
+        /** @var array<int, string> $images */
+        $images = session()->get('images', []);
+
+        collect($images)
             ->reject(fn (string $path): bool => str_contains($this->content, $path))
             ->each(fn (string $path): ?bool => $this->deleteImage(['path' => $path]));
+
         session()->forget('images');
     }
 }

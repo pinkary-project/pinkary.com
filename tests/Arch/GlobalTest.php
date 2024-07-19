@@ -10,6 +10,7 @@ arch('http helpers')
     ->expect(['session', 'auth', 'request'])
     ->toOnlyBeUsedIn([
         'App\Http',
+        'App\Rules',
         'App\Livewire',
         'App\Jobs\IncrementViews',
     ]);
