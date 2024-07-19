@@ -500,3 +500,14 @@ test('optimizeImage method resizes and saves the image', function () {
     expect($image->width())->toBeLessThanOrEqual(1000)
         ->and($image->height())->toBeLessThanOrEqual(1000);
 });
+
+test('maxFileSize and maxImages', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    expect($component->maxFileSize)->toBe(1024 * 2)
+        ->and($component->maxImages)->toBe(1);
+});

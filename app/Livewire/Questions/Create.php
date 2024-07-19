@@ -38,7 +38,7 @@ final class Create extends Component
     /**
      * Max file size allowed.
      */
-    public int $maxFileSize = 2024;
+    public int $maxFileSize = 2048;
 
     /**
      * The component's user ID.
