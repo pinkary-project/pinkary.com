@@ -222,10 +222,11 @@ final class Create extends Component
 
         collect($this->images)->each(function (UploadedFile $image): void {
             $today = now()->format('Y-m-d');
+            /** @var string $path */
             $path = $image->store("images/{$today}", 'public');
+            $this->optimizeImage($path);
             if ($path) {
                 session()->push('images', $path);
-                $this->optimizeImage($path);
                 $this->dispatch(
                     'image.uploaded',
                     path: Storage::url($path),
@@ -257,11 +258,6 @@ final class Create extends Component
 
         $image = $manager->read($imagePath);
         $image->scaleDown(1000, 1000);
-
-        if (!$image->isAnimated()) {
-            $image->toWebp();
-            $imagePath = preg_replace('/\.\w+$/', '.webp', $imagePath);
-        }
 
         $image->save($imagePath, quality: 80);
     }
