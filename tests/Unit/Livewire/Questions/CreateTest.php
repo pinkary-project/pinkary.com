@@ -557,7 +557,7 @@ test('only allows image upload files', function () {
     $component->call('runImageValidation');
 
     $component->assertHasErrors([
-        "images.0" => "The images.0 field must be a file of type: jpeg, png, gif, webp, jpg.",
-        "images.0" => "The images.0 field must be an image.",
+        'images.0' => 'The images.0 field must be a file of type: jpeg, png, gif, webp, jpg.',
+        'images.0' => 'The images.0 field must be an image.',
     ]);
 });
