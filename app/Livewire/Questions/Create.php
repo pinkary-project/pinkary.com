@@ -89,9 +89,11 @@ final class Create extends Component
     public function rules(): array
     {
         return [
-            'images' => [new MaxUploads($this->maxImages)],
-            'images.*' => [
+            'images' => [
+                new MaxUploads($this->maxImages),
                 new VerifiedOnly(),
+            ],
+            'images.*' => [
                 File::image()->max($this->maxFileSize)
                     ->types(['jpeg', 'png', 'gif', 'webp', 'jpg']),
             ],

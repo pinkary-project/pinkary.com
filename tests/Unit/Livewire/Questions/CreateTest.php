@@ -366,12 +366,12 @@ test('image property has correct validation rules', function () {
 
     expect($rules)->toBeArray()
         ->and($rules['images'][0])->toBeInstanceOf(MaxUploads::class)
-        ->and($rules['images.*'][0])->toBeInstanceOf(VerifiedOnly::class)
-        ->and($rules['images.*'][1])->toBeInstanceOf(ImageFile::class);
+        ->and($rules['images'][1])->toBeInstanceOf(VerifiedOnly::class)
+        ->and($rules['images.*'][0])->toBeInstanceOf(ImageFile::class);
 });
 
 test('updated lifecycle method', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['is_verified' => true]);
 
     $component = Livewire::actingAs($user)
         ->test(Create::class, [
@@ -382,7 +382,7 @@ test('updated lifecycle method', function () {
 
 test('updated method invokes handleUploads', function () {
     Storage::fake('public');
-    $user = User::factory()->create();
+    $user = User::factory()->create(['is_verified' => true]);
     $file = UploadedFile::fake()->image('photo1.jpg');
     $date = now()->format('Y-m-d');
     $path = $file->store("images/{$date}", 'public');
@@ -427,7 +427,7 @@ test('unused image cleanup when store is called', function () {
 
 test('used images are NOT cleanup when store is called', function () {
     Storage::fake('public');
-    $user = User::factory()->create();
+    $user = User::factory()->create(['is_verified' => true]);
     $file = UploadedFile::fake()->image('photo1.jpg');
     $name = $file->hashName();
     $date = now()->format('Y-m-d');
@@ -512,4 +512,34 @@ test('maxFileSize and maxImages', function () {
 
     expect($component->maxFileSize)->toBe(1024 * 2)
         ->and($component->maxImages)->toBe(1);
+});
+
+test('only verified users can upload images', function () {
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
+    $component->call('uploadImages');
+
+    $component->assertHasErrors([
+        'images' => 'This action is only available to verified users. Get verified in your profile settings.',
+    ]);
+});
+
+test('company verified users can upload images', function () {
+    $user = User::factory()->create([
+        'is_company_verified' => true,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
+    $component->call('uploadImages');
+
+    $component->assertHasNoErrors();
 });
