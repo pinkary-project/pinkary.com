@@ -76,9 +76,18 @@ final class Create extends Component
     public function updated(mixed $property): void
     {
         if ($property === 'images') {
-            $this->validateOnly('images');
+            $this->runImageValidation();
             $this->uploadImages();
         }
+    }
+
+    /**
+     * Run image validation rules.
+     */
+    public function runImageValidation(): void
+    {
+        $this->validateOnly('images');
+        $this->validateOnly('images.*');
     }
 
     /**

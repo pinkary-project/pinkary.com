@@ -543,3 +543,21 @@ test('company verified users can upload images', function () {
 
     $component->assertHasNoErrors();
 });
+
+test('only allows image upload files', function () {
+    $user = User::factory()->create([
+        'is_verified' => true,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('images', [UploadedFile::fake()->create('test.pdf')]);
+    $component->call('runImageValidation');
+
+    $component->assertHasErrors([
+        "images.0" => "The images.0 field must be a file of type: jpeg, png, gif, webp, jpg.",
+        "images.0" => "The images.0 field must be an image.",
+    ]);
+});
