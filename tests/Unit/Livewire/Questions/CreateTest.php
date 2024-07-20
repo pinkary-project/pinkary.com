@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Questions\Create;
 use App\Models\User;
-use App\Rules\MaxUploads;
-use App\Rules\VerifiedOnly;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Validation\Rules\ImageFile;
 use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -354,22 +351,6 @@ it('has a property for storing the images', function () {
     expect($component->images)->toBeArray();
 });
 
-test('image property has correct validation rules', function () {
-    $user = User::factory()->create();
-
-    $component = Livewire::actingAs($user)
-        ->test(Create::class, [
-            'toId' => $user->id,
-        ]);
-
-    $rules = $component->invade()->rules();
-
-    expect($rules)->toBeArray()
-        ->and($rules['images'][0])->toBeInstanceOf(MaxUploads::class)
-        ->and($rules['images'][1])->toBeInstanceOf(VerifiedOnly::class)
-        ->and($rules['images.*'][0])->toBeInstanceOf(ImageFile::class);
-});
-
 test('updated lifecycle method', function () {
     $user = User::factory()->create(['is_verified' => true]);
 
@@ -464,12 +445,12 @@ test('delete image', function () {
 
     Storage::disk('public')->assertExists($path);
 
-    $component->dispatch('image.delete', ['path' => $path]);
+    $component->call('deleteImage', $path);
 
     $pathAgain = $file->store('images', 'public');
     Storage::disk('public')->assertExists($pathAgain);
 
-    $component->call('deleteImage', ['path' => $pathAgain]);
+    $component->call('deleteImage', $pathAgain);
 
     Storage::disk('public')->assertMissing($pathAgain);
 });
@@ -511,7 +492,7 @@ test('maxFileSize and maxImages', function () {
     ]);
 
     expect($component->maxFileSize)->toBe(1024 * 2)
-        ->and($component->maxImages)->toBe(1);
+        ->and($component->uploadLimit)->toBe(1);
 });
 
 test('only verified users can upload images', function () {
@@ -544,7 +525,7 @@ test('company verified users can upload images', function () {
     $component->assertHasNoErrors();
 });
 
-test('only allows image upload files', function () {
+test('upload must be an image', function () {
     $user = User::factory()->create([
         'is_verified' => true,
     ]);
@@ -557,7 +538,66 @@ test('only allows image upload files', function () {
     $component->call('runImageValidation');
 
     $component->assertHasErrors([
-        'images.0' => 'The images.0 field must be a file of type: jpeg, png, gif, webp, jpg.',
-        'images.0' => 'The images.0 field must be an image.',
+        'images.0' => 'The file must be a an image.',
+    ]);
+});
+
+test('upload must be correct type of image', function() {
+    $user = User::factory()->create([
+        'is_verified' => true,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
+    $component->call('runImageValidation');
+    $component->assertHasNoErrors();
+
+    $component->set('images', [UploadedFile::fake()->image('test.png')]);
+    $component->call('runImageValidation');
+    $component->assertHasNoErrors();
+
+    $component->set('images', [UploadedFile::fake()->image('test.gif')]);
+    $component->call('runImageValidation');
+    $component->assertHasNoErrors();
+
+    $component->set('images', [UploadedFile::fake()->image('test.webp')]);
+    $component->call('runImageValidation');
+    $component->assertHasNoErrors();
+
+    $component->set('images', [UploadedFile::fake()->image('test.jpeg')]);
+    $component->call('runImageValidation');
+    $component->assertHasNoErrors();
+
+    $component->set('images', [UploadedFile::fake()->image('test.bmp')]);
+    $component->call('runImageValidation');
+
+    expect($component->errors()->get('images.0'))->toBeArray()
+        ->and($component->errors()->get('images.0'))->toContain('The image must be a file of type: jpeg, png, gif, webp, jpg.');
+});
+
+test('max file size error', function () {
+    $user = User::factory()->create([
+        'is_verified' => true,
+    ]);
+
+    $maxFileSize = 1024 * 2;
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $largeFile = UploadedFile::fake()->image('test.jpg')->size(1024 * 5);
+
+    $component->set('images', [$largeFile]);
+    $component->call('runImageValidation');
+
+    expect($component->get('images'))->toBeArray()
+        ->and($component->get('images'))->not()->toContain($largeFile);
+
+    $component->assertHasErrors([
+        'images.0' => "The image may not be greater than {$maxFileSize} kilobytes.",
     ]);
 });
