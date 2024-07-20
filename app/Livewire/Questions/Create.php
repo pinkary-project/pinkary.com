@@ -89,8 +89,9 @@ final class Create extends Component
         $this->validate(
             rules: [
                 'images' => [
-                    new MaxUploads($this->uploadLimit),
+                    'bail',
                     new VerifiedOnly(),
+                    new MaxUploads($this->uploadLimit),
                 ],
                 'images.*' => [
                     File::image()
@@ -189,7 +190,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters, new VerifiedOnly],
         ]);
 
         if ($this->isSharingUpdate) {
