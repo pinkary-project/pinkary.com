@@ -17,6 +17,7 @@ const imageUpload = () => ({
 
         this.$refs.imageInput.addEventListener('change', (event) => {
             this.checkFileSize(event.target.files);
+            event.target.value = '';
         });
 
         Livewire.on('image.uploaded', (event) => {
@@ -28,22 +29,21 @@ const imageUpload = () => ({
             this.errors = [];
         });
 
-        this.$watch('errors', (value) => {
-            if (value.length) {
-                this.uploading = false;
-                this.replaceUploadingText(this.$refs.content);
-            }
-        });
-
         Livewire.hook('commit', (event) => {
-            event.succeed(() => {
+            event.succeed(({ snapshot }) => {
+                const errors = JSON.parse(snapshot).memo.errors;
+                if (errors) {
+                    this.addErrors(errors);
+                }
                 this.resizeTextarea(this.$refs.content);
             });
         });
     },
 
     addErrors(errors) {
-        this.errors = [...new Set(this.errors), ...errors].filter(Boolean);
+        this.errors = [...new Set(Object.values(errors).flat())];
+        this.uploading = false;
+        this.replaceUploadingText(this.$refs.content);
     },
 
     checkFileSize(files) {
@@ -51,8 +51,7 @@ const imageUpload = () => ({
             this.errors = [];
             Array.from(files).forEach((file) => {
                 if ((file.size / 1024) > this.maxFileSize) {
-                    const sizeInMb = (this.maxFileSize / 1024).toFixed(0)
-                    this.addErrors([`${file.name} is too large. Max file size is ${sizeInMb}MB.`]);
+                    this.addErrors([`The image may not be greater than ${this.maxFileSize} kilobytes.`]);
                 }
             });
             if (this.errors.length === 0) {
@@ -104,7 +103,9 @@ const imageUpload = () => ({
 
     removeImage(event, index) {
         event.preventDefault();
-        this.$dispatch('image.delete', { image: this.images[index] });
+        this.$wire.deleteImage(
+            this.normalizePath(this.images[index].path)
+        );
         this.removeMarkdownImage(index);
         this.images.splice(index, 1);
     },

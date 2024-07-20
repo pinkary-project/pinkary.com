@@ -10,8 +10,7 @@
         <div
             x-data="imageUpload"
             x-init='() => {
-                addErrors(@json($errors->all()));
-                uploadLimit = {{ $this->maxImages }};
+                uploadLimit = {{ $this->uploadLimit }};
                 maxFileSize = {{ $this->maxFileSize }};
             }'
             class="relative group/menu">

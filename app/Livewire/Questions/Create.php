@@ -33,7 +33,7 @@ final class Create extends Component
      * Max number of images allowed.
      */
     #[Locked]
-    public int $maxImages = 1;
+    public int $uploadLimit = 1;
 
     #[Locked]
     /**
@@ -86,27 +86,24 @@ final class Create extends Component
      */
     public function runImageValidation(): void
     {
-        $this->validateOnly('images');
-        $this->validateOnly('images.*');
-    }
-
-    /**
-     * The validation rules.
-     *
-     * @return array<string, mixed>
-     */
-    public function rules(): array
-    {
-        return [
-            'images' => [
-                new MaxUploads($this->maxImages),
-                new VerifiedOnly(),
+        $this->validate(
+            rules: [
+                'images' => [
+                    new MaxUploads($this->uploadLimit),
+                    new VerifiedOnly(),
+                ],
+                'images.*' => [
+                    File::image()
+                        ->types(['jpeg', 'png', 'gif', 'webp', 'jpg'])
+                        ->max($this->maxFileSize),
+                ],
             ],
-            'images.*' => [
-                File::image()->max($this->maxFileSize)
-                    ->types(['jpeg', 'png', 'gif', 'webp', 'jpg']),
-            ],
-        ];
+            messages: [
+                'images.*.image' => 'The file must be a an image.',
+                'images.*.mimes' => 'The image must be a file of type: :values.',
+                'images.*.max' => 'The image may not be greater than :max kilobytes.',
+            ]
+        );
     }
 
     /**
@@ -250,7 +247,6 @@ final class Create extends Component
             } else {
                 $this->addError('images', 'The image could not be uploaded.');
                 $this->dispatch('notification.created', message: 'The image could not be uploaded.');
-                $this->dispatch('uploading.failed');
             }
         });
 
@@ -273,15 +269,11 @@ final class Create extends Component
 
     /**
      * Handle the image deletes.
-     *
-     * @param  array<string, string>  $image
      */
-    #[On('image.delete')]
-    public function deleteImage(array $image): void
+    public function deleteImage(string $path): void
     {
-        Storage::disk('public')->delete(
-            ltrim($image['path'], '/storage')
-        );
+        Storage::disk('public')->delete($path);
+        $this->cleanSession($path);
     }
 
     /**
@@ -301,6 +293,20 @@ final class Create extends Component
     }
 
     /**
+     * Clean the session of the given image path.
+     */
+    private function cleanSession(string $path): void
+    {
+        /** @var array<int, string> $images */
+        $images = session()->get('images', []);
+
+        $remainingImages = collect($images)
+            ->reject(fn (string $imagePath): bool => $imagePath === $path);
+
+        session()->put('images', $remainingImages->toArray());
+    }
+
+    /**
      * Delete any unused images.
      */
     private function deleteUnusedImages(): void
@@ -310,7 +316,7 @@ final class Create extends Component
 
         collect($images)
             ->reject(fn (string $path): bool => str_contains($this->content, $path))
-            ->each(fn (string $path): ?bool => $this->deleteImage(['path' => $path]));
+            ->each(fn (string $path): ?bool => $this->deleteImage($path));
 
         session()->forget('images');
     }
