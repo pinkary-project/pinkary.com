@@ -4,9 +4,11 @@ const imageUpload = () => ({
     maxFileSize: null,
     images: [],
     errors: [],
+    textarea: null,
 
     init() {
         this.setupListeners();
+        this.textarea = this.$refs.content;
     },
 
     setupListeners() {
@@ -29,21 +31,23 @@ const imageUpload = () => ({
             this.errors = [];
         });
 
-        Livewire.hook('commit', (event) => {
-            event.succeed(({ snapshot }) => {
-                const errors = JSON.parse(snapshot).memo.errors;
-                if (errors) {
-                    this.addErrors(errors);
-                }
-                this.resizeTextarea(this.$refs.content);
-            });
+        Livewire.hook('morph.updated', ({el, component}) => {
+            if (this.$el === el) {
+                const errors = component.snapshot.memo.errors;
+                this.addErrors(errors);
+            }
         });
     },
 
     addErrors(errors) {
-        this.errors = [...new Set(Object.values(errors).flat())];
-        this.uploading = false;
-        this.replaceUploadingText(this.$refs.content);
+        this.$nextTick(() => {
+            const incomingErrors = Object.values(errors).flat()
+            const uniqueErrors = new Set([...this.errors, ...incomingErrors]);
+            this.errors = Array.from(uniqueErrors);
+            this.uploading = false;
+            this.replaceUploadingText();
+            this.resizeTextarea();
+        });
     },
 
     checkFileSize(files) {
@@ -62,7 +66,6 @@ const imageUpload = () => ({
 
     handleUploading(files) {
         if ((files.length + this.images.length) > this.uploadLimit) {
-            this.uploading = false;
             this.addErrors([`You can only upload ${this.uploadLimit} images.`]);
         } else {
             this.uploading = true;
@@ -70,35 +73,32 @@ const imageUpload = () => ({
             this.$refs.imageUpload.dispatchEvent(new Event('change'));
             this.insertAtCorrectPosition(
                 'Uploading image...',
-                this.$refs.content
             );
         }
     },
 
-    replaceUploadingText(textarea) {
-        textarea.value = textarea.value.replace(
+    replaceUploadingText() {
+        this.textarea.value = this.textarea.value.replace(
             /Uploading image\.\.\./g,
             ''
         );
     },
 
-    insertAtCorrectPosition(content, textarea) {
-        this.replaceUploadingText(textarea);
-        let existingContent = textarea.value;
+    insertAtCorrectPosition(content) {
+        this.replaceUploadingText();
+        let existingContent = this.textarea.value;
         if (existingContent && !existingContent.endsWith('\n')) {
             content = '\n' + content;
         }
-        textarea.value = existingContent + content;
-        this.resizeTextarea(textarea);
+        this.textarea.value = existingContent + content;
+        this.resizeTextarea();
     },
 
-    resizeTextarea(textarea) {
-        this.$nextTick(() => {
-            textarea.dispatchEvent(new Event('input'));
-            textarea.resize();
-            textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
-            textarea.focus();
-        });
+    resizeTextarea() {
+        this.textarea.dispatchEvent(new Event('input'));
+        this.textarea.resize();
+        this.textarea.selectionStart = this.textarea.selectionEnd = this.textarea.value.length;
+        this.textarea.focus();
     },
 
     removeImage(event, index) {
@@ -120,18 +120,15 @@ const imageUpload = () => ({
         }
         this.insertAtCorrectPosition(
             `![${originalName}](${this.normalizePath(path)})`,
-            this.$refs.content
         );
         this.uploading = false;
     },
 
     removeMarkdownImage(index) {
         let {path, originalName} = this.images[index];
-        let textarea = this.$refs.content;
-        let content = textarea.value;
         let regex = new RegExp(`!\\[${originalName}\\]\\(${this.normalizePath(path)}\\)\\n?`, 'g');
-        this.$refs.content.value = content.replace(regex, '');
-        this.resizeTextarea(textarea);
+        this.textarea.value = this.textarea.value.replace(regex, '');
+        this.resizeTextarea();
     },
 
     normalizePath(path) {

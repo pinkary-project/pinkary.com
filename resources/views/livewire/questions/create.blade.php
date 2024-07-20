@@ -26,9 +26,9 @@
             <div
                 class="absolute top-0 right-0 mt-2 mr-2 group-hover/menu:inline-block hidden">
                 <button title="Upload an image" x-ref="imageButton"
-                        :disabled="images.length >= 3 || uploading"
+                        :disabled="uploading || images.length >= uploadLimit"
                         class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
-                        :class="{'cursor-not-allowed text-pink-500': images.length >= 3 || uploading}"
+                        :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-camera class="h-5 w-5"/>
                 </button>
