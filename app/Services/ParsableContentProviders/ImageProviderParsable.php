@@ -22,7 +22,7 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
                 $disk = Storage::disk('public');
 
                 if (! $disk->exists($match[2])) {
-                    return '';
+                    return '...';
                 }
 
                 $url = $disk->url($match[2]);
