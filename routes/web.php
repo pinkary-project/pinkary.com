@@ -79,4 +79,8 @@ Route::middleware('auth')->group(function () {
         ->name('profile.verified.update');
 });
 
+Route::get('/telegram', function () {
+    return redirect('https://t.me/+Yv9CUTC1q29lNzg8');
+})->name('telegram');
+
 require __DIR__.'/auth.php';
