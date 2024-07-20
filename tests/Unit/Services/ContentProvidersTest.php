@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\UploadedFile;
+
 test('brs', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\BrProviderParsable();
 
@@ -201,13 +203,25 @@ test('mention', function (string $content) {
     ['content' => '@nunomaduro/'],
 ]);
 
-test('image', function (string $content) {
+test('image exists', function () {
+    Storage::fake('public');
     $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
 
-    expect($provider->parse($content))->toMatchSnapshot();
-})->with([
-    ['content' => '![Jpg Example](/storage/images/pathtoimage.jpg)'],
-    ['content' => '![Jpeg Example](/storage/images/pathtoimage.jpeg)'],
-    ['content' => '![Png Example](/storage/images/pathtoimage.png)'],
-    ['content' => '![Png Example](/storage/images/pathtoimage.gif)'],
-]);
+    $pngFile = UploadedFile::fake()->image('pathtoimage.png');
+    $filePath = 'images/pathtoimage.png';
+    Storage::disk('public')->put($filePath, $pngFile->getContent());
+
+    // Use the direct file path in the markdown
+    $content = "![]({$filePath})";
+
+    expect($provider->parse($content))
+        ->toMatchSnapshot();
+});
+
+test('image does not exists', function () {
+    $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
+
+    $content = '![](images/imagesdoesnotexists.png)';
+
+    expect($provider->parse($content))->toBe('');
+});

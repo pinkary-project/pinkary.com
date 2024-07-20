@@ -542,7 +542,7 @@ test('upload must be an image', function () {
     ]);
 });
 
-test('upload must be correct type of image', function() {
+test('upload must be correct type of image', function () {
     $user = User::factory()->create([
         'is_verified' => true,
     ]);

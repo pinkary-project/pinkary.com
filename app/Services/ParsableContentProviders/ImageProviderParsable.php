@@ -18,6 +18,11 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
             '/!\[(.*?)\]\((.*?)\)/',
             static function (array $match): string {
                 $altText = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '', $match[1]);
+
+                if (! Storage::exists($match[2])) {
+                    return '';
+                }
+
                 $url = Storage::url($match[2]);
 
                 return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"{$url}\" alt=\"{$altText}\">";
