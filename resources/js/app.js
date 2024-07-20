@@ -27,11 +27,13 @@ Alpine.directive('sortable', (el) => {
 
 Alpine.directive('autosize', (el) => {
     const offset = (el.offsetHeight - el.clientHeight) + 8
+    const resize = () => {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + offset + 'px';
+    };
 
-    el.addEventListener('input', () => {
-        el.style.height = 'auto'
-        el.style.height = el.scrollHeight + offset + 'px'
-    })
+    el.addEventListener('input', resize);
+    el.resize = resize;
 })
 
 import { shareProfile } from './share-profile.js'
@@ -51,5 +53,8 @@ Alpine.data('particlesEffect', particlesEffect)
 
 import { copyCode } from './copy-code.js'
 Alpine.data('copyCode', copyCode)
+
+import { imageUpload } from './image-upload.js'
+Alpine.data('imageUpload', imageUpload)
 
 Livewire.start()

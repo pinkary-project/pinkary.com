@@ -5,14 +5,21 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Models\User;
+use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
+use App\Rules\VerifiedOnly;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
+use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * @property-read bool $isSharingUpdate
@@ -20,6 +27,20 @@ use Livewire\Component;
  */
 final class Create extends Component
 {
+    use WithFileUploads;
+
+    /**
+     * Max number of images allowed.
+     */
+    #[Locked]
+    public int $uploadLimit = 1;
+
+    #[Locked]
+    /**
+     * Max file size allowed.
+     */
+    public int $maxFileSize = 2048;
+
     /**
      * The component's user ID.
      */
@@ -38,9 +59,53 @@ final class Create extends Component
     public string $content = '';
 
     /**
+     * Uploaded images.
+     *
+     * @var array<int, UploadedFile>
+     */
+    public array $images = [];
+
+    /**
      * The component's anonymously state.
      */
     public bool $anonymously = true;
+
+    /**
+     * The updated lifecycle hook.
+     */
+    public function updated(mixed $property): void
+    {
+        if ($property === 'images') {
+            $this->runImageValidation();
+            $this->uploadImages();
+        }
+    }
+
+    /**
+     * Run image validation rules.
+     */
+    public function runImageValidation(): void
+    {
+        $this->validate(
+            rules: [
+                'images' => [
+                    'bail',
+                    new VerifiedOnly(),
+                    new MaxUploads($this->uploadLimit),
+                ],
+                'images.*' => [
+                    File::image()
+                        ->types(['jpeg', 'png', 'gif', 'webp', 'jpg'])
+                        ->max($this->maxFileSize),
+                ],
+            ],
+            messages: [
+                'images.*.image' => 'The file must be a an image.',
+                'images.*.mimes' => 'The image must be a file of type: :values.',
+                'images.*.max' => 'The image may not be greater than :max kilobytes.',
+            ]
+        );
+    }
 
     /**
      * Mount the component.
@@ -88,7 +153,10 @@ final class Create extends Component
     /**
      * Refresh the component.
      */
-    #[On('link-settings.updated')]
+    #[On([
+        'link-settings.updated',
+        'question.created',
+    ])]
     public function refresh(): void
     {
         //
@@ -122,7 +190,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
         ]);
 
         if ($this->isSharingUpdate) {
@@ -140,6 +208,8 @@ final class Create extends Component
             'to_id' => $this->toId,
         ]);
 
+        $this->deleteUnusedImages();
+
         $this->reset(['content']);
 
         $this->anonymously = $user->prefers_anonymous_questions;
@@ -156,6 +226,58 @@ final class Create extends Component
     }
 
     /**
+     * Handle the image uploads.
+     */
+    public function uploadImages(): void
+    {
+        collect($this->images)->each(function (UploadedFile $image): void {
+            $today = now()->format('Y-m-d');
+
+            /** @var string $path */
+            $path = $image->store("images/{$today}", 'public');
+            $this->optimizeImage($path);
+
+            if ($path) {
+                session()->push('images', $path);
+
+                $this->dispatch(
+                    'image.uploaded',
+                    path: Storage::url($path),
+                    originalName: $image->getClientOriginalName()
+                );
+            } else {
+                $this->addError('images', 'The image could not be uploaded.');
+                $this->dispatch('notification.created', message: 'The image could not be uploaded.');
+            }
+        });
+
+        $this->reset('images');
+    }
+
+    /**
+     * Optimize the images.
+     */
+    public function optimizeImage(string $path): void
+    {
+        $imagePath = Storage::disk('public')->path($path);
+        $manager = ImageManager::imagick();
+
+        $image = $manager->read($imagePath);
+        $image->scaleDown(1000, 1000);
+
+        $image->save($imagePath, quality: 80);
+    }
+
+    /**
+     * Handle the image deletes.
+     */
+    public function deleteImage(string $path): void
+    {
+        Storage::disk('public')->delete($path);
+        $this->cleanSession($path);
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
@@ -169,5 +291,34 @@ final class Create extends Component
         return view('livewire.questions.create', [
             'user' => $user,
         ]);
+    }
+
+    /**
+     * Clean the session of the given image path.
+     */
+    private function cleanSession(string $path): void
+    {
+        /** @var array<int, string> $images */
+        $images = session()->get('images', []);
+
+        $remainingImages = collect($images)
+            ->reject(fn (string $imagePath): bool => $imagePath === $path);
+
+        session()->put('images', $remainingImages->toArray());
+    }
+
+    /**
+     * Delete any unused images.
+     */
+    private function deleteUnusedImages(): void
+    {
+        /** @var array<int, string> $images */
+        $images = session()->get('images', []);
+
+        collect($images)
+            ->reject(fn (string $path): bool => str_contains($this->content, $path))
+            ->each(fn (string $path): ?bool => $this->deleteImage($path));
+
+        session()->forget('images');
     }
 }
