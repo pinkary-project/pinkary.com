@@ -12,7 +12,7 @@ final readonly class MaxUploads implements ValidationRule
     /**
      * Create a new rule instance.
      */
-    public function __construct(private readonly int $maxUploads = 1)
+    public function __construct(public readonly int $maxUploads = 1)
     {
         //
     }
