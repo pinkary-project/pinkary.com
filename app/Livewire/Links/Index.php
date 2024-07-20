@@ -86,6 +86,9 @@ final class Index extends Component
         $this->dispatch('notification.created', message: 'Link deleted.');
     }
 
+    /**
+     * Follow the given user.
+     */
     public function follow(int $targetId): void
     {
         if (! auth()->check()) {
@@ -109,6 +112,9 @@ final class Index extends Component
         $this->dispatch('user.followed');
     }
 
+    /**
+     * Unfollow the given user.
+     */
     public function unfollow(int $targetId): void
     {
         if (! auth()->check()) {

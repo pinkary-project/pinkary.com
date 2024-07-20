@@ -3,7 +3,7 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "filament/filament": "^3.2.93",
+        "filament/filament": "^3.2.95",
         "intervention/image": "^3.7.2",
         "laravel/framework": "^11.16.0",
         "laravel/pennant": "^1.9.0",
@@ -24,7 +24,7 @@
         "laravel/pint": "^1.16.2",
         "laravel/sail": "^1.30.2",
         "mockery/mockery": "^1.6.12",
-        "nunomaduro/collision": "^8",
+        "nunomaduro/collision": "^8.3",
         "pestphp/pest": "^3.0.0",
         "pestphp/pest-plugin-laravel": "^3.0.0",
         "pestphp/pest-plugin-type-coverage": "^3.0.0",

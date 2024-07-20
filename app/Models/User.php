@@ -70,6 +70,9 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         'remember_token',
     ];
 
+    /**
+     * Increment the views for the given IDs.
+     */
     public static function incrementViews(array $ids): void
     {
         self::withoutTimestamps(function () use ($ids): void {
