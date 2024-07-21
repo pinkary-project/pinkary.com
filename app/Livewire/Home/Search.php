@@ -83,9 +83,9 @@ final class Search extends Component
 
         // Prioritise users, fill results with questions, to reach 10.
         if ($users->count() < 10) {
-            return collect()->merge($users->merge(
-                $questions->take(10 - $users->count())
-            ));
+            return collect()
+                ->merge($users)
+                ->merge($questions->take(10 - $users->count()));
         }
 
         // Take up to 4 questions and users enough to reach 10 results.
