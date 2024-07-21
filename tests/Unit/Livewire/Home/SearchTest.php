@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 use App\Livewire\Home\Search;
 use App\Models\Link;
+use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
@@ -259,5 +262,79 @@ test('users has is_follower and is_following attributes only when authenticated'
     $component->viewData('users')->each(function (User $user): void {
         expect($user->is_follower)->toBeBool();
         expect($user->is_following)->toBeBool();
+    });
+});
+
+test('search for questions when query at least 3 characters', function () {
+    User::factory()->create([
+        'name' => 'Nuno Maduro',
+        'email_verified_at' => now(),
+    ]);
+
+    Question::factory()->create([
+        'content' => 'How to start?',
+        'answer' => 'Hello world!',
+    ]);
+
+    $component = Livewire::test(Search::class);
+
+    $component->assertDontSee('Nuno Maduro')
+        ->assertDontSee('Hello world');
+
+    $component->set('query', 'Hello');
+
+    $component->assertDontSee('Nuno Maduro')
+        ->assertSee('Hello world');
+});
+
+test('returns up to 4 questions in welcome search with enough matching users', function () {
+    User::factory(10)->create([
+        'name' => 'Nuno Maduro',
+        'email_verified_at' => now(),
+    ]);
+
+    Question::factory(5)->create([
+        'content' => 'Who created Pest?',
+        'answer' => 'Nuno Maduro',
+    ]);
+
+    $component = Livewire::test(Search::class);
+
+    $component->set('welcomeSearch', true);
+    $component->set('query', 'Nuno');
+
+    $component->assertViewHas('results', function (Collection $results) {
+        $counts = $results->countBy(function (Model $result) {
+            return $result::class;
+        });
+
+        return $counts->get(Question::class) === 4
+            && $counts->get(User::class) === 6;
+    });
+});
+
+test('returns more questions in welcome search with less than 6 matching users', function () {
+    User::factory(5)->create([
+        'name' => 'Nuno Maduro',
+        'email_verified_at' => now(),
+    ]);
+
+    Question::factory(10)->create([
+        'content' => 'Who created Pest?',
+        'answer' => 'Nuno Maduro',
+    ]);
+
+    $component = Livewire::test(Search::class);
+
+    $component->set('welcomeSearch', true);
+    $component->set('query', 'Nuno');
+
+    $component->assertViewHas('results', function (Collection $results) {
+        $counts = $results->countBy(function (Model $result) {
+            return $result::class;
+        });
+
+        return $counts->get(User::class) === 5
+            && $counts->get(Question::class) === 5;
     });
 });
