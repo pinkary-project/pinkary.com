@@ -7,7 +7,10 @@ const imageUpload = () => ({
     textarea: null,
 
     init() {
-        this.setupListeners();
+        if (this.$refs.imageButton !== undefined) {
+            this.setupListeners();
+        }
+
         this.textarea = this.$refs.content;
     },
 
