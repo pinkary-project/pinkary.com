@@ -54,7 +54,7 @@ final class Search extends Component
      *
      * @return \Illuminate\Support\Collection<int, mixed>
      */
-    private function searchByQuery()
+    private function searchByQuery(): SupportCollection
     {
         $users = $this->usersByQuery();
 
