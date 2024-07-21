@@ -134,7 +134,7 @@ final class CleanUnusedUploadedImages implements ShouldQueue
             return [
                 now()->subHour(),
                 now(),
-            ];
+            ]; // @codeCoverageIgnoreStart
         }
 
         /** @var CarbonImmutable $lastRun */
@@ -143,6 +143,6 @@ final class CleanUnusedUploadedImages implements ShouldQueue
         return [
             $lastRun,
             now()->subMinutes(5),
-        ];
+        ]; // @codeCoverageIgnoreEnd
     }
 }

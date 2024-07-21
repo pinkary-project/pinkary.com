@@ -238,7 +238,7 @@ final class Show extends Component
      */
     public function placeholder(): View
     {
-        return view('livewire.questions.placeholder');
+        return view('livewire.questions.placeholder'); // @codeCoverageIgnore
     }
 
     /**

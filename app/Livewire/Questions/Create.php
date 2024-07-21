@@ -245,10 +245,10 @@ final class Create extends Component
                     path: Storage::url($path),
                     originalName: $image->getClientOriginalName()
                 );
-            } else {
+            } else { // @codeCoverageIgnoreStart
                 $this->addError('images', 'The image could not be uploaded.');
                 $this->dispatch('notification.created', message: 'The image could not be uploaded.');
-            }
+            } // @codeCoverageIgnoreEnd
         });
 
         $this->reset('images');

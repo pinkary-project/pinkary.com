@@ -53,6 +53,37 @@ test('updates link', function () {
         ->toBe('Example');
 });
 
+it('prefixes with http or https if missing', function () {
+    $user = User::factory()->create();
+
+    $link = Link::factory()->create([
+        'user_id' => $user->id,
+        'url' => 'https://example.org',
+        'description' => 'Example Org',
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Edit::class);
+
+    $component->call('edit', $link->id);
+    $component->set('url', 'example.com');
+    $component->set('description', 'Example');
+
+    $component->call('update');
+    $component->assertDispatched('link.updated');
+    $component->assertDispatched('notification.created', message: 'Link updated.');
+
+    $link->refresh();
+
+    expect($user->links->count())->toBe(1);
+
+    $link = $user->links->first();
+
+    expect($link->url)
+        ->toBe('https://example.com')
+        ->and($link->description)
+        ->toBe('Example');
+});
+
 test('link click count reset on url update', function () {
     $user = User::factory()->create();
 

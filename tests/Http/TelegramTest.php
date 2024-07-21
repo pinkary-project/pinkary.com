@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 it('redirects to telegram group', function () {
     $response = $this->get(route('telegram'));
 
