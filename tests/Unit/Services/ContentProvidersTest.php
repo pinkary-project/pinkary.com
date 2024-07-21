@@ -223,5 +223,9 @@ test('image does not exists', function () {
 
     $content = '![](images/imagesdoesnotexists.png)';
 
-    expect($provider->parse($content))->toBe('');
+    expect($provider->parse($content))->toBe('...');
+
+    $content = 'other content ![](images/imagesdoesnotexists.png)';
+
+    expect($provider->parse($content))->toBe('other content ');
 });
