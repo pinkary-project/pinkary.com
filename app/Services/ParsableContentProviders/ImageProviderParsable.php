@@ -26,6 +26,7 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
                     if ($tag === $content) {
                         return '...';
                     }
+
                     return '';
                 }
 
