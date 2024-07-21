@@ -1,3 +1,8 @@
+## Version 1.25.0
+> 21 July, 2024
+
+- Verified accounts now can upload an image to their posts.
+
 ## Version 1.24.1
 > 18 July, 2024
 
