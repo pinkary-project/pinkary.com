@@ -16,13 +16,17 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
     {
         return (string) preg_replace_callback(
             '/!\[(.*?)\]\((.*?)\)/',
-            static function (array $match): string {
+            static function (array $match) use ($content): string {
                 $altText = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '', $match[1]);
 
                 $disk = Storage::disk('public');
 
                 if (! $disk->exists($match[2])) {
-                    return '...';
+                    $tag = "![{$match[1]}]({$match[2]})";
+                    if ($tag === $content) {
+                        return '...';
+                    }
+                    return '';
                 }
 
                 $url = $disk->url($match[2]);
