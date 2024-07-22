@@ -24,12 +24,12 @@
             <ul class="flex flex-col gap-3">
                 @foreach ($results as $result)
                     @if ($result instanceof App\Models\Question)
-                        <div class="group rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 pt-4 transition-colors">
+                        <li>
                             <livewire:questions.show
                                     :questionId="$result->id"
                                 :key="'question-' . $result->id"
                             />
-                        </div>
+                        </li>
                     @elseif ($result instanceof App\Models\User)
                         @php($user = $result)
                         <li
