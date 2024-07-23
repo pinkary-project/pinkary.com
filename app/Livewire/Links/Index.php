@@ -8,6 +8,8 @@ use App\Jobs\UpdateUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -155,7 +157,14 @@ final class Index extends Component
     public function render(): View
     {
         $user = User::query()
-            ->with(['links'])
+            ->with([
+                'links' => function (HasMany $query): HasMany {
+                    if (auth()->id() === $this->userId) {
+                        return $query;
+                    }
+                    return $query->where('show', true);
+                }
+            ])
             ->withCount('followers')
             ->withCount('following')
             ->findOrFail($this->userId);

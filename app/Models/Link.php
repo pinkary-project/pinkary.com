@@ -43,6 +43,7 @@ final class Link extends Model
     public function casts(): array
     {
         return [
+            'show' => 'boolean',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
