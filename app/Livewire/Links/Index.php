@@ -8,8 +8,8 @@ use App\Jobs\UpdateUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -93,14 +93,12 @@ final class Index extends Component
      */
     public function setVisibility(int $linkId): void
     {
-        $user = type(auth()->user())->as(User::class);
-
         $link = Link::findOrFail($linkId);
 
         $this->authorize('update', $link);
 
         $link->update([
-            'show' => ! $link->show,
+            'is_visible' => ! $link->is_visible,
         ]);
     }
 
@@ -174,12 +172,12 @@ final class Index extends Component
     {
         $user = User::query()
             ->with([
-                'links' => function (HasMany $query): HasMany {
-                    if (auth()->id() === $this->userId) {
-                        return $query;
-                    }
-                    return $query->where('show', true);
-                }
+            'links' => fn (HasMany $query): HasMany => $query
+                ->when(
+                    auth()->id() !== $this->userId,
+                    fn (Builder $query): Builder => $query
+                        ->where('is_visible', true)
+                    ),
             ])
             ->withCount('followers')
             ->withCount('following')

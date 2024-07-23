@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('links', function (Blueprint $table) {
-            $table->boolean('show')->default(true)->after('click_count');
+            $table->boolean('is_visible')->default(true)->after('click_count');
         });
     }
 };
