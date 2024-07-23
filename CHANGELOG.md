@@ -1,3 +1,8 @@
+## Version 1.26.0
+> 23 July, 2024
+
+- Opens image uploads to everyone.
+
 ## Version 1.25.0
 > 21 July, 2024
 
