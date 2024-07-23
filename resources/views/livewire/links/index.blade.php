@@ -229,24 +229,23 @@
                 >
                     @foreach ($links as $link)
                         <li
-                            class="hover:darken-gradient group flex {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }}"
+                            class="relative h-12 hover:darken-gradient group flex {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }}"
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
                         >
                             <div
                                 x-sortable-handle
-                                class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                class="absolute left-0 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
                                 <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
-                            <x-links.list-item
-                                :$user
-                                :$link
-                            />
+                            <div class="flex-grow flex items-center justify-center">
+                                <x-links.list-item :$user :$link />
+                            </div>
 
-                            <div class="flex items-center justify-center">
+                            <div class="absolute right-0 top-0 bottom-0 flex items-center justify-center">
                                 <div
                                     class="hidden min-w-fit cursor-help items-center gap-1 text-xs group-hover:flex"
                                     title="Clicked {{ Number::format($link->click_count) }} times"
