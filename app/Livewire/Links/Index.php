@@ -89,6 +89,22 @@ final class Index extends Component
     }
 
     /**
+     * Set visibility the given link.
+     */
+    public function setVisibility(int $linkId): void
+    {
+        $user = type(auth()->user())->as(User::class);
+
+        $link = Link::findOrFail($linkId);
+
+        $this->authorize('update', $link);
+
+        $link->update([
+            'show' => ! $link->show,
+        ]);
+    }
+
+    /**
      * Follow the given user.
      */
     public function follow(int $targetId): void
