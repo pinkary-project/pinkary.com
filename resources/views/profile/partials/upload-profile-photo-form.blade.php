@@ -2,7 +2,8 @@
     avatar: null,
     errors: @json($errors->get('avatar')),
     checkFileSize(target) {
-        const maxFileSize = 2 * 1024 * 1024;
+        const maxFileSize = 8 * 1024 * 1024;
+
         if ((target.files[0]?.size ?? 0) > maxFileSize) {
             this.errors = ["The avatar may not be greater than 2MB."];
             target.value = null;

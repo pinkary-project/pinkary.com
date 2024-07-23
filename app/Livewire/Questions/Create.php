@@ -7,7 +7,6 @@ namespace App\Livewire\Questions;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
-use App\Rules\VerifiedOnly;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -35,11 +34,11 @@ final class Create extends Component
     #[Locked]
     public int $uploadLimit = 1;
 
-    #[Locked]
     /**
      * Max file size allowed.
      */
-    public int $maxFileSize = 2048;
+    #[Locked]
+    public int $maxFileSize = 1024 * 8;
 
     /**
      * The component's user ID.
@@ -90,7 +89,6 @@ final class Create extends Component
             rules: [
                 'images' => [
                     'bail',
-                    new VerifiedOnly(),
                     new MaxUploads($this->uploadLimit),
                 ],
                 'images.*' => [

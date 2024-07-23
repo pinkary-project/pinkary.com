@@ -491,11 +491,11 @@ test('maxFileSize and maxImages', function () {
         'toId' => $user->id,
     ]);
 
-    expect($component->maxFileSize)->toBe(1024 * 2)
+    expect($component->maxFileSize)->toBe(1024 * 8)
         ->and($component->uploadLimit)->toBe(1);
 });
 
-test('only verified users can upload images', function () {
+test('non verified users can upload images', function () {
     $user = User::factory()->unverified()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -505,9 +505,7 @@ test('only verified users can upload images', function () {
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
     $component->call('uploadImages');
 
-    $component->assertHasErrors([
-        'images' => 'This action is only available to verified users. Get verified in your profile settings.',
-    ]);
+    $component->assertHasNoErrors();
 });
 
 test('company verified users can upload images', function () {
@@ -583,19 +581,21 @@ test('max file size error', function () {
         'is_verified' => true,
     ]);
 
-    $maxFileSize = 1024 * 2;
+    $maxFileSize = 1024 * 8;
 
     $component = Livewire::actingAs($user)->test(Create::class, [
         'toId' => $user->id,
     ]);
 
-    $largeFile = UploadedFile::fake()->image('test.jpg')->size(1024 * 5);
+    $largeFile = UploadedFile::fake()->image('test.jpg')->size(1024 * 16);
 
     $component->set('images', [$largeFile]);
     $component->call('runImageValidation');
 
-    expect($component->get('images'))->toBeArray()
-        ->and($component->get('images'))->not()->toContain($largeFile);
+    expect($component->get('images'))
+        ->toBeArray()
+        ->and($component->get('images'))
+        ->not()->toContain($largeFile);
 
     $component->assertHasErrors([
         'images.0' => "The image may not be greater than {$maxFileSize} kilobytes.",
