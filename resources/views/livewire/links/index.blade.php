@@ -308,7 +308,7 @@
                 <div class="space-y-3">
                     @foreach ($links as $link)
                         <div
-                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 hover:darken-gradient flex justify-center bg-gradient-to-r"
                             wire:click="click({{ $link->id }})"
                         >
                             <x-links.list-item
