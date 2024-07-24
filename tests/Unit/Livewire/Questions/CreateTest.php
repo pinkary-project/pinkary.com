@@ -587,7 +587,7 @@ test('max file size error', function () {
         'toId' => $user->id,
     ]);
 
-    $largeFile = UploadedFile::fake()->image('test.jpg')->size(1024 * 16);
+    $largeFile = UploadedFile::fake()->image('test.jpg')->size(1024 * 9);
 
     $component->set('images', [$largeFile]);
     $component->call('runImageValidation');
