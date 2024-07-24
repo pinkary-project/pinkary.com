@@ -172,12 +172,10 @@ final class Index extends Component
     {
         $user = User::query()
             ->with([
+                // @phpstan-ignore-next-line
                 'links' => fn (HasMany $query): HasMany => $query
-                    ->when(
-                        auth()->id() !== $this->userId,
-                        fn (Builder $query): Builder => $query
-                            ->where('is_visible', true)
-                    ),
+                    // @phpstan-ignore-next-line
+                    ->when(auth()->id() !== $this->userId, fn (Builder $query): Builder => $query->where('is_visible', true)),
             ])
             ->withCount('followers')
             ->withCount('following')
