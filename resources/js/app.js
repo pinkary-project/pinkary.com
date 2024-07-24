@@ -52,4 +52,7 @@ Alpine.data('copyCode', copyCode)
 import { imageUpload } from './image-upload.js'
 Alpine.data('imageUpload', imageUpload)
 
+import { dynamicAutocomplete } from "./dynamic-autocomplete.js";
+Alpine.data('dynamicAutocomplete', dynamicAutocomplete);
+
 Livewire.start()
