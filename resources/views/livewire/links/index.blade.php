@@ -229,24 +229,23 @@
                 >
                     @foreach ($links as $link)
                         <li
-                            class="hover:darken-gradient group flex bg-gradient-to-r"
+                            class="relative h-12 hover:darken-gradient group flex {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }}"
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
                         >
                             <div
                                 x-sortable-handle
-                                class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                class="absolute left-0 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                             >
                                 <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
-                            <x-links.list-item
-                                :$user
-                                :$link
-                            />
+                            <div class="flex-grow flex items-center justify-center">
+                                <x-links.list-item :$user :$link />
+                            </div>
 
-                            <div class="flex items-center justify-center">
+                            <div class="absolute right-0 top-0 bottom-0 flex items-center justify-center">
                                 <div
                                     class="hidden min-w-fit cursor-help items-center gap-1 text-xs group-hover:flex"
                                     title="Clicked {{ Number::format($link->click_count) }} times"
@@ -254,6 +253,20 @@
                                     {{ Number::abbreviate($link->click_count) }}
                                     {{ str('click')->plural($link->click_count) }}
                                 </div>
+
+                                <button
+                                    wire:click="setVisibility({{ $link->id }})"
+                                    type="button"
+                                    class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                >
+                                    @if ($link->is_visible)
+                                        <x-heroicon-o-eye class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                            x-bind:class="{ 'invisible': isDragging }" />
+                                    @else
+                                        <x-heroicon-o-eye-slash class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                            x-bind:class="{ 'invisible': isDragging }" />
+                                    @endif
+                                </button>
 
                                 <button
                                     wire:click="$dispatchTo('links.edit', 'link.edit', { link: {{ $link->id }} })"
@@ -295,7 +308,7 @@
                 <div class="space-y-3">
                     @foreach ($links as $link)
                         <div
-                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 hover:darken-gradient flex justify-center bg-gradient-to-r"
                             wire:click="click({{ $link->id }})"
                         >
                             <x-links.list-item
