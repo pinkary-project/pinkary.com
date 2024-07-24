@@ -1,3 +1,8 @@
+## Version 1.27.0
+> 24 July, 2024
+
+- Allows to hide links in the user's profile.
+
 ## Version 1.26.0
 > 23 July, 2024
 
