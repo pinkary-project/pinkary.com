@@ -98,7 +98,7 @@ final class Create extends Component
                 ],
             ],
             messages: [
-                'images.*.image' => 'The file must be a an image.',
+                'images.*.image' => 'The file must be an image.',
                 'images.*.mimes' => 'The image must be a file of type: :values.',
                 'images.*.max' => 'The image may not be greater than :max kilobytes.',
             ]
