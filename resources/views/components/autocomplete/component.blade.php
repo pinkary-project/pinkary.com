@@ -8,7 +8,7 @@
 >
     <div
         class="fixed h-full top-0 left-0 w-full"
-        @click="close()"
+        @click="closeResults()"
         aria-hidden="true">
     </div>
     <div
