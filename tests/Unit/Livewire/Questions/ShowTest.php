@@ -126,6 +126,8 @@ test('bookmark', function () {
     ]);
 
     $component->call('bookmark');
+    $component->assertDispatched('notification.created', message: 'Bookmark added.');
+
     $component->call('bookmark');
 
     expect($question->bookmarks()->count())->toBe(1);
@@ -159,6 +161,7 @@ test('unbookmark', function () {
     $component->call('unbookmark');
 
     $component->assertDispatched('question.unbookmarked');
+    $component->assertDispatched('notification.created', message: 'Bookmark removed.');
     expect($question->bookmarks()->count())->toBe(0);
 });
 
