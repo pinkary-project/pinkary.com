@@ -536,7 +536,7 @@ test('upload must be an image', function () {
     $component->call('runImageValidation');
 
     $component->assertHasErrors([
-        'images.0' => 'The file must be a an image.',
+        'images.0' => 'The file must be an image.',
     ]);
 });
 
