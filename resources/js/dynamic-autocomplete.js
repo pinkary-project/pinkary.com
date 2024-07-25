@@ -1,71 +1,32 @@
 /**
- * This functionality must be used in combination with
- * App\Livewire\Concerns\WithDynamicAutocomplete.
- *
  * @see https://www.algolia.com/doc/ui-libraries/autocomplete/solutions/rich-text-box-with-mentions-and-hashtags
  */
 
-export const dynamicAutocomplete = () => ({
+export const dynamicAutocomplete = (config) => ({
     types: null,
     matchedTypes: null,
     showAutocompleteOptions: false,
-    textarea: null,
-    text: '',
+    workingText: '',
     selectedIndex: 0,
     activeToken: false,
-
-    autocompleteInputBindings: {
-        ['@keyup'](event) {
-            this.handleInput({
-                text: this.$el.value,
-                event: event,
-            });
-        },
-        ['@keydown.arrow-up'](event) {
-            if (this.showAutocompleteOptions) {
-                event.preventDefault();
-                this.focusResultsUp();
-            }
-        },
-        ['@keydown.arrow-down'](event) {
-            if (this.showAutocompleteOptions) {
-                event.preventDefault();
-                this.focusResultsDown();
-            }
-        },
-        ['@keydown.enter'](event) {
-            if (this.showAutocompleteOptions) {
-                event.preventDefault();
-                this.select();
-            }
-        },
-        ['@keydown.tab'](event) {
-            if (this.showAutocompleteOptions) {
-                event.preventDefault();
-                this.select();
-            }
-        },
-        ['@keydown.escape'](event) {
-            if (this.showAutocompleteOptions) {
-                event.preventDefault();
-                this.closeResults();
-            }
-        },
-        ['@click.away'](event) {
-            if (this.showAutocompleteOptions) {
-                event.preventDefault();
-                this.closeResults();
-            }
-        },
-    },
+    listeners: [],
 
     init() {
-        this.textarea = this.$refs.content;
+        this.types = config.types;
+        this.initListeners();
+    },
+
+    initListeners() {
+        this.listeners.push(Livewire.on('autocompleteBoundInputKeyup', (payload) => {this.handleInput(payload)}));
+        this.listeners.push(Livewire.on('autocompleteBoundInputArrowUp', (event) => this.focusResultsUp()));
+        this.listeners.push(Livewire.on('autocompleteBoundInputArrowDown', (event) => this.focusResultsDown()));
+        this.listeners.push(Livewire.on('selectAutocomplete', (event) => this.select()));
+        this.listeners.push(Livewire.on('closeAutocompletePanel', (event) => this.closeResults()));
     },
 
     handleInput(payload) {
         const cursorPosition = payload.event.target.selectionEnd || 0;
-        const activeToken = this.getActiveToken(payload.text, cursorPosition);
+        const activeToken = this.getActiveToken(payload.content, cursorPosition);
 
         if (activeToken === undefined) {
             this.closeResults();
@@ -90,7 +51,7 @@ export const dynamicAutocomplete = () => ({
 
         this.$wire.$call('setAutocompleteSearchParams', this.matchedTypes, activeToken.word);
 
-        this.text = payload.text;
+        this.workingText = payload.content;
 
         this.openResults();
     },
@@ -120,33 +81,25 @@ export const dynamicAutocomplete = () => ({
     },
 
     select(replacement) {
-        this.$focus.focus(this.textarea);
+        Livewire.dispatch('autocompleteSelected', {
+            newValue: this.formatReplacement(replacement ?? this.getReplacementFromSelectedResult())
+        })
 
-        this.$nextTick(() => {
-            this.replace(replacement ?? this.getReplacementFromSelectedResult());
+        this.activeToken = false;
 
-            this.activeToken = false;
-
-            this.closeResults();
-        });
+        this.closeResults();
     },
 
     getReplacementFromSelectedResult() {
         return this.$refs.results.children[this.selectedIndex].dataset.replacement;
     },
 
-    replace(replacement) {
-        replacement = this.formatReplacement(replacement);
-        this.textarea.value = replacement;
-        this.$dispatch('input', replacement);
-    },
-
     formatReplacement(replacement) {
         const [index] = this.activeToken.range;
 
         return this.replaceAt(
-            this.text,
-            replacement + ' ',
+            this.workingText,
+            replacement,
             index,
             this.activeToken.word.length
         );
@@ -156,16 +109,22 @@ export const dynamicAutocomplete = () => ({
         const prefix = str.substring(0, index);
         const suffix = str.substring(index + length);
 
+        if (!suffix?.startsWith(' ')) {
+            replacement = replacement + ' ';
+        }
+
         return prefix + replacement + suffix;
     },
 
     openResults() {
         this.showAutocompleteOptions = true;
+        Livewire.dispatch('autocompletePanelShown');
     },
 
     closeResults() {
         this.showAutocompleteOptions = false;
         this.selectedIndex = 0;
+        Livewire.dispatch('autocompletePanelClosed');
     },
 
     focusResultsUp() {
@@ -192,5 +151,69 @@ export const dynamicAutocomplete = () => ({
                 block: 'nearest',
             });
         })
+    },
+});
+
+export const usesDynamicAutocomplete = () => ({
+    autocompleteComponentName: 'dynamic-autocomplete',
+    autocompletePanelIsShown: false,
+    listeners: [],
+
+    init() {
+        Livewire.on('autocompletePanelShown', () => this.autocompletePanelIsShown = true);
+        Livewire.on('autocompletePanelClosed', () => this.autocompletePanelIsShown = false);
+        Livewire.on('autocompleteSelected', (event) => {
+            this.$focus.focus(this.$el);
+
+            this.$nextTick(() => {
+                this.$el.value = event.newValue;
+                this.$dispatch('input', event.newValue);
+            });
+        })
+    },
+
+    autocompleteInputBindings: {
+        ['@keyup'](event) {
+            Livewire.dispatch('autocompleteBoundInputKeyup', {
+                content: this.$el.value,
+                event: event,
+            })
+        },
+        ['@keydown.arrow-up'](event) {
+            if (this.autocompletePanelIsShown) {
+                event.preventDefault();
+                Livewire.dispatch('autocompleteBoundInputArrowUp')
+            }
+        },
+        ['@keydown.arrow-down'](event) {
+            if (this.autocompletePanelIsShown) {
+                event.preventDefault();
+                Livewire.dispatch('autocompleteBoundInputArrowDown')
+            }
+        },
+        ['@keydown.enter'](event) {
+            if (this.autocompletePanelIsShown) {
+                event.preventDefault();
+                Livewire.dispatch('selectAutocomplete')
+            }
+        },
+        ['@keydown.tab'](event) {
+            if (this.autocompletePanelIsShown) {
+                event.preventDefault();
+                Livewire.dispatch('selectAutocomplete')
+            }
+        },
+        ['@keydown.escape'](event) {
+            if (this.autocompletePanelIsShown) {
+                event.preventDefault();
+                Livewire.dispatch('closeAutocompletePanel')
+            }
+        },
+        ['@click.away'](event) {
+            if (this.autocompletePanelIsShown) {
+                event.preventDefault();
+                Livewire.dispatch('closeAutocompletePanel')
+            }
+        },
     },
 });

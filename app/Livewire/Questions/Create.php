@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
-use App\Livewire\Concerns\WithDynamicAutocomplete;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
@@ -28,7 +27,6 @@ use Livewire\WithFileUploads;
 final class Create extends Component
 {
     use WithFileUploads;
-    use WithDynamicAutocomplete;
 
     /**
      * Max number of images allowed.

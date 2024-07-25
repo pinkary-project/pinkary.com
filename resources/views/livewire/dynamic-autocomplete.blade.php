@@ -1,10 +1,7 @@
-@props(['types'])
 <div
+    x-data="dynamicAutocomplete({types: @js($this->autocompleteTypes) })"
     x-cloak
     x-show="showAutocompleteOptions"
-    x-init="() => {
-        types = @js($types);
-    }"
 >
     <div
         class="fixed h-full top-0 left-0 w-full"
