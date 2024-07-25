@@ -125,9 +125,13 @@ final class Show extends Component
 
         $question = Question::findOrFail($this->questionId);
 
-        $question->bookmarks()->firstOrCreate([
+        $bookmark = $question->bookmarks()->firstOrCreate([
             'user_id' => auth()->id(),
         ]);
+
+        if ($bookmark->wasRecentlyCreated) {
+            $this->dispatch('notification.created', message: 'Bookmark added.');
+        }
     }
 
     /**
@@ -207,7 +211,9 @@ final class Show extends Component
         if ($bookmark = $question->bookmarks()->where('user_id', auth()->id())->first()) {
             $this->authorize('delete', $bookmark);
 
-            $bookmark->delete();
+            if ($bookmark->delete()) {
+                $this->dispatch('notification.created', message: 'Bookmark removed.');
+            }
         }
 
         $this->dispatch('question.unbookmarked');
