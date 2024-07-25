@@ -8,6 +8,8 @@ use App\Contracts\Services\DynamicAutocompleteResult;
 
 final readonly class MentionResult implements DynamicAutocompleteResult
 {
+    use ImplementsDynamicAutocompleteResult;
+
     public function __construct(
         public string|int $id,
         public string $avatar_src,
@@ -20,20 +22,5 @@ final readonly class MentionResult implements DynamicAutocompleteResult
         public string $view = 'components.autocomplete.mention-item'
     ) {
         //
-    }
-
-    public function id(): int|string
-    {
-        return $this->id;
-    }
-
-    public function replacement(): string
-    {
-        return $this->replacement;
-    }
-
-    public function view(): string
-    {
-        return $this->view;
     }
 }
