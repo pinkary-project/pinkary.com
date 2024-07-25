@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff7de6b26ff82cbc0661a6b03a67da73",
+    "content-hash": "63c72a91d3806a3ece80920a94ef5889",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10278,16 +10278,16 @@
         },
         {
             "name": "nunomaduro/laravel-optimize-database",
-            "version": "v1.0.0",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/laravel-optimize-database.git",
-                "reference": "d5fe89eca42095e94e0c45ef220d59413fb69230"
+                "reference": "1c7a9f84c04a3a898a921c01993dab7478d78dc6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/laravel-optimize-database/zipball/d5fe89eca42095e94e0c45ef220d59413fb69230",
-                "reference": "d5fe89eca42095e94e0c45ef220d59413fb69230",
+                "url": "https://api.github.com/repos/nunomaduro/laravel-optimize-database/zipball/1c7a9f84c04a3a898a921c01993dab7478d78dc6",
+                "reference": "1c7a9f84c04a3a898a921c01993dab7478d78dc6",
                 "shasum": ""
             },
             "require": {
@@ -10332,7 +10332,7 @@
             ],
             "support": {
                 "issues": "https://github.com/nunomaduro/laravel-optimize-database/issues",
-                "source": "https://github.com/nunomaduro/laravel-optimize-database/tree/v1.0.0"
+                "source": "https://github.com/nunomaduro/laravel-optimize-database/tree/v1.0.4"
             },
             "funding": [
                 {
@@ -10348,7 +10348,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-07-25T21:02:33+00:00"
+            "time": "2024-07-25T23:28:44+00:00"
         },
         {
             "name": "pestphp/pest",
