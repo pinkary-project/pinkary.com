@@ -492,7 +492,7 @@ test('maxFileSize and maxImages', function () {
     ]);
 
     expect($component->maxFileSize)->toBe(1024 * 8)
-        ->and($component->uploadLimit)->toBe(1);
+        ->and($component->uploadLimit)->toBe(3);
 });
 
 test('non verified users can upload images', function () {
