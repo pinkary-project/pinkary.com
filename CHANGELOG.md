@@ -1,3 +1,8 @@
+## Version 1.28.0
+> 27 July, 2024
+
+- Allows up to 3 uploaded images in a post.
+
 ## Version 1.27.0
 > 24 July, 2024
 
