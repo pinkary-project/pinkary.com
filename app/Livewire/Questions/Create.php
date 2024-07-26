@@ -32,7 +32,7 @@ final class Create extends Component
      * Max number of images allowed.
      */
     #[Locked]
-    public int $uploadLimit = 1;
+    public int $uploadLimit = 3;
 
     /**
      * Max file size allowed.

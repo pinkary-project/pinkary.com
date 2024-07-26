@@ -34,8 +34,8 @@
                     <x-heroicon-o-camera class="h-5 w-5"/>
                 </button>
             </div>
-            <input class="hidden" type="file" x-ref="imageInput" accept="image/*" />
-            <input class="hidden" type="file" x-ref="imageUpload" accept="image/*" wire:model="images" />
+            <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
+            <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
 
             <div x-show="images.length > 0" class="relative mt-2 flex h-20 flex-wrap gap-2">
                 <template x-for="(image, index) in images" :key="index">
