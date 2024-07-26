@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd678e4376ff57231c887a86ca70d1c6",
+    "content-hash": "a85e5c43c58953854f3c2b7ccff37beb",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10278,27 +10278,27 @@
         },
         {
             "name": "nunomaduro/laravel-optimize-database",
-            "version": "v1.0.4",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/laravel-optimize-database.git",
-                "reference": "1c7a9f84c04a3a898a921c01993dab7478d78dc6"
+                "reference": "8a1231aac811387dc202502b9617a5ec28948e1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/laravel-optimize-database/zipball/1c7a9f84c04a3a898a921c01993dab7478d78dc6",
-                "reference": "1c7a9f84c04a3a898a921c01993dab7478d78dc6",
+                "url": "https://api.github.com/repos/nunomaduro/laravel-optimize-database/zipball/8a1231aac811387dc202502b9617a5ec28948e1c",
+                "reference": "8a1231aac811387dc202502b9617a5ec28948e1c",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.2.0"
             },
             "require-dev": {
-                "laravel/framework": "^11.17.0",
+                "laravel/framework": "^11.18.1",
                 "laravel/pint": "^1.17.0",
                 "phpstan/phpstan": "^1.11.8",
                 "rector/rector": "^1.2.2",
-                "symfony/var-dumper": "^7.1.2"
+                "symfony/var-dumper": "^7.1.3"
             },
             "type": "library",
             "extra": {
@@ -10332,7 +10332,7 @@
             ],
             "support": {
                 "issues": "https://github.com/nunomaduro/laravel-optimize-database/issues",
-                "source": "https://github.com/nunomaduro/laravel-optimize-database/tree/v1.0.4"
+                "source": "https://github.com/nunomaduro/laravel-optimize-database/tree/v1.0.5"
             },
             "funding": [
                 {
@@ -10348,7 +10348,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-07-25T23:28:44+00:00"
+            "time": "2024-07-26T23:50:46+00:00"
         },
         {
             "name": "pestphp/pest",
