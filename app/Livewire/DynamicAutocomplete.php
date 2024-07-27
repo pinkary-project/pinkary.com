@@ -29,6 +29,9 @@ final class DynamicAutocomplete extends Component
      */
     public string $query = '';
 
+    /**
+     * Get the available autocomplete types.
+     */
     #[Computed]
     public function autocompleteTypes(): array
     {
@@ -40,6 +43,9 @@ final class DynamicAutocomplete extends Component
             ->all();
     }
 
+    /**
+     * Set the required search properties on the component.
+     */
     public function setAutocompleteSearchParams(array $matchedTypes, string $query): void
     {
         if (blank($matchedTypes)) {
@@ -50,6 +56,10 @@ final class DynamicAutocomplete extends Component
         $this->query = $query;
     }
 
+    /**
+     * Get the autocomplete results (aka options) for the matched types
+     * and search query previously set on the component.
+     */
     #[Computed]
     public function autocompleteResults(): Collection
     {
@@ -62,6 +72,9 @@ final class DynamicAutocomplete extends Component
             ->flatten(1);
     }
 
+    /**
+     * Render the component.
+     */
     public function render(): View
     {
         return view('livewire.dynamic-autocomplete');
