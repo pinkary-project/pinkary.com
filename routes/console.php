@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Console\Commands\DeleteImagesMetadataCommand;
 use App\Console\Commands\DeleteNonEmailVerifiedUsersCommand;
 use App\Console\Commands\PerformDatabaseBackupCommand;
 use App\Console\Commands\SendDailyEmailsCommand;
@@ -16,3 +17,9 @@ Schedule::command(PerformDatabaseBackupCommand::class)->hourly();
 Schedule::command(DeleteNonEmailVerifiedUsersCommand::class)->hourly();
 Schedule::command(SyncVerifiedUsersCommand::class)->daily();
 Schedule::job(CleanUnusedUploadedImages::class)->hourly();
+
+return [
+    'commands' => [
+        DeleteImagesMetadataCommand::class,
+    ],
+];
