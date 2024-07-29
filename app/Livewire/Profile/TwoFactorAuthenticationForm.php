@@ -6,6 +6,7 @@ namespace App\Livewire\Profile;
 
 use App\Models\User;
 use Illuminate\View\View;
+use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
@@ -27,17 +28,27 @@ final class TwoFactorAuthenticationForm extends Component
     public bool $showingRecoveryCodes = false;
 
     /**
+     * Indicates if the two factor authentication confirmation input and button are being displayed.
+     */
+    public bool $showingConfirmation = false;
+
+    /**
      * Determine if two factor authentication is enabled.
      */
     #[Locked]
     public bool $enabled = false;
 
     /**
+     * The OTP code for confirming two factor authentication.
+     */
+    public ?string $code;
+
+    /**
      * Mount the component.
      */
     public function mount(): void
     {
-        $this->enabled = type(auth()->user())->as(User::class)->two_factor_secret !== null;
+        $this->enabled = type(auth()->user())->as(User::class)->hasEnabledTwoFactorAuthentication();
     }
 
     /**
@@ -46,10 +57,21 @@ final class TwoFactorAuthenticationForm extends Component
     public function enableTwoFactorAuthentication(EnableTwoFactorAuthentication $enable): void
     {
         $enable(auth()->user());
-
         $this->showingQrCode = true;
-        $this->showingRecoveryCodes = true;
+        $this->showingConfirmation = true;
         $this->enabled = true;
+    }
+
+    /**
+     * Confirm two factor authentication for the user.
+     */
+    public function confirmTwoFactorAuthentication(ConfirmTwoFactorAuthentication $confirm): void
+    {
+        $confirm(auth()->user(), $this->code);
+
+        $this->showingQrCode = false;
+        $this->showingConfirmation = false;
+        $this->showingRecoveryCodes = true;
     }
 
     /**
