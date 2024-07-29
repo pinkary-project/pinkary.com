@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Intervention\Image\ImageManager;
+use Imagick;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -266,12 +266,17 @@ final class Create extends Component
     public function optimizeImage(string $path): void
     {
         $imagePath = Storage::disk('public')->path($path);
-        $manager = ImageManager::imagick();
+        $imagick = new Imagick($imagePath);
 
-        $image = $manager->read($imagePath);
-        $image->scaleDown(1000, 1000);
+        $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
 
-        $image->save($imagePath, quality: 80);
+        $imagick->stripImage();
+
+        $imagick->setImageCompressionQuality(80);
+        $imagick->writeImage($imagePath);
+
+        $imagick->clear();
+        $imagick->destroy();
     }
 
     /**
