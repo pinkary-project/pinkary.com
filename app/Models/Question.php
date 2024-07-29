@@ -158,7 +158,7 @@ final class Question extends Model implements Viewable
     /**
      * Get the tags for this question
      */
-    public function tags() :BelongsToMany
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
     }

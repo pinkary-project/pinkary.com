@@ -6,14 +6,14 @@ namespace App\Livewire\Questions;
 
 use App\Models\Tag;
 use App\Models\User;
-use Livewire\Component;
-use Illuminate\View\View;
-use Livewire\Attributes\On;
+use App\Rules\NoBlankCharacters;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Locked;
-use App\Rules\NoBlankCharacters;
+use Illuminate\View\View;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 /**
  * @property-read bool $isSharingUpdate
@@ -115,12 +115,13 @@ final class Create extends Component
     #[On('inputChanged')]
     public function handleInputChange(string $input): void
     {
-        if (!$this->lastWordStartsWith($input)) {
+        if (! $this->lastWordStartsWith($input)) {
             $this->showTagsDropdown = false;
+
             return;
         }
 
-        if (strripos($input, '#') == strlen($input) - 1) {
+        if (mb_strripos($input, '#') === mb_strlen($input) - 1) {
             $this->showTagsDropdown = true;
             $this->fetchTrendingTags();
         } else {
@@ -138,42 +139,6 @@ final class Create extends Component
     }
 
     /**
-     * Extract the latest hashtag from the input.
-     */
-    protected function extractHashtag(string $input): ?string
-    {
-        preg_match('/#(\w*)$/', $input, $matches);
-
-        return $matches[1] ?? null;
-    }
-
-    /**
-     * Fetch tags from the database.
-     */
-    protected function fetchTags(string $search): void
-    {
-        $tags = Tag::where('name', 'like', '%' . $search . '%')
-            ->get()
-            ->toArray();
-        if (blank($tags)) {
-            $this->customTag = $search;
-        }
-        $this->tags = $tags;
-    }
-
-    /**
-     * Fetch tags from the database.
-     */
-    protected function fetchTrendingTags(): void
-    {
-        $all_tags = Tag::latest()->limit(20)->get()->toArray();
-        if (blank($all_tags)) {
-            $this->customTag = '';
-        }
-        $this->tags = $all_tags;
-    }
-
-    /**
      * Select a tag.
      */
     public function selectTag(string $tagName): void
@@ -185,38 +150,11 @@ final class Create extends Component
     }
 
     /**
-     * Check if the last word of a given string starts with a given letter
-     */
-    protected function lastWordStartsWith($string, $letter = '#')
-    {
-        //return early if there is no content
-        if (!strlen(trim($this->content))) {
-            $this->showTagsDropdown = false;
-            return false;
-        }
-        // Trim any trailing spaces from the string
-        $trimmedString = trim($string);
-
-        // Split the string into an array of words
-        $words = explode(' ', $trimmedString);
-
-        // Get the last word from the array
-        $lastWord = end($words);
-
-        // Check if the first character of the last word is $letter
-        if (strtolower($lastWord[0]) === $letter) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Stores a new question.
      */
     public function store(Request $request): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -224,13 +162,13 @@ final class Create extends Component
 
         $user = type($request->user())->as(User::class);
 
-        if (!app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
+        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');
 
             return;
         }
 
-        if (!app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
+        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
             $this->addError('content', 'You can only send 30 questions per day.');
 
             return;
@@ -239,7 +177,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'max:' . $this->maxContentLength, new NoBlankCharacters()],
+            'content' => ['required', 'string', 'max:'.$this->maxContentLength, new NoBlankCharacters()],
         ]);
 
         if ($this->isSharingUpdate) {
@@ -264,7 +202,7 @@ final class Create extends Component
         $this->dispatch('notification.created', message: 'Question sent.');
     }
 
-    public function getCurrentTagIds() : array|null
+    public function getCurrentTagIds(): ?array
     {
         $allTagIds = [];
 
@@ -331,5 +269,70 @@ final class Create extends Component
         return view('livewire.questions.create', [
             'user' => $user,
         ]);
+    }
+
+    /**
+     * Extract the latest hashtag from the input.
+     */
+    protected function extractHashtag(string $input): ?string
+    {
+        preg_match('/#(\w*)$/', $input, $matches);
+
+        return $matches[1] ?? null;
+    }
+
+    /**
+     * Fetch tags from the database.
+     */
+    protected function fetchTags(string $search): void
+    {
+        $tags = Tag::where('name', 'like', '%'.$search.'%')
+            ->get()
+            ->toArray();
+        if (blank($tags)) {
+            $this->customTag = $search;
+        }
+        $this->tags = $tags;
+    }
+
+    /**
+     * Fetch tags from the database.
+     */
+    protected function fetchTrendingTags(): void
+    {
+        $all_tags = Tag::latest()->limit(20)->get()->toArray();
+        if (blank($all_tags)) {
+            $this->customTag = '';
+        }
+        $this->tags = $all_tags;
+    }
+
+    /**
+     * Check if the last word of a given string starts with a given letter
+     */
+    protected function lastWordStartsWith($string, $letter = '#')
+    {
+        //return early if there is no content
+        if (! mb_strlen(trim($this->content))) {
+            $this->showTagsDropdown = false;
+
+            return false;
+        }
+        // Trim any trailing spaces from the string
+        $trimmedString = trim($string);
+
+        // Split the string into an array of words
+        $words = explode(' ', $trimmedString);
+
+        // Get the last word from the array
+        $lastWord = end($words);
+
+        // Check if the first character of the last word is $letter
+        if (mb_strtolower($lastWord[0]) === $letter) {
+            return true;
+        }
+
+        return false;
+
     }
 }

@@ -122,7 +122,7 @@
             </div>
 
             <p class="mt-3 break-words text-slate-200">
-                {!! $this->d_parse($question->answer) !!}
+                {!! $this->parseContent($question->answer) !!}
             </p>
 
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))

@@ -70,7 +70,7 @@ final class Show extends Component
      */
     public function ignore(): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -98,7 +98,7 @@ final class Show extends Component
      */
     public function like(): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -116,7 +116,7 @@ final class Show extends Component
      */
     public function pin(): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -128,8 +128,8 @@ final class Show extends Component
 
         $this->authorize('pin', $question);
 
-        Question::withoutTimestamps(fn() => $user->pinnedQuestion()->update(['pinned' => false]));
-        Question::withoutTimestamps(fn() => $question->update(['pinned' => true]));
+        Question::withoutTimestamps(fn () => $user->pinnedQuestion()->update(['pinned' => false]));
+        Question::withoutTimestamps(fn () => $question->update(['pinned' => true]));
 
         $this->dispatch('question.updated');
     }
@@ -139,7 +139,7 @@ final class Show extends Component
      */
     public function unpin(): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -149,7 +149,7 @@ final class Show extends Component
 
         $this->authorize('update', $question);
 
-        Question::withoutTimestamps(fn() => $question->update(['pinned' => false]));
+        Question::withoutTimestamps(fn () => $question->update(['pinned' => false]));
 
         $this->dispatch('question.updated');
     }
@@ -159,7 +159,7 @@ final class Show extends Component
      */
     public function unlike(): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -198,7 +198,7 @@ final class Show extends Component
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
-            'content' => $this->parseContent($question->content)
+            'content' => $this->parseContent($question->content),
         ]);
     }
 }
