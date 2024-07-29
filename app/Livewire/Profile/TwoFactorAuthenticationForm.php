@@ -27,12 +27,6 @@ final class TwoFactorAuthenticationForm extends Component
     public bool $showingRecoveryCodes = false;
 
     /**
-     * The OTP code for confirming two factor authentication.
-     */
-    #[Locked]
-    public ?string $code = null;
-
-    /**
      * Determine if two factor authentication is enabled.
      */
     #[Locked]
