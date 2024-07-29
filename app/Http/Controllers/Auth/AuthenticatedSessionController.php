@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 final readonly class AuthenticatedSessionController
