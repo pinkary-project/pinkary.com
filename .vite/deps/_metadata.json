@@ -1,0 +1,37 @@
+{
+  "hash": "5cbfba16",
+  "configHash": "c43ac148",
+  "lockfileHash": "559b4045",
+  "browserHash": "04cc346d",
+  "optimized": {
+    "@alpinejs/focus": {
+      "src": "../../node_modules/@alpinejs/focus/dist/module.esm.js",
+      "file": "@alpinejs_focus.js",
+      "fileHash": "302ae2d5",
+      "needsInterop": false
+    },
+    "alpinejs-notify": {
+      "src": "../../node_modules/alpinejs-notify/dist/notifications.esm.js",
+      "file": "alpinejs-notify.js",
+      "fileHash": "73b30305",
+      "needsInterop": false
+    },
+    "sortablejs": {
+      "src": "../../node_modules/sortablejs/modular/sortable.esm.js",
+      "file": "sortablejs.js",
+      "fileHash": "03708448",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "a2c855ad",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-PZ5AY32C": {
+      "file": "chunk-PZ5AY32C.js"
+    }
+  }
+}

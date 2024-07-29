@@ -1,30 +1,76 @@
-<div>
-    <textarea
-        wire:model.live="content"
-        class="w-full p-2 border rounded bg-black"
-        rows="4"
-        placeholder="What's happening?"
-    ></textarea>
+<div
+    class="mb-12 pt-4"
+    id="questions-create"
+>
+    <form wire:submit="store">
+        <div>
+            <x-textarea
+                wire:model="content"
+                placeholder="{{ $this->isSharingUpdate ? 'Share an update...' : 'Ask a question...' }}"
+                maxlength="{{ $this->maxContentLength }}"
+                rows="3"
+                required
+                x-data="{ focusTextarea() { this.$refs.textarea.focus(); }}"
+                x-ref="textarea"
+                x-on:tag-selected.window="focusTextarea"
+                x-on:input.debounce="$wire.handleInputChange($event.target.value)"
+            />
 
-    @if ($content && $suggestedTags)
-        <div class="relative">
-            <ul class="absolute w-full bg-gray-500 text-white border rounded shadow">
-                @foreach ($suggestedTags as $tag)
-                    <li
-                        wire:click="selectTag('{{ $tag->name }}')"
-                        class="p-2 cursor-pointer hover:bg-gray-100"
-                    >
-                        {{ $tag->name }}
-                    </li>
-                @endforeach
-            </ul>
+            {{-- For Debugging Content --}}
+            <p>{!! $this->parsedContent !!}</p>
+
+            <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+
+            @error('content')
+                <x-input-error
+                    :messages="$message"
+                    class="my-2"
+                />
+            @enderror
+
+            <div class="relative h-auto">
+                @if ($showTagsDropdown)
+                    <ul class="absolute mt-2 w-full h-52 overflow-y-auto p-3 z-20 text-white caret-white focus:border-pink-500 border-slate-700 bg-slate-800 backdrop-blur-sm focus:ring-slate-900 rounded-lg shadow-sm sm:text-sm">
+                        @forelse ($tags as $tag)
+                                <li class="p-2 pb-4 rounded-md hover:bg-slate-900 cursor-pointer" wire:click="selectTag('{{ $tag["name"] }}')">
+                                    <span class="text-md block font-semibold">#{{ $tag['name'] }}</span>
+                                    @if ($tag['is_trending'])
+                                        <span class="text-sm font-medium mt-2">Trending</span>
+                                    @endif
+                                </li>
+                        @empty
+                            <li class="p-2 pb-4 rounded-md hover:bg-slate-900 cursor-pointer" wire:click="selectTag('{{ $customTag }}')">
+                                <span class="text-md block font-semibold">#{{ $customTag }}</span>
+                            </li>
+                        @endforelse
+                    </ul>
+                @endif
+            </div>
         </div>
-    @endif
 
-    <button
-        wire:click="submit"
-        class="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-    >
-        Share
-    </button>
+        <div class="mt-4 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <x-primary-button
+                    class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
+                    type="submit"
+                >
+                    {{ __('Send') }}
+                </x-primary-button>
+            </div>
+            @if (! $this->isSharingUpdate)
+                <div class="flex items-center">
+                    <x-checkbox
+                        wire:model="anonymously"
+                        id="anonymously"
+                    />
+
+                    <label
+                        for="anonymously"
+                        class="ml-2 text-slate-400"
+                        >Anonymously</label
+                    >
+                </div>
+            @endif
+        </div>
+    </form>
 </div>

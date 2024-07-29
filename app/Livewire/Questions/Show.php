@@ -47,10 +47,12 @@ final class Show extends Component
      */
     public function getListeners(): array
     {
-        return $this->inIndex ? [] : [
-            'question.ignore' => 'ignore',
-            'question.reported' => 'redirectToProfile',
-        ];
+        return $this->inIndex
+            ? []
+            : [
+                'question.ignore' => 'ignore',
+                'question.reported' => 'redirectToProfile',
+            ];
     }
 
     /**
@@ -68,7 +70,7 @@ final class Show extends Component
      */
     public function ignore(): void
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -96,7 +98,7 @@ final class Show extends Component
      */
     public function like(): void
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -114,7 +116,7 @@ final class Show extends Component
      */
     public function pin(): void
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -126,8 +128,8 @@ final class Show extends Component
 
         $this->authorize('pin', $question);
 
-        Question::withoutTimestamps(fn () => $user->pinnedQuestion()->update(['pinned' => false]));
-        Question::withoutTimestamps(fn () => $question->update(['pinned' => true]));
+        Question::withoutTimestamps(fn() => $user->pinnedQuestion()->update(['pinned' => false]));
+        Question::withoutTimestamps(fn() => $question->update(['pinned' => true]));
 
         $this->dispatch('question.updated');
     }
@@ -137,7 +139,7 @@ final class Show extends Component
      */
     public function unpin(): void
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -147,7 +149,7 @@ final class Show extends Component
 
         $this->authorize('update', $question);
 
-        Question::withoutTimestamps(fn () => $question->update(['pinned' => false]));
+        Question::withoutTimestamps(fn() => $question->update(['pinned' => false]));
 
         $this->dispatch('question.updated');
     }
@@ -157,7 +159,7 @@ final class Show extends Component
      */
     public function unlike(): void
     {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -173,6 +175,17 @@ final class Show extends Component
     }
 
     /**
+     * Parse tags in the question's content.
+     */
+    public function parseContent(string $content): string
+    {
+        return preg_replace('/#(\w+)/',
+            '<a href="/tag/$1" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>#$1</a>',
+            $content
+        );
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
@@ -185,6 +198,7 @@ final class Show extends Component
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
+            'content' => $this->parseContent($question->content)
         ]);
     }
 }

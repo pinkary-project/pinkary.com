@@ -15,13 +15,13 @@ class AppSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::factory(200)->create();
+        // $users = User::factory(200)->create();
 
-        $questions = Question::factory(1000)->recycle($users)->create();
+        // $questions = Question::factory(1000)->recycle($users)->create();
 
-        Like::factory(200)
-            ->recycle($users)
-            ->recycle($questions)
-            ->create();
+        // Like::factory(200)
+        //     ->recycle($users)
+        //     ->recycle($questions)
+        //     ->create();
     }
 }

@@ -1,4 +1,4 @@
-<article class="block">
+ <article class="block">
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
@@ -122,7 +122,7 @@
             </div>
 
             <p class="mt-3 break-words text-slate-200">
-                {!! $question->answer !!}
+                {!! $this->d_parse($question->answer) !!}
             </p>
 
             @php($likeExists = $question->likes->contains('user_id', auth()->id()))
@@ -276,4 +276,3 @@
         />
     @endif
 </article>
-
