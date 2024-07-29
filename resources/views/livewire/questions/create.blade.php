@@ -14,16 +14,29 @@
                 maxFileSize = {{ $this->maxFileSize }};
             }'
             class="relative group/menu">
-            <x-textarea
-                wire:model="content"
-                placeholder="{{ $this->placeholder }}"
-                maxlength="{{ $this->maxContentLength }}"
-                rows="3"
-                required
-                x-autosize
-                x-ref="content"
-            />
+                <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }">
+                    <x-textarea
+                        x-model="content"
+                        placeholder="{{ $this->placeholder }}"
+                        maxlength="{{ $this->maxContentLength }}"
+                        rows="3"
+                        required
+                        x-autosize
+                        x-ref="content"
+                    />
+                </div>
 
+                <div class="absolute top-0 right-0 mt-2 mr-2 group-hover/menu:inline-block hidden">
+                    <button
+                        title="Upload an image"
+                        x-ref="imageButton"
+                        :disabled="uploading || images.length >= uploadLimit"
+                        class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
+                        :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
+                    >
+                        <x-heroicon-o-camera class="h-5 w-5"/>
+                    </button>
+                </div>
             <div
                 class="absolute top-0 right-0 mt-2 mr-2 group-hover/menu:inline-block hidden">
                 <button title="Upload an image" x-ref="imageButton"

@@ -10,6 +10,7 @@
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/typography": "^0.5.12",
         "alpinejs-notify": "^1.0.3",
+        "autosize": "^6.0.1",
         "autoprefixer": "^10.4.19",
         "axios": "^1.6.8",
         "highlight.js": "^11.9.0",
