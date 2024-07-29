@@ -11,7 +11,7 @@
 
     <section>
         <h3 class="text-lg font-medium text-slate-300">
-            @if ($this->enabled)
+            @if ($enabled)
                 {{ __('You have enabled two factor authentication.') }}
             @else
                 {{ __('You have not enabled two factor authentication.') }}
@@ -24,7 +24,7 @@
             </p>
         </div>
 
-        @if ($this->enabled)
+        @if ($enabled)
             @if ($showingQrCode)
                 <div class="mt-4 max-w-xl text-sm text-slate-500">
                     <p class="font-semibold">
@@ -33,12 +33,12 @@
                 </div>
 
                 <div class="mt-4 p-2 inline-block bg-white">
-                    {!! $this->user->twoFactorQrCodeSvg() !!}
+                    {!! $user->twoFactorQrCodeSvg() !!}
                 </div>
 
                 <div class="mt-4 max-w-xl text-sm text-slate-500">
                     <p class="font-semibold">
-                        {{ __('Setup Key') }}: {{ decrypt($this->user->two_factor_secret) }}
+                        {{ __('Setup Key') }}: {{ decrypt($user->two_factor_secret) }}
                     </p>
                 </div>
             @endif
@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="grid gap-1 max-w-xl mt-4 px-4 py-4 font-mono text-sm bg-gray-900 text-gray-100 rounded-lg">
-                    @foreach (json_decode(decrypt($this->user->two_factor_recovery_codes), true) as $code)
+                    @foreach (json_decode(decrypt($user->two_factor_recovery_codes), true) as $code)
                         <div>{{ $code }}</div>
                     @endforeach
                 </div>
@@ -59,35 +59,23 @@
         @endif
 
         <div class="mt-5">
-            @if (! $this->enabled)
-                <x-primary-button
-                    type="button"
-                    wire:loading.attr="disabled"
-                    wire:click="enableTwoFactorAuthentication"
-                >
+            @if (!$enabled)
+                <x-primary-button type="button" wire:loading.attr="disabled"
+                    wire:click="enableTwoFactorAuthentication">
                     {{ __('Enable') }}
                 </x-primary-button>
             @else
                 @if ($showingRecoveryCodes)
-                    <x-secondary-button
-                        class="me-3"
-                        wire:click="regenerateRecoveryCodes"
-                    >
+                    <x-secondary-button class="me-3" wire:click="regenerateRecoveryCodes">
                         {{ __('Regenerate Recovery Codes') }}
                     </x-secondary-button>
                 @else
-                    <x-secondary-button
-                        class="me-3"
-                        wire:click="showRecoveryCodes"
-                    >
+                    <x-secondary-button class="me-3" wire:click="showRecoveryCodes">
                         {{ __('Show Recovery Codes') }}
                     </x-secondary-button>
                 @endif
 
-                <x-danger-button
-                    wire:loading.attr="disabled"
-                    wire:click="disableTwoFactorAuthentication"
-                >
+                <x-danger-button wire:loading.attr="disabled" wire:click="disableTwoFactorAuthentication">
                     {{ __('Disable') }}
                 </x-danger-button>
             @endif
