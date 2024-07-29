@@ -1,3 +1,9 @@
+## Version 1.29.0
+> 29 July, 2024
+
+- Internal improvements and bug fixes.
+- Preserves the state of written answers when the user navigates.
+
 ## Version 1.28.0
 > 27 July, 2024
 
