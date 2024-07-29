@@ -17,11 +17,14 @@ it('renders', function () {
 it('can enable two factor authentication', function () {
     $user = User::factory()->create();
 
-    Livewire::actingAs($user)
-        ->test(TwoFactorAuthenticationForm::class)
-        ->call('enableTwoFactorAuthentication')
-        ->assertSet('showingQrCode', true)
-        ->assertSet('showingRecoveryCodes', true);
+    $component = Livewire::actingAs($user)
+        ->test(TwoFactorAuthenticationForm::class);
+
+    $component->assertSet('enabled', false);
+    $component->call('enableTwoFactorAuthentication');
+    $component->assertSet('showingQrCode', true);
+    $component->assertSet('showingRecoveryCodes', true);
+    $component->assertSet('enabled', true);
 });
 
 it('can disable two factor authentication', function () {
@@ -30,32 +33,43 @@ it('can disable two factor authentication', function () {
         'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
     ]);
 
-    Livewire::actingAs($user)
-        ->test(TwoFactorAuthenticationForm::class)
-        ->call('disableTwoFactorAuthentication')
-        ->assertSet('showingQrCode', false)
-        ->assertSet('showingConfirmation', false)
-        ->assertSet('showingRecoveryCodes', false);
+    $component = Livewire::actingAs($user)
+        ->test(TwoFactorAuthenticationForm::class);
+
+    $component->assertSet('enabled', true);
+    $component->call('disableTwoFactorAuthentication');
+    $component->assertSet('showingQrCode', false);
+    $component->assertSet('showingConfirmation', false);
+    $component->assertSet('showingRecoveryCodes', false);
+    $component->assertSet('enabled', false);
 });
 
 it('can regenerate recovery codes', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'two_factor_secret' => 'secret',
+        'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
+    ]);
 
-    Livewire::actingAs($user)
-        ->test(TwoFactorAuthenticationForm::class)
-        ->call('regenerateRecoveryCodes')
-        ->assertSet('showingQrCode', false)
-        ->assertSet('showingConfirmation', false)
-        ->assertSet('showingRecoveryCodes', true);
+    $component = Livewire::actingAs($user)
+        ->test(TwoFactorAuthenticationForm::class);
+
+    $component->call('regenerateRecoveryCodes');
+    $component->assertSet('showingQrCode', false);
+    $component->assertSet('showingConfirmation', false);
+    $component->assertSet('showingRecoveryCodes', true);
 });
 
 it('can show recovery codes', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'two_factor_secret' => 'secret',
+        'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
+    ]);
 
-    Livewire::actingAs($user)
-        ->test(TwoFactorAuthenticationForm::class)
-        ->call('showRecoveryCodes')
-        ->assertSet('showingQrCode', false)
-        ->assertSet('showingConfirmation', false)
-        ->assertSet('showingRecoveryCodes', true);
+    $component = Livewire::actingAs($user)
+        ->test(TwoFactorAuthenticationForm::class);
+
+    $component->call('showRecoveryCodes');
+    $component->assertSet('showingQrCode', false);
+    $component->assertSet('showingConfirmation', false);
+    $component->assertSet('showingRecoveryCodes', true);
 });
