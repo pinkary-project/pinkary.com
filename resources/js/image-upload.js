@@ -11,7 +11,7 @@ const imageUpload = () => ({
             this.setupListeners();
         }
 
-        this.textarea = this.$refs.content;
+        this.textarea = this.$el.querySelector('textarea[x-ref="content"]');
     },
 
     setupListeners() {
@@ -99,7 +99,6 @@ const imageUpload = () => ({
 
     resizeTextarea() {
         this.textarea.dispatchEvent(new Event('input'));
-        this.textarea.resize();
         this.textarea.selectionStart = this.textarea.selectionEnd = this.textarea.value.length;
         this.textarea.focus();
     },
