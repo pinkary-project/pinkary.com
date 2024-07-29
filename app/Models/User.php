@@ -47,7 +47,6 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $username
  * @property int $views
  * @property bool $is_uploaded_avatar
- * @property string $two_factor_secret
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
