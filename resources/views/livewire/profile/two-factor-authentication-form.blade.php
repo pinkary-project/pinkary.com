@@ -61,6 +61,7 @@
         <div class="mt-5">
             @if (!$enabled)
                 <x-primary-button type="button" wire:loading.attr="disabled"
+                    wire:confirm="Are you sure you want to enable two factor authentication?"
                     wire:click="enableTwoFactorAuthentication">
                     {{ __('Enable') }}
                 </x-primary-button>
@@ -75,7 +76,9 @@
                     </x-secondary-button>
                 @endif
 
-                <x-danger-button wire:loading.attr="disabled" wire:click="disableTwoFactorAuthentication">
+                <x-danger-button type="button" wire:loading.attr="disabled"
+                    wire:confirm="Are you sure you want to disable two factor authentication?"
+                    wire:click="disableTwoFactorAuthentication">
                     {{ __('Disable') }}
                 </x-danger-button>
             @endif
