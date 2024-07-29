@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\Profile;
 
+use App\Models\User;
 use Illuminate\View\View;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 final class TwoFactorAuthenticationForm extends Component
@@ -15,17 +17,34 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * Indicates if two factor authentication QR code is being displayed.
      */
+    #[Locked]
     public bool $showingQrCode = false;
 
     /**
      * Indicates if two factor authentication recovery codes are being displayed.
      */
+    #[Locked]
     public bool $showingRecoveryCodes = false;
 
     /**
      * The OTP code for confirming two factor authentication.
      */
+    #[Locked]
     public ?string $code = null;
+
+    /**
+     * Determine if two factor authentication is enabled.
+     */
+    #[Locked]
+    public bool $enabled = false;
+
+    /**
+     * Mount the component.
+     */
+    public function mount(): void
+    {
+        $this->enabled = type(auth()->user())->as(User::class)->two_factor_secret !== null;
+    }
 
     /**
      * Enable two factor authentication for the user.
@@ -36,6 +55,7 @@ final class TwoFactorAuthenticationForm extends Component
 
         $this->showingQrCode = true;
         $this->showingRecoveryCodes = true;
+        $this->enabled = true;
     }
 
     /**
@@ -43,6 +63,10 @@ final class TwoFactorAuthenticationForm extends Component
      */
     public function showRecoveryCodes(): void
     {
+        if (! $this->enabled) {
+            return;
+        }
+
         $this->showingRecoveryCodes = true;
     }
 
@@ -51,6 +75,10 @@ final class TwoFactorAuthenticationForm extends Component
      */
     public function regenerateRecoveryCodes(GenerateNewRecoveryCodes $generate): void
     {
+        if (! $this->enabled) {
+            return;
+        }
+
         $generate(auth()->user());
 
         $this->showingRecoveryCodes = true;
@@ -65,22 +93,7 @@ final class TwoFactorAuthenticationForm extends Component
 
         $this->showingQrCode = false;
         $this->showingRecoveryCodes = false;
-    }
-
-    /**
-     * Get the current user of the application.
-     */
-    public function getUserProperty(): mixed
-    {
-        return auth()->user();
-    }
-
-    /**
-     * Determine if two factor authentication is enabled.
-     */
-    public function getEnabledProperty(): bool
-    {
-        return ! empty(auth()->user()->two_factor_secret);
+        $this->enabled = false;
     }
 
     /**
@@ -88,6 +101,8 @@ final class TwoFactorAuthenticationForm extends Component
      */
     public function render(): View
     {
-        return view('livewire.profile.two-factor-authentication-form');
+        return view('livewire.profile.two-factor-authentication-form', [
+            'user' => auth()->user(),
+        ]);
     }
 }
