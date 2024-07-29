@@ -148,10 +148,13 @@ final class Create extends Component
         return $this->isSharingUpdate ? 1000 : 255;
     }
 
+    /**
+     * Get the draft key.
+     */
     #[Computed]
     public function draftKey(): string
     {
-        return $this->parentId !== null && $this->parentId !== '' && $this->parentId !== '0'
+        return filled($this->parentId)
             ? "reply_{$this->parentId}"
             : 'post_new';
     }
