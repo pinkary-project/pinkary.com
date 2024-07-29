@@ -8,10 +8,11 @@ use App\Services\DynamicAutocomplete\Results\Collection;
 use App\Services\DynamicAutocomplete\Types\Mentions;
 use App\Services\DynamicAutocomplete\Types\Type;
 
-final class DynamicAutocomplete
+final class DynamicAutocompleteService
 {
     /**
-     * The registered autocomplete types.
+     * The registered autocomplete types in the form
+     * alias => class name.
      *
      * @var array<string, class-string<Type>>
      */
@@ -30,11 +31,13 @@ final class DynamicAutocomplete
     }
 
     /**
+     * Get the type's class name for the provided alias.
+     *
      * @return class-string<Type>
      */
-    public static function typeClassFor(string $type): string
+    public static function typeClassFor(string $typeAlias): string
     {
-        return self::$types[$type];
+        return self::$types[$typeAlias];
     }
 
     /**
@@ -49,6 +52,9 @@ final class DynamicAutocomplete
         );
     }
 
+    /**
+     * Resolve the type instance from the provided parameter.
+     */
     private function resolveInstance(Type|string $type): Type
     {
         return $type instanceof Type

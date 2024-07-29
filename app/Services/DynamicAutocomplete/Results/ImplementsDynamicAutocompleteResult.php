@@ -6,16 +6,25 @@ namespace App\Services\DynamicAutocomplete\Results;
 
 trait ImplementsDynamicAutocompleteResult
 {
+    /**
+     * {@inheritDoc}
+     */
     public function id(): int|string
     {
         return $this->id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function replacement(): string
     {
         return $this->replacement;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function view(): string
     {
         return $this->view;

@@ -10,6 +10,9 @@ final readonly class MentionResult implements DynamicAutocompleteResult
 {
     use ImplementsDynamicAutocompleteResult;
 
+    /**
+     * Construct the result.
+     */
     public function __construct(
         public string|int $id,
         public string $avatar_src,

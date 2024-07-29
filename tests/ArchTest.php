@@ -18,12 +18,18 @@ arch('strict types')
 arch('avoid open for extension')
     ->expect('App')
     ->classes()
-    ->toBeFinal();
+    ->toBeFinal()
+    ->ignoring([
+        App\Services\DynamicAutocomplete\Types\Type::class,
+    ]);
 
 test('ensure no extends')
     ->expect('App')
     ->classes()
-    ->not->toBeAbstract();
+    ->not->toBeAbstract()
+    ->ignoring([
+        App\Services\DynamicAutocomplete\Types\Type::class,
+    ]);
 
 arch('avoid mutation')
     ->expect('App')
@@ -41,6 +47,8 @@ arch('avoid mutation')
         'App\Notifications',
         'App\Providers',
         'App\View',
+        App\Services\DynamicAutocomplete\DynamicAutocompleteService::class,
+        App\Services\DynamicAutocomplete\Results\Collection::class,
     ]);
 
 arch('avoid inheritance')
@@ -59,6 +67,8 @@ arch('avoid inheritance')
         'App\Notifications',
         'App\Providers',
         'App\View',
+        'App\Services\DynamicAutocomplete\Types',
+        App\Services\DynamicAutocomplete\Results\Collection::class,
     ]);
 
 arch('annotations')

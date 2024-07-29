@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Services\DynamicAutocomplete\DynamicAutocomplete as AutocompleteService;
+use App\Services\DynamicAutocomplete\DynamicAutocompleteService as AutocompleteService;
 use App\Services\DynamicAutocomplete\Results\Collection;
 use App\Services\DynamicAutocomplete\Types\Type;
 use Illuminate\Contracts\View\View;
@@ -30,30 +30,41 @@ final class DynamicAutocomplete extends Component
     public string $query = '';
 
     /**
+     * The autocomplete service.
+     */
+    private AutocompleteService $autocompleteService;
+
+    /**
+     * Boot the component.
+     */
+    public function boot(AutocompleteService $service): void
+    {
+        $this->autocompleteService = $service;
+    }
+
+    /**
      * Get the available autocomplete types.
+     *
+     * @return array<string, array<string, string>>
      */
     #[Computed]
     public function autocompleteTypes(): array
     {
-        return collect(AutocompleteService::types())
+        return collect($this->autocompleteService::types())
             /** @param class-string<Type> $type */
-            ->map(function (string $type) {
-                return $type::make()->toArray();
-            })
+            ->map(fn (string $type): array => $type::make()->toArray())
             ->all();
     }
 
     /**
      * Set the required search properties on the component.
+     *
+     * @param  string[]  $matchedTypes
      */
     public function setAutocompleteSearchParams(array $matchedTypes, string $query): void
     {
-        if (blank($matchedTypes)) {
-            return;
-        }
-
-        $this->matchedTypes = $matchedTypes;
-        $this->query = $query;
+        $this->matchedTypes = array_intersect($matchedTypes, array_keys($this->autocompleteTypes));
+        $this->query = $this->matchedTypes === [] ? '' : $query;
     }
 
     /**
@@ -63,13 +74,13 @@ final class DynamicAutocomplete extends Component
     #[Computed]
     public function autocompleteResults(): Collection
     {
-        $autocompleteService = new AutocompleteService();
-
-        return Collection::make($this->matchedTypes)
-            ->map(fn (string $typeAlias) => $autocompleteService
+        $results = collect($this->matchedTypes)
+            ->map(fn (string $typeAlias): Collection => $this->autocompleteService
                 ->search($typeAlias, $this->query)
             )
             ->flatten(1);
+
+        return Collection::make($results);
     }
 
     /**
