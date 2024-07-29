@@ -1,5 +1,5 @@
 import './bootstrap'
-
+import autosize from 'autosize';
 import focus from '@alpinejs/focus'
 import notifications from 'alpinejs-notify'
 import Sortable from 'sortablejs'
@@ -26,15 +26,10 @@ Alpine.directive('sortable', (el) => {
 })
 
 Alpine.directive('autosize', (el) => {
-    const offset = (el.offsetHeight - el.clientHeight) + 8
-    const resize = () => {
-        el.style.height = 'auto';
-        el.style.height = el.scrollHeight + offset + 'px';
-    };
-
-    el.addEventListener('input', resize);
-    el.resize = resize;
-})
+    if (el) {
+        autosize(el);
+    }
+});
 
 import { shareProfile } from './share-profile.js'
 Alpine.data('shareProfile', shareProfile)
