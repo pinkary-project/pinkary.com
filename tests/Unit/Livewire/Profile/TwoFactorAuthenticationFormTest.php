@@ -37,13 +37,14 @@ it('can enable two factor authentication', function () {
     $component->assertSet('showingConfirmation', false);
     $component->assertSet('showingRecoveryCodes', true);
     $component->assertSet('enabled', true);
+    $component->assertSet('code', null);
 });
 
 it('can not enable two factor authentication with invalid code', function () {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)
-        ->test(TwoFactorAuthenticationForm::class);
+    ->test(TwoFactorAuthenticationForm::class);
 
     $component->assertSet('enabled', false);
     $component->call('enableTwoFactorAuthentication');
@@ -62,7 +63,7 @@ it('can not enable two factor authentication with invalid code', function () {
 
     // Ensure the user is still not enabled
     $newComponent = Livewire::actingAs($user)
-        ->test(TwoFactorAuthenticationForm::class);
+    ->test(TwoFactorAuthenticationForm::class);
     $newComponent->assertSet('enabled', false);
 });
 
@@ -82,6 +83,7 @@ it('can disable two factor authentication', function () {
     $component->assertSet('showingConfirmation', false);
     $component->assertSet('showingRecoveryCodes', false);
     $component->assertSet('enabled', false);
+    $component->assertSet('code', null);
 });
 
 it('can regenerate recovery codes', function () {
