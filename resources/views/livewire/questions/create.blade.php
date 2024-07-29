@@ -1,49 +1,30 @@
-<div
-    class="mb-12 pt-4"
-    id="questions-create"
->
-    <form wire:submit="store">
-        <div>
-            <x-textarea
-                wire:model="content"
-                placeholder="{{ $this->isSharingUpdate ? 'Share an update...' : 'Ask a question...' }}"
-                maxlength="{{ $this->maxContentLength }}"
-                rows="3"
-                required
-            />
+<div>
+    <textarea
+        wire:model.live="content"
+        class="w-full p-2 border rounded bg-black"
+        rows="4"
+        placeholder="What's happening?"
+    ></textarea>
 
-            <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
-
-            @error('content')
-                <x-input-error
-                    :messages="$message"
-                    class="my-2"
-                />
-            @enderror
-        </div>
-        <div class="mt-4 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <x-primary-button
-                    class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
-                    type="submit"
-                >
-                    {{ __('Send') }}
-                </x-primary-button>
-            </div>
-            @if (! $this->isSharingUpdate)
-                <div class="flex items-center">
-                    <x-checkbox
-                        wire:model="anonymously"
-                        id="anonymously"
-                    />
-
-                    <label
-                        for="anonymously"
-                        class="ml-2 text-slate-400"
-                        >Anonymously</label
+    @if ($content && $suggestedTags)
+        <div class="relative">
+            <ul class="absolute w-full bg-gray-500 text-white border rounded shadow">
+                @foreach ($suggestedTags as $tag)
+                    <li
+                        wire:click="selectTag('{{ $tag->name }}')"
+                        class="p-2 cursor-pointer hover:bg-gray-100"
                     >
-                </div>
-            @endif
+                        {{ $tag->name }}
+                    </li>
+                @endforeach
+            </ul>
         </div>
-    </form>
+    @endif
+
+    <button
+        wire:click="submit"
+        class="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+    >
+        Share
+    </button>
 </div>

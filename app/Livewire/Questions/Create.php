@@ -4,136 +4,67 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Models\Question;
+use App\Models\Tag;
 use App\Models\User;
-use App\Rules\NoBlankCharacters;
+use Livewire\Component;
+use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\View\View;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\On;
-use Livewire\Component;
+use App\Rules\NoBlankCharacters;
+use Livewire\Attributes\Computed;
 
-/**
- * @property-read bool $isSharingUpdate
- * @property-read int $maxContentLength
- */
 final class Create extends Component
 {
-    /**
-     * The component's user ID.
-     */
-    #[Locked]
-    public int $toId;
+    public $content = '';
+    public $tags = [];
 
-    /**
-     * The component's content.
-     */
-    public string $content = '';
-
-    /**
-     * The component's anonymously state.
-     */
-    public bool $anonymously = true;
-
-    /**
-     * Mount the component.
-     */
-    public function mount(Request $request): void
-    {
-        if (auth()->check()) {
-            $user = type($request->user())->as(User::class);
-
-            $this->anonymously = $user->prefers_anonymous_questions;
-        }
+public function updatedContent($value)
+{
+    // Detect if '#' is pressed and show dropdown
+    if (preg_match('/#(\w*)$/', $value)) {
+    // if (preg_match('/\s#\w*$/', $value)) {
+        dd(explode('#', $value)[1]);
+        // $this->tags = Tag::where('name', 'like', '%' . explode('#', $value)[1] . '%')->limit(20)->get()->toArray();
+    } else {
+        $this->tags = [];
     }
+}
 
-    /**
-     * Determine if the user is sharing an update.
-     */
-    #[Computed]
-    public function isSharingUpdate(): bool
+public function selectTag($tagName)
+{
+    // Replace the current word with the selected tag
+    $this->content = preg_replace('/#\w*$/', "#{$tagName} ", $this->content);
+    $this->tags = [];
+}
+
+    public function submit()
     {
-        return $this->toId === auth()->id();
-    }
-
-    /**
-     * Get the maximum content length.
-     */
-    #[Computed]
-    public function maxContentLength(): int
-    {
-        return $this->isSharingUpdate ? 1000 : 255;
-    }
-
-    /**
-     * Refresh the component.
-     */
-    #[On('link-settings.updated')]
-    public function refresh(): void
-    {
-        //
-    }
-
-    /**
-     * Stores a new question.
-     */
-    public function store(Request $request): void
-    {
-        if (! auth()->check()) {
-            $this->redirectRoute('login', navigate: true);
-
-            return;
-        }
-
-        $user = type($request->user())->as(User::class);
-
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
-            $this->addError('content', 'You can only send 3 questions per minute.');
-
-            return;
-        }
-
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
-            $this->addError('content', 'You can only send 30 questions per day.');
-
-            return;
-        }
-
-        /** @var array<string, mixed> $validated */
-        $validated = $this->validate([
-            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+        $this->validate([
+            'content' => 'required|string|max:255',
         ]);
 
-        if ($this->isSharingUpdate) {
-            $validated['answer_created_at'] = now();
-            $validated['answer'] = $validated['content'];
-            $validated['content'] = '__UPDATE__';
+        $update = Question::create(['content' => $this->content]);
+
+        // Extract tags and attach to the update
+        preg_match_all('/#(\w+)/', $this->content, $matches);
+        $tags = $matches[1];
+
+        foreach ($tags as $tagName) {
+            $tag = Tag::firstOrCreate(['name' => $tagName]);
+            $update->tags()->attach($tag);
         }
 
-        $user->questionsSent()->create([
-            ...$validated,
-            'to_id' => $this->toId,
-        ]);
-
-        $this->reset(['content']);
-
-        $this->anonymously = $user->prefers_anonymous_questions;
-
-        $this->dispatch('question.created');
-        $this->dispatch('notification.created', message: 'Question sent.');
+        // Clear the form
+        $this->content = '';
     }
 
-    /**
-     * Render the component.
-     */
-    public function render(): View
+    public function render()
     {
-        $user = User::findOrFail($this->toId);
-
         return view('livewire.questions.create', [
-            'user' => $user,
+            'suggestedTags' => $this->tags,
         ]);
     }
 }
