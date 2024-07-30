@@ -20,7 +20,7 @@ final class DynamicAutocomplete extends Component
     /**
      * An array of matched type aliases (like ["mentions", ...]).
      *
-     * @var string[]
+     * @var array<int, string>
      */
     public array $matchedTypes = [];
 
@@ -59,7 +59,7 @@ final class DynamicAutocomplete extends Component
     /**
      * Set the required search properties on the component.
      *
-     * @param  string[]  $matchedTypes
+     * @param  array<int, string>  $matchedTypes
      */
     public function setAutocompleteSearchParams(array $matchedTypes, string $query): void
     {
