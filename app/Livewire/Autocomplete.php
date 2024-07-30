@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Services\Autocomplete\DynamicAutocompleteService as AutocompleteService;
+use App\Services\Autocomplete\AutocompleteService;
 use App\Services\Autocomplete\Results\Collection;
 use App\Services\Autocomplete\Types\Type;
 use Illuminate\Contracts\View\View;

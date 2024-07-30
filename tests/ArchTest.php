@@ -47,7 +47,7 @@ arch('avoid mutation')
         'App\Notifications',
         'App\Providers',
         'App\View',
-        App\Services\Autocomplete\DynamicAutocompleteService::class,
+        App\Services\Autocomplete\AutocompleteService::class,
         App\Services\Autocomplete\Results\Collection::class,
     ]);
 

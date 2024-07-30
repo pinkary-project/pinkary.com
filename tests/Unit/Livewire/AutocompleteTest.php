@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Contracts\Services\AutocompleteResult;
 use App\Livewire\Autocomplete;
-use App\Services\Autocomplete\DynamicAutocompleteService as AutocompleteService;
+use App\Services\Autocomplete\AutocompleteService;
 use App\Services\Autocomplete\Results\Collection;
 use Livewire\Livewire;
 

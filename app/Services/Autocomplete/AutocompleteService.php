@@ -8,7 +8,7 @@ use App\Services\Autocomplete\Results\Collection;
 use App\Services\Autocomplete\Types\Mentions;
 use App\Services\Autocomplete\Types\Type;
 
-final class DynamicAutocompleteService
+final class AutocompleteService
 {
     /**
      * The registered autocomplete types in the form
