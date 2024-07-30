@@ -10,5 +10,5 @@
 </textarea>
 
 @if ($autocomplete === true)
-<livewire:dynamic-autocomplete></livewire:dynamic-autocomplete>
+<livewire:autocomplete></livewire:autocomplete>
 @endif

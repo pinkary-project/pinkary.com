@@ -15,7 +15,7 @@ use Livewire\Component;
  * @property-read array<string, array<string, string>> $autocompleteTypes
  * @property-read Collection $autocompleteResults
  */
-final class DynamicAutocomplete extends Component
+final class Autocomplete extends Component
 {
     /**
      * An array of matched type aliases (like ["mentions", ...]).
@@ -88,6 +88,6 @@ final class DynamicAutocomplete extends Component
      */
     public function render(): View
     {
-        return view('livewire.dynamic-autocomplete');
+        return view('livewire.autocomplete');
     }
 }
