@@ -93,6 +93,9 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-link :href="route('about')">
+                            {{ __('About') }}
+                        </x-dropdown-link>
                         @auth
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Settings') }}
@@ -110,10 +113,6 @@
                                 </x-dropdown-button>
                             </form>
                         @else
-                            <x-dropdown-link :href="route('about')">
-                                {{ __('About') }}
-                            </x-dropdown-link>
-
                             <x-dropdown-link
                                 :href="route('home.feed')"
                                 :class="request()->routeIs('home.feed') ? 'bg-slate-800' : ''"
