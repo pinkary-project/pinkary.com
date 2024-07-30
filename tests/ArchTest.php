@@ -67,7 +67,7 @@ arch('avoid inheritance')
         'App\Notifications',
         'App\Providers',
         'App\View',
-        'App\Services\DynamicAutocomplete\Types',
+        'App\Services\Autocomplete\Types',
         App\Services\Autocomplete\Results\Collection::class,
     ]);
 
