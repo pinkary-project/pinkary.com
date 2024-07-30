@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Profile;
 
+use App\Livewire\Concerns\ConfirmsPasswords;
 use App\Models\User;
 use Illuminate\View\View;
 use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
@@ -11,10 +12,13 @@ use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class TwoFactorAuthenticationForm extends Component
 {
+    use ConfirmsPasswords;
+
     /**
      * Indicates if two factor authentication QR code is being displayed.
      */
@@ -42,7 +46,7 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * The OTP code for confirming two factor authentication.
      */
-    public ?string $code;
+    public ?string $code = null;
 
     /**
      * Mount the component.
@@ -56,8 +60,13 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * Enable two factor authentication for the user.
      */
+    #[On('password-confirmed-enable-two-factor-authentication')]
     public function enableTwoFactorAuthentication(EnableTwoFactorAuthentication $enable): void
     {
+        if (! $this->ensurePasswordIsConfirmed('enable-two-factor-authentication')) {
+            return;
+        }
+
         $enable(auth()->user());
         $this->showingQrCode = true;
         $this->showingConfirmation = true;
@@ -79,9 +88,14 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * Display the user's recovery codes.
      */
+    #[On('password-confirmed-show-recovery-codes')]
     public function showRecoveryCodes(): void
     {
         if (! $this->enabled) {
+            return;
+        }
+
+        if (! $this->ensurePasswordIsConfirmed('show-recovery-codes')) {
             return;
         }
 
@@ -91,9 +105,14 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * Generate new recovery codes for the user.
      */
+    #[On('password-confirmed-generate-new-recovery-codes')]
     public function regenerateRecoveryCodes(GenerateNewRecoveryCodes $generate): void
     {
         if (! $this->enabled) {
+            return;
+        }
+
+        if (! $this->ensurePasswordIsConfirmed('generate-new-recovery-codes')) {
             return;
         }
 
@@ -105,8 +124,17 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * Disable two factor authentication for the user.
      */
+    #[On('password-confirmed-disable-two-factor-authentication')]
     public function disableTwoFactorAuthentication(DisableTwoFactorAuthentication $disable): void
     {
+        if (! $this->enabled) {
+            return;
+        }
+
+        if (! $this->ensurePasswordIsConfirmed('disable-two-factor-authentication')) {
+            return;
+        }
+
         $disable(auth()->user());
 
         $this->showingQrCode = false;
