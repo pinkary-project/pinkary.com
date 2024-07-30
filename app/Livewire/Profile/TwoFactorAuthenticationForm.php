@@ -49,7 +49,8 @@ final class TwoFactorAuthenticationForm extends Component
      */
     public function mount(): void
     {
-        $this->enabled = type(auth()->user())->as(User::class)->hasEnabledTwoFactorAuthentication();
+        $user = type(auth()->user())->as(User::class);
+        $this->enabled = $user->hasEnabledTwoFactorAuthentication();
     }
 
     /**
