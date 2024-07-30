@@ -108,4 +108,5 @@
             @endif
         </div>
     </section>
+    <livewire:auth.confirm-password />
 </section>
