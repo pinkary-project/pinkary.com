@@ -1,7 +1,3 @@
-/**
- * @see https://www.algolia.com/doc/ui-libraries/autocomplete/solutions/rich-text-box-with-mentions-and-hashtags
- */
-
 export const dynamicAutocomplete = (config) => ({
     types: null,
     matchedTypes: null,
