@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\DynamicAutocomplete\Types;
 
-use App\Contracts\Services\DynamicAutocompleteResult;
+use App\Contracts\Services\AutocompleteResult;
 use App\Services\DynamicAutocomplete\Results\Collection;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
@@ -26,7 +26,7 @@ abstract readonly class Type implements Arrayable
      * Perform a search using the query to return
      * autocompletion options.
      *
-     * @return Collection<int, DynamicAutocompleteResult>
+     * @return Collection<int, AutocompleteResult>
      */
     abstract public function search(string $query): Collection;
 

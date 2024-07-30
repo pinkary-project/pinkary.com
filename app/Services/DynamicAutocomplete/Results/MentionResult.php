@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\DynamicAutocomplete\Results;
 
-use App\Contracts\Services\DynamicAutocompleteResult;
+use App\Contracts\Services\AutocompleteResult;
 
-final readonly class MentionResult implements DynamicAutocompleteResult
+final readonly class MentionResult implements AutocompleteResult
 {
     use ImplementsDynamicAutocompleteResult;
 

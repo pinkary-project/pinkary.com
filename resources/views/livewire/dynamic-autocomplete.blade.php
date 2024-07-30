@@ -24,7 +24,7 @@
             class="relative space-y-2"
         >
             @forelse($this->autocompleteResults as $index => $result)
-                @php /** @var \App\Contracts\Services\DynamicAutocompleteResult $result */ @endphp
+                @php /** @var \App\Contracts\Services\AutocompleteResult $result */ @endphp
                 @if($result->view())
                     <li
                         class="text-white rounded-lg m-0 p-2 cursor-pointer select-none relative hover:bg-slate-800"

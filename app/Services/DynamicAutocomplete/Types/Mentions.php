@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\DynamicAutocomplete\Types;
 
-use App\Contracts\Services\DynamicAutocompleteResult;
+use App\Contracts\Services\AutocompleteResult;
 use App\Models\User;
 use App\Services\DynamicAutocomplete\Results\Collection;
 use App\Services\DynamicAutocomplete\Results\MentionResult;
@@ -33,7 +33,7 @@ final readonly class Mentions extends Type
      * Perform a search using the query to return
      * autocompletion options.
      *
-     * @return Collection<int, DynamicAutocompleteResult>
+     * @return Collection<int, AutocompleteResult>
      */
     public function search(?string $query): Collection
     {
@@ -54,7 +54,7 @@ final readonly class Mentions extends Type
                 ->orderBy('username')
                 ->limit(10)
                 ->get()
-                ->map(fn (User $user): DynamicAutocompleteResult => new MentionResult(
+                ->map(fn (User $user): AutocompleteResult => new MentionResult(
                     id: $user->id,
                     name: $user->name,
                     username: "@{$user->username}",
