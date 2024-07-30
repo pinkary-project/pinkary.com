@@ -1,3 +1,8 @@
+## Version 1.31.0
+> 30 July, 2024
+
+- Makes `/` the default route for feeds.
+
 ## Version 1.30.0
 > 30 July, 2024
 
