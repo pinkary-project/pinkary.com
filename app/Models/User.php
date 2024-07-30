@@ -20,6 +20,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
  * @property bool $prefers_anonymous_questions
@@ -29,6 +30,9 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon $created_at
  * @property string $email
  * @property Carbon|null $email_verified_at
+ * @property ?string $two_factor_secret
+ * @property array<int, string> $two_factor_recovery_codes
+ * @property ?Carbon $two_factor_confirmed_at
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
@@ -58,7 +62,7 @@ use Illuminate\Support\Facades\Storage;
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -287,6 +291,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'email_verified_at' => 'datetime',
+            'two_factor_confirmed_at' => 'datetime',
             'is_verified' => 'boolean',
             'is_company_verified' => 'boolean',
             'password' => 'hashed',

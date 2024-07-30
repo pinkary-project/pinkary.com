@@ -5,6 +5,7 @@
         "php": "^8.3",
         "filament/filament": "^3.2.96",
         "intervention/image": "^3.7.2",
+        "laravel/fortify": "^1.21",
         "laravel/framework": "^11.18.1",
         "laravel/pennant": "^1.10.0",
         "laravel/pulse": "^1.2.4",
