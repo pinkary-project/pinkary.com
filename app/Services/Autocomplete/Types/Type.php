@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 abstract readonly class Type implements Arrayable
 {
     /**
-     * Construct the type.
+     * Creates a new Type instance.
      */
     final public function __construct()
     {
