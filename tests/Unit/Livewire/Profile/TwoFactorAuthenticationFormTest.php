@@ -17,6 +17,7 @@ it('renders', function () {
 
 it('can enable two factor authentication', function () {
     $user = User::factory()->create();
+    session()->put('auth.password_confirmed_at', time());
 
     $component = Livewire::actingAs($user)
         ->test(TwoFactorAuthenticationForm::class);
@@ -42,9 +43,9 @@ it('can enable two factor authentication', function () {
 
 it('can not enable two factor authentication with invalid code', function () {
     $user = User::factory()->create();
-
+    session()->put('auth.password_confirmed_at', time());
     $component = Livewire::actingAs($user)
-    ->test(TwoFactorAuthenticationForm::class);
+        ->test(TwoFactorAuthenticationForm::class);
 
     $component->assertSet('enabled', false);
     $component->call('enableTwoFactorAuthentication');
@@ -63,7 +64,7 @@ it('can not enable two factor authentication with invalid code', function () {
 
     // Ensure the user is still not enabled
     $newComponent = Livewire::actingAs($user)
-    ->test(TwoFactorAuthenticationForm::class);
+        ->test(TwoFactorAuthenticationForm::class);
     $newComponent->assertSet('enabled', false);
 });
 
@@ -73,9 +74,10 @@ it('can disable two factor authentication', function () {
         'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
         'two_factor_confirmed_at' => now(),
     ]);
+    session()->put('auth.password_confirmed_at', time());
 
     $component = Livewire::actingAs($user)
-    ->test(TwoFactorAuthenticationForm::class);
+        ->test(TwoFactorAuthenticationForm::class);
 
     $component->assertSet('enabled', true);
     $component->call('disableTwoFactorAuthentication');
@@ -92,9 +94,9 @@ it('can regenerate recovery codes', function () {
         'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
         'two_factor_confirmed_at' => now(),
     ]);
-
+    session()->put('auth.password_confirmed_at', time());
     $component = Livewire::actingAs($user)
-    ->test(TwoFactorAuthenticationForm::class);
+        ->test(TwoFactorAuthenticationForm::class);
 
     $component->call('regenerateRecoveryCodes');
     $component->assertSet('showingQrCode', false);
@@ -108,9 +110,10 @@ it('can show recovery codes', function () {
         'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
         'two_factor_confirmed_at' => now(),
     ]);
+    session()->put('auth.password_confirmed_at', time());
 
     $component = Livewire::actingAs($user)
-    ->test(TwoFactorAuthenticationForm::class);
+        ->test(TwoFactorAuthenticationForm::class);
 
     $component->call('showRecoveryCodes');
     $component->assertSet('showingQrCode', false);
