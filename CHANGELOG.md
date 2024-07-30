@@ -1,3 +1,8 @@
+## Version 1.30.0
+> 30 July, 2024
+
+- Added 2FA
+
 ## Version 1.29.0
 > 29 July, 2024
 
