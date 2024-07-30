@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Autocomplete\Results;
 
-trait ImplementsDynamicAutocompleteResult
+trait ImplementsAutocompleteResult
 {
     /**
      * {@inheritDoc}

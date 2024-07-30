@@ -8,7 +8,7 @@ use App\Contracts\Services\AutocompleteResult;
 
 final readonly class MentionResult implements AutocompleteResult
 {
-    use ImplementsDynamicAutocompleteResult;
+    use ImplementsAutocompleteResult;
 
     /**
      * Construct the result.
