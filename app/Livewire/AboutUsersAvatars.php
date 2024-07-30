@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Component;
 
-final class WelcomeUsersAvatars extends Component
+final class AboutUsersAvatars extends Component
 {
     /**
      * Render the component.
@@ -26,7 +26,7 @@ final class WelcomeUsersAvatars extends Component
             ->get()
             ->shuffle();
 
-        return view('livewire.welcome-users-avatars', [
+        return view('livewire.about-users-avatars', [
             'users' => $users,
         ]);
     }

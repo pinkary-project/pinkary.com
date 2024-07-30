@@ -15,9 +15,9 @@ use App\Http\Controllers\UserTimezoneController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('welcome');
+Route::view('/about', 'about')->name('about');
 
-Route::view('/feed', 'home/feed')->name('home.feed');
+Route::view('/', 'home/feed')->name('home.feed');
 Route::view('/for-you', 'home/questions-for-you')->name('home.for_you');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');
 Route::view('/users', 'home/users')->name('home.users');

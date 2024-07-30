@@ -110,8 +110,8 @@
                                 </x-dropdown-button>
                             </form>
                         @else
-                            <x-dropdown-link :href="route('welcome')">
-                                {{ __('Home') }}
+                            <x-dropdown-link :href="route('about')">
+                                {{ __('About') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link

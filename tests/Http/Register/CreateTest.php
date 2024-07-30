@@ -246,7 +246,7 @@ test('username is not reserved', function (string $username) {
     'dashboard',
     'feed',
     'home',
-    'welcome',
+    'about',
     'login',
     'register',
     'logout',

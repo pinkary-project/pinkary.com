@@ -12,7 +12,7 @@
         <div class="flex min-h-screen flex-col">
             <main class="flex-grow">
                 <div class="fixed right-0">
-                    @if (! request()->routeIs('welcome'))
+                    @if (! request()->routeIs('about'))
                         @include('layouts.navigation')
                     @endif
                 </div>
