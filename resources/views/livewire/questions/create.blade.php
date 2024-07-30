@@ -23,7 +23,7 @@
                         required
                         x-autosize
                         x-ref="content"
-                        :autocomplete="true"
+                        autocomplete
                     />
                 </div>
 
