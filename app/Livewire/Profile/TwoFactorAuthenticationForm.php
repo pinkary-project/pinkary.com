@@ -30,6 +30,7 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * Indicates if the two factor authentication confirmation input and button are being displayed.
      */
+    #[Locked]
     public bool $showingConfirmation = false;
 
     /**
@@ -67,7 +68,7 @@ final class TwoFactorAuthenticationForm extends Component
      */
     public function confirmTwoFactorAuthentication(ConfirmTwoFactorAuthentication $confirm): void
     {
-        $confirm(auth()->user(), $this->code);
+        $confirm(auth()->user(), $this->pull('code'));
 
         $this->showingQrCode = false;
         $this->showingConfirmation = false;
@@ -110,6 +111,7 @@ final class TwoFactorAuthenticationForm extends Component
         $this->showingQrCode = false;
         $this->showingRecoveryCodes = false;
         $this->enabled = false;
+        $this->code = null;
     }
 
     /**
