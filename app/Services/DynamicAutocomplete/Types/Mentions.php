@@ -58,12 +58,12 @@ final readonly class Mentions extends Type
                     id: $user->id,
                     name: $user->name,
                     username: "@{$user->username}",
-                    avatar_src: $user->avatar_url,
+                    avatarSrc: $user->avatar_url,
                     replacement: "@{$user->username}",
-                    is_followed_by_user: $user->is_followed_by_user, // @phpstan-ignore-line
-                    is_verified: $user->is_verified,
-                    is_company_verified: $user->is_company_verified,
-                )
-                ));
+                    isFollowedByUser: $user->is_followed_by_user, // @phpstan-ignore-line
+                    isVerified: $user->is_verified,
+                    isCompanyVerified: $user->is_company_verified,
+                ))
+        );
     }
 }

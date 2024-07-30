@@ -5,11 +5,11 @@
     <div
         class="flex items-center gap-3"
     >
-        <figure class="{{ $result->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800">
+        <figure class="{{ $result->isCompanyVerified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800">
             <img
-                src="{{ $result->avatar_src }}"
+                src="{{ $result->avatarSrc }}"
                 alt="{{ $result->username }}"
-                class="{{ $result->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                class="{{ $result->isCompanyVerified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
             />
         </figure>
         <div class="overflow-hidden text-sm">
@@ -18,12 +18,12 @@
                     {{ $result->name }}
                 </p>
 
-                @if ($result->is_company_verified)
+                @if ($result->isCompanyVerified)
                     <x-icons.verified-company
                         color="pink-500"
                         class="ml-1 h-3.5 w-3.5"
                     />
-                @elseif ($result->is_verified)
+                @elseif ($result->isVerified)
                     <x-icons.verified
                         color="pink-500"
                         class="ml-1 h-3.5 w-3.5"
@@ -34,7 +34,7 @@
             <p class="truncate text-slate-500">
                 {{ $result->username }}
             </p>
-            @if($result->is_followed_by_user)
+            @if($result->isFollowedByUser)
                 <div class="truncate text-slate-500 flex items-center">
                     <x-icons.user
                         class="mr-1 h-3 w-3"

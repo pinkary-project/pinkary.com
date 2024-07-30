@@ -15,13 +15,13 @@ final readonly class MentionResult implements DynamicAutocompleteResult
      */
     public function __construct(
         public string|int $id,
-        public string $avatar_src,
+        public string $avatarSrc,
         public string $name,
         public string $username,
         public string $replacement,
-        public bool $is_followed_by_user,
-        public bool $is_verified,
-        public bool $is_company_verified,
+        public bool $isFollowedByUser,
+        public bool $isVerified,
+        public bool $isCompanyVerified,
         public string $view = 'components.autocomplete.mention-item'
     ) {
         //
