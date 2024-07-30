@@ -15,9 +15,6 @@
             }'
             class="relative group/menu">
                 <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }">
-                    @php
-                        $enableAutocomplete = auth()->user()?->is_verified || auth()->user()?->is_company_verified;
-                    @endphp
                     <x-textarea
                         x-model="content"
                         placeholder="{{ $this->placeholder }}"
@@ -26,7 +23,7 @@
                         required
                         x-autosize
                         x-ref="content"
-                        :autocomplete="$enableAutocomplete"
+                        :autocomplete="true"
                     />
                 </div>
 
