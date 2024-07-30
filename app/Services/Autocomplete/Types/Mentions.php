@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Services\DynamicAutocomplete\Types;
+namespace App\Services\Autocomplete\Types;
 
 use App\Contracts\Services\AutocompleteResult;
 use App\Models\User;
-use App\Services\DynamicAutocomplete\Results\Collection;
-use App\Services\DynamicAutocomplete\Results\MentionResult;
+use App\Services\Autocomplete\Results\Collection;
+use App\Services\Autocomplete\Results\MentionResult;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class Mentions extends Type

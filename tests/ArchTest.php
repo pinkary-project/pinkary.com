@@ -20,7 +20,7 @@ arch('avoid open for extension')
     ->classes()
     ->toBeFinal()
     ->ignoring([
-        App\Services\DynamicAutocomplete\Types\Type::class,
+        App\Services\Autocomplete\Types\Type::class,
     ]);
 
 test('ensure no extends')
@@ -28,7 +28,7 @@ test('ensure no extends')
     ->classes()
     ->not->toBeAbstract()
     ->ignoring([
-        App\Services\DynamicAutocomplete\Types\Type::class,
+        App\Services\Autocomplete\Types\Type::class,
     ]);
 
 arch('avoid mutation')
@@ -47,8 +47,8 @@ arch('avoid mutation')
         'App\Notifications',
         'App\Providers',
         'App\View',
-        App\Services\DynamicAutocomplete\DynamicAutocompleteService::class,
-        App\Services\DynamicAutocomplete\Results\Collection::class,
+        App\Services\Autocomplete\DynamicAutocompleteService::class,
+        App\Services\Autocomplete\Results\Collection::class,
     ]);
 
 arch('avoid inheritance')
@@ -68,7 +68,7 @@ arch('avoid inheritance')
         'App\Providers',
         'App\View',
         'App\Services\DynamicAutocomplete\Types',
-        App\Services\DynamicAutocomplete\Results\Collection::class,
+        App\Services\Autocomplete\Results\Collection::class,
     ]);
 
 arch('annotations')

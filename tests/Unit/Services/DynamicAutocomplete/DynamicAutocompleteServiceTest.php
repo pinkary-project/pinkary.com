@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Services\DynamicAutocomplete\DynamicAutocompleteService;
-use App\Services\DynamicAutocomplete\Results\Collection;
-use App\Services\DynamicAutocomplete\Types\Mentions;
-use App\Services\DynamicAutocomplete\Types\Type;
+use App\Services\Autocomplete\DynamicAutocompleteService;
+use App\Services\Autocomplete\Results\Collection;
+use App\Services\Autocomplete\Types\Mentions;
+use App\Services\Autocomplete\Types\Type;
 
 final readonly class TestType extends Type
 {

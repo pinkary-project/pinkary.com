@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use App\Contracts\Services\AutocompleteResult;
 use App\Livewire\Autocomplete;
-use App\Services\DynamicAutocomplete\DynamicAutocompleteService as AutocompleteService;
-use App\Services\DynamicAutocomplete\Results\Collection;
+use App\Services\Autocomplete\DynamicAutocompleteService as AutocompleteService;
+use App\Services\Autocomplete\Results\Collection;
 use Livewire\Livewire;
 
 test('component can be rendered', function () {

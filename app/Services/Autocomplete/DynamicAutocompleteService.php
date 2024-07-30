@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Services\DynamicAutocomplete;
+namespace App\Services\Autocomplete;
 
-use App\Services\DynamicAutocomplete\Results\Collection;
-use App\Services\DynamicAutocomplete\Types\Mentions;
-use App\Services\DynamicAutocomplete\Types\Type;
+use App\Services\Autocomplete\Results\Collection;
+use App\Services\Autocomplete\Types\Mentions;
+use App\Services\Autocomplete\Types\Type;
 
 final class DynamicAutocompleteService
 {

@@ -1,5 +1,5 @@
 @php
-    /** @var \App\Services\DynamicAutocomplete\Results\MentionResult $result */
+    /** @var \App\Services\Autocomplete\Results\MentionResult $result */
 @endphp
 <div class="flex items-center justify-between">
     <div

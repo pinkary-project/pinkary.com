@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Services\DynamicAutocomplete\Types;
+namespace App\Services\Autocomplete\Types;
 
 use App\Contracts\Services\AutocompleteResult;
-use App\Services\DynamicAutocomplete\Results\Collection;
+use App\Services\Autocomplete\Results\Collection;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 
