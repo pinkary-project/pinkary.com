@@ -1,4 +1,4 @@
-export const dynamicAutocomplete = (config) => ({
+export const autocomplete = (config) => ({
     types: null,
     matchedTypes: null,
     showAutocompleteOptions: false,
@@ -150,8 +150,7 @@ export const dynamicAutocomplete = (config) => ({
     },
 });
 
-export const usesDynamicAutocomplete = () => ({
-    autocompleteComponentName: 'dynamic-autocomplete',
+export const usesAutocomplete = () => ({
     autocompletePanelIsShown: false,
     listeners: [],
 
