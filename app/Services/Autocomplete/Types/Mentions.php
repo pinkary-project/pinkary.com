@@ -40,6 +40,7 @@ final readonly class Mentions extends Type
         return Collection::make(
             User::query()
                 ->when(auth()->id(), fn (Builder $constraint, string|int $id) => $constraint->whereKeyNot($id))
+                ->whereNotNull('email_verified_at')
                 ->where(fn (Builder $groupedConstraint) => $groupedConstraint
                     ->where('name', 'like', "{$query}%")
                     ->orWhere('username', 'like', "{$query}%")
