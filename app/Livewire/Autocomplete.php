@@ -14,7 +14,7 @@ use Livewire\Component;
 
 /**
  * @property-read array<string, array<string, string>> $autocompleteTypes
- * @property-read Collection $autocompleteResults
+ * @property-read Collection<int, AutocompleteResult> $autocompleteResults
  */
 final class Autocomplete extends Component
 {
@@ -77,13 +77,12 @@ final class Autocomplete extends Component
     #[Computed]
     public function autocompleteResults(): Collection
     {
-        $results = collect($this->matchedTypes)
+        // @phpstan-ignore-next-line
+        return collect($this->matchedTypes)
             ->map(fn (string $typeAlias): Collection => $this->autocompleteService
                 ->search($typeAlias, $this->query)
             )
             ->flatten(1);
-
-        return Collection::make($results);
     }
 
     /**

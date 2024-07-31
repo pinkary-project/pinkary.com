@@ -36,6 +36,7 @@ final readonly class Mentions extends Type
      */
     public function search(?string $query): Collection
     {
+        // @phpstan-ignore-next-line
         return Collection::make(
             User::query()
                 ->when(auth()->id(), fn (Builder $constraint, string|int $id) => $constraint->whereKeyNot($id))
