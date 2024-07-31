@@ -48,7 +48,6 @@ arch('avoid mutation')
         'App\Providers',
         'App\View',
         App\Services\Autocomplete\AutocompleteService::class,
-        App\Services\Autocomplete\Results\Collection::class,
     ]);
 
 arch('avoid inheritance')
@@ -68,7 +67,6 @@ arch('avoid inheritance')
         'App\Providers',
         'App\View',
         'App\Services\Autocomplete\Types',
-        App\Services\Autocomplete\Results\Collection::class,
     ]);
 
 arch('annotations')

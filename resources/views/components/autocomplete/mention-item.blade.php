@@ -1,29 +1,29 @@
 @php
-    /** @var \App\Services\Autocomplete\Results\MentionResult $result */
+    /** @var \App\Services\Autocomplete\Results\AutocompleteResult $result */
 @endphp
 <div class="flex items-center justify-between">
     <div
         class="flex items-center gap-3"
     >
-        <figure class="{{ $result->isCompanyVerified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800">
+        <figure class="{{ $result->payload['isCompanyVerified'] ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800">
             <img
-                src="{{ $result->avatarSrc }}"
-                alt="{{ $result->username }}"
-                class="{{ $result->isCompanyVerified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                src="{{ $result->payload['avatarSrc'] }}"
+                alt="{{ $result->payload['username'] }}"
+                class="{{ $result->payload['isCompanyVerified'] ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
             />
         </figure>
         <div class="overflow-hidden text-sm">
             <div class="flex items-center">
                 <p class="truncate font-medium text-slate-50">
-                    {{ $result->name }}
+                    {{ $result->payload['name'] }}
                 </p>
 
-                @if ($result->isCompanyVerified)
+                @if ($result->payload['isCompanyVerified'])
                     <x-icons.verified-company
                         color="pink-500"
                         class="ml-1 h-3.5 w-3.5"
                     />
-                @elseif ($result->isVerified)
+                @elseif ($result->payload['isVerified'])
                     <x-icons.verified
                         color="pink-500"
                         class="ml-1 h-3.5 w-3.5"
@@ -32,9 +32,9 @@
             </div>
 
             <p class="truncate text-slate-500">
-                {{ $result->username }}
+                {{ $result->payload['username'] }}
             </p>
-            @if($result->isFollowedByUser)
+            @if($result->payload['isFollowedByUser'])
                 <div class="truncate text-slate-500 flex items-center">
                     <x-icons.user
                         class="mr-1 h-3 w-3"

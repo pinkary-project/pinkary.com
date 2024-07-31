@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Services\Autocomplete\AutocompleteService;
-use App\Services\Autocomplete\Results\Collection;
+use App\Services\Autocomplete\Results\AutocompleteResult;
 use App\Services\Autocomplete\Types\Type;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -70,6 +71,8 @@ final class Autocomplete extends Component
     /**
      * Get the autocomplete results (aka options) for the matched types
      * and search query previously set on the component.
+     *
+     * @return Collection<int, AutocompleteResult>
      */
     #[Computed]
     public function autocompleteResults(): Collection

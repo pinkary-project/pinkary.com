@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Autocomplete\Types;
 
-use App\Contracts\Services\AutocompleteResult;
-use App\Services\Autocomplete\Results\Collection;
+use App\Services\Autocomplete\Results\AutocompleteResult;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**

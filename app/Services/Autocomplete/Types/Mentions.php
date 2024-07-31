@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Autocomplete\Types;
 
-use App\Contracts\Services\AutocompleteResult;
 use App\Models\User;
-use App\Services\Autocomplete\Results\Collection;
-use App\Services\Autocomplete\Results\MentionResult;
+use App\Services\Autocomplete\Results\AutocompleteResult;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 final readonly class Mentions extends Type
 {
@@ -54,15 +53,18 @@ final readonly class Mentions extends Type
                 ->orderBy('username')
                 ->limit(10)
                 ->get()
-                ->map(fn (User $user): AutocompleteResult => new MentionResult(
+                ->map(fn (User $user): AutocompleteResult => new AutocompleteResult(
                     id: $user->id,
-                    name: $user->name,
-                    username: "@{$user->username}",
-                    avatarSrc: $user->avatar_url,
                     replacement: "@{$user->username}",
-                    isFollowedByUser: $user->is_followed_by_user, // @phpstan-ignore-line
-                    isVerified: $user->is_verified,
-                    isCompanyVerified: $user->is_company_verified,
+                    view: 'components.autocomplete.mention-item',
+                    payload: [
+                        'name' => $user->name,
+                        'username' => $user->username,
+                        'avatarSrc' => $user->avatar_url,
+                        'isFollowedByUser' => $user->is_followed_by_user, // @phpstan-ignore-line
+                        'isVerified' => $user->is_verified,
+                        'isCompanyVerified' => $user->is_company_verified,
+                    ],
                 ))
         );
     }

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Contracts\Services\AutocompleteResult;
 use App\Livewire\Autocomplete;
 use App\Services\Autocomplete\AutocompleteService;
-use App\Services\Autocomplete\Results\Collection;
+use App\Services\Autocomplete\Results\AutocompleteResult;
+use Illuminate\Support\Collection;
 use Livewire\Livewire;
 
 test('component can be rendered', function () {
@@ -81,7 +81,7 @@ test('autocompleteResults computed property returns correct data', function () {
     expect($result)->toBeInstanceOf(Collection::class)
         ->and($result->count())->toBe(1)
         ->and($result->first())->toBeInstanceOf(AutocompleteResult::class)
-        ->and($result->first()->id())->toBe($user->id);
+        ->and($result->first()->id)->toBe($user->id);
 });
 
 test('autocompleteResults returns empty collection when no matched types are set', function () {

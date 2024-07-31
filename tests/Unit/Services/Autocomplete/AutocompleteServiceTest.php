@@ -3,15 +3,14 @@
 declare(strict_types=1);
 
 use App\Services\Autocomplete\AutocompleteService;
-use App\Services\Autocomplete\Results\Collection;
 use App\Services\Autocomplete\Types\Mentions;
 use App\Services\Autocomplete\Types\Type;
 
 final readonly class TestType extends Type
 {
-    public function search(string $query): Collection
+    public function search(string $query): Illuminate\Support\Collection
     {
-        return new Collection([$query]); // @phpstan-ignore-line
+        return new Illuminate\Support\Collection([$query]); // @phpstan-ignore-line
     }
 
     public function delimiter(): string

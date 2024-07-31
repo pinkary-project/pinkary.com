@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Autocomplete;
 
-use App\Services\Autocomplete\Results\Collection;
+use App\Services\Autocomplete\Results\AutocompleteResult;
 use App\Services\Autocomplete\Types\Mentions;
 use App\Services\Autocomplete\Types\Type;
+use Illuminate\Support\Collection;
 
 final class AutocompleteService
 {
@@ -42,6 +43,8 @@ final class AutocompleteService
 
     /**
      * Perform an autocompletion search.
+     *
+     * @return Collection<int, AutocompleteResult>
      */
     public function search(Type|string $type, string $query): Collection
     {

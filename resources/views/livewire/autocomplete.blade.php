@@ -24,18 +24,18 @@
             class="relative space-y-2"
         >
             @forelse($this->autocompleteResults as $index => $result)
-                @php /** @var \App\Contracts\Services\AutocompleteResult $result */ @endphp
-                @if($result->view())
+                @php /** @var \App\Services\Autocomplete\Results\AutocompleteResult $result */ @endphp
+                @if($result->view)
                     <li
                         class="text-white rounded-lg m-0 p-2 cursor-pointer select-none relative hover:bg-slate-800"
-                        x-bind:data-id="{{ $result->id() }}"
-                        x-bind:data-replacement="'{{ $result->replacement() }}'"
-                        @click="select('{{ $result->replacement() }}')"
+                        x-bind:data-id="{{ $result->id }}"
+                        x-bind:data-replacement="'{{ $result->replacement }}'"
+                        @click="select('{{ $result->replacement }}')"
                         :class="{ 'bg-slate-800': selectedIndex === {{ $index }} }"
-                        wire:key="{{ $result->id() }}"
+                        wire:key="{{ $result->id }}"
                         role="option"
                     >
-                        @include($result->view())
+                        @include($result->view)
                     </li>
                 @endif
             @empty
