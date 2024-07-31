@@ -24,12 +24,12 @@ final readonly class TrendingQuestionsFeed
             ->withCount('likes')
             ->where('likes_count', '>', 1)
             ->orderByRaw(<<<'SQL'
-                MAX((`likes_count` * 0.8) + (`views` * 0.2))
+                MAX(((`likes_count` * 0.8) + (`views` * 0.2))
                 / ( IIF(
                     strftime("%s", "now") - strftime("%s", `answer_created_at`) > 6000,
                     6000,
                     strftime("%s", "now") - strftime("%s", `answer_created_at`)
-                ) / 60 + 1) desc
+                ) / 60 + 1)) desc
             SQL)
             ->groupBy('to_id')
             ->where('is_reported', false)
