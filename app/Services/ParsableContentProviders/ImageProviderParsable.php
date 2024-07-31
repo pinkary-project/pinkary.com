@@ -17,8 +17,6 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
         return (string) preg_replace_callback(
             '/!\[(.*?)\]\((.*?)\)/',
             static function (array $match) use ($content): string {
-                $altText = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '', $match[1]);
-
                 $disk = Storage::disk('public');
 
                 if (! $disk->exists($match[2])) {
@@ -32,7 +30,7 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
 
                 $url = $disk->url($match[2]);
 
-                return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"{$url}\" alt=\"{$altText}\">";
+                return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"{$url}\" alt=\"image\">";
             },
             $content
         );
