@@ -13,4 +13,5 @@ arch('http helpers')
         'App\Rules',
         'App\Livewire',
         'App\Jobs\IncrementViews',
+        'App\Services\Autocomplete\Types',
     ]);
