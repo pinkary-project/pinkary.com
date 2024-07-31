@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Services\Autocomplete;
+use App\Services\Autocomplete as AutocompleteService;
 use App\Services\Autocomplete\Result;
 use App\Services\Autocomplete\Types\Type;
 use Illuminate\Contracts\View\View;
@@ -33,12 +33,12 @@ final class Autocomplete extends Component
     /**
      * The autocomplete service.
      */
-    private Autocomplete $autocompleteService;
+    private AutocompleteService $autocompleteService;
 
     /**
      * Boot the component.
      */
-    public function boot(self $service): void
+    public function boot(AutocompleteService $service): void
     {
         $this->autocompleteService = $service;
     }
