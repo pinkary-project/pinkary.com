@@ -60,8 +60,12 @@ final class AutocompleteService
      */
     private function resolveInstance(Type|string $type): Type
     {
-        return $type instanceof Type
-            ? $type
-            : self::typeClassFor($type)::make();
+        if ($type instanceof Type) {
+            return $type;
+        }
+
+        $typeClass = self::typeClassFor($type);
+
+        return new $typeClass;
     }
 }

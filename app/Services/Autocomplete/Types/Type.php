@@ -42,14 +42,6 @@ abstract readonly class Type implements Arrayable
     abstract public function matchExpression(): string;
 
     /**
-     * Fluently make a type.
-     */
-    final public static function make(): static
-    {
-        return new static();
-    }
-
-    /**
      * Get the full regular expression for the type.
      */
     final public function regexExpression(): string

@@ -53,7 +53,7 @@ final class Autocomplete extends Component
     {
         return collect($this->autocompleteService::types())
             /** @param class-string<Type> $type */
-            ->map(fn (string $type): array => $type::make()->toArray())
+            ->map(fn (string $type): array => (new $type)->toArray())
             ->all();
     }
 
