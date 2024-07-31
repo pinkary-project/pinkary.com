@@ -1,3 +1,8 @@
+## Version 1.32.0
+> 31 July, 2024
+
+- Adds mentions autocomplete to the post editor.
+
 ## Version 1.31.0
 > 30 July, 2024
 
