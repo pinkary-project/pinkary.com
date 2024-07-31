@@ -9,7 +9,7 @@ final readonly class AutocompleteResult
     /**
      * Creates a new AutocompleteResult instance.
      *
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      */
     public function __construct(
         public string|int $id,
