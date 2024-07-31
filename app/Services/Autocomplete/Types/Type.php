@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Autocomplete\Types;
 
-use App\Services\Autocomplete\Results\AutocompleteResult;
+use App\Services\Autocomplete\Result;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -26,7 +26,7 @@ abstract readonly class Type implements Arrayable
      * Perform a search using the query to return
      * autocompletion options.
      *
-     * @return Collection<int, AutocompleteResult>
+     * @return Collection<int, Result>
      */
     abstract public function search(string $query): Collection;
 

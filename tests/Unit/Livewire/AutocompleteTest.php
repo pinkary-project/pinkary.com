@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Livewire\Autocomplete;
-use App\Services\Autocomplete\AutocompleteService;
-use App\Services\Autocomplete\Results\AutocompleteResult;
+use App\Services\Autocomplete;
+use App\Services\Autocomplete\Result;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
 
@@ -20,7 +20,7 @@ test('the render method returns the correct view', function () {
 
 test('autocompleteTypes computed property returns correct data', function () {
     $result = Livewire::test(Autocomplete::class)->instance()->autocompleteTypes;
-    $expected = collect(AutocompleteService::types())
+    $expected = collect(Autocomplete::types())
         ->map(function (string $type) {
             return $type::make()->toArray();
         })
@@ -80,7 +80,7 @@ test('autocompleteResults computed property returns correct data', function () {
 
     expect($result)->toBeInstanceOf(Collection::class)
         ->and($result->count())->toBe(1)
-        ->and($result->first())->toBeInstanceOf(AutocompleteResult::class)
+        ->and($result->first())->toBeInstanceOf(Result::class)
         ->and($result->first()->id)->toBe($user->id);
 });
 

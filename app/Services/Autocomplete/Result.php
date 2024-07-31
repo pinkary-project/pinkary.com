@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Autocomplete\Results;
+namespace App\Services\Autocomplete;
 
-final readonly class AutocompleteResult
+final readonly class Result
 {
     /**
      * Creates a new AutocompleteResult instance.

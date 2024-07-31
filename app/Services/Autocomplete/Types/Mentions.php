@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Autocomplete\Types;
 
 use App\Models\User;
-use App\Services\Autocomplete\Results\AutocompleteResult;
+use App\Services\Autocomplete\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
@@ -32,7 +32,7 @@ final readonly class Mentions extends Type
      * Perform a search using the query to return
      * autocompletion options.
      *
-     * @return Collection<int, AutocompleteResult>
+     * @return Collection<int, Result>
      */
     public function search(?string $query): Collection
     {
@@ -54,7 +54,7 @@ final readonly class Mentions extends Type
                 ->orderBy('username')
                 ->limit(10)
                 ->get()
-                ->map(fn (User $user): AutocompleteResult => new AutocompleteResult(
+                ->map(fn (User $user): Result => new Result(
                     id: $user->id,
                     replacement: "@{$user->username}",
                     view: 'components.autocomplete.mention-item',

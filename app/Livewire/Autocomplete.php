@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Services\Autocomplete\AutocompleteService;
-use App\Services\Autocomplete\Results\AutocompleteResult;
+use App\Services\Autocomplete;
+use App\Services\Autocomplete\Result;
 use App\Services\Autocomplete\Types\Type;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -14,7 +14,7 @@ use Livewire\Component;
 
 /**
  * @property-read array<string, array<string, string>> $autocompleteTypes
- * @property-read Collection<int, AutocompleteResult> $autocompleteResults
+ * @property-read Collection<int, Result> $autocompleteResults
  */
 final class Autocomplete extends Component
 {
@@ -33,12 +33,12 @@ final class Autocomplete extends Component
     /**
      * The autocomplete service.
      */
-    private AutocompleteService $autocompleteService;
+    private Autocomplete $autocompleteService;
 
     /**
      * Boot the component.
      */
-    public function boot(AutocompleteService $service): void
+    public function boot(self $service): void
     {
         $this->autocompleteService = $service;
     }
@@ -72,7 +72,7 @@ final class Autocomplete extends Component
      * Get the autocomplete results (aka options) for the matched types
      * and search query previously set on the component.
      *
-     * @return Collection<int, AutocompleteResult>
+     * @return Collection<int, Result>
      */
     #[Computed]
     public function autocompleteResults(): Collection
