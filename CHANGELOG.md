@@ -1,3 +1,10 @@
+## Version 1.33.0
+> 1 August, 2024
+
+- Infinite scrolling on the trending page.
+- Fixes buttons on links in the user's profile.
+- Internal improvements and bug fixes.
+
 ## Version 1.32.0
 > 31 July, 2024
 
