@@ -3,7 +3,7 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "filament/filament": "^3.2.96",
+        "filament/filament": "^3.2.97",
         "intervention/image": "^3.7.2",
         "laravel/fortify": "^1.21.1",
         "laravel/framework": "^11.19.0",
@@ -23,7 +23,7 @@
         "barryvdh/laravel-debugbar": "^3.13.5",
         "fakerphp/faker": "^1.23.1",
         "larastan/larastan": "^2.9.8",
-        "laravel/pint": "^1.17.0",
+        "laravel/pint": "^1.17.1",
         "laravel/sail": "^1.31.0",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.3",
