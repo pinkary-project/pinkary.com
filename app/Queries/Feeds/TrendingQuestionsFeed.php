@@ -22,7 +22,6 @@ final readonly class TrendingQuestionsFeed
             ->orderByDesc('likes_count')
             ->where('is_reported', false)
             ->where('is_ignored', false)
-            ->where('answer_created_at', '>=', now()->subDays(7))
-            ->limit(10);
+            ->where('answer_created_at', '>=', now()->subDays(7));
     }
 }
