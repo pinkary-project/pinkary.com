@@ -29,16 +29,16 @@
         </div>
 
         @if ($enabled)
-            <div class="mt-4 max-w-xl text-sm text-slate-500">
-                <p class="font-semibold">
-                    @if ($showingConfirmation)
-                        {{ __('To finish enabling two factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.') }}
-                    @else
-                        {{ __('Two factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.') }}
-                    @endif
-                </p>
-            </div>
             @if ($showingQrCode)
+                <div class="mt-4 max-w-xl text-sm text-slate-500">
+                    <p class="font-semibold">
+                        @if ($showingConfirmation)
+                            {{ __('To finish enabling two factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.') }}
+                        @else
+                            {{ __('Two factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.') }}
+                        @endif
+                    </p>
+                </div>
                 <div class="mt-4 p-2 inline-block bg-white">
                     {!! $user->twoFactorQrCodeSvg() !!}
                 </div>
