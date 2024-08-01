@@ -233,38 +233,38 @@
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
-                            x-data="{ showMenu: false }"
-                            x-on:click.outside="showMenu = false"
+                            x-data="{ showActions: false }"
+                            x-on:click.outside="showActions = false"
                         >
                             <div
                                 x-sortable-handle
                                 class="absolute -left-10 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none group-hover:left-0 transition-all duration-500 z-10"
-                                x-bind:class="{ 'invisible': showMenu }"
+                                x-bind:class="{ 'invisible': showActions }"
                             >
                                 <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
                             <div class="flex-grow flex items-center justify-center transition-all duration-500"
-                                x-bind:class="{ 'group-hover:-translate-x-44' : showMenu }"
+                                x-bind:class="{ 'group-hover:-translate-x-44' : showActions }"
                             >
                                 <x-links.list-item :$user :$link />
                             </div>
 
                             <div
-                                x-on:click="showMenu = !showMenu"
+                                x-on:click="showActions = !showActions"
                                 x-bind:class="{ 'invisible': isDragging }"
                                 class="absolute -right-10 top-0 bottom-0 flex w-11 cursor-pointer items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none transition-all duration-500 z-10 group-hover:right-0"
                             >
                                 <x-heroicon-o-chevron-double-left class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
-                                    x-bind:class="{ 'hidden': showMenu }"
+                                    x-bind:class="{ 'hidden': showActions }"
                                 />
                                 <x-heroicon-o-chevron-double-right class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
-                                    x-bind:class="{ 'hidden': !showMenu }"
+                                    x-bind:class="{ 'hidden': !showActions }"
                                 />
                             </div>
 
                             <div class="absolute -right-56 top-0 bottom-0 flex items-center justify-center transition-all duration-500 z-5"
-                                x-bind:class="{ 'group-hover:inset-0' : showMenu }"
+                                x-bind:class="{ 'group-hover:inset-0' : showActions }"
                             >
                                 <div
                                     class="min-w-fit cursor-help items-center gap-1 text-xs"
