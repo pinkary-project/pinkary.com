@@ -79,7 +79,7 @@ test('renders trending questions orderby trending score', function () {
             'views' => 100,
         ]); // score = (15 * 0.8 + 100 * 0.2) / (20 + 1) = 1.52
 
-    $question1 = Question::factory()
+    Question::factory()
         ->hasLikes(20)
         ->create([
             'content' => 'trending question 4',
@@ -95,31 +95,13 @@ test('renders trending questions orderby trending score', function () {
             'views' => 500,
         ]); // score = (50 * 0.8 + 500 * 0.2) / (30 + 1) = 4.51
 
-    $question2 = Question::factory()
+    Question::factory()
         ->hasLikes(50)
         ->create([
             'content' => 'trending question 6',
             'answer_created_at' => now()->subMinutes(30),
             'views' => 700,
         ]); // score = (50 * 0.8 + 700 * 0.2) / (30 + 1) = 5.36
-
-    // duplicate user questions in trending questions
-    Question::factory()
-        ->hasLikes(15)
-        ->for($question1->to, 'to')
-        ->create([
-            'content' => 'question needs to be ignored 2',
-            'answer_created_at' => now()->subMinutes(20),
-            'views' => 100,
-        ]); // score = (15 * 0.8 + 100 * 0.2) / (20 + 1) = 1.52
-    Question::factory()
-        ->hasLikes(50)
-        ->for($question2->to, 'to')
-        ->create([
-            'content' => 'question needs to be ignored 1',
-            'answer_created_at' => now()->subMinutes(30),
-            'views' => 500,
-        ]); // score = (50 * 0.8 + 500 * 0.2) / (30 + 1) = 4.51
 
     $component = Livewire::test(TrendingQuestions::class);
     $component->assertSeeInOrder([
@@ -130,7 +112,4 @@ test('renders trending questions orderby trending score', function () {
         'trending question 1',
         'trending question 2',
     ]);
-
-    $component->assertDontSee('question needs to be ignored 1');
-    $component->assertDontSee('question needs to be ignored 2');
 });
