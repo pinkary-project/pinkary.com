@@ -168,7 +168,7 @@ export const usesAutocomplete = () => ({
     },
 
     autocompleteInputBindings: {
-        ['@keyup'](event) {
+        ['@keyup.debounce.250ms'](event) {
             Livewire.dispatch('autocompleteBoundInputKeyup', {
                 content: this.$el.value,
                 event: event,
