@@ -145,7 +145,7 @@
     />
 
     @if ($answer)
-        <title>{{ $question->to->name }}: "{{ $answer }}" / Pinkary</title>
+        <title>{{ $question->to->name }}: "{!! $answer !!}" / Pinkary</title>
         <meta
             property="og:title"
             content='{{ $ogTitle }}'

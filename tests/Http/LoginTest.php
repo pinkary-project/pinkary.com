@@ -21,9 +21,7 @@ test('users can authenticate', function () {
 
     $this->assertAuthenticated();
 
-    $response->assertRedirect(route('profile.show', [
-        'username' => $user->username,
-    ], absolute: false));
+    $response->assertRedirect(route('home.feed', absolute: false));
 });
 
 test('users are rate limited', function () {
@@ -41,9 +39,7 @@ test('users are rate limited', function () {
     $this->post('/login', [
         'email' => $user->email,
         'password' => 'wrong-password',
-    ])->assertStatus(302)->assertSessionHasErrors([
-        'email',
-    ]);
+    ])->assertStatus(429);
 });
 
 test('users can not authenticate with invalid password', function () {

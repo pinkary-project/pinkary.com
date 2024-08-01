@@ -29,9 +29,9 @@ final readonly class CodeProviderParsable implements ParsableContentProvider
 
                 try {
                     $highlighted = $highlighter->highlight($language, $code);
-                } catch (Exception) {
+                } catch (Exception) { // @codeCoverageIgnoreStart
                     $highlighted = $highlighter->highlight('plaintext', $code);
-                }
+                } // @codeCoverageIgnoreEnd
 
                 $highlightedCode = $highlighted->value;
                 $highlightedLanguage = $highlighted->language;

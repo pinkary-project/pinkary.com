@@ -1,13 +1,13 @@
 <nav>
     <div class="fixed right-0 top-0 z-50 mx-auto px-4">
         <div class="flex h-16 justify-between">
-            <div class="flex"></div>
             <div
                 class="flex items-center"
                 x-data
             >
                 @auth
                     <a
+                        title="Home"
                         href="{{ route('home.feed') }}"
                         class="mr-2"
                         wire:navigate
@@ -16,11 +16,26 @@
                             type="button"
                             class="{{ request()->routeIs('home.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-icons.home class="h-6 w-6" />
+                            <x-heroicon-o-home class="h-6 w-6" />
                         </button>
                     </a>
 
                     <a
+                        title="Source code"
+                        target="_blank"
+                        href="https://github.com/sponsors/nunomaduro"
+                        class="mr-2"
+                    >
+                        <button
+                            type="button"
+                            class="text-slate-500 hover:text-slate-100 inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                        >
+                            <x-heroicon-o-code-bracket class="h-6 w-6" />
+                        </button>
+                    </a>
+
+                    <a
+                        title="Profile"
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
                         class="mr-2"
                         wire:navigate
@@ -29,11 +44,26 @@
                             type="button"
                             class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-icons.user class="h-6 w-6" />
+                            <x-heroicon-o-user class="h-6 w-6" />
                         </button>
                     </a>
 
                     <a
+                        title="Bookmarks"
+                        href="{{ route('bookmarks.index') }}"
+                        class="mr-2"
+                        wire:navigate
+                    >
+                        <button
+                            type="button"
+                            class="{{ request()->routeIs('bookmarks.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                        >
+                            <x-heroicon-o-bookmark class="h-6 w-6" />
+                        </button>
+                    </a>
+
+                    <a
+                        title="Notifications"
                         href="{{ route('notifications.index') }}"
                         class="mr-2"
                         wire:navigate
@@ -42,7 +72,7 @@
                             type="button"
                             class="{{ request()->routeIs('notifications.index') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-icons.bell class="h-6 w-6" />
+                            <x-heroicon-o-bell class="h-6 w-6" />
 
                             <livewire:navigation.notifications-count.show />
                         </button>
@@ -55,6 +85,7 @@
                 >
                     <x-slot name="trigger">
                         <button
+                            title="Menu"
                             class="inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 text-slate-500 transition duration-150 ease-in-out hover:text-slate-100 focus:outline-none"
                         >
                             <x-icons.bars class="size-6" />
@@ -62,6 +93,9 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-link :href="route('about')">
+                            {{ __('About') }}
+                        </x-dropdown-link>
                         @auth
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Settings') }}
@@ -79,10 +113,6 @@
                                 </x-dropdown-button>
                             </form>
                         @else
-                            <x-dropdown-link :href="route('welcome')">
-                                {{ __('Home') }}
-                            </x-dropdown-link>
-
                             <x-dropdown-link
                                 :href="route('home.feed')"
                                 :class="request()->routeIs('home.feed') ? 'bg-slate-800' : ''"

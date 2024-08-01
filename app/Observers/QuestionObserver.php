@@ -18,10 +18,17 @@ final readonly class QuestionObserver
     public function created(Question $question): void
     {
         if ($question->isSharedUpdate()) {
+            if ($question->parent_id !== null) {
+                $question->loadMissing('parent.to');
+                if ($question->parent?->to_id !== $question->to_id) {
+                    $question->parent?->to->notify(new QuestionCreated($question));
+                }
+            }
+
             $question->mentions()->each->notify(new UserMentioned($question));
         } else {
-            $user = type(User::find($question->to_id))->as(User::class);
-            $user->notify(new QuestionCreated($question));
+            $question->loadMissing('to');
+            $question->to->notify(new QuestionCreated($question));
         }
     }
 
@@ -63,5 +70,7 @@ final readonly class QuestionObserver
         $question->mentions()->each(function (User $user) use ($question): void {
             $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         });
+
+        $question->children->each->delete();
     }
 }

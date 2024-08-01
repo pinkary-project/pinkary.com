@@ -1,12 +1,130 @@
+## Version 1.32.0
+> 31 July, 2024
+
+- Adds mentions autocomplete to the post editor.
+
+## Version 1.31.0
+> 30 July, 2024
+
+- Makes `/` the default route for feeds.
+
+## Version 1.30.0
+> 30 July, 2024
+
+- Added 2FA
+
+## Version 1.29.0
+> 29 July, 2024
+
+- Internal improvements and bug fixes.
+- Preserves the state of written answers when the user navigates.
+
+## Version 1.28.0
+> 27 July, 2024
+
+- Allows up to 3 uploaded images in a post.
+
+## Version 1.27.0
+> 24 July, 2024
+
+- Allows to hide links in the user's profile.
+
+## Version 1.26.0
+> 23 July, 2024
+
+- Opens image uploads to everyone.
+
+## Version 1.25.0
+> 21 July, 2024
+
+- Verified accounts now can upload an image to their posts.
+
+## Version 1.24.1
+> 18 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.24
+> 18 July, 2024
+
+- Adds edit links
+- Trending logic improvements
+- Internal improvements and bug fixes
+
+## Version 1.23.5
+> 16 July, 2024
+
+- Adds bookmarks
+
+## Version 1.23.5
+> 14 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.4
+> 13 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.3
+> 12 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.2
+> 11 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.1
+> 10 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23
+> 10 July, 2024
+
+- Improves design of feeds
+- Improves following / followers sorting
+
+## Version 1.22.2
+> 10 July, 2024
+
+- Fixes on avatar upload
+- Fixes on posts
+
+## Version 1.22.1
+> 9 July, 2024
+
+- Adds notifications for commenents
+- Fixes on comments
+
+## Version 1.22.0
+> 9 July, 2024
+
+- Adds comments
+
+## Version 1.21.1
+> 6 July, 2024
+
+- Fix the delete button in feed
+  
+## Version 1.21.0
+> 6 July, 2024
+
+- Adds create "update" on home feed
+- Fixes 500s errors on home feed
+- Fixes on sharing updates
+
 ## Version 1.20.2
 > 4 July, 2024
 
-- Fixed on sharing updates
+- Fixes on sharing updates
 
 ## Version 1.20.1
 > 4 July, 2024
 
-- Fixed on sharing updates
+- Fixes on sharing updates
 
 ## Version 1.20.0
 > 4 July, 2024

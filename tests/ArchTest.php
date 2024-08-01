@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+arch()->preset()->base();
+
+arch()->preset()->strict();
+
+arch()->preset()->security()->ignoring('assert');
+
+arch()->preset()->laravel()
+    ->ignoring('App\Providers\Filament\CitadelPanelProvider');
+
 arch('strict types')
     ->expect('App')
     ->toUseStrictTypes();
@@ -9,12 +18,18 @@ arch('strict types')
 arch('avoid open for extension')
     ->expect('App')
     ->classes()
-    ->toBeFinal();
+    ->toBeFinal()
+    ->ignoring([
+        App\Services\Autocomplete\Types\Type::class,
+    ]);
 
 test('ensure no extends')
     ->expect('App')
     ->classes()
-    ->not->toBeAbstract();
+    ->not->toBeAbstract()
+    ->ignoring([
+        App\Services\Autocomplete\Types\Type::class,
+    ]);
 
 arch('avoid mutation')
     ->expect('App')
@@ -32,6 +47,7 @@ arch('avoid mutation')
         'App\Notifications',
         'App\Providers',
         'App\View',
+        App\Services\Autocomplete::class,
     ]);
 
 arch('avoid inheritance')
@@ -50,4 +66,10 @@ arch('avoid inheritance')
         'App\Notifications',
         'App\Providers',
         'App\View',
+        'App\Services\Autocomplete\Types',
     ]);
+
+arch('annotations')
+    ->expect('App')
+    ->toHavePropertiesDocumented()
+    ->toHaveMethodsDocumented();

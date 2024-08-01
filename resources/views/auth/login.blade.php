@@ -2,6 +2,7 @@
     <form
         method="POST"
         action="{{ route('login') }}"
+        onsubmit="event.submitter.disabled = true"
     >
         @csrf
 

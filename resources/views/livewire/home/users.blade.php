@@ -2,7 +2,7 @@
     <div class="mb-8 w-full max-w-md">
         <div class="relative flex items-center py-1">
 
-            <x-icons.magnifying-glass class="absolute left-5 z-50 size-5"/>
+            <x-heroicon-o-magnifying-glass class="absolute left-5 z-50 size-5"/>
 
             <x-text-input
                 x-ref="searchInput"

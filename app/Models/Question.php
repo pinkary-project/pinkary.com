@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
+use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -19,6 +20,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property string $id
+ * @property string|null $parent_id
  * @property int $from_id
  * @property int $to_id
  * @property bool $pinned
@@ -36,10 +38,13 @@ use Illuminate\Support\Carbon;
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
  * @property-read Collection<int, User> $mentions
+ * @property-read Question|null $parent
+ * @property-read Collection<int, Question> $children
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
 {
+    /** @use HasFactory<QuestionFactory> */
     use HasFactory, HasUuids;
 
     /**
@@ -116,6 +121,16 @@ final class Question extends Model implements Viewable
     }
 
     /**
+     * Get the bookmarks for the question.
+     *
+     * @return HasMany<Bookmark>
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    /**
      * Get the likes for the question.
      *
      * @return HasMany<Like>
@@ -153,6 +168,24 @@ final class Question extends Model implements Viewable
     public function isSharedUpdate(): bool
     {
         return $this->from_id === $this->to_id && $this->content === '__UPDATE__';
+    }
+
+    /**
+     * @return BelongsTo<Question, Question>
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * @return HasMany<Question>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')
+            ->where('is_ignored', false)
+            ->where('is_reported', false);
     }
 
     /**

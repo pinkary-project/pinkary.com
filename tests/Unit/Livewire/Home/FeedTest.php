@@ -114,3 +114,19 @@ it('displays questions from users I am following', function () {
 
     $component->assertSee('Do you like star wars?');
 });
+
+test('refresh', function () {
+    $component = Livewire::test(Feed::class);
+
+    Question::factory()->create([
+        'answer' => 'This is the answer',
+    ]);
+
+    $component->assertSee('There are no questions to show.')
+        ->assertDontSee('This is the answer');
+
+    $component->dispatch('question.created');
+
+    $component->assertSee('This is the answer')
+        ->assertDontSee('There are no questions to show.');
+});

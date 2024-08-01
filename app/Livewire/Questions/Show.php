@@ -6,9 +6,11 @@ namespace App\Livewire\Questions;
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 final class Show extends Component
@@ -20,10 +22,16 @@ final class Show extends Component
     public string $questionId;
 
     /**
-     * The component's in index state.
+     * Determine if this is currently being viewed in the index (list) view.
      */
     #[Locked]
     public bool $inIndex = false;
+
+    /**
+     * Determine if this is currently being viewed in thread view.
+     */
+    #[Locked]
+    public bool $inThread = false;
 
     /**
      * Whether the pinned label should be displayed or not.
@@ -32,9 +40,22 @@ final class Show extends Component
     public bool $pinnable = false;
 
     /**
+     * Enable the comment box.
+     */
+    #[Locked]
+    public bool $commenting = false;
+
+    /**
+     * The previous question ID, where the user came from.
+     */
+    #[Url]
+    public ?string $previousQuestionId = null;
+
+    /**
      * Refresh the component.
      */
     #[On('question.updated')]
+    #[On('question.created')]
     public function refresh(): void
     {
         //
@@ -91,6 +112,28 @@ final class Show extends Component
         $question->update(['is_ignored' => true]);
 
         $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
+    }
+
+    /**
+     * Bookmark the question.
+     */
+    public function bookmark(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $bookmark = $question->bookmarks()->firstOrCreate([
+            'user_id' => auth()->id(),
+        ]);
+
+        if ($bookmark->wasRecentlyCreated) {
+            $this->dispatch('notification.created', message: 'Bookmark added.');
+        }
     }
 
     /**
@@ -155,6 +198,30 @@ final class Show extends Component
     }
 
     /**
+     * Unbookmark the question.
+     */
+    public function unbookmark(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        if ($bookmark = $question->bookmarks()->where('user_id', auth()->id())->first()) {
+            $this->authorize('delete', $bookmark);
+
+            if ($bookmark->delete()) {
+                $this->dispatch('notification.created', message: 'Bookmark removed.');
+            }
+        }
+
+        $this->dispatch('question.unbookmarked');
+    }
+
+    /**
      * Unlike the question.
      */
     public function unlike(): void
@@ -175,6 +242,14 @@ final class Show extends Component
     }
 
     /**
+     * Get the placeholder for the component.
+     */
+    public function placeholder(): View
+    {
+        return view('livewire.questions.placeholder'); // @codeCoverageIgnore
+    }
+
+    /**
      * Parse tags in the question's content.
      */
     public function parseContent(string $content): string
@@ -191,8 +266,14 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes'])
-            ->withCount('likes')
+            ->with(['to', 'from', 'bookmarks', 'likes'])
+            ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
+                $query->with('parent');
+            })
+            ->when($this->inThread, function (Builder $query): void {
+                $query->with(['children']);
+            })
+            ->withCount(['likes', 'children'])
             ->firstOrFail();
 
         return view('livewire.questions.show', [

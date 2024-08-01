@@ -32,6 +32,12 @@ final class Feed extends Component
     }
 
     /**
+     * Refresh the feed.
+     */
+    #[On('question.created')]
+    public function refresh(): void {}
+
+    /**
      * Render the component.
      */
     public function render(): View

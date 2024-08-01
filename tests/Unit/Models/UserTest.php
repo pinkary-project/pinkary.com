@@ -27,6 +27,9 @@ test('to array', function () {
         'avatar_updated_at',
         'views',
         'is_uploaded_avatar',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ]);
 });
 
@@ -92,11 +95,11 @@ test('default avatar url', function () {
 
 test('custom avatar url', function () {
     $user = User::factory()->create([
-        'avatar' => 'storage/avatars/123.png',
+        'avatar' => 'avatars/123.png',
     ]);
 
-    expect($user->avatar)->toBe('storage/avatars/123.png')
-        ->and($user->avatar_url)->toBe(asset('storage/avatars/123.png'));
+    expect($user->avatar)->toBe('avatars/123.png')
+        ->and($user->avatar_url)->toBe(Storage::disk('public')->url('avatars/123.png'));
 });
 
 test('following', function () {

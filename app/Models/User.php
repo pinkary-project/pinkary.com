@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -19,6 +20,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
  * @property bool $prefers_anonymous_questions
@@ -28,6 +30,9 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon $created_at
  * @property string $email
  * @property Carbon|null $email_verified_at
+ * @property ?string $two_factor_secret
+ * @property array<int, string> $two_factor_recovery_codes
+ * @property ?Carbon $two_factor_confirmed_at
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
@@ -56,7 +61,8 @@ use Illuminate\Support\Facades\Storage;
  */
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
-    use HasFactory, Notifiable;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -68,6 +74,9 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         'remember_token',
     ];
 
+    /**
+     * Increment the views for the given IDs.
+     */
     public static function incrementViews(array $ids): void
     {
         self::withoutTimestamps(function () use ($ids): void {
@@ -83,6 +92,16 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->hasVerifiedEmail() && ($this->email === 'enunomaduro@gmail.com' || $this->email === 'mrpunyapal@gmail.com');
+    }
+
+    /**
+     * Get the user's bookmarks.
+     *
+     * @return HasMany<Bookmark>
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
     }
 
     /**
@@ -149,7 +168,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getAvatarUrlAttribute(): string
     {
-        return $this->avatar ? asset($this->avatar) : asset('img/default-avatar.png');
+        return $this->avatar ? Storage::disk('public')->url($this->avatar) : asset('img/default-avatar.png');
     }
 
     /**
@@ -224,9 +243,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function purge(): void
     {
         if ($this->avatar) {
-            Storage::disk('public')->delete(
-                str_replace('storage/', '', $this->avatar)
-            );
+            Storage::disk('public')->delete($this->avatar);
         }
 
         $this->followers()->detach();
@@ -274,6 +291,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'email_verified_at' => 'datetime',
+            'two_factor_confirmed_at' => 'datetime',
             'is_verified' => 'boolean',
             'is_company_verified' => 'boolean',
             'password' => 'hashed',

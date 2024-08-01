@@ -17,10 +17,9 @@ use Tests\TestCase;
 |
 */
 
-uses(TestCase::class, RefreshDatabase::class)
-    ->beforeEach(function () {
-        Storage::fake('public');
-    })->in(__DIR__);
+pest()->extend(TestCase::class, RefreshDatabase::class)->beforeEach(function () {
+    Storage::fake('public');
+});
 
 /*
 |--------------------------------------------------------------------------
