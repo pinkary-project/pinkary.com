@@ -239,13 +239,12 @@
                             <div
                                 x-sortable-handle
                                 class="absolute left-0 sm:-left-10 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none group-hover:left-0 transition-all duration-500 z-10"
-                                x-bind:class="{ 'invisible': showActions }"
                             >
                                 <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
                             <div class="flex-grow flex items-center justify-center transition-all duration-500"
-                                x-bind:class="{ 'group-hover:-translate-x-44' : showActions }"
+                                x-bind:class="{ 'group-hover:-translate-x-full' : showActions }"
                             >
                                 <x-links.list-item :$user :$link />
                             </div>
@@ -256,11 +255,7 @@
                                 class="absolute right-0 sm:-right-10 top-0 bottom-0 flex w-11 cursor-pointer items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none transition-all duration-500 z-10 group-hover:right-0"
                             >
                                 <x-heroicon-o-chevron-double-left class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
-                                    x-bind:class="{ 'hidden': showActions }"
-                                    x-cloak
-                                />
-                                <x-heroicon-o-chevron-double-right class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
-                                    x-bind:class="{ 'hidden': !showActions }"
+                                    x-bind:class="{ 'rotate-180': showActions }"
                                     x-cloak
                                 />
                             </div>
