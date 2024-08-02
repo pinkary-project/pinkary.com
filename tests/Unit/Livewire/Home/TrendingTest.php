@@ -6,8 +6,6 @@ use App\Livewire\Home\TrendingQuestions;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Livewire\Livewire;
 
 test('renders trending questions', function () {

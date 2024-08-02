@@ -6,7 +6,6 @@ namespace App\Queries\Feeds;
 
 use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Config;
 
 final readonly class TrendingQuestionsFeed
 {
