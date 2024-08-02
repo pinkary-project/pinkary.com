@@ -6,6 +6,8 @@ use App\Livewire\Home\TrendingQuestions;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Livewire\Livewire;
 
 test('renders trending questions', function () {
@@ -52,64 +54,99 @@ test('do not renders trending questions', function () {
         ->assertDontSee($questionContent);
 });
 
-test('renders trending questions orderby trending score', function () {
-    // (likes * 0.8 + views * 0.2) / (minutes since answered + 1) = trending score
+test('renders trending questions order by trending score', function () {
+    $this->travelTo($date = now());
 
+    // 0 likes, 0 comments, just posted
+    // (proves the algo works with zeroes)
     Question::factory()
-        ->hasLikes(5)
         ->create([
             'content' => 'trending question 1',
-            'answer_created_at' => now()->subMinutes(10),
+            'answer_created_at' => $date,
             'views' => 20,
-        ]); // score = (5 * 0.8 + 20 * 0.2) / (10 + 1) = 0.72
+        ]); // score = .00001157
 
+    // 0 likes, 0 comments, posted 10 minutes ago
     Question::factory()
-        ->hasLikes(5)
         ->create([
             'content' => 'trending question 2',
-            'answer_created_at' => now()->subMinutes(20),
+            'answer_created_at' => $date->subMinutes(10),
             'views' => 20,
-        ]); // score = (5 * 0.8 + 20 * 0.2) / (20 + 1) = 0.38
+        ]); // score = .00001149
 
+    // 1 like, 0 comments, posted 10 minutes ago
     Question::factory()
-        ->hasLikes(15)
+        ->hasLikes(1)
         ->create([
             'content' => 'trending question 3',
-            'answer_created_at' => now()->subMinutes(20),
+            'answer_created_at' => $date->subMinutes(10),
             'views' => 100,
-        ]); // score = (15 * 0.8 + 100 * 0.2) / (20 + 1) = 1.52
+        ]); // score = .00002298
 
+    // 0 likes, 1 comment, posted 10 minutes ago (same score as above)
+    Question::factory()
+        ->afterCreating(fn (Question $question) => Question::factory()->create([
+            'parent_id' => $question->id,
+            'content' => 'comment on question 4',
+            'answer_created_at' => $date->subMinutes(10),
+        ]))
+        ->create([
+            'content' => 'trending question 4',
+            'answer_created_at' => $date->subMinutes(10),
+            'views' => 100,
+        ]); // score = .00002298
+
+    // 1 like, 0 comments, posted 11 minutes ago (just below question 3)
+    Question::factory()
+        ->hasLikes(1)
+        ->create([
+            'content' => 'trending question 5',
+            'answer_created_at' => $date->subMinutes(11),
+            'views' => 500,
+        ]); // score = .00002297
+
+    // 1 like, 1 comment, posted 15 minutes ago
+    Question::factory()
+        ->hasLikes(1)
+        ->afterCreating(fn (Question $question) => Question::factory()->create([
+            'parent_id' => $question->id,
+            'content' => 'comment on question 6',
+            'answer_created_at' => $date->subMinutes(15),
+        ]))
+        ->create([
+            'content' => 'trending question 6',
+            'answer_created_at' => $date->subMinutes(15),
+            'views' => 700,
+        ]); // score = .0000459
+
+    // 20 likes, 0 comments, posted a day ago
     Question::factory()
         ->hasLikes(20)
         ->create([
-            'content' => 'trending question 4',
-            'answer_created_at' => now()->subMinutes(20),
-            'views' => 100,
-        ]); // score = (20 * 0.8 + 100 * 0.2) / (20 + 1) = 1.71
-
-    Question::factory()
-        ->hasLikes(50)
-        ->create([
-            'content' => 'trending question 5',
-            'answer_created_at' => now()->subMinutes(30),
+            'content' => 'trending question 7',
+            'answer_created_at' => $date->subDay(),
             'views' => 500,
-        ]); // score = (50 * 0.8 + 500 * 0.2) / (30 + 1) = 4.51
+        ]); // score = .0001215
 
+    // Prove we limit to max days since posted
     Question::factory()
         ->hasLikes(50)
         ->create([
-            'content' => 'trending question 6',
-            'answer_created_at' => now()->subMinutes(30),
-            'views' => 700,
-        ]); // score = (50 * 0.8 + 700 * 0.2) / (30 + 1) = 5.36
+            'content' => 'trending question 8',
+            'answer_created_at' => $date->subDays(8),
+            'views' => 500,
+        ]); // score = .00006559 (would otherwise be trending...)
 
-    $component = Livewire::test(TrendingQuestions::class);
+    $component = Livewire::test(TrendingQuestions::class, ['perPage' => 10]);
+
     $component->assertSeeInOrder([
+        'trending question 7',
         'trending question 6',
-        'trending question 5',
-        'trending question 4',
         'trending question 3',
+        'trending question 4',
+        'trending question 5',
         'trending question 1',
         'trending question 2',
     ]);
+    $component->assertDontSee('trending question 8');
 });
