@@ -1,3 +1,9 @@
+## Version 1.34.0
+> 2 August, 2024
+
+- Improves trending algorithm.
+- Internal improvements and bug fixes.
+
 ## Version 1.33.0
 > 1 August, 2024
 
