@@ -26,18 +26,18 @@ it('render questions with right conditions', function () {
     expect($builder->get()->count())->toBe(1);
 });
 
-it('do not render questions without likes', function () {
+it('will render questions without likes or comments posted now', function () {
     $user = User::factory()->create();
 
     Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'answer_created_at' => now()->subDays(12),
+        'answer_created_at' => now(),
     ]);
 
     $builder = (new TrendingQuestionsFeed())->builder();
 
-    expect($builder->get()->count())->toBe(0);
+    expect($builder->get()->count())->toBe(1);
 });
 
 it('do not render questions older than 7 days', function () {
