@@ -67,12 +67,4 @@ final class UserFactory extends Factory
             'github_username' => fake()->userName(),
         ]);
     }
-
-    public function githubCompanyVerified(): static
-    {
-        return $this->state(fn (array $attributes): array => [
-            'is_verified' => true,
-            'github_username' => fake()->userName(),
-        ]);
-    }
 }
