@@ -120,3 +120,57 @@ it('can show recovery codes', function () {
     $component->assertSet('showingConfirmation', false);
     $component->assertSet('showingRecoveryCodes', true);
 });
+
+it('dispatches confirm-password event when password is not confirmed', function () {
+    $user = User::factory()->create();
+    session()->forget('auth.password_confirmed_at');
+
+    $component = Livewire::actingAs($user)
+        ->test(TwoFactorAuthenticationForm::class);
+
+    $component->call('enableTwoFactorAuthentication');
+    $component->assertDispatched('confirm-password', idToConfirm: 'enable-two-factor-authentication');
+
+    $user->update([
+        'two_factor_secret' => 'secret',
+        'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
+        'two_factor_confirmed_at' => now(),
+    ]);
+
+    $component = Livewire::actingAs($user->refresh())
+        ->test(TwoFactorAuthenticationForm::class, ['enabled' => true]);
+
+    $component->call('showRecoveryCodes');
+    $component->assertDispatched('confirm-password', idToConfirm: 'show-recovery-codes');
+
+    $component->call('regenerateRecoveryCodes');
+    $component->assertDispatched('confirm-password', idToConfirm: 'generate-new-recovery-codes');
+
+    $component->call('disableTwoFactorAuthentication');
+    $component->assertDispatched('confirm-password', idToConfirm: 'disable-two-factor-authentication');
+});
+
+it('can not see codes if not enabled', function () {
+    $user = User::factory()->create();
+    session()->put('auth.password_confirmed_at', time());
+
+    $component = Livewire::actingAs($user)
+        ->test(TwoFactorAuthenticationForm::class);
+
+    $component->call('showRecoveryCodes');
+    $component->assertSet('showingRecoveryCodes', false);
+
+    $component->call('regenerateRecoveryCodes');
+    $component->assertSet('showingRecoveryCodes', false);
+});
+
+it('can not disable two factor authentication if not enabled', function () {
+    $user = User::factory()->create();
+    session()->put('auth.password_confirmed_at', time());
+
+    $component = Livewire::actingAs($user)
+        ->test(TwoFactorAuthenticationForm::class);
+
+    $component->call('disableTwoFactorAuthentication');
+    $component->assertSet('enabled', false);
+});
