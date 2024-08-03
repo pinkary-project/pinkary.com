@@ -104,4 +104,18 @@ final class QuestionFactory extends Factory
             'answer_updated_at' => null,
         ]);
     }
+
+    public function fewView(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'views' => $this->faker->numberBetween(0, 10),
+        ]);
+    }
+
+    public function manyViews(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'views' => $this->faker->numberBetween(500, 1000),
+        ]);
+    }
 }

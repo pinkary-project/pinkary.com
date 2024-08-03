@@ -56,4 +56,20 @@ final class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function githubVerified(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_verified' => true,
+            'github_username' => fake()->userName(),
+        ]);
+    }
+
+    public function githubCompanyVerified(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_verified' => true,
+            'github_username' => fake()->userName(),
+        ]);
+    }
 }
