@@ -33,7 +33,8 @@ it('does not dispatch confirm-password when password is confirmed', function () 
 
 function myComponent(): Component
 {
-    return new class () extends Component {
+    return new class() extends Component
+    {
         use ConfirmsPasswords;
 
         public bool $isConfirmed = false;
