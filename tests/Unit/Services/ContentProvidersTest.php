@@ -229,3 +229,50 @@ test('image does not exists', function () {
 
     expect($provider->parse($content))->toBe('other content ');
 });
+
+test('hashtags', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\HashtagProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'This is a #hashtag',
+        'parsed' => 'This is a <span class="text-blue-500">#hashtag</span>',
+    ],
+    [
+        'content' => '#hashtag at the beginning',
+        'parsed' => '<span class="text-blue-500">#hashtag</span> at the beginning',
+    ],
+    [
+        'content' => '#ab12z9_-',
+        'parsed' => '<span class="text-blue-500">#ab12z9_</span>-',
+    ],
+    [
+        'content' => '#hashtag.',
+        'parsed' => '<span class="text-blue-500">#hashtag</span>.',
+    ],
+    [
+        'content' => '#hashtag,',
+        'parsed' => '<span class="text-blue-500">#hashtag</span>,',
+    ],
+    [
+        'content' => '#hashtag!',
+        'parsed' => '<span class="text-blue-500">#hashtag</span>!',
+    ],
+    [
+        'content' => '#hashtag?',
+        'parsed' => '<span class="text-blue-500">#hashtag</span>?',
+    ],
+    [
+        'content' => '#hashtag/',
+        'parsed' => '<span class="text-blue-500">#hashtag</span>/',
+    ],
+    [
+        'content' => '##hashtag#',
+        'parsed' => '#<span class="text-blue-500">#hashtag</span>#',
+    ],
+    [
+        'content' => 'Existing <a href="/route#segment">link with #segment</a> and a #hashtag.',
+        'parsed' => 'Existing <a href="/route#segment">link with #segment</a> and a <span class="text-blue-500">#hashtag</span>.',
+    ],
+]);
