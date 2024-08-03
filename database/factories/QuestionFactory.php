@@ -105,6 +105,9 @@ final class QuestionFactory extends Factory
         ]);
     }
 
+    /**
+     * Indicate that the question has been viewed a few times.
+     */
     public function fewView(): static
     {
         return $this->state(fn (array $attributes): array => [
@@ -112,6 +115,9 @@ final class QuestionFactory extends Factory
         ]);
     }
 
+    /**
+     * Indicate that the question has been viewed many times.
+     */
     public function manyViews(): static
     {
         return $this->state(fn (array $attributes): array => [

@@ -57,6 +57,9 @@ final class UserFactory extends Factory
         ]);
     }
 
+    /**
+     * Indicate that the user should be verified by GitHub.
+     */
     public function githubVerified(): static
     {
         return $this->state(fn (array $attributes): array => [
