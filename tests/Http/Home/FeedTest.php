@@ -12,7 +12,7 @@ it('can see the "feed" view', function () {
     $response = $this->get(route('home.feed'));
 
     $response->assertOk()
-        ->assertSee('Home')
+        ->assertSee('Feed')
         ->assertSeeLivewire(Feed::class);
 });
 

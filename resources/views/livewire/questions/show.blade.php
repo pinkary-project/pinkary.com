@@ -85,7 +85,7 @@
                             <button
                                 data-navigate-ignore="true"
                                 class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
-                                <x-icons.ellipsis-horizontal class="h-6 w-6" />
+                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
                             </button>
                         </x-slot>
 
@@ -126,7 +126,7 @@
                                     wire:confirm="Are you sure you want to delete this question?"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.trash class="h-4 w-4" />
+                                    <x-heroicon-o-trash class="h-4 w-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
@@ -217,9 +217,9 @@
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)
-                            <x-icons.heart-solid class="h-4 w-4"/>
+                            <x-heroicon-s-heart class="h-4 w-4"/>
                         @else
-                            <x-icons.heart class="h-4 w-4"/>
+                            <x-heroicon-o-heart class="h-4 w-4"/>
                         @endif
                         @if ($likesCount)
                             <span class="ml-1">
@@ -242,7 +242,10 @@
                 </div>
 
                 <div class="flex items-center text-slate-500 ">
-                    @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
+                    @php
+                        $timestamp = $question->answer_updated_at ?: $question->answer_created_at
+                    @endphp
+
                     <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
@@ -251,11 +254,32 @@
                         {{  $question->answer_updated_at ? 'Edited:' : null }}
                         {{
                             $timestamp->timezone(session()->get('timezone', 'UTC'))
-                                ->diffForHumans()
+                                ->diffForHumans(short: true)
                         }}
                     </time>
 
                     <span class="mx-1">•</span>
+
+                    @php
+                        $bookmarkExists = $question->bookmarks->contains('user_id', auth()->id());
+                    @endphp
+
+                    <button
+                        data-navigate-ignore="true"
+                        @if ($bookmarkExists)
+                            wire:click="unbookmark()"
+                        @else
+                            wire:click="bookmark()"
+                        @endif
+
+                        class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                    >
+                        @if ($bookmarkExists)
+                            <x-heroicon-s-bookmark class="h-4 w-4" />
+                        @else
+                            <x-heroicon-o-bookmark class="h-4 w-4" />
+                        @endif
+                    </button>
                     <x-dropdown align="left"
                                 width="48"
                                 dropdown-classes="top-[-3.4rem] shadow-none"
@@ -269,7 +293,7 @@
                                 title="Share"
                                 class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
-                                <x-icons.paper-airplane class="h-4 w-4" />
+                                <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
                         </x-slot>
 
@@ -292,7 +316,7 @@
                                 type="button"
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
                                 data-navigate-ignore="true"
@@ -311,7 +335,7 @@
                                 "
                                 class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
                             >
-                                <x-icons.link class="size-4" />
+                                <x-heroicon-o-link class="size-4" />
                             </button>
                             <button
                                 data-navigate-ignore="true"

@@ -28,23 +28,23 @@ arch('models')
     ])->ignoring('App\Models\Concerns');
 
 arch('ensure factories', function () {
-    expect($models = getModels())->toHaveCount(4);
+    expect($models = getModels())->toHaveCount(5);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
-        expect($model::factory()) // @phpstan-ignore-line
+        expect($model::factory())
             ->toBeInstanceOf(Illuminate\Database\Eloquent\Factories\Factory::class);
     }
 });
 
 arch('ensure datetime casts', function () {
-    expect($models = getModels())->toHaveCount(4);
+    expect($models = getModels())->toHaveCount(5);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
-        $instance = $model::factory()->create(); //@phpstan-ignore-line
+        $instance = $model::factory()->create();
 
-        $dates = collect($instance->getAttributes()) //@phpstan-ignore-line
+        $dates = collect($instance->getAttributes())
             ->filter(fn ($_, $key) => str_ends_with($key, '_at'));
 
         foreach ($dates as $key => $value) {

@@ -38,6 +38,12 @@
 
             <div class="p-4 shadow sm:rounded-lg sm:p-8">
                 <div class="max-w-xl">
+                    <livewire:profile.two-factor-authentication-form />
+                </div>
+            </div>
+
+            <div class="p-4 shadow sm:rounded-lg sm:p-8">
+                <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>

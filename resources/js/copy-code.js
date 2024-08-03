@@ -13,59 +13,80 @@ const copyCode = () => ({
         });
     },
 
+    copyToClipboard(code) {
+        this.$clipboard(code);
+        this.$notify('Copied to clipboard.', {
+            wrapperId: 'flashMessageWrapper',
+            templateId: 'flashMessageTemplate',
+            autoClose: 3000,
+            autoRemove: 4000
+        });
+    },
+
     addCopyButtons() {
         const codeElements = this.$el.querySelectorAll('code');
+
+        const copyIcon = new DOMParser().parseFromString(
+            `<svg xmlns="http://www.w3.org/2000/svg" class="opacity-0 group-hover/code:opacity-80 size-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H10c-1.103 0-2 .897-2 2v4H4c-1.103 0-2 .897-2 2v10c0 1.103.897 2 2 2h10c1.103 0 2-.897 2-2v-4h4c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zM4 20V10h10l.002 10H4zm16-6h-4v-4c0-1.103-.897-2-2-2h-4V4h10v10z"></path><path d="M6 12h6v2H6zm0 4h6v2H6z"></path></svg>`
+            , 'image/svg+xml'
+        ).documentElement;
+
+        const positionButton = (button, el) => {
+            el.parentNode.style.position = 'relative';
+
+            const m = 6;
+            button.style.position = 'absolute';
+            button.style.right = `${m}px`;
+            button.style.top = `${m}px`;
+        }
+
         codeElements.forEach((codeElement) => {
+
             if (codeElement.querySelector('button')) {
                 codeElement.querySelector('button').remove();
             }
 
-            let button = document.createElement('button');
-            button.innerHTML = 'Copy';
-            button.classList.add(
-                'text-xs',
-                'text-pink-500',
-                'cursor-pointer',
-                'focus:outline-none',
-                'transition-colors',
-                'hover:text-pink-400',
-                'z-10',
-                'p-1',
-                'rounded-md',
-                'bg-pink-900',
-                'bg-opacity-50',
-                'text-white',
-                'transition-opacity',
-                'duration-200',
-            );
-
-            // to make it appear on hover
             codeElement.classList.add('group/code');
-            button.classList.add(
-                'opacity-0',
-                'group-hover/code:opacity-100',
+            const button = document.createElement('button');
+            const setupButton = () => {
+                button.classList.add(
+                    'opacity-0',
+                    'group-hover/code:opacity-100',
+                    'group-hover/code:bg-opacity-50',
+                    'text-xs',
+                    'text-pink-400',
+                    'cursor-pointer',
+                    'focus:outline-none',
+                    'transition-colors',
+                    'hover:text-white',
+                    'z-10',
+                    'p-1',
+                    'rounded-md',
+                    'bg-pink-900',
+                    'bg-opacity-0',
+                    'transition-opacity',
+                    'duration-200',
+                );
+                button.title = 'Copy';
+                button.setAttribute(
+                    'data-navigate-ignore',
+                    'true'
+                );
+                button.appendChild(copyIcon.cloneNode(true));
+                positionButton(button, codeElement);
+            }
+
+            this.$nextTick(() => {
+                setupButton();
+            });
+
+            window.addEventListener(
+                'resize', () =>
+                    positionButton(button, codeElement)
             );
-
-            // to make the button stick to the top right corner
-            button.style.position = 'sticky';
-            button.style.left = 'calc(100% - 1.5rem)';
-            button.style.bottom = '100%';
-            button.style.margin = '-0.5rem';
-
-            // This is to prevent comment-box chick
-            button.setAttribute('data-navigate-ignore', 'true');
 
             button.addEventListener('click', () => {
-                let text = codeElement.innerText;
-                // removing the last 4 characters which are the word 'Copy'
-                text = text.substring(0, text.length - 4);
-                navigator.clipboard.writeText(text);
-                button.style.left = 'calc(100% - 2.3rem)';
-                button.innerHTML = 'Copied';
-                setTimeout(() => {
-                    button.style.left = 'calc(100% - 1.5rem)';
-                    button.innerHTML = 'Copy';
-                }, 400);
+                this.copyToClipboard(codeElement.innerText.trim());
             });
 
             codeElement.appendChild(button);
@@ -73,4 +94,4 @@ const copyCode = () => ({
     }
 });
 
-export { copyCode }
+export {copyCode}

@@ -16,6 +16,7 @@ test('to array', function () {
         'created_at',
         'updated_at',
         'click_count',
+        'is_visible',
     ]);
 });
 

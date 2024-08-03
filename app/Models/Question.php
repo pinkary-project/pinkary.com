@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
+use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -42,6 +43,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
 {
+    /** @use HasFactory<QuestionFactory> */
     use HasFactory, HasUuids;
 
     /**
@@ -115,6 +117,16 @@ final class Question extends Model implements Viewable
     public function to(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the bookmarks for the question.
+     *
+     * @return HasMany<Bookmark>
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
     }
 
     /**

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\UploadedFile;
+
 test('brs', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\BrProviderParsable();
 
@@ -74,6 +76,17 @@ test('links with mail', function (string $content, string $parsed) {
         'parsed' => 'Hello my emails are <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:javier@example.com">javier@example.com</a>, <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:contact@example.com">contact@example.com</a> and <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:support@example.com">support@example.com</a>.',
     ],
 ]);
+
+test('link parser doesnt ignores the src attribute in am image tag, only the alt attribute', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => '<img src="/storage/images/pathtoimage.jpg" alt="Example">',
+        'parsed' => '<img src="/storage/images/pathtoimage.jpg" alt="Example">',
+    ],
+])->note('The dot in the path was causing a anchor tag to be parsed so we added the src attribute to the REGEX');
 
 test('links with ports in the url', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
@@ -189,3 +202,30 @@ test('mention', function (string $content) {
     ['content' => '@nunomaduro?'],
     ['content' => '@nunomaduro/'],
 ]);
+
+test('image exists', function () {
+    Storage::fake('public');
+    $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
+
+    $pngFile = UploadedFile::fake()->image('pathtoimage.png');
+    $filePath = 'images/pathtoimage.png';
+    Storage::disk('public')->put($filePath, $pngFile->getContent());
+
+    // Use the direct file path in the markdown
+    $content = "![]({$filePath})";
+
+    expect($provider->parse($content))
+        ->toMatchSnapshot();
+});
+
+test('image does not exists', function () {
+    $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
+
+    $content = '![](images/imagesdoesnotexists.png)';
+
+    expect($provider->parse($content))->toBe('...');
+
+    $content = 'other content ![](images/imagesdoesnotexists.png)';
+
+    expect($provider->parse($content))->toBe('other content ');
+});

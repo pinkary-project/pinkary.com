@@ -1,5 +1,5 @@
 import './bootstrap'
-
+import autosize from 'autosize';
 import focus from '@alpinejs/focus'
 import notifications from 'alpinejs-notify'
 import Sortable from 'sortablejs'
@@ -26,13 +26,10 @@ Alpine.directive('sortable', (el) => {
 })
 
 Alpine.directive('autosize', (el) => {
-    const offset = (el.offsetHeight - el.clientHeight) + 8
-
-    el.addEventListener('input', () => {
-        el.style.height = 'auto'
-        el.style.height = el.scrollHeight + offset + 'px'
-    })
-})
+    if (el) {
+        autosize(el);
+    }
+});
 
 import { shareProfile } from './share-profile.js'
 Alpine.data('shareProfile', shareProfile)
@@ -51,5 +48,12 @@ Alpine.data('particlesEffect', particlesEffect)
 
 import { copyCode } from './copy-code.js'
 Alpine.data('copyCode', copyCode)
+
+import { imageUpload } from './image-upload.js'
+Alpine.data('imageUpload', imageUpload)
+
+import { autocomplete, usesAutocomplete } from "./autocomplete.js";
+Alpine.data('dynamicAutocomplete', autocomplete);
+Alpine.data('usesDynamicAutocomplete', usesAutocomplete);
 
 Livewire.start()

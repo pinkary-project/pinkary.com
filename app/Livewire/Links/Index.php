@@ -8,6 +8,8 @@ use App\Jobs\UpdateUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -86,6 +88,23 @@ final class Index extends Component
         $this->dispatch('notification.created', message: 'Link deleted.');
     }
 
+    /**
+     * Set visibility the given link.
+     */
+    public function setVisibility(int $linkId): void
+    {
+        $link = Link::findOrFail($linkId);
+
+        $this->authorize('update', $link);
+
+        $link->update([
+            'is_visible' => ! $link->is_visible,
+        ]);
+    }
+
+    /**
+     * Follow the given user.
+     */
     public function follow(int $targetId): void
     {
         if (! auth()->check()) {
@@ -109,6 +128,9 @@ final class Index extends Component
         $this->dispatch('user.followed');
     }
 
+    /**
+     * Unfollow the given user.
+     */
     public function unfollow(int $targetId): void
     {
         if (! auth()->check()) {
@@ -136,6 +158,7 @@ final class Index extends Component
      * Refresh the component.
      */
     #[On('link.created')]
+    #[On('link.updated')]
     #[On('link-settings.updated')]
     public function refresh(): void
     {
@@ -148,7 +171,12 @@ final class Index extends Component
     public function render(): View
     {
         $user = User::query()
-            ->with(['links'])
+            ->with([
+                // @phpstan-ignore-next-line
+                'links' => fn (HasMany $query): HasMany => $query
+                    // @phpstan-ignore-next-line
+                    ->when(auth()->id() !== $this->userId, fn (Builder $query): Builder => $query->where('is_visible', true)),
+            ])
             ->withCount('followers')
             ->withCount('following')
             ->findOrFail($this->userId);
