@@ -177,11 +177,11 @@
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
-                        href="{{Route('questions.show', [
+                            href="{{Route('questions.show', [
                                 'question' => $question->id,
                                 'username' => $question->to->username,
                             ])}}"
-                        wire:navigate
+                            wire:navigate
                         @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
                         @class([
