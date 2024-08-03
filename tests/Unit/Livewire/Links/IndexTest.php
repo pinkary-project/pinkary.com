@@ -241,7 +241,7 @@ test('guest cannot unfollow', function () {
 
 test('set visible', function () {
     $user = User::factory()->create();
-    $component = Livewire::test(Index::class, [
+    $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
     ]);
 
@@ -257,20 +257,36 @@ test('set visible', function () {
 
 test('set invisible', function () {
     $user = User::factory()->create();
-    $component = Livewire::test(Index::class, [
+    $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
     ]);
 
     $link = Link::factory()->create([
         'user_id' => $user->id,
-        'is_visible' => false,
+        'is_visible' => true,
+    ]);
+
+    $component->call('setVisibility', $link->id);
+
+    expect($link->refresh()->is_visible)->toBeFalse();
+});
+
+test('only owner can set visibility', function () {
+    $user = User::factory()->create();
+    $anotherUser = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $anotherUser->id,
+    ]);
+
+    $link = Link::factory()->create([
+        'user_id' => $anotherUser->id,
+        'is_visible' => true,
     ]);
 
     $component->call('setVisibility', $link->id);
 
     expect($link->refresh()->is_visible)->toBeTrue();
+
+    $component->assertForbidden();
 });
-
-
-
-
