@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Contracts\Services\ParsableContentProvider;
 use App\Services\ParsableContentProviders\BrProviderParsable;
 use App\Services\ParsableContentProviders\CodeProviderParsable;
+use App\Services\ParsableContentProviders\HashtagProviderParsable;
 use App\Services\ParsableContentProviders\ImageProviderParsable;
 use App\Services\ParsableContentProviders\LinkProviderParsable;
 use App\Services\ParsableContentProviders\MentionProviderParsable;
@@ -26,6 +27,7 @@ final readonly class ParsableContent
         BrProviderParsable::class,
         LinkProviderParsable::class,
         MentionProviderParsable::class,
+        HashtagProviderParsable::class,
     ])
     {
         //
