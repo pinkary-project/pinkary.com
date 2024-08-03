@@ -275,4 +275,8 @@ test('hashtags', function (string $content, string $parsed) {
         'content' => 'Existing <a href="/route#segment">link with #segment</a> and a #hashtag.',
         'parsed' => 'Existing <a href="/route#segment">link with #segment</a> and a <span class="text-blue-500">#hashtag</span>.',
     ],
+    [
+        'content' => 'It&#039ll work with html escapes.',
+        'parsed' => 'It&#039ll work with html escapes.',
+    ],
 ]);
