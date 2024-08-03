@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Links\CanFollow;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,6 +16,8 @@ use Livewire\Component;
 
 final class Show extends Component
 {
+    use CanFollow;
+
     /**
      * The component's question ID.
      */
@@ -237,55 +240,6 @@ final class Show extends Component
 
             $like->delete();
         }
-    }
-
-    public function follow(int $targetId): void
-    {
-        if (! auth()->check()) {
-            $this->redirectRoute('login', navigate: true);
-
-            return;
-        }
-
-        $user = type(auth()->user())->as(User::class);
-
-        $target = User::findOrFail($targetId);
-
-        $this->authorize('follow', $target);
-
-        if ($target->followers()->where('follower_id', $user->id)->exists()) {
-            return;
-        }
-
-        $user->following()->attach($targetId);
-
-        $this->dispatch('user.followed');
-    }
-
-    /**
-     * Unfollow the given user.
-     */
-    public function unfollow(int $targetId): void
-    {
-        if (! auth()->check()) {
-            $this->redirectRoute('login', navigate: true);
-
-            return;
-        }
-
-        $user = type(auth()->user())->as(User::class);
-
-        $target = User::findOrFail($targetId);
-
-        $this->authorize('unfollow', $target);
-
-        if ($target->followers()->where('follower_id', $user->id)->doesntExist()) {
-            return;
-        }
-
-        $user->following()->detach($targetId);
-
-        $this->dispatch('user.unfollowed');
     }
 
     /**

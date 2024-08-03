@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\IpUtils;
 
 final class Index extends Component
 {
+    use CanFollow;
+
     /**
      * The component's user ID.
      */
@@ -100,58 +102,6 @@ final class Index extends Component
         $link->update([
             'is_visible' => ! $link->is_visible,
         ]);
-    }
-
-    /**
-     * Follow the given user.
-     */
-    public function follow(int $targetId): void
-    {
-        if (! auth()->check()) {
-            $this->redirectRoute('login', navigate: true);
-
-            return;
-        }
-
-        $user = type(auth()->user())->as(User::class);
-
-        $target = User::findOrFail($targetId);
-
-        $this->authorize('follow', $target);
-
-        if ($target->followers()->where('follower_id', $user->id)->exists()) {
-            return;
-        }
-
-        $user->following()->attach($targetId);
-
-        $this->dispatch('user.followed');
-    }
-
-    /**
-     * Unfollow the given user.
-     */
-    public function unfollow(int $targetId): void
-    {
-        if (! auth()->check()) {
-            $this->redirectRoute('login', navigate: true);
-
-            return;
-        }
-
-        $user = type(auth()->user())->as(User::class);
-
-        $target = User::findOrFail($targetId);
-
-        $this->authorize('unfollow', $target);
-
-        if ($target->followers()->where('follower_id', $user->id)->doesntExist()) {
-            return;
-        }
-
-        $user->following()->detach($targetId);
-
-        $this->dispatch('user.unfollowed');
     }
 
     /**
