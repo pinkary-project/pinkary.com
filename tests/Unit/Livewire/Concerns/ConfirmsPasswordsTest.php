@@ -12,7 +12,7 @@ it('ensures password is confirmed', function () {
     $user = User::factory()->create();
 
     /** @var Testable $component */
-    $component = Livewire::actingAs($user)->test(MyComponent::class);
+    $component = Livewire::actingAs($user)->test(myComponent()::class);
 
     $component->call('someMethod');
     $component->assertDispatched('confirm-password', idToConfirm: 'id-to-confirm');
@@ -24,30 +24,32 @@ it('does not dispatch confirm-password when password is confirmed', function () 
     session()->put('auth.password_confirmed_at', time());
 
     /** @var Testable $component */
-    $component = Livewire::actingAs($user)->test(MyComponent::class);
+    $component = Livewire::actingAs($user)->test(myComponent()::class);
 
     $component->call('someMethod');
     $component->assertNotDispatched('confirm-password', idToConfirm: 'id-to-confirm');
     $component->assertSet('isConfirmed', true);
 });
 
-final class MyComponent extends Component
+function myComponent(): Component
 {
-    use ConfirmsPasswords;
+    return new class () extends Component {
+        use ConfirmsPasswords;
 
-    public bool $isConfirmed = false;
+        public bool $isConfirmed = false;
 
-    public function someMethod()
-    {
-        $this->isConfirmed = $this->ensurePasswordIsConfirmed('id-to-confirm');
-    }
+        public function someMethod()
+        {
+            $this->isConfirmed = $this->ensurePasswordIsConfirmed('id-to-confirm');
+        }
 
-    public function render()
-    {
-        return <<<'HTML'
+        public function render()
+        {
+            return <<<'HTML'
             <div>
                 <button wire:click="someMethod">Click me</button>
             </div>
         HTML;
-    }
+        }
+    };
 }

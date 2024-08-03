@@ -5,24 +5,7 @@ declare(strict_types=1);
 use App\Services\Autocomplete;
 use App\Services\Autocomplete\Types\Mentions;
 use App\Services\Autocomplete\Types\Type;
-
-final readonly class TestType extends Type
-{
-    public function search(string $query): Illuminate\Support\Collection
-    {
-        return new Illuminate\Support\Collection([$query]); // @phpstan-ignore-line
-    }
-
-    public function delimiter(): string
-    {
-        return '/';
-    }
-
-    public function matchExpression(): string
-    {
-        return '[a-z]+';
-    }
-}
+use Tests\Fixtures\TestType;
 
 test('types method returns registered autocomplete types', function () {
     $types = Autocomplete::types();
