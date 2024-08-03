@@ -147,4 +147,4 @@ test('renders trending questions order by trending score', function () {
         'trending question 2',
     ]);
     $component->assertDontSee('trending question 8');
-})->todo();
+});
