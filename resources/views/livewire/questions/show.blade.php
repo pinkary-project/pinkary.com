@@ -11,7 +11,7 @@
                         <p class="font-medium">Anonymously</p>
                     </div>
                 @else
-                    <x-avatar-with-name :user="$question->from"/>
+                    <x-avatar-with-name :user="$question->from" />
                 @endif
             @endunless
             @if ($question->pinned && $pinnable)
@@ -44,8 +44,7 @@
                     data-navigate-ignore="true"
                     wire:navigate
                 >
-                    <figure
-                        class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover/profile:opacity-90">
+                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover/profile:opacity-90">
                         <img
                             src="{{ $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
@@ -116,7 +115,7 @@
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-heroicon-m-pencil class="h-4 w-4" />
+                                    <x-heroicon-m-pencil class="h-4 w-4"/>
                                     <span>Edit</span>
                                 </x-dropdown-button>
                             @endif
@@ -178,11 +177,11 @@
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
-                        href="{{Route('questions.show', [
+                            href="{{Route('questions.show', [
                                 'question' => $question->id,
                                 'username' => $question->to->username,
                             ])}}"
-                        wire:navigate
+                            wire:navigate
                         @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
                         @class([
@@ -218,9 +217,9 @@
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)
-                            <x-heroicon-s-heart class="h-4 w-4" />
+                            <x-heroicon-s-heart class="h-4 w-4"/>
                         @else
-                            <x-heroicon-o-heart class="h-4 w-4" />
+                            <x-heroicon-o-heart class="h-4 w-4"/>
                         @endif
                         @if ($likesCount)
                             <span class="ml-1">
@@ -233,7 +232,7 @@
                         class="inline-flex cursor-help items-center"
                         title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
                     >
-                        <x-icons.chart class="h-4 w-4" />
+                        <x-icons.chart class="h-4 w-4"/>
                         @if ($question->views > 0)
                             <span class="mx-1">
                                 {{ Number::abbreviate($question->views) }}
@@ -250,9 +249,9 @@
                         <button
                             data-navigate-ignore="true"
                             @if ($alreadyFollowing)
-                                wire:click="unfollow"
+                                wire:click="unfollow({{ $question->to->id }})"
                             @else
-                                wire:click="follow"
+                                wire:click="follow({{ $question->to->id }})"
                             @endif
                             x-data="particlesEffect"
                             x-on:click="executeParticlesEffect($event)"
