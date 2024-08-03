@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Services\Autocomplete;
 use App\Services\Autocomplete\Types\Mentions;
-use App\Services\Autocomplete\Types\Type;
 use Tests\Fixtures\TestType;
 
 test('types method returns registered autocomplete types', function () {
