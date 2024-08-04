@@ -14,10 +14,10 @@ final readonly class HashtagProviderParsable implements ParsableContentProvider
     public function parse(string $content): string
     {
         return (string) preg_replace_callback(
-            '/(<a\s+[^>]*>.*?<\/a>)|(?<!&)#([a-z0-9_]+)/i',
+            '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!&)#([a-z0-9_]+)/is',
             fn (array $matches): string => $matches[1] !== ''
                 ? $matches[1]
-                : '<span class="text-blue-500">#'.$matches[2].'</span>',
+                : '<span class="text-blue-500">#'.$matches[3].'</span>',
             $content
         );
     }
