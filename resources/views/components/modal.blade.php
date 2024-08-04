@@ -3,7 +3,7 @@
     'show' => false,
     'maxWidth' => '2xl',
     'showCloseButton' => true,
-    'closeButtonOutsideContent' => false,
+    'closeButtonOutsideModal' => false,
     'shouldCenterModalContent' => false
 ])
 
@@ -16,8 +16,8 @@
         '2xl' => 'sm:max-w-2xl',
     ][$maxWidth];
 
-    $closeButtonPosition = $closeButtonOutsideContent ? 'right-0 -top-10 text-white' : 'right-2 top-2 text-slate-500';
-    $contentOverflowStyle = $closeButtonOutsideContent ? '' : 'overflow-hidden';
+    $closeButtonPosition = $closeButtonOutsideModal ? 'right-0 -top-10 text-white' : 'right-2 top-2 text-slate-500';
+    $contentOverflowStyle = $closeButtonOutsideModal ? '' : 'overflow-hidden';
     $modalContentPosition = $shouldCenterModalContent ? 'flex justify-center items-center' : '';
 @endphp
 
