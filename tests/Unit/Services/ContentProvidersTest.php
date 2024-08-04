@@ -276,7 +276,19 @@ test('hashtags', function (string $content, string $parsed) {
         'parsed' => 'Existing <a href="/route#segment">link with #segment</a> and a <span class="text-blue-500">#hashtag</span>.',
     ],
     [
-        'content' => 'It&#039ll work with html escapes.',
-        'parsed' => 'It&#039ll work with html escapes.',
+        'content' => 'It&#039;ll work with html escapes.',
+        'parsed' => 'It&#039;ll work with html escapes.',
+    ],
+    [
+        'content' => 'It works with <pre style="position: relative;"><code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+        multiline $codeBlocks = <span class="hljs-keyword">true</span>;
+        #comment
+        </code></pre>
+        #hashtag',
+        'parsed' => 'It works with <pre style="position: relative;"><code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+        multiline $codeBlocks = <span class="hljs-keyword">true</span>;
+        #comment
+        </code></pre>
+        <span class="text-blue-500">#hashtag</span>',
     ],
 ]);
