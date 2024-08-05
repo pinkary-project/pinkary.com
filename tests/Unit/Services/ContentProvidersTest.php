@@ -161,6 +161,64 @@ test('links with query params', function (string $content, string $parsed) {
     ],
 ]);
 
+test('links within <pre> and <code> blocks are ignored', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a url</span>
+                    <br>
+                    $url = <span class="hljs-string">'https://example.com/route?param=1'</span>
+                </code>
+            </pre>
+            https://linkoutsidecodeblock.com
+            CODE,
+        'parsed' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a url</span>
+                    <br>
+                    $url = <span class="hljs-string">'https://example.com/route?param=1'</span>
+                </code>
+            </pre>
+            <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://linkoutsidecodeblock.com">linkoutsidecodeblock.com</a>
+            CODE,
+    ],
+]);
+
+test('mentions within <pre> and <code> blocks are ignored', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\MentionProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a mention</span>
+                    <br>
+                    $username = <span class="hljs-string">'@username'</span>
+                </code>
+            </pre>
+            @username
+            CODE,
+        'parsed' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a mention</span>
+                    <br>
+                    $username = <span class="hljs-string">'@username'</span>
+                </code>
+            </pre>
+            <a href="/@username" data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@username</a>
+            CODE,
+    ],
+]);
+
 test('code', function (string $content) {
     $provider = new App\Services\ParsableContentProviders\CodeProviderParsable();
 
