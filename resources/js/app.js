@@ -56,4 +56,7 @@ import { autocomplete, usesAutocomplete } from "./autocomplete.js";
 Alpine.data('dynamicAutocomplete', autocomplete);
 Alpine.data('usesDynamicAutocomplete', usesAutocomplete);
 
+import {lightBox} from './light-box.js';
+Alpine.data('lightBox',lightBox);
+
 Livewire.start()
