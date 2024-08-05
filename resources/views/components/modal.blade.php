@@ -16,8 +16,8 @@
         '2xl' => 'sm:max-w-2xl',
     ][$maxWidth];
 
-    $closeButtonPosition = $closeButtonOutsideModal ? 'right-0 -top-10 text-white' : 'right-2 top-2 text-slate-500';
-    $contentOverflowStyle = $closeButtonOutsideModal ? '' : 'overflow-hidden';
+    $closeButtonPosition = $closeButtonOutsideModal ? 'right-0 -top-10' : 'right-2 top-2';
+    $contentOverflowStyle = ($closeButtonOutsideModal && !$shouldCenterModalContent) ? 'mt-10' : '';
     $modalContentPosition = $shouldCenterModalContent ? 'flex justify-center items-center' : '';
 @endphp
 
@@ -38,6 +38,14 @@
         prevFocusable() { return this.focusables()[this.prevFocusableIndex()] || this.lastFocusable() },
         nextFocusableIndex() { return (this.focusables().indexOf(document.activeElement) + 1) % (this.focusables().length + 1) },
         prevFocusableIndex() { return Math.max(0, this.focusables().indexOf(document.activeElement)) -1 },
+        open(name) {
+            this.show = true;
+            this.$dispatch('modal-opened', name);
+        },
+        close(name) {
+            this.show = false;
+            this.$dispatch('modal-closed', name);
+        }
     }"
     x-init="
         $watch('show', (value) => {
@@ -49,8 +57,8 @@
             }
         })
     "
-    x-on:open-modal.window="$event.detail == '{{ $name }}' ? (show = true) : null"
-    x-on:close-modal.window="$event.detail == '{{ $name }}' ? (show = false) : null"
+    x-on:open-modal.window="$event.detail == '{{ $name }}' ? open('{{ $name }}') : null"
+    x-on:close-modal.window="$event.detail == '{{ $name }}' ? close('{{ $name }}') : null"
     x-on:close.stop="show = false"
     x-on:keydown.escape.window="show = false"
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
@@ -86,7 +94,7 @@
             <button
                 x-show="showCloseButton == true"
                 x-on:click="show = false"
-                class="absolute text-xl focus:outline-none {{$closeButtonPosition}}"
+                class="absolute text-xl focus:outline-none z-50 {{$closeButtonPosition}}"
             >
                 <x-heroicon-o-x-mark class="h-6 w-6" />
             </button>
