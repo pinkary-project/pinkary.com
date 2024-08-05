@@ -69,7 +69,7 @@ it('sets resets avatar state when job fails', function () {
 
     expect($user->avatar)->toBeNull();
     expect($file->getRealPath())->toBeFalse();
-});
+})->skipOnWindows(); // Skipped on Windows because of file permissions
 
 it('accepts different services to download avatar', function () {
     Storage::fake('public');
