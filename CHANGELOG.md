@@ -1,3 +1,8 @@
+## Version 1.36.0
+> 5 August, 2024
+
+- Improves viewing of images on posts.
+
 ## Version 1.35.0
 > 3 August, 2024
 
