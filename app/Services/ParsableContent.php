@@ -22,8 +22,8 @@ final readonly class ParsableContent
      */
     public function __construct(private array $providers = [
         StripProviderParsable::class,
-        ImageProviderParsable::class,
         CodeProviderParsable::class,
+        ImageProviderParsable::class,
         BrProviderParsable::class,
         LinkProviderParsable::class,
         MentionProviderParsable::class,
