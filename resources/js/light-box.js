@@ -3,25 +3,34 @@ const lightBox = () => ({
     imgSrc: '',
     currentIndex: 0,
     images: [],
+    observer: null,
     init() {
         let self = this;
 
         let hasLightboxImageElements = document.querySelectorAll('[data-has-lightbox-images]');
 
         hasLightboxImageElements.forEach((lightboxImageElement) => {
-            let images = lightboxImageElement.querySelectorAll('img');
+            self.registerEventForLightboxElement(lightboxImageElement);
 
-            images.forEach((img, index) => {
-                img.classList.add('cursor-pointer');
-                img.dataset.navigateIgnore = true;
-                img.addEventListener('click', function (e) {
-                    self.currentIndex = index;
-                    self.images = images;
-                    self.updateImageSrc();
-                    self.$dispatch('open-modal', 'image-lightbox');
-                    self.attachKeyboardEvents();
+            if (self.observer === null) {
+                const observer = new MutationObserver((mutations) => {
+                    self.$nextTick(() => {
+                        mutations.forEach((mutation) => {
+                            mutation.addedNodes.forEach((node) => {
+                                if (node.nodeType === 1) {
+                                    self.registerEventForLightboxElement(node);
+                                }
+                            });
+                        });
+                    });
                 });
-            });
+
+                let section = lightboxImageElement.closest('section');
+
+                if (section) {
+                    observer.observe(section, {childList: true, subtree: true});
+                }
+            }
         });
 
         window.addEventListener('modal-opened', (e) => {
@@ -34,6 +43,22 @@ const lightBox = () => ({
             if (e.detail === 'image-lightbox') {
                 this.open = false;
             }
+        });
+    },
+    registerEventForLightboxElement(lightboxImageElement) {
+        let images = lightboxImageElement.querySelectorAll('img');
+        let self = this;
+
+        images.forEach((img, index) => {
+            img.classList.add('cursor-pointer');
+            img.dataset.navigateIgnore = true;
+            img.addEventListener('click', function (e) {
+                self.currentIndex = index;
+                self.images = images;
+                self.updateImageSrc();
+                self.$dispatch('open-modal', 'image-lightbox');
+                self.attachKeyboardEvents();
+            });
         });
     },
     nextImage() {
