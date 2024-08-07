@@ -8,7 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 
-final readonly class QuestionsForYouFeed
+final readonly class QuestionsFollowingFeed
 {
     /**
      * Create a new instance ForYou feed.

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Jobs\IncrementViews;
-use App\Livewire\Home\QuestionsForYou;
+use App\Livewire\Home\QuestionsFollowing;
 use App\Models\User;
 
 it('can see the "for you" view', function () {
@@ -13,7 +13,7 @@ it('can see the "for you" view', function () {
 
     $response->assertOk()
         ->assertSee('For you')
-        ->assertSeeLivewire(QuestionsForYou::class);
+        ->assertSeeLivewire(QuestionsFollowing::class);
 });
 
 it('guest can see the "for you" view', function () {

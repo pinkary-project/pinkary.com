@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Home\QuestionsForYou;
+use App\Livewire\Home\QuestionsFollowing;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
@@ -26,7 +26,7 @@ test('renders questions with likes of authenticated user', function () {
 
     $question->likes()->save($like);
 
-    $component = Livewire::actingAs($user)->test(QuestionsForYou::class);
+    $component = Livewire::actingAs($user)->test(QuestionsFollowing::class);
 
     $component
         ->assertDontSee('We haven\'t found any questions that may interest you based on the activity you\'ve done on Pinkary.')
@@ -45,7 +45,7 @@ test('do not renders questions without likes of authenticated user', function ()
         'to_id' => $user->id,
     ]);
 
-    $component = Livewire::actingAs($user)->test(QuestionsForYou::class);
+    $component = Livewire::actingAs($user)->test(QuestionsFollowing::class);
 
     $component
         ->assertSee('found any questions that may interest you based on the activity')
@@ -57,7 +57,7 @@ test('load more', function () {
 
     Question::factory(120)->create();
 
-    $component = Livewire::actingAs($user)->test(QuestionsForYou::class);
+    $component = Livewire::actingAs($user)->test(QuestionsFollowing::class);
 
     $component->call('loadMore');
     $component->assertSet('perPage', 10);
