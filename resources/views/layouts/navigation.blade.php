@@ -1,5 +1,5 @@
 <nav>
-    <div class="fixed inset-0 flex justify-center md:justify-end md:px-4">
+    <div class="fixed inset-0 h-0 flex justify-center md:justify-end md:px-4">
         <div class="flex h-16 justify-between">
             <div
                 class="flex items-center space-x-2.5"
