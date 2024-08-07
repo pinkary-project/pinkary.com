@@ -2,14 +2,14 @@
     <div class="fixed right-0 top-0 z-50 mx-auto px-4">
         <div class="flex h-16 justify-between">
             <div
-                class="flex items-center"
+                class="flex items-center space-x-2.5"
                 x-data
             >
                 @auth
                     <a
                         title="Home"
                         href="{{ route('home.feed') }}"
-                        class="mr-2"
+                        class=""
                         wire:navigate
                     >
                         <button
@@ -24,7 +24,7 @@
                         title="Source code"
                         target="_blank"
                         href="https://github.com/sponsors/nunomaduro"
-                        class="mr-2"
+                        class=""
                     >
                         <button
                             type="button"
@@ -37,7 +37,7 @@
                     <a
                         title="Profile"
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="mr-2"
+                        class=""
                         wire:navigate
                     >
                         <button
@@ -51,7 +51,7 @@
                     <a
                         title="Bookmarks"
                         href="{{ route('bookmarks.index') }}"
-                        class="mr-2"
+                        class=""
                         wire:navigate
                     >
                         <button
@@ -65,7 +65,7 @@
                     <a
                         title="Notifications"
                         href="{{ route('notifications.index') }}"
-                        class="mr-2"
+                        class=""
                         wire:navigate
                     >
                         <button
