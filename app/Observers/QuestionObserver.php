@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
 use App\Notifications\UserMentioned;
+use App\Services\QuestionHashtagSyncer;
 
 final readonly class QuestionObserver
 {
@@ -30,6 +31,8 @@ final readonly class QuestionObserver
             $question->loadMissing('to');
             $question->to->notify(new QuestionCreated($question));
         }
+
+        (new QuestionHashtagSyncer($question))->sync();
     }
 
     /**
@@ -45,6 +48,10 @@ final readonly class QuestionObserver
 
         if ($question->answer !== null) {
             $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        }
+
+        if ($question->isDirty(['answer', 'content'])) {
+            (new QuestionHashtagSyncer($question))->sync();
         }
 
         if ($question->isDirty('answer') === false) {
@@ -72,5 +79,7 @@ final readonly class QuestionObserver
         });
 
         $question->children->each->delete();
+
+        $question->hashtags()->detach();
     }
 }
