@@ -157,7 +157,7 @@
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
-                    <p data-has-lightbox-images>
+                    <p x-data="hasLightBoxImages">
                         {!! $question->answer !!}
                     </p>
                 </div>
