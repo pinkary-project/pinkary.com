@@ -4,7 +4,7 @@
 @endphp
 
 <nav>
-    <div class="{{$navClasses}}">
+    <div class="{{ $navClasses }}">
         <div class="flex h-16 justify-between">
             <div
                 class="flex items-center space-x-2.5"
