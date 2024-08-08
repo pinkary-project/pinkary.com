@@ -307,7 +307,7 @@ test('hashtags are synced when updated and the answer is dirty', function () {
     ]);
 });
 
-test('hashtags are detached when updated', function () {
+test('missing hashtags are detached when updated', function () {
     $question = Question::factory()->create([
         'answer' => '#hashtag1 #hashtag2',
     ]);
