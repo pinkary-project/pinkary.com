@@ -268,3 +268,90 @@ test('deleted', function () {
     expect($question->children()->count())->toBe(0);
     expect(Question::where('answer', 'grandchild')->count())->toBe(0);
 });
+
+test('hashtags are synced when created', function () {
+    $question = Question::factory()->create([
+        'answer' => 'This answer has a #hashtag.'
+    ]);
+
+    expect($question->hashtags->pluck('name')->all())->toBe([
+        'hashtag',
+    ]);
+});
+
+test('hashtags are synced when updated and the content is dirty', function () {
+    $question = Question::factory()->create();
+
+    expect($question->hashtags)->toBeEmpty();
+
+    $question->update([
+        'content' => 'The content now has a #hashtag.',
+    ]);
+
+    expect($question->refresh()->hashtags->pluck('name')->all())->toBe([
+        'hashtag',
+    ]);
+});
+
+test('hashtags are synced when updated and the answer is dirty', function () {
+    $question = Question::factory()->create();
+
+    expect($question->hashtags)->toBeEmpty();
+
+    $question->update([
+        'answer' => 'The answer now has a #hashtag.',
+    ]);
+
+    expect($question->refresh()->hashtags->pluck('name')->all())->toBe([
+        'hashtag',
+    ]);
+});
+
+test('hashtags are detached when updated', function () {
+    $question = Question::factory()->create([
+        'answer' => '#hashtag1 #hashtag2'
+    ]);
+
+    expect($question->refresh()->hashtags->pluck('name')->all())->toBe([
+        'hashtag1',
+        'hashtag2',
+    ]);
+
+    $question->update([
+        'answer' => '#hashtag1',
+    ]);
+
+    expect($question->refresh()->hashtags->pluck('name')->all())->toBe([
+        'hashtag1',
+    ]);
+
+    $question->update([
+        'answer' => 'No hashtags anymore...',
+    ]);
+
+    expect($question->refresh()->hashtags)->toBeEmpty();
+});
+
+test('hashtags are detached when reported', function () {
+    $question = Question::factory()->create([
+        'answer' => '#hashtag1'
+    ]);
+
+    $question->update([
+        'is_reported' => true,
+    ]);
+
+    expect($question->hashtags)->toBeEmpty();
+});
+
+test('hashtags are detached when ignored', function () {
+    $question = Question::factory()->create([
+        'answer' => '#hashtag1'
+    ]);
+
+    $question->update([
+        'is_ignored' => true,
+    ]);
+
+    expect($question->hashtags)->toBeEmpty();
+});
