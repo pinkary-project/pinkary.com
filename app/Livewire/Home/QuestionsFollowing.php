@@ -27,7 +27,7 @@ final class QuestionsFollowing extends Component
         IncrementViews::dispatchUsingSession($questions->getCollection());
 
         return view('livewire.home.questions-following', [
-            'forYouQuestions' => $questions,
+            'followingQuestions' => $questions,
         ]);
     }
 }

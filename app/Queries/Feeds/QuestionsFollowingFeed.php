@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 final readonly class QuestionsFollowingFeed
 {
     /**
-     * Create a new instance ForYou feed.
+     * Create a new instance Following feed.
      */
     public function __construct(
         private User $user,
