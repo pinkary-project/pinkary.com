@@ -7,11 +7,10 @@ const imageUpload = () => ({
     textarea: null,
 
     init() {
+        this.textarea = this.$el.querySelector('textarea[x-ref="content"]');
         if (this.$refs.imageButton !== undefined) {
             this.setupListeners();
         }
-
-        this.textarea = this.$el.querySelector('textarea[x-ref="content"]');
     },
 
     setupListeners() {
@@ -24,6 +23,8 @@ const imageUpload = () => ({
             this.checkFileSize(event.target.files);
             event.target.value = '';
         });
+
+        this.textarea.addEventListener('paste', this.handleImagePaste.bind(this));
 
         Livewire.on('image.uploaded', (event) => {
             this.createMarkdownImage(event);
@@ -40,6 +41,24 @@ const imageUpload = () => ({
                 this.addErrors(errors);
             }
         });
+    },
+
+    handleImagePaste(event) {
+        const dataTransfer = new DataTransfer();
+        for (const item of event.clipboardData.items) {
+            if (item === null || item.kind !== 'file') {
+                return;
+            }
+
+            if (!item.type.startsWith('image/')) {
+                this.addErrors(['The file must be an image.']);
+                return;
+            }
+
+            dataTransfer.items.add(item.getAsFile());
+        }
+
+        this.checkFileSize(dataTransfer.files);
     },
 
     addErrors(errors) {
