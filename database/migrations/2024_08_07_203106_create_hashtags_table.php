@@ -15,13 +15,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hashtags', function (Blueprint $table) {
+        Schema::create('hashtags', function (Blueprint $table): void {
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
         });
 
-        Schema::create('hashtag_question', function (Blueprint $table) {
+        Schema::create('hashtag_question', function (Blueprint $table): void {
             $table->id();
             $table->foreignIdFor(Hashtag::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Question::class)->constrained()->cascadeOnDelete();
