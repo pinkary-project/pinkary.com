@@ -271,7 +271,7 @@ test('deleted', function () {
 
 test('hashtags are synced when created', function () {
     $question = Question::factory()->create([
-        'answer' => 'This answer has a #hashtag.'
+        'answer' => 'This answer has a #hashtag.',
     ]);
 
     expect($question->hashtags->pluck('name')->all())->toBe([
@@ -309,7 +309,7 @@ test('hashtags are synced when updated and the answer is dirty', function () {
 
 test('hashtags are detached when updated', function () {
     $question = Question::factory()->create([
-        'answer' => '#hashtag1 #hashtag2'
+        'answer' => '#hashtag1 #hashtag2',
     ]);
 
     expect($question->refresh()->hashtags->pluck('name')->all())->toBe([
@@ -334,7 +334,7 @@ test('hashtags are detached when updated', function () {
 
 test('hashtags are detached when reported', function () {
     $question = Question::factory()->create([
-        'answer' => '#hashtag1'
+        'answer' => '#hashtag1',
     ]);
 
     $question->update([
@@ -346,7 +346,7 @@ test('hashtags are detached when reported', function () {
 
 test('hashtags are detached when ignored', function () {
     $question = Question::factory()->create([
-        'answer' => '#hashtag1'
+        'answer' => '#hashtag1',
     ]);
 
     $question->update([
