@@ -1,3 +1,8 @@
+## Version 1.36.1
+> 8 August, 2024
+
+- Internal improvements and bug fixes.
+  
 ## Version 1.36.0
 > 5 August, 2024
 
