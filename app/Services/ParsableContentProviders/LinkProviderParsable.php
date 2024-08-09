@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\ParsableContentProviders;
 
 use App\Contracts\Services\ParsableContentProvider;
+use App\Services\MetaData;
 
 final readonly class LinkProviderParsable implements ParsableContentProvider
 {
@@ -25,6 +26,17 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                 }
 
                 $url = $isMail ? 'mailto:'.$humanUrl : $url;
+
+                if (! $isMail && $url) {
+                    $metadata = MetaData::fetch($url);
+
+                    if ($metadata->isNotEmpty()) {
+                        return view('components.link-preview-card', [
+                            'data' => $metadata,
+                            'url' => $url,
+                        ])->render();
+                    }
+                }
 
                 return '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
             },
