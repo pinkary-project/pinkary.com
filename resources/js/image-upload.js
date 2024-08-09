@@ -52,7 +52,7 @@ const imageUpload = () => ({
         // prevent default behavior to avoid pasting the title of the image
         event.preventDefault();
 
-        // build out the file list from the clipboard
+        // build out the file list from the clipboard, filtering only for images.
         const dataTransfer = new DataTransfer();
         for (const item of event.clipboardData.files) {
             if (!item.type.startsWith('image/')) {
