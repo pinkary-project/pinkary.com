@@ -44,18 +44,23 @@ const imageUpload = () => ({
     },
 
     handleImagePaste(event) {
-        const dataTransfer = new DataTransfer();
-        for (const item of event.clipboardData.items) {
-            if (item === null || item.kind !== 'file') {
-                return;
-            }
+        // if no files, handle paste event as normal
+        if (event.clipboardData.files.length === 0) {
+            return;
+        }
 
+        // prevent default behavior to avoid oasting the title of the image
+        event.preventDefault();
+
+        // build out the file list from the clipboard
+        const dataTransfer = new DataTransfer();
+        for (const item of event.clipboardData.files) {
             if (!item.type.startsWith('image/')) {
                 this.addErrors(['The file must be an image.']);
                 return;
             }
 
-            dataTransfer.items.add(item.getAsFile());
+            dataTransfer.items.add(item);
         }
 
         this.checkFileSize(dataTransfer.files);
