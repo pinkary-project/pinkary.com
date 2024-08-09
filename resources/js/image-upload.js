@@ -49,7 +49,7 @@ const imageUpload = () => ({
             return;
         }
 
-        // prevent default behavior to avoid oasting the title of the image
+        // prevent default behavior to avoid pasting the title of the image
         event.preventDefault();
 
         // build out the file list from the clipboard
