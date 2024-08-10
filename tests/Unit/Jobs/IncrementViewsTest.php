@@ -9,7 +9,9 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Eloquent\Collection;
 
 it('increments models when not viewed before', function () {
-    $models = Question::factory()->count(3)->create(['views' => 0]);
+    $models = Question::factory()->count(3)
+        ->hasAnswer()
+        ->create(['views' => 0]);
 
     $user = User::factory()->create();
 
@@ -20,7 +22,9 @@ it('increments models when not viewed before', function () {
 });
 
 it('caches viewed items', function () {
-    $models = Question::factory()->count(3)->create(['views' => 0]);
+    $models = Question::factory()->count(3)
+        ->hasAnswer()
+        ->create(['views' => 0]);
 
     $user = User::factory()->create();
 
@@ -58,7 +62,9 @@ it('releases lock when exception occurs', function () {
 })->throws(LockTimeoutException::class);
 
 it('caches using session id when no user', function () {
-    $models = Question::factory()->count(3)->create(['views' => 0]);
+    $models = Question::factory()->count(3)
+        ->hasAnswer()
+        ->create(['views' => 0]);
 
     Session::shouldReceive('getId')->andReturn('session-id');
 

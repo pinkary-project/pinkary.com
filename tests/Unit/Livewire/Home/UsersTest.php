@@ -75,20 +75,19 @@ test('order by the number of answered questions', function () {
         'description' => 'twitter',
     ]);
 
-    $nuno->questionsReceived()->createMany([[
+    $nuno->questionsReceived()
+        ->createMany([[
         'from_id' => $punyapal->id,
         'content' => 'What is the best PHP framework?',
-        'answer' => 'Laravel',
     ], [
         'from_id' => $punyapal->id,
         'content' => 'What is the best PHP testing framework?',
-        'answer' => 'Pest',
     ]]);
 
-    $punyapal->questionsReceived()->create([
+    $punyapal->questionsReceived()
+        ->create([
         'from_id' => $nuno->id,
         'content' => 'What is the best PHP frontend framework?',
-        'answer' => 'Livewire',
     ]);
 
     $component = Livewire::test(Users::class);
@@ -116,14 +115,14 @@ test('default users should have 2 verified users', function () {
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
+        ->hasQuestionsReceived(1, ['content' => 'this is a question'])
         ->create();
 
     User::factory(10)
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
+        ->hasQuestionsReceived(1, ['content' => 'this is a question'])
         ->create();
 
     $component = Livewire::test(Users::class);
@@ -139,14 +138,14 @@ test('default users should be from top 50 famous users', function () {
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
+        ->hasQuestionsReceived(2, ['content' => 'this is a question'])
         ->create();
 
     User::factory()
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
+        ->hasQuestionsReceived(1, ['content' => 'this is a question'])
         ->create(['name' => 'Adam Lee']);
 
     $component = Livewire::test(Users::class);
@@ -162,7 +161,7 @@ test('famous users are cached for a day', function () {
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
+        ->hasQuestionsReceived(2, ['content' => 'this is a question'])
         ->create();
 
     Cache::forget('top-50-users');
@@ -181,7 +180,7 @@ test('cached famous users are refreshed after a day', function () {
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
+        ->hasQuestionsReceived(2, ['content' => 'this is a question'])
         ->create();
 
     Cache::forget('top-50-users');
@@ -196,7 +195,7 @@ test('cached famous users are refreshed after a day', function () {
         ->hasLinks(1, function (array $attributes, User $user) {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
-        ->hasQuestionsReceived(3, ['answer' => 'this is an answer'])
+        ->hasQuestionsReceived(3, ['content' => 'this is a question'])
         ->create();
 
     $this->assertFalse(Cache::has('top-50-users'));

@@ -75,7 +75,9 @@ it('do not render questions without answer', function () {
 
     $content = 'Question to the question that needs to be rendered';
 
-    $questionWithLike = Question::factory()->create([
+    $questionWithLike = Question::factory()
+        ->hasAnswer()
+        ->create([
         'to_id' => $userTo->id,
         'content' => $content,
         'is_reported' => false,

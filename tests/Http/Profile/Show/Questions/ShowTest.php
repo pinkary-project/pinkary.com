@@ -29,6 +29,8 @@ test('auth', function () {
 
     $question = Question::factory()->create([
         'content' => 'This is the answer',
+        'to_id' => $user->id,
+        'from_id' => $user->id,
         'is_update' => true,
     ]);
 

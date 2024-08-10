@@ -31,6 +31,7 @@ test('only renders questions with answers if user is not auth user', function ()
     $questions = Question::factory(3)->create([
         'from_id' => $userA->id,
         'to_id' => $userB->id,
+        'is_update' => true,
     ]);
 
     $component = Livewire::actingAs($userA)->test(Index::class, [
@@ -56,7 +57,7 @@ test('only renders questions with answers if user is not auth user', function ()
 
     $component->dispatch('question.updated');
 
-    $component->assertSee($question->content);
+    $component->assertSee($question->answer->content);
 });
 
 test('do not render reported questions', function () {
@@ -143,12 +144,16 @@ test('load more', function () {
 test('pinned question is displayed at the top', function () {
     $user = User::factory()->create();
 
-    $pinnedQuestion = Question::factory()->create([
+    $pinnedQuestion = Question::factory()
+        ->hasAnswer()
+        ->create([
         'pinned' => true,
         'to_id' => $user->id,
     ]);
 
-    $otherQuestions = Question::factory()->count(10)->create(['to_id' => $user->id, 'answer_created_at' => now()]);
+    $otherQuestions = Question::factory()->count(10)
+        ->hasAnswer()
+        ->create(['to_id' => $user->id]);
 
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
