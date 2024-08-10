@@ -9,7 +9,7 @@ use Livewire\Livewire;
 
 test('renders questions with answers', function () {
     Question::factory()
-        ->hasAnswer()
+        ->hasAnswer(['content' => 'This is the answer'])
         ->create();
 
     $component = Livewire::test(Feed::class);
@@ -121,7 +121,9 @@ it('displays questions from users I am following', function () {
 test('refresh', function () {
     $component = Livewire::test(Feed::class);
 
-    Question::factory()->create([
+    Question::factory()
+        ->hasAnswer()
+        ->create([
         'content' => 'This is the answer',
     ]);
 
