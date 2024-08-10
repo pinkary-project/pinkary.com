@@ -4,17 +4,17 @@
             <div class="w-full">
                 <div class="mb-1">
                     <label
-                        for="{{ 'edit_update_'.$question->id }}"
+                        for="{{ 'answer_question_'.$question->id }}"
                         class="sr-only"
                         >Answer</label
                     >
 
                     <textarea
-                        id="{{ 'edit_update_'.$question->id }}"
+                        id="{{ 'answer_question_'.$question->id }}"
                         wire:model="content"
                         x-autosize
                         class="h-24 w-full resize-none border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
-                        placeholder="Edit your update..."
+                        placeholder="Write your answer..."
                         maxlength="1000"
                         rows="3"
                     ></textarea>
@@ -36,6 +36,24 @@
                         >
                             {{ __('Send') }}
                         </x-primary-colorless-button>
+                        @if (! $question->is_reported)
+                            @if (! $question->answer)
+                                <button
+                                    wire:click.prevent="ignore"
+                                    wire:confirm="Are you sure you want to ignore this question?"
+                                    class="text-slate-400 hover:text-slate-500 focus:outline-none"
+                                >
+                                    Ignore
+                                </button>
+                                <button
+                                    wire:click.prevent="report"
+                                    wire:confirm="Are you sure you want to report this question?"
+                                    class="text-slate-400 hover:text-red-500 focus:outline-none"
+                                >
+                                    Report
+                                </button>
+                            @endif
+                        @endif
                     </div>
                 </div>
             </div>
