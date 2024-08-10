@@ -11,21 +11,28 @@ use Illuminate\Database\Eloquent\Builder;
 it('render questions with right conditions', function () {
     $user = User::factory()->create();
 
-    $question = Question::factory()->create([
+    $question1 = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
         'is_ignored' => false,
         'is_reported' => false,
+        'is_update' => true,
     ]);
 
-    Like::factory()->create([
-        'user_id' => $user->id,
-        'question_id' => $question->id,
+    $question2 = Question::factory()
+        ->hasAnswer()
+        ->create([
+        'from_id' => User::factory()->create()->id,
+        'to_id' => $user->id,
+        'is_ignored' => false,
+        'is_reported' => false,
+        'is_update' => false,
     ]);
+
 
     $builder = (new RecentQuestionsFeed())->builder();
 
-    expect($builder->count())->toBe(1);
+    expect($builder->count())->toBe(2);
 });
 
 it('do not render ignored questions', function () {
