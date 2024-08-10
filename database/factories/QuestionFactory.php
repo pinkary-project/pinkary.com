@@ -27,9 +27,8 @@ final class QuestionFactory extends Factory
             'to_id' => User::factory(),
             'content' => $this->faker->sentence,
             'anonymously' => $this->faker->boolean,
-            'answer' => $this->faker->sentence,
-            'answer_created_at' => $this->faker->dateTime,
             'pinned' => false,
+            'is_update' => false,
             'views' => $this->faker->numberBetween(0, 1000),
         ];
     }
@@ -40,8 +39,7 @@ final class QuestionFactory extends Factory
     public function sharedUpdate(): self
     {
         return $this->state(fn (array $attributes): array => [
-            'content' => '__UPDATE__',
-            'answer' => $this->faker->sentence,
+            'content' => $this->faker->sentence,
         ]);
     }
 }
