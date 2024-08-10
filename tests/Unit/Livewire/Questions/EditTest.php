@@ -9,10 +9,7 @@ use App\Models\User;
 use Livewire\Livewire;
 
 beforeEach(function () {
-    $this->question = Question::factory()->create([
-        'answer' => null,
-        'answer_created_at' => null,
-    ]);
+    $this->question = Question::factory()->create();
 
     $this->actingAs($this->question->to);
 });
@@ -22,7 +19,7 @@ test('render', function () {
         'questionId' => $this->question->id,
     ]);
 
-    $component->assertSee('Write your answer...');
+    $component->assertSee('Edit your update...');
 });
 
 test('update', function () {
@@ -30,11 +27,11 @@ test('update', function () {
         'questionId' => $this->question->id,
     ]);
 
-    $component->set('answer', 'Hello World');
+    $component->set('content', 'Hello World');
 
     $component->call('update');
 
-    expect($this->question->fresh()->answer)->toBe('Hello World');
+    expect($this->question->fresh()->content)->toBe('Hello World');
 });
 
 test('update auth', function () {
@@ -44,7 +41,7 @@ test('update auth', function () {
 
     $this->actingAs(User::factory()->create());
 
-    $component->set('answer', 'Hello World');
+    $component->set('content', 'Hello World');
 
     $component->call('update');
 
@@ -95,32 +92,34 @@ test('cannot update with blank characters', function () {
 
     $this->actingAs(User::factory()->create());
 
-    $component->set('answer', "\u{200E}");
+    $component->set('content', "\u{200E}");
 
     $component->call('update');
 
     $component->assertHasErrors([
-        'answer' => 'The answer field cannot contain blank characters.',
+        'content' => 'The content field cannot contain blank characters.',
     ]);
 });
 
-test('can edit a question that has an answer', function () {
+test('can edit a question that is an update', function () {
     $this->question->update([
-        'answer' => 'foo',
-        'answer_created_at' => now(),
+        'content' => 'foo',
+        'is_update' => true,
+        'from_id' => $this->question->to->id,
+        'updated_at' => now(),
+        'created_at' => now()->subHour()
     ]);
 
     Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ])
-        ->set('answer', 'Hello World')
+        ->set('content', 'Hello World')
         ->call('update')
-        ->assertDispatched('notification.created', message: 'Answer updated.')
-        ->assertDispatched('close-modal', "question.edit.answer.{$this->question->id}")
+        ->assertDispatched('notification.created', message: 'Update Edited.')
+        ->assertDispatched('close-modal', "question.edit.update.{$this->question->id}")
         ->assertDispatched('question.updated');
 
-    expect($this->question->fresh()->answer)->toBe('Hello World');
-    expect($this->question->fresh()->answer_updated_at)->not->toBeNull();
+    expect($this->question->fresh()->content)->toBe('Hello World');
 
     Livewire::test(Show::class, [
         'questionId' => $this->question->id,
@@ -129,23 +128,24 @@ test('can edit a question that has an answer', function () {
         ->assertSee('Edited');
 });
 
-test('edited questions display raw answers in the form', function () {
+test('edited questions display raw content in the form', function () {
     $this->question->update([
-        'answer' => "Hello @{$this->question->from->username} - How are you doing?",
-        'answer_created_at' => now(),
+        'content' => "Hello @{$this->question->from->username} - How are you doing?",
+        'is_update' => true,
     ]);
 
     Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ])
         ->assertSeeHtml("Hello @{$this->question->from->username} - How are you doing?")
-        ->assertSet('answer', "Hello @{$this->question->from->username} - How are you doing?");
+        ->assertSet('content', "Hello @{$this->question->from->username} - How are you doing?");
 });
 
-test('likes are reset when an answer is updated', function () {
+test('likes are reset when an content is updated', function () {
     $this->question->update([
-        'answer' => 'foo',
-        'answer_created_at' => now(),
+        'content' => 'foo',
+        'from_id' => $this->question->to->id,
+        'is_update' => true,
     ]);
 
     $this->question->likes()->create([
@@ -157,7 +157,7 @@ test('likes are reset when an answer is updated', function () {
     Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ])
-        ->set('answer', 'Hello World')
+        ->set('content', 'Hello World')
         ->call('update');
 
     expect($this->question->likes()->count())->toBe(0);
@@ -165,16 +165,20 @@ test('likes are reset when an answer is updated', function () {
 
 test('cannot edit an answer after 24 hours', function () {
     $this->question->update([
-        'answer' => 'foo',
-        'answer_created_at' => now()->subHours(25),
+        'content' => 'foo',
+        'is_update' => true,
+        'from_id' => $this->question->to_id,
+        'created_at' => now()->subHours(25),
     ]);
+
+    $this->question->fresh();
 
     Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ])
-        ->set('answer', 'Hello World')
+        ->set('content', 'Hello World')
         ->call('update')
-        ->assertDispatched('notification.created', message: 'Answer cannot be edited after 24 hours.');
+        ->assertDispatched('notification.created', message: 'Posts cannot be edited after 24 hours.');
 });
 
 test('cannot answer a question that has been reported or ignored', function () {
@@ -186,7 +190,7 @@ test('cannot answer a question that has been reported or ignored', function () {
         'questionId' => $this->question->id,
     ]);
 
-    $component->set('answer', 'Hello World');
+    $component->set('content', 'Hello World');
 
     $component->call('update');
 

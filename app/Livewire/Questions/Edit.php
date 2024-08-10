@@ -23,7 +23,7 @@ final class Edit extends Component
     /**
      * The component's answer.
      */
-    public string $answer = '';
+    public string $content = '';
 
     /**
      * Mount the component.
@@ -32,8 +32,8 @@ final class Edit extends Component
     {
         $this->questionId = $questionId;
         $question = Question::findOrFail($questionId);
-        $rawAnswer = $question->getRawOriginal('answer');
-        $this->answer = is_string($rawAnswer) ? $rawAnswer : '';
+        $rawContent = $question->getRawOriginal('content');
+        $this->content = is_string($rawContent) ? $rawContent : '';
     }
 
     /**
@@ -42,48 +42,48 @@ final class Edit extends Component
     public function update(Request $request): void
     {
         $validated = $this->validate([
-            'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
+            'content' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
 
         $user = type($request->user())->as(User::class);
 
         $question = Question::query()
+            ->whereDoesntHave('answer')
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->find($this->questionId);
 
-        $originalAnswer = $question->answer ?? null;
-
-        if (is_null($question)) {
+        if ($question === null) {
             $this->dispatch('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
             $this->redirectRoute('profile.show', ['username' => $user->username], navigate: true);
 
             return;
         }
 
-        if ($question->answer_created_at !== null && $question->answer_created_at->diffInHours(now()) > 24) {
-            $this->dispatch('notification.created', message: 'Answer cannot be edited after 24 hours.');
+        if ($question->isSharedUpdate() && $question->created_at->diffInHours(now()) > 24) {
+            $this->dispatch('notification.created', message: 'Posts cannot be edited after 24 hours.');
 
             return;
         }
 
         $this->authorize('update', $question);
 
-        if ($originalAnswer === null) {
-            $validated['answer_created_at'] = now();
-        } else {
-            $validated['answer_updated_at'] = now();
-        }
+        $question->content = $validated['content'];
+        $question->is_update = $question->isSharedUpdate();
 
-        $question->update($validated);
-
-        if ($originalAnswer !== null) {
+        if ($question->isDirty('content')) {
             $question->likes()->delete();
-
-            $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
+            $this->dispatch('close-modal', "question.edit.update.{$question->id}");
         }
 
-        $this->dispatch('notification.created', message: $originalAnswer === null ? 'Question answered.' : ($question->isSharedUpdate() ? 'Post updated.' : 'Answer updated.'));
+        $message = match (true) {
+            $question->isDirty('content') => 'Update Edited.',
+            default => 'Update shared.',
+        };
+
+        $question->save();
+
+        $this->dispatch('notification.created', message: $message);
         $this->dispatch('question.updated');
     }
 
