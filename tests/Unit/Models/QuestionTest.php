@@ -73,7 +73,9 @@ test('mentions when there is no answer', function () {
 });
 
 test('increment views', function () {
-    $question = Question::factory()->create([
+    $question = Question::factory()
+        ->hasAnswer()
+        ->create([
         'content' => 'Hello',
         'views' => 0,
     ]);
