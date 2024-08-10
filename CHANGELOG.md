@@ -1,3 +1,120 @@
+## Version 1.36.1
+> 8 August, 2024
+
+- Internal improvements and bug fixes.
+  
+## Version 1.36.0
+> 5 August, 2024
+
+- Improves viewing of images on posts.
+
+## Version 1.35.0
+> 3 August, 2024
+
+- Improves trending algorithm.
+
+## Version 1.34.0
+> 2 August, 2024
+
+- Improves trending algorithm.
+- Internal improvements and bug fixes.
+
+## Version 1.33.0
+> 1 August, 2024
+
+- Infinite scrolling on the trending page.
+- Fixes buttons on links in the user's profile.
+- Internal improvements and bug fixes.
+
+## Version 1.32.0
+> 31 July, 2024
+
+- Adds mentions autocomplete to the post editor.
+
+## Version 1.31.0
+> 30 July, 2024
+
+- Makes `/` the default route for feeds.
+
+## Version 1.30.0
+> 30 July, 2024
+
+- Added 2FA
+
+## Version 1.29.0
+> 29 July, 2024
+
+- Internal improvements and bug fixes.
+- Preserves the state of written answers when the user navigates.
+
+## Version 1.28.0
+> 27 July, 2024
+
+- Allows up to 3 uploaded images in a post.
+
+## Version 1.27.0
+> 24 July, 2024
+
+- Allows to hide links in the user's profile.
+
+## Version 1.26.0
+> 23 July, 2024
+
+- Opens image uploads to everyone.
+
+## Version 1.25.0
+> 21 July, 2024
+
+- Verified accounts now can upload an image to their posts.
+
+## Version 1.24.1
+> 18 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.24
+> 18 July, 2024
+
+- Adds edit links
+- Trending logic improvements
+- Internal improvements and bug fixes
+
+## Version 1.23.5
+> 16 July, 2024
+
+- Adds bookmarks
+
+## Version 1.23.5
+> 14 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.4
+> 13 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.3
+> 12 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.2
+> 11 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23.1
+> 10 July, 2024
+
+- Internal improvements and bug fixes.
+
+## Version 1.23
+> 10 July, 2024
+
+- Improves design of feeds
+- Improves following / followers sorting
+
 ## Version 1.22.2
 > 10 July, 2024
 

@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Process;
 
 it('guest', function () {
-    $response = $this->get('/');
+    $response = $this->get('/about');
 
     $response
         ->assertOk()
@@ -17,7 +17,7 @@ it('guest', function () {
 it('auth', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->get('/');
+    $response = $this->actingAs($user)->get('/about');
 
     $response
         ->assertOk()
@@ -26,7 +26,7 @@ it('auth', function () {
 });
 
 it('displays login button', function () {
-    $response = $this->get('/');
+    $response = $this->get('/about');
 
     $response
         ->assertOk()
@@ -39,7 +39,7 @@ it('displays "Your Profile" when logged in', function () {
 
     $this->actingAs($user);
 
-    $response = $this->get('/');
+    $response = $this->get('/about');
 
     $response
         ->assertOk()
@@ -48,7 +48,7 @@ it('displays "Your Profile" when logged in', function () {
 });
 
 it('displays terms of service and privacy policy', function () {
-    $response = $this->get('/');
+    $response = $this->get('/about');
 
     $response
         ->assertOk()
@@ -65,7 +65,7 @@ it('displays the current version of the app', function () {
         ),
     ]);
 
-    $this->get('/')
+    $this->get('/about')
         ->assertOk()
         ->assertSee('v1.0.0');
 });

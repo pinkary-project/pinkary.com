@@ -147,7 +147,6 @@ test('fetches github avatar if no custom avatar uploaded', function () {
         ->and($user->is_verified)->toBeFalse()
         ->and($user->avatar)->toContain('avatars/')
         ->and($user->avatar)->toContain('.png')
-        ->and($user->avatar)->toContain('storage/')
         ->and($user->avatar_updated_at)->not()->toBeNull()
         ->and($user->is_uploaded_avatar)->toBeFalse();
 

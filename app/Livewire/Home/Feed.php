@@ -31,6 +31,9 @@ final class Feed extends Component
         $this->dispatch('question.ignored');
     }
 
+    /**
+     * Refresh the feed.
+     */
     #[On('question.created')]
     public function refresh(): void {}
 

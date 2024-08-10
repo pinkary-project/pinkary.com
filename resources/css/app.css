@@ -9,10 +9,6 @@
     padding-right: 1rem;
 }
 
-.answer>pre {
-    padding-top: 1rem;
-}
-
 .hover\:darken-gradient:hover {
     filter: saturate(2.5);
 }
@@ -27,6 +23,34 @@ particleEffect {
     border-radius: 50%;
 }
 
+::-webkit-scrollbar {
+    height: 5px;
+    width: 5px
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-700;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c9cbcd
+}
+
+.dark ::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    @apply bg-gray-600;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+}
 
 @tailwind base;
 @tailwind components;

@@ -12,7 +12,7 @@
                                         'bg-slate-900 hover:bg-slate-800': !open }"
                                     class="mr-2 flex size-10 items-center justify-center rounded-lg text-slate-300 hover:text-white transition duration-150 ease-in-out "
                     >
-                        <x-icons.share class="size-5" />
+                        <x-heroicon-o-share class="size-5" />
                     </button>
                 </x-slot>
 
@@ -24,7 +24,7 @@
                         type="button"
                         class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     >
-                        <x-icons.link class="size-5" />
+                        <x-heroicon-o-link class="size-5" />
                     </button>
                     <button
                         x-data="copyUrl"
@@ -37,7 +37,7 @@
                         type="button"
                         class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
                     >
-                        <x-icons.link class="size-5" />
+                        <x-heroicon-o-link class="size-5" />
                     </button>
                     <button
                         x-data="shareProfile"
@@ -118,7 +118,7 @@
                     wire:navigate
                     title="Upload Avatar"
                 >
-                    <x-icons.camera class="size-5" />
+                    <x-heroicon-o-camera class="size-5" />
                 </button>
             @endif
         </div>
@@ -229,38 +229,83 @@
                 >
                     @foreach ($links as $link)
                         <li
-                            class="hover:darken-gradient group flex bg-gradient-to-r"
+                            class="relative h-12 hover:darken-gradient group flex {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }} overflow-hidden"
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
+                            x-data="{ showActions: false }"
+                            x-on:click.outside="showActions = false"
                         >
                             <div
                                 x-sortable-handle
-                                class="flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                class="absolute left-0 sm:-left-10 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none group-hover:left-0 transition-all duration-500 z-10"
                             >
-                                <x-icons.sortable-handle class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
+                                <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
-                            <x-links.list-item
-                                :$user
-                                :$link
-                            />
+                            <div class="flex-grow flex items-center justify-center transition-all duration-500"
+                                x-bind:class="{ 'group-hover:-translate-x-full' : showActions }"
+                            >
+                                <x-links.list-item :$user :$link />
+                            </div>
 
-                            <div class="flex items-center justify-center">
+                            <div
+                                x-on:click="showActions = !showActions"
+                                x-bind:class="{ 'invisible': isDragging }"
+                                class="absolute right-0 sm:-right-10 top-0 bottom-0 flex w-11 cursor-pointer items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none transition-all duration-500 z-10 group-hover:right-0"
+                            >
+                                <x-heroicon-o-chevron-double-left class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                    x-bind:class="{ 'rotate-180': showActions }"
+                                    x-cloak
+                                />
+                            </div>
+
+                            <div class="absolute -right-56 top-0 bottom-0 flex items-center justify-center transition-all duration-500 z-5"
+                                x-bind:class="{ 'group-hover:inset-0' : showActions }"
+                            >
                                 <div
-                                    class="hidden min-w-fit cursor-help items-center gap-1 text-xs group-hover:flex"
+                                    class="min-w-fit cursor-help items-center gap-1 text-xs"
                                     title="Clicked {{ Number::format($link->click_count) }} times"
+                                    x-bind:class="{ 'invisible': isDragging }"
                                 >
                                     {{ Number::abbreviate($link->click_count) }}
                                     {{ str('click')->plural($link->click_count) }}
                                 </div>
+
+                                <button
+                                    wire:click="setVisibility({{ $link->id }})"
+                                    type="button"
+                                    class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                >
+                                    @if ($link->is_visible)
+                                        <x-heroicon-o-eye class="size-5"
+                                            x-bind:class="{ 'invisible': isDragging }"
+                                        />
+                                    @else
+                                        <x-heroicon-o-eye-slash class="size-5"
+                                            x-bind:class="{ 'invisible': isDragging }"
+                                        />
+                                    @endif
+                                </button>
+
+                                <button
+                                    wire:click="$dispatchTo('links.edit', 'link.edit', { link: {{ $link->id }} })"
+                                    type="button"
+                                    class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                >
+                                    <x-heroicon-o-pencil
+                                        class="size-5"
+                                        x-bind:class="{ 'invisible': isDragging }"
+                                    />
+                                </button>
+
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
                                         type="submit"
                                         class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
-                                        <x-icons.trash
+                                        <x-heroicon-o-trash
                                             class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
                                             x-bind:class="{ 'invisible': isDragging }"
                                         />
@@ -270,11 +315,20 @@
                         </li>
                     @endforeach
                 </ul>
+
+                <x-modal
+                    name="link-edit-modal"
+                    maxWidth="2xl"
+                >
+                    <div class="p-10">
+                        <livewire:links.edit />
+                    </div>
+                </x-modal>
             @else
                 <div class="space-y-3">
                     @foreach ($links as $link)
                         <div
-                            class="{{ $user->link_shape }} {{ $user->gradient }} hover:darken-gradient flex bg-gradient-to-r"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 hover:darken-gradient flex justify-center bg-gradient-to-r"
                             wire:click="click({{ $link->id }})"
                         >
                             <x-links.list-item
@@ -310,7 +364,7 @@
                         class="hover:darken-gradient flex w-full basis-1/5 items-center justify-center px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
                         :class="showSettingsForm ? 'bg-' + gradient.split(' ')[1].replace('to-', '') + ' ' + link_shape : 'bg-{{ $user->right_color }} {{ $user->link_shape }}'"
                     >
-                        <x-icons.cog class="size-6" />
+                        <x-heroicon-o-cog-6-tooth class="size-6" />
                     </button>
                 </div>
 

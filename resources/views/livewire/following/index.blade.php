@@ -12,7 +12,7 @@
         </div>
 
         @if ($following->count())
-            <section class="mt-10 max-w-2xl">
+            <section class="mt-10 max-w-2xl max-h-96 overflow-y-auto">
                 <ul class="flex flex-col gap-2">
                     @foreach ($following as $followingUser)
                         <li>

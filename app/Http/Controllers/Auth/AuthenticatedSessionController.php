@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 final readonly class AuthenticatedSessionController
@@ -18,22 +15,6 @@ final readonly class AuthenticatedSessionController
     public function create(): View
     {
         return view('auth.login');
-    }
-
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-
-        session()->regenerate();
-
-        $user = type($request->user())->as(User::class);
-
-        return redirect()->intended(route('profile.show', [
-            'username' => $user->username,
-        ], absolute: false));
     }
 
     /**

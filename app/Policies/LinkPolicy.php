@@ -16,4 +16,12 @@ final readonly class LinkPolicy
     {
         return $user->id === $link->user_id;
     }
+
+    /**
+     * Determine whether the user can update the link.
+     */
+    public function update(User $user, Link $link): bool
+    {
+        return $user->id === $link->user_id;
+    }
 }

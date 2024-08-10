@@ -113,6 +113,28 @@ final class Show extends Component
     }
 
     /**
+     * Bookmark the question.
+     */
+    public function bookmark(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $bookmark = $question->bookmarks()->firstOrCreate([
+            'user_id' => auth()->id(),
+        ]);
+
+        if ($bookmark->wasRecentlyCreated) {
+            $this->dispatch('notification.created', message: 'Bookmark added.');
+        }
+    }
+
+    /**
      * Like the question.
      */
     public function like(): void
@@ -174,6 +196,30 @@ final class Show extends Component
     }
 
     /**
+     * Unbookmark the question.
+     */
+    public function unbookmark(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        if ($bookmark = $question->bookmarks()->where('user_id', auth()->id())->first()) {
+            $this->authorize('delete', $bookmark);
+
+            if ($bookmark->delete()) {
+                $this->dispatch('notification.created', message: 'Bookmark removed.');
+            }
+        }
+
+        $this->dispatch('question.unbookmarked');
+    }
+
+    /**
      * Unlike the question.
      */
     public function unlike(): void
@@ -194,16 +240,11 @@ final class Show extends Component
     }
 
     /**
-     * Show the comment form.
+     * Get the placeholder for the component.
      */
-    public function comment(): void
+    public function placeholder(): View
     {
-        $question = Question::with(['to'])->findOrFail($this->questionId);
-
-        $this->redirectRoute('questions.show', [
-            'question' => $this->questionId,
-            'username' => $question->to->username,
-        ], navigate: true);
+        return view('livewire.questions.placeholder'); // @codeCoverageIgnore
     }
 
     /**
@@ -212,7 +253,7 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes', 'answer'])
+            ->with(['to', 'from', 'likes', 'bookmarks', 'answer'])
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
