@@ -8,9 +8,12 @@ use App\Models\User;
 use Livewire\Livewire;
 
 test('render', function () {
-    $question = Question::factory()->create([
+    $question = Question::factory()
+        ->hasAnswer([
+            'content' => 'Hello World Answer',
+        ])
+        ->create([
         'content' => 'Hello World',
-        'answer' => 'Hello World Answer',
     ]);
 
     $component = Livewire::test(Show::class, [
@@ -19,12 +22,16 @@ test('render', function () {
 
     $component->assertSee([
         $question->content,
-        $question->answer,
+        $question->answer->content,
     ]);
 });
 
 test('refresh', function () {
-    $question = Question::factory()->create([
+    $question = Question::factory()
+        ->hasAnswer([
+            'content' => 'Hello World Answer',
+        ])
+        ->create([
         'content' => 'Hello World',
     ]);
 
@@ -32,8 +39,8 @@ test('refresh', function () {
         'questionId' => $question->id,
     ]);
 
-    $question->update([
-        'answer' => 'Hello World Answer Updated',
+    $question->answer()->update([
+        'content' => 'Hello World Answer Updated',
     ]);
 
     $component->assertDontSee('Hello World Answer Updated');
@@ -179,6 +186,8 @@ test('pin', function () {
 
     $question = Question::factory()->create([
         'to_id' => $user->id,
+        'from_id' => $user->id,
+        'is_update' => true,
     ]);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
@@ -211,8 +220,6 @@ test('pin no answer', function () {
 
     $question = Question::factory()->create([
         'to_id' => $user->id,
-        'answer' => null,
-        'answer_created_at' => null,
     ]);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
@@ -229,7 +236,9 @@ test('pin no answer', function () {
 test('unpin', function () {
     $user = User::factory()->create();
 
-    $question = Question::factory()->create([
+    $question = Question::factory()
+        ->hasAnswer()
+        ->create([
         'to_id' => $user->id,
         'pinned' => true,
     ]);

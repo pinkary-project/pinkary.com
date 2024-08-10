@@ -42,6 +42,8 @@ final readonly class QuestionPolicy
      */
     public function pin(User $user, Question $question): bool
     {
-        return $user->id === $question->to_id;
+        $conditionSetOne = $user->id === $question->to_id && $question->is_update === true;
+        $conditionSetTwo = $user->id === $question->to_id && $question->answer !== null;
+        return $conditionSetOne || $conditionSetTwo;
     }
 }
