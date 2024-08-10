@@ -34,8 +34,8 @@ test('auth', function () {
         'content' => 'Question content 3',
     ]);
 
-    $questionC->update([
-        'answer' => 'Answer content',
+    $questionC->answer()->create([
+        'content' => 'Answer to question content 3',
     ]);
 
     $response = $this->actingAs($userA)

@@ -19,11 +19,11 @@ test('renders trending questions', function () {
             'created_at' => now()->subDays(6),
         ])
         ->create([
-        'content' => $questionContent,
-        'created_at' => now()->subDays(7),
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-    ]);
+            'content' => $questionContent,
+            'created_at' => now()->subDays(7),
+            'from_id' => $user->id,
+            'to_id' => $user->id,
+        ]);
 
     Like::factory()->create([
         'user_id' => $user->id,
@@ -44,11 +44,11 @@ test('do not renders trending questions', function () {
 
     Question::factory()
         ->create([
-        'content' => $questionContent,
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-        'is_update' => true,
-    ]);
+            'content' => $questionContent,
+            'from_id' => $user->id,
+            'to_id' => $user->id,
+            'is_update' => true,
+        ]);
 
     $component = Livewire::test(TrendingQuestions::class);
 

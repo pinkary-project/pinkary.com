@@ -8,9 +8,9 @@ use App\Models\Question;
 use App\Models\User;
 
 test('guest', function () {
-    $question = Question::factory()->create([
-        'answer' => 'This is the answer',
-    ]);
+    $question = Question::factory()
+        ->hasAnswer(['content' => 'This is the answer'])
+        ->create();
 
     $response = $this->get(route('questions.show', [
         'username' => $question->to->username,
@@ -18,8 +18,7 @@ test('guest', function () {
     ]));
 
     $response->assertOk()->assertSee([
-        $question->content,
-        'This is the answer',
+        $question->answer->content,
     ]);
 
     $response->assertSeeLivewire(Show::class);
@@ -29,7 +28,8 @@ test('auth', function () {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
-        'answer' => 'This is the answer',
+        'content' => 'This is the answer',
+        'is_update' => true,
     ]);
 
     $response = $this->actingAs($user)->get(route('questions.show', [
@@ -62,9 +62,7 @@ test('reported question is not visible', function () {
 test('question without answer is not visible for other users', function () {
     $user = User::factory()->create();
 
-    $question = Question::factory()->create([
-        'answer' => null,
-    ]);
+    $question = Question::factory()->create();
 
     $response = $this->actingAs($user)->get(route('questions.show', [
         'username' => $question->to->username,
@@ -83,9 +81,11 @@ test('question without answer is not visible for other users', function () {
 });
 
 test('question is not visible for other usernames on the url', function () {
-    $question = Question::factory()->create([
-        'answer' => 'This is the answer',
-    ]);
+    $question = Question::factory()
+        ->hasAnswer()
+        ->create([
+            'content' => 'This is the question',
+        ]);
 
     $response = $this->get(route('questions.show', [
         'username' => 'wrongusername',

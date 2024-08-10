@@ -14,7 +14,6 @@ test('to array', function () {
         'from_id',
         'to_id',
         'content',
-        'answer',
         'anonymously',
         'is_reported',
         'created_at',
@@ -85,7 +84,7 @@ test('increment views', function () {
 });
 
 test('does not increment views without answer', function () {
-    $question = Question::factory()->create();
+    $question = Question::factory()->create(['views' => 0]);
 
     Question::incrementViews([$question->id]);
 

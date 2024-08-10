@@ -13,8 +13,8 @@ test('render', function () {
             'content' => 'Hello World Answer',
         ])
         ->create([
-        'content' => 'Hello World',
-    ]);
+            'content' => 'Hello World',
+        ]);
 
     $component = Livewire::test(Show::class, [
         'questionId' => $question->id,
@@ -32,8 +32,8 @@ test('refresh', function () {
             'content' => 'Hello World Answer',
         ])
         ->create([
-        'content' => 'Hello World',
-    ]);
+            'content' => 'Hello World',
+        ]);
 
     $component = Livewire::test(Show::class, [
         'questionId' => $question->id,
@@ -239,9 +239,9 @@ test('unpin', function () {
     $question = Question::factory()
         ->hasAnswer()
         ->create([
-        'to_id' => $user->id,
-        'pinned' => true,
-    ]);
+            'to_id' => $user->id,
+            'pinned' => true,
+        ]);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
         'questionId' => $question->id,

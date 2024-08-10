@@ -15,7 +15,8 @@ it('render questions with right conditions', function () {
 
     $questionWithLike = Question::factory()->create([
         'to_id' => $userTo->id,
-        'answer' => 'Answer',
+        'content' => 'Question content',
+        'is_update' => true,
         'is_reported' => false,
     ]);
 
@@ -24,11 +25,13 @@ it('render questions with right conditions', function () {
         'question_id' => $questionWithLike->id,
     ]);
 
-    Question::factory()->create([
-        'to_id' => $userTo->id,
-        'answer' => 'Answer 2',
-        'is_reported' => false,
-    ]);
+    Question::factory()
+        ->hasAnswer()
+        ->create([
+            'to_id' => $userTo->id,
+            'content' => 'Question content 2',
+            'is_reported' => false,
+        ]);
 
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
@@ -42,7 +45,8 @@ it('do not render questions liked beyond the last 60 days', function () {
 
     $questionWithLike = Question::factory()->create([
         'to_id' => $userTo->id,
-        'answer' => 'Answer',
+        'content' => 'Answer',
+        'is_update' => true,
         'is_reported' => false,
     ]);
 
@@ -54,7 +58,8 @@ it('do not render questions liked beyond the last 60 days', function () {
 
     Question::factory()->create([
         'to_id' => $userTo->id,
-        'answer' => 'Answer 2',
+        'content' => 'Answer 2',
+        'is_update' => true,
         'is_reported' => false,
     ]);
 
@@ -68,11 +73,11 @@ it('do not render questions without answer', function () {
 
     $userTo = User::factory()->create();
 
-    $answer = 'Answer to the question that needs to be rendered';
+    $content = 'Question to the question that needs to be rendered';
 
     $questionWithLike = Question::factory()->create([
         'to_id' => $userTo->id,
-        'answer' => $answer,
+        'content' => $content,
         'is_reported' => false,
     ]);
 
@@ -84,12 +89,11 @@ it('do not render questions without answer', function () {
     Question::factory()->create([
         'to_id' => $userTo->id,
         'is_reported' => false,
-        'answer' => null,
     ]);
 
     $builder = (new QuestionsForYouFeed($likerUser))->builder();
 
-    expect($builder->where('answer', $answer)->count())->toBe(1);
+    expect($builder->where('content', $content)->count())->toBe(1);
 });
 
 it('includes questions made to users i follow', function () {
@@ -99,10 +103,11 @@ it('includes questions made to users i follow', function () {
 
     $follower->following()->attach($user);
 
-    Question::factory()->create([
-        'to_id' => $user->id,
-        'answer' => 'Answer',
-    ]);
+    Question::factory()
+        ->hasAnswer(['content' => 'Answer'])
+        ->create([
+            'to_id' => $user->id,
+        ]);
 
     $builder = (new QuestionsForYouFeed($follower))->builder();
 
@@ -116,7 +121,7 @@ it('do not render reported questions', function () {
 
     $questionWithLike = Question::factory()->create([
         'to_id' => $userTo->id,
-        'answer' => 'Answer',
+        'is_update' => true,
         'is_reported' => false,
     ]);
 
@@ -127,7 +132,7 @@ it('do not render reported questions', function () {
 
     Question::factory()->create([
         'to_id' => $userTo->id,
-        'answer' => 'Answer 2',
+        'is_update' => true,
         'is_reported' => true,
     ]);
 

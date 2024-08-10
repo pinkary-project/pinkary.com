@@ -6,7 +6,7 @@ use App\Models\Question;
 
 test('guest', function () {
     $question = Question::factory()->create([
-        'answer' => 'This is the answer',
+        'content' => 'This is the answer',
     ]);
 
     $response = $this->get(route('notifications.show', [
@@ -18,9 +18,11 @@ test('guest', function () {
 });
 
 test('notifications about answers are deleted', function () {
-    $question = Question::factory()->create();
+    $question = Question::factory()
+        ->hasAnswer()
+        ->create();
 
-    $question->update(['answer' => 'Question answer']);
+    $question->answer->update(['content' => 'Question answer']);
 
     $notification = $question->from->notifications()->first();
     expect($notification->fresh())->not->toBe(null);
@@ -36,9 +38,8 @@ test('notifications about answers are deleted', function () {
 });
 
 test('notifications about questions are not deleted', function () {
-    $question = Question::factory()->create([
-        'answer' => null,
-    ]);
+    $question = Question::factory()
+        ->create();
 
     expect($question->to->notifications()->count())->toBe(1);
 

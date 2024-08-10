@@ -17,11 +17,11 @@ it('render questions with right conditions', function () {
             'created_at' => now()->subDays(7),
         ])
         ->create([
-        'content' => 'How did you manage to get on the trending list, tomloprod?',
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-        'created_at' => now()->subDays(7),
-    ]);
+            'content' => 'How did you manage to get on the trending list, tomloprod?',
+            'from_id' => $user->id,
+            'to_id' => $user->id,
+            'created_at' => now()->subDays(7),
+        ]);
 
     Like::factory()->create([
         'user_id' => $user->id,
@@ -53,10 +53,10 @@ it('do not render questions older than 7 days', function () {
     $question = Question::factory()
         ->hasLikes(1)
         ->create([
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-        'created_at' => now()->subDays(8),
-    ]);
+            'from_id' => $user->id,
+            'to_id' => $user->id,
+            'created_at' => now()->subDays(8),
+        ]);
 
     $builder = (new TrendingQuestionsFeed())->builder();
 

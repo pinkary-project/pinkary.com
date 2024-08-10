@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
 use App\Queries\Feeds\RecentQuestionsFeed;
@@ -22,13 +21,12 @@ it('render questions with right conditions', function () {
     $question2 = Question::factory()
         ->hasAnswer()
         ->create([
-        'from_id' => User::factory()->create()->id,
-        'to_id' => $user->id,
-        'is_ignored' => false,
-        'is_reported' => false,
-        'is_update' => false,
-    ]);
-
+            'from_id' => User::factory()->create()->id,
+            'to_id' => $user->id,
+            'is_ignored' => false,
+            'is_reported' => false,
+            'is_update' => false,
+        ]);
 
     $builder = (new RecentQuestionsFeed())->builder();
 

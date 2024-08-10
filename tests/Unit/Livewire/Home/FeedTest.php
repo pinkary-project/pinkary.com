@@ -8,9 +8,9 @@ use App\Models\User;
 use Livewire\Livewire;
 
 test('renders questions with answers', function () {
-    Question::factory()->create([
-        'answer' => 'This is the answer',
-    ]);
+    Question::factory()
+        ->hasAnswer()
+        ->create();
 
     $component = Livewire::test(Feed::class);
 
@@ -21,9 +21,7 @@ test('renders questions with answers', function () {
 test('do not renders questions without answers', function () {
     $user = User::factory()->create();
 
-    Question::factory()->create([
-        'answer' => null,
-    ]);
+    Question::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Feed::class);
 
@@ -31,10 +29,12 @@ test('do not renders questions without answers', function () {
 });
 
 test('do not renders ignored questions', function () {
-    Question::factory()->create([
-        'answer' => 'This is the answer',
-        'is_ignored' => true,
-    ]);
+    Question::factory()
+        ->hasAnswer()
+        ->create([
+            'content' => 'This is the question',
+            'is_ignored' => true,
+        ]);
 
     $component = Livewire::test(Feed::class);
 
@@ -46,6 +46,8 @@ test('ignore', function () {
 
     $question = Question::factory()->create([
         'to_id' => $user->id,
+        'content' => 'This is the question',
+        'is_update' => true,
     ]);
 
     $component = Livewire::actingAs($user)->test(Feed::class);
@@ -104,11 +106,12 @@ it('displays questions from users I am following', function () {
 
     $user->following()->attach($following);
 
-    Question::factory()->create([
-        'content' => 'Do you like star wars?',
-        'answer' => 'May the force be with you!',
-        'to_id' => $following,
-    ]);
+    Question::factory()
+        ->hasAnswer()
+        ->create([
+            'content' => 'Do you like star wars?',
+            'to_id' => $following,
+        ]);
 
     $component = Livewire::actingAs($user)->test(Feed::class);
 
@@ -119,7 +122,7 @@ test('refresh', function () {
     $component = Livewire::test(Feed::class);
 
     Question::factory()->create([
-        'answer' => 'This is the answer',
+        'content' => 'This is the answer',
     ]);
 
     $component->assertSee('There are no questions to show.')

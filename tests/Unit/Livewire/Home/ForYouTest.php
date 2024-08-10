@@ -15,9 +15,9 @@ test('renders questions with likes of authenticated user', function () {
 
     $question = Question::factory()->create([
         'content' => $questionContent,
-        'answer' => 'Cool question',
         'from_id' => $user->id,
         'to_id' => $user->id,
+        'is_update' => true,
     ]);
 
     $like = Like::factory()->create([
@@ -38,12 +38,13 @@ test('do not renders questions without likes of authenticated user', function ()
 
     $questionContent = 'This is a question with a like from the authenticated user';
 
-    Question::factory()->create([
-        'content' => $questionContent,
-        'answer' => 'Cool question',
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-    ]);
+    Question::factory()
+        ->create([
+            'is_update' => true,
+            'content' => $questionContent,
+            'from_id' => $user->id,
+            'to_id' => $user->id,
+        ]);
 
     $component = Livewire::actingAs($user)->test(QuestionsForYou::class);
 

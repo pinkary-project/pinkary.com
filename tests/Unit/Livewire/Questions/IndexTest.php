@@ -44,17 +44,14 @@ test('only renders questions with answers if user is not auth user', function ()
     $question = Question::factory()->create([
         'from_id' => $userA->id,
         'to_id' => $userB->id,
-        'answer' => null,
-        'answer_created_at' => null,
     ]);
 
     $component->dispatch('question.created');
 
     $component->assertDontSee($question->content);
 
-    $question->update([
-        'answer' => 'Hello World',
-        'answer_created_at' => now(),
+    $question->answer()->create([
+        'content' => 'Answer',
     ]);
 
     $component->dispatch('question.updated');

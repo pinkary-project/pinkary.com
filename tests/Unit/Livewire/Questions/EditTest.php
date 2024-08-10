@@ -107,7 +107,7 @@ test('can edit a question that is an update', function () {
         'is_update' => true,
         'from_id' => $this->question->to->id,
         'updated_at' => now(),
-        'created_at' => now()->subHour()
+        'created_at' => now()->subHour(),
     ]);
 
     Livewire::test(Edit::class, [

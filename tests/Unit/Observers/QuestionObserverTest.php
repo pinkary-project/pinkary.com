@@ -25,7 +25,7 @@ test('do not send notification if asked himself', function () {
     $question = Question::factory()->create([
         'to_id' => $user->id,
         'from_id' => $user->id,
-        'content' => '__UPDATE__',
+        'is_update' => true,
     ]);
 
     Notification::assertNotSentTo($question->to, QuestionCreated::class);
@@ -39,13 +39,13 @@ test('send mentioned notification if shared update', function () {
         'username' => 'johndoe',
     ]);
 
-    $question = Question::factory()->create([
-        'content' => '__UPDATE__',
-        'to_id' => $user->id,
-        'from_id' => $user->id,
-        'answer' => 'this update is for @johndoe!',
-        'answer_created_at' => now(),
-    ]);
+    $question = Question::factory()
+        ->create([
+            'to_id' => $user->id,
+            'from_id' => $user->id,
+            'is_update' => true,
+            'content' => 'this update is for @johndoe!',
+        ]);
 
     expect($question->mentions()->count())->toBe(1);
 
@@ -61,19 +61,17 @@ test('send comment notification', function () {
     $commenter = User::factory()->create();
 
     $question = Question::factory()->create([
-        'content' => '__UPDATE__',
+        'is_update' => true,
         'to_id' => $user->id,
         'from_id' => $user->id,
-        'answer' => 'this is update!',
-        'answer_created_at' => now(),
+        'content' => 'this is update!',
     ]);
 
     $comment = $question->children()->create([
-        'content' => '__UPDATE__',
-        'answer' => 'this is a comment',
+        'is_update' => true,
+        'content' => 'this is a comment',
         'from_id' => $commenter->id,
         'to_id' => $user->id,
-        'answer_created_at' => now(),
     ]);
 
     Notification::assertSentTo($question->from, QuestionCreated::class, function ($notification) use ($comment) {
@@ -86,19 +84,17 @@ test('do not send notification if comment to himself', function () {
 
     $user = User::factory()->create();
     $question = Question::factory()->create([
-        'content' => '__UPDATE__',
+        'is_update' => true,
         'to_id' => $user->id,
         'from_id' => $user->id,
-        'answer' => 'this is update!',
-        'answer_created_at' => now(),
+        'content' => 'this is update!',
     ]);
 
     $question->children()->create([
-        'content' => '__UPDATE__',
-        'answer' => 'this is a comment',
+        'is_update' => true,
+        'content' => 'this is a comment',
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'answer_created_at' => now(),
     ]);
 
     Notification::assertNotSentTo($question->from, QuestionCreated::class);
@@ -113,18 +109,21 @@ test('updated', function () {
 
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
-    $question->update(['answer' => 'answer']);
+    $question->update(['content' => 'content']);
 
     expect($question->fresh()->to->notifications()->count())->toBe(0)
         ->and($question->from->notifications()->count())->toBe(1);
 
     $user = User::factory()->create();
-    $question = Question::factory()->create([
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-    ]);
+    $question = Question::factory()
+        ->create([
+            'from_id' => $user->id,
+            'to_id' => $user->id,
+        ]);
 
-    $question->update(['answer' => 'answer']);
+    $question->answer()->create([
+        'content' => 'answer',
+    ]);
     expect($question->from->notifications()->count())->toBe(0);
 
     // Question answered and user mentioned in the question content
@@ -135,16 +134,18 @@ test('updated', function () {
         'content' => 'Hello @johndoe! How are you doing?',
     ]);
 
-    $question->update(['answer' => 'answer']);
+    $question->answer()->create([
+        'content' => 'Im fine!',
+    ]);
     expect($user->notifications()->count())->toBe(1);
 
     // Question answered and user mentioned in the question answer
     $user = User::factory()->create([
         'username' => 'doejohn',
     ]);
-    $question = Question::factory()->create(['answer' => null]);
+    $question = Question::factory()->create();
 
-    $question->update(['answer' => 'Im fine @doejohn!']);
+    $question->answer()->create(['content' => 'Im fine @doejohn!']);
     expect($user->notifications()->count())->toBe(1);
 });
 
@@ -162,7 +163,7 @@ test('reported', function () {
         'username' => 'johndoe',
     ]);
     $question = Question::factory()->create();
-    $question->update([
+    $question->answer()->create([
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
@@ -185,7 +186,9 @@ test('ignored', function () {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
 
-    $question->update(['answer' => 'answer']);
+    $question->answer()->create([
+        'content' => 'answer',
+    ]);
     expect($question->from->notifications()->count())->toBe(1);
 
     $user = $question->to;
@@ -198,7 +201,7 @@ test('ignored', function () {
         'username' => 'johndoe',
     ]);
     $question = Question::factory()->create();
-    $question->update([
+    $question->answer()->create([
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
@@ -228,7 +231,7 @@ test('deleted', function () {
     expect($user->fresh()->notifications()->count())->toBe(0);
 
     $question = Question::factory()->create();
-    $question->update([
+    $question->answer()->create([
         'answer' => 'answer',
     ]);
 
@@ -243,7 +246,7 @@ test('deleted', function () {
     ]);
 
     $question = Question::factory()->create();
-    $question->update([
+    $question->answer()->create([
         'answer' => 'My favourite developer is to @johndoe',
     ]);
 
