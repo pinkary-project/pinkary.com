@@ -44,7 +44,8 @@ final class Index extends Component
             ->where('is_ignored', false)
             ->where('is_reported', false)
             ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
-                $query->whereNotNull('answer');
+                $query->whereHas('answer')
+                    ->orWhere('is_update', true);
             })
             ->orderByDesc('pinned')
             ->orderByDesc('updated_at')
