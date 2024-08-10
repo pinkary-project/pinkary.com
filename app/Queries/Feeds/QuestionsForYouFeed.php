@@ -43,9 +43,18 @@ final readonly class QuestionsForYouFeed
                         $toQuery->whereIn('id', $this->user->following()->select('users.id'));
                     });
             })
-            ->orderByDesc('updated_at')
-            ->whereNotNull('answer')
             ->where('is_reported', false)
-            ->where('is_ignored', false);
+            ->where('is_ignored', false)
+            ->where(fn (Builder $query): Builder => $query
+                ->where(fn (Builder $query) => $query
+                    ->where('is_update', false)
+                    ->whereHas('answer')
+                )
+                ->orWhere(fn (Builder $query): Builder => $query
+                    ->where('is_update', true)
+                    ->whereDoesntHave('answer')
+                )
+            )
+            ->orderByDesc('updated_at');
     }
 }

@@ -19,13 +19,15 @@ final readonly class RecentQuestionsFeed
         return Question::query()
             ->where('is_ignored', false)
             ->where('is_reported', false)
-            ->where(fn (Builder $query) => $query
-                ->where('is_update', false)
-                ->whereHas('answer')
-            )
-            ->orWhere(fn (Builder $query) => $query
-                ->where('is_update', true)
-                ->whereDoesntHave('answer')
+            ->where(fn (Builder $query): Builder => $query
+                ->where(fn (Builder $query) => $query
+                    ->where('is_update', false)
+                    ->whereHas('answer')
+                )
+                ->orWhere(fn (Builder $query): Builder => $query
+                    ->where('is_update', true)
+                    ->whereDoesntHave('answer')
+                )
             )
             ->orderByDesc('updated_at');
     }
