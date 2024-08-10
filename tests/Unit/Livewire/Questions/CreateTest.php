@@ -152,7 +152,7 @@ test('store comment', function () {
 
     expect($comment->from_id)->toBe($userA->id)
         ->and($comment->to_id)->toBe($userA->id)
-        ->and($comment->answer)->toBe('My comment')
+        ->and($comment->content)->toBe('My comment')
         ->and($comment->parent_id)->toBe($question->id);
 });
 
@@ -332,8 +332,8 @@ test('user cannot share update anonymously', function () {
     $this->assertDatabaseHas('questions', [
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'answer' => 'Hello World',
-        'content' => '__UPDATE__', // This is the content for an update
+        'content' => 'Hello World',
+        'is_update' => true,
         'anonymously' => false,
     ]);
 });

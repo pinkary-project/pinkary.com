@@ -126,9 +126,7 @@ final class Create extends Component
         ]);
 
         if ($this->isSharingUpdate) {
-            $validated['answer_created_at'] = now();
-            $validated['answer'] = $validated['content'];
-            $validated['content'] = '__UPDATE__';
+            $validated['is_update'] = true;
         }
 
         if (filled($this->parentId)) {
