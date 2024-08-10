@@ -13,10 +13,14 @@ test('renders trending questions', function () {
 
     $questionContent = 'This is a trending question!';
 
-    $question = Question::factory()->create([
+    $question = Question::factory()
+        ->hasAnswer([
+            'content' => 'This is the answer',
+            'created_at' => now()->subDays(6),
+        ])
+        ->create([
         'content' => $questionContent,
-        'answer' => 'This is the answer',
-        'answer_created_at' => now()->subDays(7),
+        'created_at' => now()->subDays(7),
         'from_id' => $user->id,
         'to_id' => $user->id,
     ]);
@@ -38,16 +42,17 @@ test('do not renders trending questions', function () {
 
     $questionContent = 'Is this a trending question?';
 
-    Question::factory()->create([
+    Question::factory()
+        ->create([
         'content' => $questionContent,
-        'answer' => 'No',
         'from_id' => $user->id,
         'to_id' => $user->id,
+        'is_update' => true,
     ]);
 
     $component = Livewire::test(TrendingQuestions::class);
 
     $component
-        ->assertSee('There is no trending questions right now')
-        ->assertDontSee($questionContent);
+        ->assertDontSee($questionContent)
+        ->assertSee('There is no trending questions right now');
 });

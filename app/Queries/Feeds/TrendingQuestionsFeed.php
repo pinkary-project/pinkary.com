@@ -18,20 +18,23 @@ final readonly class TrendingQuestionsFeed
     {
         return Question::query()
             ->withCount('likes')
-            ->orderBy('likes_count', 'desc')
+            ->whereHas('likes')
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->where(fn (Builder $query) => $query
-                ->where('is_update', false)
-                ->whereHas('answer', fn (Builder $query) => $query
+                ->where(fn (Builder $query) => $query
+                    ->where('is_update', false)
+                    ->whereHas('answer', fn (Builder $query) => $query
+                        ->where('created_at', '>=', now()->subDays(7))
+                    )
+                )
+                ->orWhere(fn (Builder $query) => $query
+                    ->where('is_update', true)
                     ->where('created_at', '>=', now()->subDays(7))
+                    ->whereDoesntHave('answer')
                 )
             )
-            ->orWhere(fn (Builder $query) => $query
-                ->where('is_update', true)
-                ->where('created_at', '>=', now()->subDays(7))
-                ->whereDoesntHave('answer')
-            )
+            ->orderBy('likes_count', 'desc')
             ->limit(10);
     }
 }
