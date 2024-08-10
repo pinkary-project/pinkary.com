@@ -15,7 +15,6 @@ test('to array', function () {
         'to_id',
         'content',
         'answer',
-        'answer_created_at',
         'anonymously',
         'is_reported',
         'created_at',
@@ -23,8 +22,8 @@ test('to array', function () {
         'pinned',
         'is_ignored',
         'views',
-        'answer_updated_at',
         'parent_id',
+        'is_update',
     ]);
 });
 
@@ -50,10 +49,13 @@ test('mentions', function () {
     User::factory()->create(['username' => 'firstuser']);
     User::factory()->create(['username' => 'seconduser']);
 
-    $question = Question::factory()->create([
-        'content' => 'Hello @firstuser! How are you doing?',
-        'answer' => 'I am doing fine, @seconduser! @invaliduser is not doing well.',
-    ]);
+    $question = Question::factory()
+        ->hasAnswer([
+            'content' => 'I am doing fine, @seconduser!',
+        ])
+        ->create([
+            'content' => 'Hello @firstuser! How are you doing?',
+        ]);
 
     expect($question->mentions()->count())->toBe(2)
         ->and($question->mentions()->first()->username)->toBe('firstuser')
@@ -66,7 +68,6 @@ test('mentions when there is no answer', function () {
 
     $question = Question::factory()->create([
         'content' => 'Hello @firstuser! How are you doing?',
-        'answer' => null,
     ]);
 
     expect($question->mentions()->count())->toBe(0);
@@ -74,7 +75,7 @@ test('mentions when there is no answer', function () {
 
 test('increment views', function () {
     $question = Question::factory()->create([
-        'answer' => 'Hello',
+        'content' => 'Hello',
         'views' => 0,
     ]);
 
@@ -84,10 +85,7 @@ test('increment views', function () {
 });
 
 test('does not increment views without answer', function () {
-    $question = Question::factory()->create([
-        'answer' => null,
-        'views' => 0,
-    ]);
+    $question = Question::factory()->create();
 
     Question::incrementViews([$question->id]);
 
