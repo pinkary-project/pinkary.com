@@ -21,7 +21,17 @@ final readonly class TrendingQuestionsFeed
             ->orderBy('likes_count', 'desc')
             ->where('is_reported', false)
             ->where('is_ignored', false)
-            ->where('answer_created_at', '>=', now()->subDays(7))
+            ->where(fn (Builder $query) => $query
+                ->where('is_update', false)
+                ->whereHas('answer', fn (Builder $query) => $query
+                    ->where('created_at', '>=', now()->subDays(7))
+                )
+            )
+            ->orWhere(fn (Builder $query) => $query
+                ->where('is_update', true)
+                ->where('created_at', '>=', now()->subDays(7))
+                ->whereDoesntHave('answer')
+            )
             ->limit(10);
     }
 }
