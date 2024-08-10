@@ -29,8 +29,9 @@
         @endunless
     </div>
 
-    @if ($question->answer)
-        <div class="answer mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
+    @if ($question->answer|| $question->isSharedUpdate())
+        <div
+            class="answer mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }} p-4">
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
@@ -98,9 +99,17 @@
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
-                            @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
-                                <x-dropdown-button
+                            @if (! $question->is_ignored && ! $question->isSharedUpdate() && $question->answer?->created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
+                                    <x-dropdown-button
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
+                                    class="flex items-center gap-1.5"
+                                >
+                                    <x-heroicon-m-pencil class="h-4 w-4"/>
+                                    <span>Edit</span>
+                                </x-dropdown-button>
+                            @elseif (! $question->is_ignored && $question->isSharedUpdate() && auth()->user()->can('update', $question))
+                                <x-dropdown-button
+                                    x-on:click="$dispatch('open-modal', 'question.edit.update.{{ $questionId }}');"
                                     class="flex items-center gap-1.5"
                                 >
                                     <x-heroicon-m-pencil class="h-4 w-4"/>
@@ -143,7 +152,7 @@
                     x-ref="parentDiv"
                 >
                     <p>
-                        {!! $question->answer !!}
+                        {!! $question->isSharedUpdate() ? $question->content : $question->answer->content !!}
                     </p>
                 </div>
 
@@ -213,15 +222,18 @@
                         @endif
                     </p>
                 </div>
-
-                <div class="flex items-center text-slate-500 ">
-                    @php($timestamp = $question->answer_updated_at ?: $question->answer_created_at)
+                <div class="flex items-center text-slate-500">
+                    @php
+                        $created = $question->answer->created_at ?? $question->created_at;
+                        $edited = $question->answer->updated_at ?? $question->updated_at;
+                        $timestamp = $edited > $created ? $edited : $created;
+                    @endphp
                     <time
                         class="cursor-help"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                         datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                     >
-                        {{  $question->answer_updated_at ? 'Edited:' : null }}
+                        {{  $edited > $created ? 'Edited:' : null }}
                         {{
                             $timestamp->timezone(session()->get('timezone', 'UTC'))
                                 ->diffForHumans()
@@ -289,7 +301,7 @@
                                 x-on:click="
                                     twitter({
                                         url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
-                                        question: '{{ str_replace("'", "\'", $question->isSharedUpdate() ? $question->answer : $question->content) }}',
+                                        question: '{{ str_replace("'", "\'", $question->isSharedUpdate() ? $question->content : $question->answer->content) }}',
                                         message: '{{ $question->isSharedUpdate() ? 'See it on Pinkary' : 'See response on Pinkary' }}',
                                     })
                                 "
@@ -303,29 +315,42 @@
                 </div>
             </div>
         </div>
-        @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()?->can('update', $question))
+        @if ($question->answer !== null && ! $question->is_ignored && $question->answer?->created_at?->diffInHours() < 24 && auth()->user()?->can('update', $question))
             <x-modal
                 max-width="md"
                 name="question.edit.answer.{{ $questionId }}"
             >
                 <div class="p-8">
                     <h2 class="text-lg font-medium text-slate-50">Edit Answer</h2>
-                    <livewire:questions.edit
+                    <livewire:answers.edit
                         :questionId="$question->id"
                         :key="'edit-answer-'.$question->id"
                     />
                 </div>
             </x-modal>
+        @elseif (! $question->is_ignored && $question->isSharedUpdate() && auth()->user()?->can('update', $question) && $question->answer?->created_at?->diffInHours() < 24)
+            <x-modal
+                max-width="md"
+                name="question.edit.update.{{ $questionId }}"
+            >
+                <div class="p-8">
+                    <h2 class="text-lg font-medium text-slate-50">Edit Update</h2>
+                    <livewire:questions.edit
+                        :questionId="$question->id"
+                        :key="'edit-update-'.$question->id"
+                    />
+                </div>
+            </x-modal>
         @endif
-    @elseif (auth()->user()?->is($user))
-        <livewire:questions.edit
+    @elseif (! $question->isSharedUpdate() && auth()->user()?->is($user))
+        <livewire:answers.edit
             :questionId="$question->id"
             :key="$question->id"
         />
     @endif
 
-    @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
-        <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
+    @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! $question->answer))
+        <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()"/>
     @endif
 
     @if($inThread && $question->children->isNotEmpty())
@@ -338,4 +363,3 @@
         </div>
     @endif
 </article>
-

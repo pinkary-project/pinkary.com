@@ -130,11 +130,6 @@ final class Question extends Model implements Viewable
         return $this->hasMany(Like::class);
     }
 
-    // NOTE: consider using a AnswerObserver to handle the creation of the answer entity
-    // NOTE: work out why the mention notifications are not working // being sent.
-    // TODO: work out how we will handle mentions accross the the question and answer entity relationship
-    //  handle this in the test
-
     /**
      * Get the mentions for the question.
      *
@@ -148,7 +143,7 @@ final class Question extends Model implements Viewable
 
             return $mentionedUsers;
         }
-        // TODO: ensure this change works as expected.
+
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer->content)->asString(), $answerMatches);
 
@@ -162,7 +157,6 @@ final class Question extends Model implements Viewable
      */
     public function isSharedUpdate(): bool
     {
-        // TODO: ensure tests are changed to reflect this added column
         return $this->from_id === $this->to_id && $this->is_update;
     }
 

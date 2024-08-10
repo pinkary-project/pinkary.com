@@ -47,7 +47,7 @@ final readonly class QuestionObserver
             $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         }
 
-        if ($question->isDirty('answer') === false) {
+        if ($question->isDirty('content') === false) {
             return;
         }
 
