@@ -44,6 +44,7 @@ final readonly class QuestionPolicy
     {
         $conditionSetOne = $user->id === $question->to_id && $question->is_update === true;
         $conditionSetTwo = $user->id === $question->to_id && $question->answer !== null;
+
         return $conditionSetOne || $conditionSetTwo;
     }
 }

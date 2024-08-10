@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Answer;
 use App\Models\Question;
-use App\Models\User;
 use Database\Factories\Concerns\RefreshOnCreate;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
@@ -12,7 +13,7 @@ use Illuminate\Support\Carbon;
 /**
  * @extends Factory<Answer>
  */
-class AnswerFactory extends Factory
+final class AnswerFactory extends Factory
 {
     use RefreshOnCreate;
 

@@ -8,12 +8,14 @@ use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -24,18 +26,17 @@ use Illuminate\Support\Carbon;
  * @property bool $pinned
  * @property string $content
  * @property bool $anonymously
- * @property string|null $answer
- * @property Carbon|null $answer_created_at
- * @property Carbon|null $answer_updated_at
  * @property bool $is_reported
  * @property bool $is_ignored
  * @property int $views
+ * @property bool $is_update
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read User $from
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
  * @property-read Collection<int, User> $mentions
+ * @property-read Collection<int, Answer> $answer
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
  */
@@ -52,7 +53,10 @@ final class Question extends Model implements Viewable
         self::withoutTimestamps(function () use ($ids): void {
             self::query()
                 ->whereIn('id', $ids)
-                ->whereNotNull('answer')
+                ->where(fn (Builder $query): Builder => $query
+                    ->whereHas('answer')
+                    ->orWhere('is_update', true)
+                )
                 ->increment('views');
         });
     }
@@ -69,16 +73,6 @@ final class Question extends Model implements Viewable
 
     /**
      * The attributes that should be cast.
-     */
-    public function getAnswerAttribute(?string $value): ?string
-    {
-        $content = new ParsableContent();
-
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
-    }
-
-    /**
-     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -87,14 +81,23 @@ final class Question extends Model implements Viewable
         return [
             'is_reported' => 'boolean',
             'anonymously' => 'boolean',
-            'answer_created_at' => 'datetime',
-            'answer_updated_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'pinned' => 'bool',
             'is_ignored' => 'boolean',
+            'is_update' => 'boolean',
             'views' => 'integer',
         ];
+    }
+
+    /**
+     * The answer to the question.
+     *
+     * @return hasOne<Answer>
+     */
+    public function answer(): HasOne
+    {
+        return $this->hasOne(Answer::class);
     }
 
     /**
@@ -127,6 +130,11 @@ final class Question extends Model implements Viewable
         return $this->hasMany(Like::class);
     }
 
+    // NOTE: consider using a AnswerObserver to handle the creation of the answer entity
+    // NOTE: work out why the mention notifications are not working // being sent.
+    // TODO: work out how we will handle mentions accross the the question and answer entity relationship
+    //  handle this in the test
+
     /**
      * Get the mentions for the question.
      *
@@ -134,15 +142,15 @@ final class Question extends Model implements Viewable
      */
     public function mentions(): Collection
     {
-        if (is_null($this->answer)) {
+        if (! $this->answer) {
             /** @var Collection<int, User> $mentionedUsers */
             $mentionedUsers = new Collection();
 
             return $mentionedUsers;
         }
-
+        // TODO: ensure this change works as expected.
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
-        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer)->asString(), $answerMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer->content)->asString(), $answerMatches);
 
         $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
 
@@ -154,7 +162,8 @@ final class Question extends Model implements Viewable
      */
     public function isSharedUpdate(): bool
     {
-        return $this->from_id === $this->to_id && $this->content === '__UPDATE__';
+        // TODO: ensure tests are changed to reflect this added column
+        return $this->from_id === $this->to_id && $this->is_update;
     }
 
     /**

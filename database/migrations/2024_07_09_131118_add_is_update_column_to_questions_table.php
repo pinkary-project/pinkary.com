@@ -14,9 +14,9 @@ return new class extends Migration
     public function up(): void
     {
 
-        DB::transaction(function () {
+        DB::transaction(function (): void {
 
-            Schema::table('questions', function (Blueprint $table) {
+            Schema::table('questions', function (Blueprint $table): void {
                 $table->boolean('is_update')->default(false)->after('is_ignored');
             });
 
@@ -24,8 +24,8 @@ return new class extends Migration
             DB::table('questions')
                 ->where('content', '!=', '__UPDATE__')
                 ->whereNotNull('answer')
-                ->chunkById(100, function ($questions) {
-                    collect($questions)->each(function ($question) {
+                ->chunkById(100, function ($questions): void {
+                    collect($questions)->each(function ($question): void {
                         if ($question->content !== '__UPDATE__') {
                             DB::table('answers')->insert([
                                 'content' => $question->answer,
@@ -41,8 +41,8 @@ return new class extends Migration
             DB::table('questions')
                 ->where('content', '__UPDATE__')
                 ->whereNotNull('answer')
-                ->chunkById(100, function ($questions) {
-                    collect($questions)->each(function ($question) {
+                ->chunkById(100, function ($questions): void {
+                    collect($questions)->each(function ($question): void {
                         if ($question->content === '__UPDATE__') {
                             DB::table('questions')
                                 ->where('id', $question->id)
@@ -57,7 +57,7 @@ return new class extends Migration
                 });
 
             // drop the extra columns
-            Schema::table('questions', function (Blueprint $table) {
+            Schema::table('questions', function (Blueprint $table): void {
                 $table->dropColumn('answer');
                 $table->dropColumn('answer_created_at');
                 $table->dropColumn('answer_updated_at');
