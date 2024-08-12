@@ -48,7 +48,6 @@ test('do not renders trending questions', function () {
             'content' => $questionContent,
             'from_id' => $user->id,
             'to_id' => $user->id,
-            'is_update' => true,
         ]);
 
     $component = Livewire::test(TrendingQuestions::class);
@@ -135,7 +134,7 @@ test('renders trending questions order by trending score', function () {
         ->hasAnswer(['created_at' => $date->subDay()])
         ->create([
             'content' => 'trending question 7',
-            'answer_created_at' => $date->subDay(),
+            'created_at' => $date->subDay(),
             'views' => 500,
         ]); // score = .0001215
 

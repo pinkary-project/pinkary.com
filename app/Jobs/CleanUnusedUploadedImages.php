@@ -78,7 +78,7 @@ final class CleanUnusedUploadedImages implements ShouldQueue
                     $questionContent, $contentMatches
                 );
                 /** @var string $answerContent */
-                $answerContent = $question->getRawOriginal('answer');
+                $answerContent = $question->answer?->getRawOriginal('answer') ?? '';
                 preg_match_all(
                     '/!\[.*?]\((.*?)\)/',
                     $answerContent, $answerMatches
@@ -103,7 +103,8 @@ final class CleanUnusedUploadedImages implements ShouldQueue
         return Question::where(static fn (Builder $query): Builder => $query
             ->whereBetween('created_at', [$lastRunTime, $fiveMinutesAgo])
             ->orWhereBetween('updated_at', [$lastRunTime, $fiveMinutesAgo])
-        )->get();
+        )->with('answer')
+            ->get();
     }
 
     /**

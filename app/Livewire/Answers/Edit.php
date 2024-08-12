@@ -32,11 +32,15 @@ final class Edit extends Component
     public function mount(string $questionId): void
     {
         $this->questionId = $questionId;
-        $question = Question::with('answer')->findOrFail($questionId);
-        /** @var Answer $answer */
-        $answer = $question->getRelation('answer');
-        $rawContent = $answer->getRawOriginal('content');
-        $this->content = is_string($rawContent) ? $rawContent : '';
+        $question = Question::findOrFail($questionId);
+        $answer = $question->load('answer')->getRelation('answer');
+
+        if ($answer instanceof Answer) {
+            $rawContent = $answer->getRawOriginal('content');
+            $this->content = is_string($rawContent) ? $rawContent : '';
+        } else {
+            $this->content = '';
+        }
     }
 
     /**

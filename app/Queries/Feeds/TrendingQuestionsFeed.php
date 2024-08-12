@@ -61,11 +61,10 @@ final readonly class TrendingQuestionsFeed
                     )
                 )
                 ->orWhere(fn (Builder $query) => $query
+                    ->whereDoesntHave('answer')
                     ->where('is_update', true)
                     ->where('created_at', '>=', now()->subDays($maxDaysSincePosted))
-                    ->whereDoesntHave('answer')
                 )
-            )
-            ->limit(10);
+            );
     }
 }
