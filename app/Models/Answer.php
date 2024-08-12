@@ -21,7 +21,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon $updated_at
  * @property-read Question $question
  */
-
 #[ObservedBy(QuestionObserver::class)]
 final class Answer extends Model
 {

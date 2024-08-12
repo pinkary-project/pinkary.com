@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\View\View;
 
@@ -29,6 +28,7 @@ final readonly class NotificationController
 
         if ($question->isSharedUpdate() && $question->from_id !== auth()->id()) {
             $notification->delete();
+
             return redirect()->back();
         }
 

@@ -28,10 +28,10 @@ test('displays notifications', function () {
     $questionC = Question::factory()
         ->hasAnswer()
         ->create([
-        'to_id' => $userB->id,
-        'from_id' => $userA->id,
-        'content' => 'Question content 3',
-    ]);
+            'to_id' => $userB->id,
+            'from_id' => $userA->id,
+            'content' => 'Question content 3',
+        ]);
 
     $userA->notify(new QuestionAnswered($questionC));
 

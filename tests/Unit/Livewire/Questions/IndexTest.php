@@ -147,9 +147,9 @@ test('pinned question is displayed at the top', function () {
     $pinnedQuestion = Question::factory()
         ->hasAnswer()
         ->create([
-        'pinned' => true,
-        'to_id' => $user->id,
-    ]);
+            'pinned' => true,
+            'to_id' => $user->id,
+        ]);
 
     $otherQuestions = Question::factory()->count(10)
         ->hasAnswer()

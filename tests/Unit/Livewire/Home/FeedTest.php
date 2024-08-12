@@ -124,8 +124,8 @@ test('refresh', function () {
     Question::factory()
         ->hasAnswer()
         ->create([
-        'content' => 'This is the answer',
-    ]);
+            'content' => 'This is the answer',
+        ]);
 
     $component->assertSee('There are no questions to show.')
         ->assertDontSee('This is the answer');

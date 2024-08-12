@@ -27,6 +27,34 @@ final readonly class QuestionObserver
     }
 
     /**
+     * Handle the question "updated" event.
+     */
+    public function updated(Question|Answer $model): void
+    {
+        if ($model instanceof Question) {
+            $this->updatedQuestion($model);
+        } else {
+            $this->updatedAnswer($model);
+        }
+
+    }
+
+    /**
+     * Handle the question "deleted" event.
+     */
+    public function deleted(Question $question): void
+    {
+        $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        $question->from->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+
+        $question->mentions()->each(function (User $user) use ($question): void {
+            $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        });
+
+        $question->children->each->delete();
+    }
+
+    /**
      * Created question.
      */
     private function createdQuestion(Question $question): void
@@ -65,19 +93,6 @@ final readonly class QuestionObserver
             $this->notifyMentions($answer->question);
             $answer->question->from->notify(new QuestionAnswered($answer->question));
         }
-    }
-
-    /**
-     * Handle the question "updated" event.
-     */
-    public function updated(Question|Answer $model): void
-    {
-        if ($model instanceof Question) {
-            $this->updatedQuestion($model);
-        } else {
-            $this->updatedAnswer($model);
-        }
-
     }
 
     /**
@@ -125,20 +140,5 @@ final readonly class QuestionObserver
         if ($question->mentions()->isNotEmpty() && $question->mentions()->contains($question->to) === false) {
             $question->mentions()->each->notify(new UserMentioned($question));
         }
-    }
-
-    /**
-     * Handle the question "deleted" event.
-     */
-    public function deleted(Question $question): void
-    {
-        $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
-        $question->from->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
-
-        $question->mentions()->each(function (User $user) use ($question): void {
-            $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
-        });
-
-        $question->children->each->delete();
     }
 }

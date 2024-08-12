@@ -78,9 +78,9 @@ test('increment views', function () {
     $question = Question::factory()
         ->hasAnswer()
         ->create([
-        'content' => 'Hello',
-        'views' => 0,
-    ]);
+            'content' => 'Hello',
+            'views' => 0,
+        ]);
 
     Question::incrementViews([$question->id]);
 

@@ -77,18 +77,18 @@ test('order by the number of answered questions', function () {
 
     $nuno->questionsReceived()
         ->createMany([[
-        'from_id' => $punyapal->id,
-        'content' => 'What is the best PHP framework?',
-    ], [
-        'from_id' => $punyapal->id,
-        'content' => 'What is the best PHP testing framework?',
-    ]]);
+            'from_id' => $punyapal->id,
+            'content' => 'What is the best PHP framework?',
+        ], [
+            'from_id' => $punyapal->id,
+            'content' => 'What is the best PHP testing framework?',
+        ]]);
 
     $punyapal->questionsReceived()
         ->create([
-        'from_id' => $nuno->id,
-        'content' => 'What is the best PHP frontend framework?',
-    ]);
+            'from_id' => $nuno->id,
+            'content' => 'What is the best PHP frontend framework?',
+        ]);
 
     $component = Livewire::test(Users::class);
 

@@ -154,7 +154,7 @@ final class Question extends Model implements Viewable
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
         $mentions = $mentions->merge($contentMatches[1]);
 
-        if ($this->answer !== null && !$this->isSharedUpdate()) {
+        if ($this->answer !== null && ! $this->isSharedUpdate()) {
             preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer->content)->asString(), $answerMatches);
             $mentions = $mentions->merge($answerMatches[1]);
         }

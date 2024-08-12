@@ -78,10 +78,10 @@ it('do not render questions without answer', function () {
     $questionWithLike = Question::factory()
         ->hasAnswer()
         ->create([
-        'to_id' => $userTo->id,
-        'content' => $content,
-        'is_reported' => false,
-    ]);
+            'to_id' => $userTo->id,
+            'content' => $content,
+            'is_reported' => false,
+        ]);
 
     Like::factory()->create([
         'user_id' => $likerUser->id,
