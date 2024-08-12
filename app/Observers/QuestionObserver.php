@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Models\Answer;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
@@ -15,7 +16,20 @@ final readonly class QuestionObserver
     /**
      * Handle the question "created" event.
      */
-    public function created(Question $question): void
+    public function created(Question|Answer $model): void
+    {
+        if ($model instanceof Question) {
+            $this->createdQuestion($model);
+        } else {
+            $this->createdAnswer($model);
+        }
+
+    }
+
+    /**
+     * Created question.
+     */
+    private function createdQuestion(Question $question): void
     {
         if ($question->isSharedUpdate()) {
             if ($question->parent_id !== null) {
@@ -25,7 +39,7 @@ final readonly class QuestionObserver
                 }
             }
 
-            $question->mentions()->each->notify(new UserMentioned($question));
+            $this->notifyMentions($question);
         } else {
             $question->loadMissing('to');
             $question->to->notify(new QuestionCreated($question));
@@ -33,9 +47,43 @@ final readonly class QuestionObserver
     }
 
     /**
+     * Created answer.
+     */
+    private function createdAnswer(Answer $answer): void
+    {
+        $answer->loadMissing('question.to');
+
+        if ($answer->question->is_ignored || $answer->question->is_reported) {
+            $this->deleted($answer->question);
+
+            return;
+        }
+
+        if ($answer->question->answer !== null) {
+            $answer->question->to->notifications()->whereJsonContains('data->question_id', $answer->question_id)->delete();
+
+            $this->notifyMentions($answer->question);
+            $answer->question->from->notify(new QuestionAnswered($answer->question));
+        }
+    }
+
+    /**
      * Handle the question "updated" event.
      */
-    public function updated(Question $question): void
+    public function updated(Question|Answer $model): void
+    {
+        if ($model instanceof Question) {
+            $this->updatedQuestion($model);
+        } else {
+            $this->updatedAnswer($model);
+        }
+
+    }
+
+    /**
+     * Updated question.
+     */
+    private function updatedQuestion(Question $question): void
     {
         if ($question->is_ignored || $question->is_reported) {
             $this->deleted($question);
@@ -43,20 +91,40 @@ final readonly class QuestionObserver
             return;
         }
 
-        if ($question->answer !== null) {
-            $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
-        }
-
         if ($question->isDirty('content') === false) {
             return;
         }
 
-        if ($question->from->id === $question->to->id) {
+        if ($question->answer !== null || $question->isSharedUpdate()) {
+            $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        }
+
+        $this->notifyMentions($question);
+    }
+
+    /**
+     * Updated answer.
+     */
+    private function updatedAnswer(Answer $answer): void
+    {
+        if ($answer->isDirty('content') === false) {
             return;
         }
 
-        $question->from->notify(new QuestionAnswered($question));
-        $question->mentions()->each->notify(new UserMentioned($question));
+        $answer->loadMissing('question.to');
+        $answer->question->to->notifications()->whereJsonContains('data->question_id', $answer->question_id)->delete();
+
+        $this->notifyMentions($answer->question);
+    }
+
+    /**
+     * Handle mentions for the given model
+     */
+    private function notifyMentions(Question $question): void
+    {
+        if ($question->mentions()->isNotEmpty() && $question->mentions()->contains($question->to) === false) {
+            $question->mentions()->each->notify(new UserMentioned($question));
+        }
     }
 
     /**
