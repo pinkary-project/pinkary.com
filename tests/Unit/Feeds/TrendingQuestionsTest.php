@@ -35,7 +35,8 @@ it('will render questions without likes or comments posted now', function () {
     Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'created_at' => now()->subDays(12),
+        'is_update' => true,
+        'created_at' => now(),
     ]);
 
     $builder = (new TrendingQuestionsFeed())->builder();

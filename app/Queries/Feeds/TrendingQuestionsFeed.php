@@ -45,8 +45,11 @@ final readonly class TrendingQuestionsFeed
             ->withCount('likes', 'children')
             ->orderByRaw(<<<SQL
                 (((likes_count * {$likesBias} + 1.0) * (children_count * {$commentsBias} + 1.0))
-                / (strftime('%s') - strftime('%s', answer_created_at) + {$timeBias} + 1.0)) desc
-                SQL,
+                / (strftime('%s') - strftime('%s', coalesce(
+                    (select created_at from answers where answers.question_id = questions.id),
+                    questions.created_at
+                )) + {$timeBias} + 1.0)) desc
+             SQL,
             )
             ->where('is_reported', false)
             ->where('is_ignored', false)
@@ -63,7 +66,6 @@ final readonly class TrendingQuestionsFeed
                     ->whereDoesntHave('answer')
                 )
             )
-            ->orderBy('likes_count', 'desc')
             ->limit(10);
     }
 }
