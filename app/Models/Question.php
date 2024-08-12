@@ -39,7 +39,6 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
- *
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
