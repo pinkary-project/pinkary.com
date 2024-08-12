@@ -26,10 +26,8 @@ test('displays bookmarks', function () {
 
     Question::factory()
         ->has(Bookmark::factory()->for($user))
-        ->create([
-            'content' => 'Question content 3',
-            'answer' => 'Answer content 3',
-        ]);
+        ->hasAnswer()
+        ->create(['content' => 'Question content 3',]);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($user->fresh())->test(Index::class);

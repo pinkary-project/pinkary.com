@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\View\View;
 
@@ -25,6 +26,11 @@ final readonly class NotificationController
     public function show(DatabaseNotification $notification): RedirectResponse
     {
         $question = type(Question::findOrFail($notification->data['question_id']))->as(Question::class);
+
+        if ($question->isSharedUpdate() && $question->from_id !== auth()->id()) {
+            $notification->delete();
+            return redirect()->back();
+        }
 
         if ($question->answer !== null) {
             $notification->delete();

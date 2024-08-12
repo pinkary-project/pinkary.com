@@ -23,9 +23,7 @@ test('displays no notifications by default', function () {
 });
 
 test('displays the number of notifications', function () {
-    $question = Question::factory()->create([
-        'answer' => null,
-    ]);
+    $question = Question::factory()->create();
 
     /** @var Testable $component */
     $component = Livewire::actingAs($question->to)->test(Show::class);
@@ -41,10 +39,7 @@ test('displays the number of notifications', function () {
 test('displays 20+ notifications when there are more than 20', function () {
     $user = User::factory()->create();
 
-    Question::factory(21)->create([
-        'to_id' => $user->id,
-        'answer' => null,
-    ]);
+    Question::factory(21)->create(['to_id' => $user->id]);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($user)->test(Show::class);
