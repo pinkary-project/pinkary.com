@@ -37,9 +37,9 @@ use Illuminate\Support\Carbon;
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
  * @property-read Collection<int, User> $mentions
- * @property-read Collection<int, Answer> $answer
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
+ *
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable

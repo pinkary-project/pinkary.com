@@ -32,10 +32,11 @@ final class Edit extends Component
     public function mount(string $questionId): void
     {
         $this->questionId = $questionId;
-        $answer = Answer::query()
-            ->where('question_id', $questionId)
-            ->first();
-        $this->content = $answer?->getRawOriginal('content') ?? '';
+        $question = Question::with('answer')->findOrFail($questionId);
+        /** @var Answer $answer */
+        $answer = $question->getRelation('answer');
+        $rawContent = $answer->getRawOriginal('content');
+        $this->content = is_string($rawContent) ? $rawContent : '';
     }
 
     /**
@@ -64,7 +65,7 @@ final class Edit extends Component
 
         $this->authorize('update', $question);
 
-        if ($question->answer?->created_at?->diffInHours(now()) > 24) {
+        if ($question->answer && $question->answer->created_at->diffInHours(now()) > 24) {
             $this->dispatch('notification.created', message: 'Answer cannot be edited after 24 hours.');
 
             return;

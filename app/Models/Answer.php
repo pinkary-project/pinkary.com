@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
+use Database\Factories\AnswerFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ use Illuminate\Support\Carbon;
 #[ObservedBy(QuestionObserver::class)]
 final class Answer extends Model
 {
+    /** @use HasFactory<AnswerFactory> */
     use HasFactory;
 
     /**
