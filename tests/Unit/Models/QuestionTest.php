@@ -61,15 +61,17 @@ test('mentions', function () {
         ->and($question->mentions()->last()->username)->toBe('seconduser');
 });
 
-test('mentions when there is no answer', function () {
+test('mentions when its an update', function () {
     User::factory()->create(['username' => 'firstuser']);
     User::factory()->create(['username' => 'seconduser']);
 
     $question = Question::factory()->create([
         'content' => 'Hello @firstuser! How are you doing?',
+        'is_update' => true,
     ]);
 
-    expect($question->mentions()->count())->toBe(0);
+    expect($question->mentions()->count())->toBe(1)
+        ->and($question->mentions()->first()->username)->toBe('firstuser');
 });
 
 test('increment views', function () {

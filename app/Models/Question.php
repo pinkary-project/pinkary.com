@@ -149,19 +149,17 @@ final class Question extends Model implements Viewable
      */
     public function mentions(): Collection
     {
-        if (! $this->answer) {
-            /** @var Collection<int, User> $mentionedUsers */
-            $mentionedUsers = new Collection();
-
-            return $mentionedUsers;
-        }
+        $mentions = collect();
 
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
-        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer->content)->asString(), $answerMatches);
+        $mentions = $mentions->merge($contentMatches[1]);
 
-        $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
+        if ($this->answer !== null && !$this->isSharedUpdate()) {
+            preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer->content)->asString(), $answerMatches);
+            $mentions = $mentions->merge($answerMatches[1]);
+        }
 
-        return User::whereIn('username', $mentions)->get();
+        return User::whereIn('username', $mentions->unique()->all())->get();
     }
 
     /**
