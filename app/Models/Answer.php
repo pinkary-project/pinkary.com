@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,10 +21,15 @@ use Illuminate\Support\Carbon;
  * @property Carbon $updated_at
  * @property-read Question $question
  */
+
+#[ObservedBy(QuestionObserver::class)]
 final class Answer extends Model
 {
     use HasFactory;
 
+    /**
+     * The casted attributes.
+     */
     protected $casts = [
         'content' => 'string',
         'created_at' => 'datetime',

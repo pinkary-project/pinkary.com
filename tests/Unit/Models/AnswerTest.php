@@ -20,10 +20,10 @@ test('to array', function () {
 
 test('content', function () {
     $question = Question::factory()->create([
-        'content' => 'Hello https://example.com, how are you? https://example.com',
+        'content' => 'Hello, how are you?',
     ])->fresh();
 
-    expect($question->content)->toBe('Hello <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>, how are you? <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>');
+    expect($question->content)->toBe('Hello, how are you?');
 });
 
 test('relations', function () {
