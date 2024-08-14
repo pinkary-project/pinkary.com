@@ -11,6 +11,7 @@ arch('models')
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',
+        'App\EventActions',
         'App\Filament',
         'App\Http',
         'App\Jobs',
