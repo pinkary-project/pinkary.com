@@ -29,13 +29,4 @@ return new class extends Migration
             $table->unique(['hashtag_id', 'question_id']);
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('hashtags');
-        Schema::dropIfExists('hashtag_question');
-    }
 };
