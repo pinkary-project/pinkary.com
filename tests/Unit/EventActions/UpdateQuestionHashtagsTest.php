@@ -2,27 +2,16 @@
 
 declare(strict_types=1);
 
+use App\EventActions\UpdateQuestionHashtags;
 use App\Models\Hashtag;
 use App\Models\Question;
-use App\Services\QuestionHashtagSyncer;
-
-it('provides the parsed hashtags', function () {
-    $question = Question::factory()->create([
-        'answer' => 'Answer has a #hashtag.',
-    ]);
-
-    $parsedHashtags = (new QuestionHashtagSyncer($question))->parsedHashtagNames();
-
-    expect($parsedHashtags)->toBeInstanceOf(Illuminate\Support\Collection::class)
-        ->and($parsedHashtags->all())->toBe(['hashtag']);
-});
 
 it('attaches the newly parsed hashtags', function () {
     $question = Question::factory()->create();
 
     $question->answer = '#hashtag1 #hashtag2';
 
-    $synced = (new QuestionHashtagSyncer($question))->sync();
+    $synced = (new UpdateQuestionHashtags($question))->handle();
 
     $hashtag1 = Hashtag::query()->firstWhere('name', 'hashtag1');
     $hashtag2 = Hashtag::query()->firstWhere('name', 'hashtag2');
@@ -47,7 +36,7 @@ it('detaches hashtags no longer found in the question', function () {
 
     $question->answer = '#hashtag3';
 
-    $synced = (new QuestionHashtagSyncer($question))->sync();
+    $synced = (new UpdateQuestionHashtags($question))->handle();
 
     $hashtag1 = Hashtag::query()->firstWhere('name', 'hashtag1');
     $hashtag2 = Hashtag::query()->firstWhere('name', 'hashtag2');
@@ -80,7 +69,7 @@ it('will not parse hashtags within code and links', function () {
             But the #cool hashtag should be synced!
             ANSWER;
 
-    (new QuestionHashtagSyncer($question))->sync();
+    (new UpdateQuestionHashtags($question))->handle();
 
     expect($question->hashtags->pluck('name')->all())->toBe(['cool']);
 });

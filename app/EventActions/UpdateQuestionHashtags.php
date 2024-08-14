@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\EventActions;
 
 use App\Models\Hashtag;
 use App\Models\Question;
 use Illuminate\Support\Collection;
 
-final readonly class QuestionHashtagSyncer
+final readonly class UpdateQuestionHashtags
 {
     /**
      * Create a new class instance.
@@ -22,7 +22,7 @@ final readonly class QuestionHashtagSyncer
     /**
      * @return array{attached: array<int, int>, detached: array<int, int>, updated: array<int, int>}
      */
-    public function sync(): array
+    public function handle(): array
     {
         $parsedHashtags = $this->parsedHashtagNames();
 
@@ -39,7 +39,7 @@ final readonly class QuestionHashtagSyncer
      *
      * @return Collection<int, non-falsy-string>
      */
-    public function parsedHashtagNames(): Collection
+    private function parsedHashtagNames(): Collection
     {
         $matches = [];
 
