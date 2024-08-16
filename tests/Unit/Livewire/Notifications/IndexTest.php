@@ -5,13 +5,15 @@ declare(strict_types=1);
 use App\Livewire\Notifications\Index;
 use App\Models\Question;
 use App\Models\User;
-use App\Notifications\QuestionAnswered;
+use App\Notifications;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
 test('displays notifications', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
+
+    $userA->followers()->attach($userB);
 
     $questionA = Question::factory()->create([
         'to_id' => $userA->id,
@@ -32,7 +34,8 @@ test('displays notifications', function () {
         'answer' => 'Answer content 3',
     ]);
 
-    $userA->notify(new QuestionAnswered($questionC));
+    $userA->notify(new Notifications\QuestionAnswered($questionC));
+    $userA->notify(new Notifications\UserFollowed($userB));
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA->fresh())->test(Index::class);
@@ -42,5 +45,6 @@ test('displays notifications', function () {
             'Question content 1',
             'Question content 2',
             'Question content 3',
+            "{$userB->name} followed you",
         ]);
 });
