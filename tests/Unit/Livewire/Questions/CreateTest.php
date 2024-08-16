@@ -601,3 +601,31 @@ test('max file size error', function () {
         'images.0' => "The image may not be greater than {$maxFileSize} kilobytes.",
     ]);
 });
+
+test('max size & ratio validation', function () {
+    $user = User::factory()->create([
+        'is_verified' => true,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('images', [
+        UploadedFile::fake()->image('test.jpg', '4005', '4005'),
+    ]);
+    $component->call('runImageValidation');
+
+    $component->assertHasErrors([
+        'images.0' => 'The image must be less than 4000 x 4000 pixels.',
+    ]);
+
+    $component->set('images', [
+        UploadedFile::fake()->image('test.jpg', '429', '1100'),
+    ]);
+    $component->call('runImageValidation');
+
+    $component->assertHasErrors([
+        'images.0' => 'The image aspect ratio must be less than 2/5.',
+    ]);
+});
