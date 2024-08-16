@@ -7,6 +7,7 @@ namespace App\EventActions;
 use App\Models\Hashtag;
 use App\Models\Question;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 final readonly class UpdateQuestionHashtags
 {
@@ -37,7 +38,7 @@ final readonly class UpdateQuestionHashtags
     /**
      * Get the unique hashtag names found in the question.
      *
-     * @return Collection<int, non-falsy-string>
+     * @return Collection<int, string>
      */
     private function parsedHashtagNames(): Collection
     {
@@ -52,6 +53,7 @@ final readonly class UpdateQuestionHashtags
         return collect($matches[3] ?? [])
             ->filter()
             ->unique()
-            ->values();
+            ->values()
+            ->map(fn (string $hashtag): string => Str::limit($hashtag, 50, ''));
     }
 }
