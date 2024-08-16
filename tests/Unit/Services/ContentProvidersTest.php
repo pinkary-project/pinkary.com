@@ -303,7 +303,7 @@ test('hashtags', function (string $content, string $parsed) {
     ],
     [
         'content' => '#ab12z9_-',
-        'parsed' => '<span class="text-blue-500">#ab12z9_</span>-',
+        'parsed' => '<span class="text-blue-500">#ab12z9</span>_-',
     ],
     [
         'content' => '#hashtag.',

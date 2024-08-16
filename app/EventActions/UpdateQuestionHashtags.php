@@ -44,7 +44,7 @@ final readonly class UpdateQuestionHashtags
         $matches = [];
 
         preg_match_all(
-            '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!&)#([a-z0-9_]+)/is',
+            '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!&)#([a-z0-9]+)/is',
             "{$this->question->answer} {$this->question->content}",
             $matches,
         );
