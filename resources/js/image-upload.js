@@ -24,7 +24,10 @@ const imageUpload = () => ({
             event.target.value = '';
         });
 
-        this.textarea.addEventListener('paste', this.handleImagePaste.bind(this));
+        this.textarea.addEventListener('paste', (event) => {
+            event.preventDefault();
+            this.handleImagePaste(event);
+        });
 
         Livewire.on('image.uploaded', (event) => {
             this.createMarkdownImage(event);
@@ -49,8 +52,10 @@ const imageUpload = () => ({
             return;
         }
 
-        // prevent default behavior to avoid pasting the title of the image
-        event.preventDefault();
+        // don't allow multiple uploads at once
+        if(this.uploading) {
+            return;
+        }
 
         // build out the file list from the clipboard, filtering only for images.
         const dataTransfer = new DataTransfer();
