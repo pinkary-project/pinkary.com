@@ -30,7 +30,7 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
 
                 $url = $disk->url($match[2]);
 
-                return "<img class='object-cover mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"{$url}\" alt=\"image\">";
+                return "<img class='object-contain mx-auto max-h-[52rem] w-full max-w-[26rem] rounded-lg' src=\"{$url}\" alt=\"image\">";
             },
             $content
         );
