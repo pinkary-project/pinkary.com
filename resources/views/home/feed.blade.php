@@ -4,10 +4,18 @@
             <x-home-menu></x-home-menu>
 
             @auth
-                <livewire:questions.create :toId="auth()->id()" />
+                <livewire:questions.create :toId="auth()->id()"/>
             @endauth
 
-            <livewire:home.feed />
+            {{--
+                This stuff is only here to compare the htmx options.
+                It would go away for production.
+            --}}
+            @if(isset($questions))
+                <x-questions.list :questions="$questions"></x-questions.list>
+            @else
+                <livewire:home.feed/>
+            @endif
         </div>
     </div>
 </x-app-layout>

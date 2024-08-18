@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
+use App\Http\Controllers\Home\FeedController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/about', 'about')->name('about');
 
-Route::view('/', 'home/feed')->name('home.feed');
+Route::get('/', FeedController::class)->name('home.feed');
 Route::view('/for-you', 'home/questions-for-you')->name('home.for_you');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');
 Route::view('/users', 'home/users')->name('home.users');

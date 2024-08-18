@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\Home;
 
 use App\Jobs\IncrementViews;
-use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\View\View;
@@ -14,14 +13,13 @@ use Livewire\Component;
 
 final class Feed extends Component
 {
-    use HasLoadMore;
-
     /**
      * Ignore the given question.
      */
     #[On('question.ignore')]
     public function ignore(string $questionId): void
     {
+        // TODO: Remove this. It's never used. Ignoring is handled in question.show.
         $question = Question::findOrFail($questionId);
 
         $this->authorize('ignore', $question);
@@ -40,9 +38,11 @@ final class Feed extends Component
     /**
      * Render the component.
      */
-    public function render(): View
+    public function render(): View|string
     {
-        $questions = (new RecentQuestionsFeed())->builder()->simplePaginate($this->perPage);
+        $questions = (new RecentQuestionsFeed())
+            ->builder()
+            ->cursorPaginate();
 
         IncrementViews::dispatchUsingSession($questions->getCollection());
 
