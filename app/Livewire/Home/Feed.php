@@ -38,11 +38,9 @@ final class Feed extends Component
     /**
      * Render the component.
      */
-    public function render(): View|string
+    public function render(): View
     {
-        $questions = (new RecentQuestionsFeed())
-            ->builder()
-            ->cursorPaginate();
+        $questions = (new RecentQuestionsFeed())->builder()->cursorPaginate();
 
         IncrementViews::dispatchUsingSession($questions->getCollection());
 
