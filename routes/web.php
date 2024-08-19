@@ -51,8 +51,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::patch('/profile/avatar', [UserAvatarController::class, 'update'])
         ->name('profile.avatar.update');
-    Route::delete('/profile/avatar', [UserAvatarController::class, 'delete'])
-        ->name('profile.avatar.delete');
+    Route::delete('/profile/avatar', [UserAvatarController::class, 'destroy'])
+        ->name('profile.avatar.destroy');
 });
 
 Route::middleware('auth')->group(function () {
