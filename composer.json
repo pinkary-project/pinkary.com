@@ -3,10 +3,10 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "filament/filament": "^3.2.97",
-        "intervention/image": "^3.7.2",
+        "filament/filament": "^3.2.102",
+        "intervention/image": "^3.8.0",
         "laravel/fortify": "^1.21.1",
-        "laravel/framework": "^11.19.0",
+        "laravel/framework": "^11.20.0",
         "laravel/pennant": "^1.10.0",
         "laravel/pulse": "^1.2.4",
         "laravel/socialite": "^5.15.1",
@@ -23,15 +23,15 @@
         "barryvdh/laravel-debugbar": "^3.13.5",
         "fakerphp/faker": "^1.23.1",
         "larastan/larastan": "^2.9.8",
-        "laravel/pint": "^1.17.1",
-        "laravel/sail": "^1.31.0",
+        "laravel/pint": "^1.17.2",
+        "laravel/sail": "^1.31.1",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.4",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
         "pestphp/pest": "^3.0.0",
         "pestphp/pest-plugin-laravel": "^3.0.0",
         "pestphp/pest-plugin-type-coverage": "^3.0.0",
-        "rector/rector": "^1.2.2"
+        "rector/rector": "^1.2.3"
     },
     "autoload": {
         "psr-4": {
