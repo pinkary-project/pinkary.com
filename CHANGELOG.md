@@ -1,3 +1,9 @@
+## Version 1.37.0
+> 19 August, 2024
+
+- Adds support for pasting images directly into the text area for creating posts.
+- Internal improvements and bug fixes.
+
 ## Version 1.36.1
 > 8 August, 2024
 
