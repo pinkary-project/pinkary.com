@@ -155,9 +155,16 @@ const imageUpload = () => ({
         this.uploading = false;
     },
 
+    escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    },
+
     removeMarkdownImage(index) {
         let {path, originalName} = this.images[index];
-        let regex = new RegExp(`!\\[${originalName}\\]\\(${this.normalizePath(path)}\\)\\n?`, 'g');
+        let regex = new RegExp(
+            `!\\[${this.escapeRegExp(originalName)}\\]\\(${this.normalizePath(path)}\\)\\n?`,
+            'g'
+        );
         this.textarea.value = this.textarea.value.replace(regex, '');
         this.resizeTextarea();
     },
