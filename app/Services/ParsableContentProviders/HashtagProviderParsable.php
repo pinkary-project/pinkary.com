@@ -18,7 +18,10 @@ final readonly class HashtagProviderParsable implements ParsableContentProvider
             '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!&)#([a-z0-9]+)/is',
             fn (array $matches): string => $matches[1] !== ''
                 ? $matches[1]
-                : '<span class="text-blue-500">#'.Str::limit($matches[3], 50, '').'</span>',
+                : sprintf(
+                    '<span class="text-blue-500">#%s</span>',
+                    Str::limit($matches[3], 200, '')
+                ),
             $content
         );
     }

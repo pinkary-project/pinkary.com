@@ -350,7 +350,7 @@ test('hashtags', function (string $content, string $parsed) {
         <span class="text-blue-500">#hashtag</span>',
     ],
     [
-        'content' => '#extremelylonghashtagswontbeallowedaaaaaaaaaaaaaaaab', // 51 chars
-        'parsed' => '<span class="text-blue-500">#extremelylonghashtagswontbeallowedaaaaaaaaaaaaaaaa</span>', // 50 chars
+        'content' => '#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        'parsed' => '<span class="text-blue-500">#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span>',
     ],
 ]);
