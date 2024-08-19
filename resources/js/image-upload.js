@@ -25,7 +25,6 @@ const imageUpload = () => ({
         });
 
         this.textarea.addEventListener('paste', (event) => {
-            event.preventDefault();
             this.handleImagePaste(event);
         });
 
