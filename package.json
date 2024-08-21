@@ -12,7 +12,7 @@
         "alpinejs-notify": "^1.0.3",
         "autosize": "^6.0.1",
         "autoprefixer": "^10.4.19",
-        "axios": "^1.6.8",
+        "axios": "^1.7.4",
         "highlight.js": "^11.9.0",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.38",
