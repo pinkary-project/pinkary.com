@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1bf546e284d6741951a5de406dad11ac",
+    "content-hash": "0456b530ecae658a2db7661c0e623ed2",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1143,7 +1143,7 @@
         },
         {
             "name": "filament/actions",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/actions.git",
@@ -1196,7 +1196,7 @@
         },
         {
             "name": "filament/filament",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/panels.git",
@@ -1261,7 +1261,7 @@
         },
         {
             "name": "filament/forms",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/forms.git",
@@ -1317,7 +1317,7 @@
         },
         {
             "name": "filament/infolists",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/infolists.git",
@@ -1368,7 +1368,7 @@
         },
         {
             "name": "filament/notifications",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/notifications.git",
@@ -1420,16 +1420,16 @@
         },
         {
             "name": "filament/support",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/support.git",
-                "reference": "544e521a310b1b4e7783d8ad1781ef7b1915232a"
+                "reference": "7cded440dee149f86f5d157164bc57e4e18f6842"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/support/zipball/544e521a310b1b4e7783d8ad1781ef7b1915232a",
-                "reference": "544e521a310b1b4e7783d8ad1781ef7b1915232a",
+                "url": "https://api.github.com/repos/filamentphp/support/zipball/7cded440dee149f86f5d157164bc57e4e18f6842",
+                "reference": "7cded440dee149f86f5d157164bc57e4e18f6842",
                 "shasum": ""
             },
             "require": {
@@ -1475,20 +1475,20 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2024-08-20T12:51:40+00:00"
+            "time": "2024-08-21T06:07:30+00:00"
         },
         {
             "name": "filament/tables",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/tables.git",
-                "reference": "d801f70146d07fbf3cbbb9d9c09d8daf0ff530b5"
+                "reference": "1d256833bfc5fc67276c1f0fb44e364dfb0f4ef1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/tables/zipball/d801f70146d07fbf3cbbb9d9c09d8daf0ff530b5",
-                "reference": "d801f70146d07fbf3cbbb9d9c09d8daf0ff530b5",
+                "url": "https://api.github.com/repos/filamentphp/tables/zipball/1d256833bfc5fc67276c1f0fb44e364dfb0f4ef1",
+                "reference": "1d256833bfc5fc67276c1f0fb44e364dfb0f4ef1",
                 "shasum": ""
             },
             "require": {
@@ -1527,11 +1527,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2024-08-20T08:32:55+00:00"
+            "time": "2024-08-21T06:07:26+00:00"
         },
         {
             "name": "filament/widgets",
-            "version": "v3.2.105",
+            "version": "v3.2.106",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/widgets.git",
@@ -5437,16 +5437,16 @@
         },
         {
             "name": "psr/log",
-            "version": "3.0.0",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001"
+                "reference": "79dff0b268932c640297f5208d6298f71855c03e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe5ea303b0887d5caefd3d431c3e61ad47037001",
-                "reference": "fe5ea303b0887d5caefd3d431c3e61ad47037001",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/79dff0b268932c640297f5208d6298f71855c03e",
+                "reference": "79dff0b268932c640297f5208d6298f71855c03e",
                 "shasum": ""
             },
             "require": {
@@ -5481,9 +5481,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/3.0.0"
+                "source": "https://github.com/php-fig/log/tree/3.0.1"
             },
-            "time": "2021-07-14T16:46:02+00:00"
+            "time": "2024-08-21T13:31:24+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -10289,12 +10289,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "4d9ed8768c7a8bd909af477407e6baa93f4c74d0"
+                "reference": "9b11857ae62dd767867ebb516f6ec80cc19a8ffe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/4d9ed8768c7a8bd909af477407e6baa93f4c74d0",
-                "reference": "4d9ed8768c7a8bd909af477407e6baa93f4c74d0",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/9b11857ae62dd767867ebb516f6ec80cc19a8ffe",
+                "reference": "9b11857ae62dd767867ebb516f6ec80cc19a8ffe",
                 "shasum": ""
             },
             "require": {
@@ -10304,7 +10304,7 @@
                 "pestphp/pest-plugin": "^3.0.0",
                 "pestphp/pest-plugin-arch": "^3.0.0",
                 "php": "^8.2.0",
-                "phpunit/phpunit": "^11.3.0"
+                "phpunit/phpunit": "^11.3.1"
             },
             "conflict": {
                 "sebastian/exporter": "<6.0.0",
@@ -10389,7 +10389,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-08-19T01:24:18+00:00"
+            "time": "2024-08-20T21:59:25+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -11165,32 +11165,32 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "11.0.5",
+            "version": "11.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "19b6365ab8b59a64438c0c3f4241feeb480c9861"
+                "reference": "ebdffc9e09585dafa71b9bffcdb0a229d4704c45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/19b6365ab8b59a64438c0c3f4241feeb480c9861",
-                "reference": "19b6365ab8b59a64438c0c3f4241feeb480c9861",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ebdffc9e09585dafa71b9bffcdb0a229d4704c45",
+                "reference": "ebdffc9e09585dafa71b9bffcdb0a229d4704c45",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "ext-xmlwriter": "*",
-                "nikic/php-parser": "^5.0",
+                "nikic/php-parser": "^5.1.0",
                 "php": ">=8.2",
-                "phpunit/php-file-iterator": "^5.0",
-                "phpunit/php-text-template": "^4.0",
-                "sebastian/code-unit-reverse-lookup": "^4.0",
-                "sebastian/complexity": "^4.0",
-                "sebastian/environment": "^7.0",
-                "sebastian/lines-of-code": "^3.0",
-                "sebastian/version": "^5.0",
-                "theseer/tokenizer": "^1.2.0"
+                "phpunit/php-file-iterator": "^5.0.1",
+                "phpunit/php-text-template": "^4.0.1",
+                "sebastian/code-unit-reverse-lookup": "^4.0.1",
+                "sebastian/complexity": "^4.0.1",
+                "sebastian/environment": "^7.2.0",
+                "sebastian/lines-of-code": "^3.0.1",
+                "sebastian/version": "^5.0.1",
+                "theseer/tokenizer": "^1.2.3"
             },
             "require-dev": {
                 "phpunit/phpunit": "^11.0"
@@ -11202,7 +11202,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "11.0-dev"
+                    "dev-main": "11.0.x-dev"
                 }
             },
             "autoload": {
@@ -11231,7 +11231,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/11.0.5"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/11.0.6"
             },
             "funding": [
                 {
@@ -11239,7 +11239,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-07-03T05:05:37+00:00"
+            "time": "2024-08-22T04:37:56+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
