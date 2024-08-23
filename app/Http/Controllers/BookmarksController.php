@@ -9,7 +9,7 @@ use Illuminate\View\View;
 final readonly class BookmarksController
 {
     /**
-     * Display all notifications.
+     * Display all bookmarks.
      */
     public function index(): View
     {
