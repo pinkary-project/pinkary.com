@@ -260,13 +260,9 @@
 
                     <span class="mx-1">•</span>
 
-                    @php
-                        $bookmarkExists = $question->bookmarks->contains('user_id', auth()->id());
-                    @endphp
-
                     <button
                         data-navigate-ignore="true"
-                        @if ($bookmarkExists)
+                        @if ($question->is_bookmarked)
                             wire:click="unbookmark()"
                         @else
                             wire:click="bookmark()"
@@ -274,7 +270,7 @@
 
                         class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($bookmarkExists)
+                        @if ($question->is_bookmarked)
                             <x-heroicon-s-bookmark class="h-4 w-4" />
                         @else
                             <x-heroicon-o-bookmark class="h-4 w-4" />
