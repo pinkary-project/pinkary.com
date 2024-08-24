@@ -253,8 +253,10 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'likes'])
+            ->with(['to', 'from'])
             ->withExists(['bookmarks as is_bookmarked' => function (Builder $query): void {
+                $query->where('user_id', auth()->id());
+            }, 'likes as is_liked' => function (Builder $query): void {
                 $query->where('user_id', auth()->id());
             }])
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {

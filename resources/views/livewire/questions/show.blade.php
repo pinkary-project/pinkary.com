@@ -200,7 +200,7 @@
                     <span>•</span>
 
                     @php
-                        $likeExists = $question->likes->contains('user_id', auth()->id());
+                        $likeExists = $question->is_liked;
                         $likesCount = $question->likes_count;
                     @endphp
 
