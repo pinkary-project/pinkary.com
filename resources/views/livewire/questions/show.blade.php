@@ -267,13 +267,18 @@
                         @else
                             wire:click="bookmark()"
                         @endif
-
+                        title="{{ Number::format($question->bookmarks_count) }} {{ str('bookmark')->plural($question->bookmarks_count) }}"
                         class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($question->is_bookmarked)
                             <x-heroicon-s-bookmark class="h-4 w-4" />
                         @else
                             <x-heroicon-o-bookmark class="h-4 w-4" />
+                        @endif
+                        @if ($question->bookmarks_count)
+                            <span class="ml-1">
+                                {{ Number::abbreviate($question->bookmarks_count) }}
+                            </span>
                         @endif
                     </button>
                     <x-dropdown align="left"

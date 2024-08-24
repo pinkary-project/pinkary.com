@@ -263,7 +263,7 @@ final class Show extends Component
             ->when($this->inThread, function (Builder $query): void {
                 $query->with(['children']);
             })
-            ->withCount(['likes', 'children'])
+            ->withCount(['likes', 'children', 'bookmarks'])
             ->firstOrFail();
 
         return view('livewire.questions.show', [
