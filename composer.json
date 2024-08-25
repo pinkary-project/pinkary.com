@@ -3,7 +3,7 @@
     "type": "project",
     "require": {
         "php": "^8.3",
-        "filament/filament": "^3.2.106",
+        "filament/filament": "^3.2.107",
         "intervention/image": "^3.8.0",
         "laravel/fortify": "^1.21.1",
         "laravel/framework": "^11.21.0",
@@ -31,7 +31,7 @@
         "pestphp/pest": "^3.0.0",
         "pestphp/pest-plugin-laravel": "^3.0.0",
         "pestphp/pest-plugin-type-coverage": "^3.0.0",
-        "rector/rector": "^1.2.3"
+        "rector/rector": "^1.2.4"
     },
     "autoload": {
         "psr-4": {
