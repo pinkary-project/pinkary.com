@@ -200,7 +200,7 @@
                     <span>•</span>
 
                     @php
-                        $likeExists = $question->likes->contains('user_id', auth()->id());
+                        $likeExists = $question->is_liked;
                         $likesCount = $question->likes_count;
                     @endphp
 
@@ -260,24 +260,25 @@
 
                     <span class="mx-1">•</span>
 
-                    @php
-                        $bookmarkExists = $question->bookmarks->contains('user_id', auth()->id());
-                    @endphp
-
                     <button
                         data-navigate-ignore="true"
-                        @if ($bookmarkExists)
+                        @if ($question->is_bookmarked)
                             wire:click="unbookmark()"
                         @else
                             wire:click="bookmark()"
                         @endif
-
+                        title="{{ Number::format($question->bookmarks_count) }} {{ str('bookmark')->plural($question->bookmarks_count) }}"
                         class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($bookmarkExists)
+                        @if ($question->is_bookmarked)
                             <x-heroicon-s-bookmark class="h-4 w-4" />
                         @else
                             <x-heroicon-o-bookmark class="h-4 w-4" />
+                        @endif
+                        @if ($question->bookmarks_count)
+                            <span class="ml-1">
+                                {{ Number::abbreviate($question->bookmarks_count) }}
+                            </span>
                         @endif
                     </button>
                     <x-dropdown align="left"
