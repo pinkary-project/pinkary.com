@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\EventActions\UpdateQuestionHashtags;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
@@ -30,6 +31,8 @@ final readonly class QuestionObserver
             $question->loadMissing('to');
             $question->to->notify(new QuestionCreated($question));
         }
+
+        (new UpdateQuestionHashtags($question))->handle();
     }
 
     /**
@@ -45,6 +48,10 @@ final readonly class QuestionObserver
 
         if ($question->answer !== null) {
             $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
+        }
+
+        if ($question->isDirty(['answer', 'content'])) {
+            (new UpdateQuestionHashtags($question))->handle();
         }
 
         if ($question->isDirty('answer') === false) {
@@ -72,5 +79,7 @@ final readonly class QuestionObserver
         });
 
         $question->children->each->delete();
+
+        $question->hashtags()->detach();
     }
 }

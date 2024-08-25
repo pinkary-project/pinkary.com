@@ -11,6 +11,7 @@ arch('models')
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',
+        'App\EventActions',
         'App\Filament',
         'App\Http',
         'App\Jobs',
@@ -28,7 +29,7 @@ arch('models')
     ])->ignoring('App\Models\Concerns');
 
 arch('ensure factories', function () {
-    expect($models = getModels())->toHaveCount(5);
+    expect($models = getModels())->toHaveCount(6);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
@@ -38,7 +39,7 @@ arch('ensure factories', function () {
 });
 
 arch('ensure datetime casts', function () {
-    expect($models = getModels())->toHaveCount(5);
+    expect($models = getModels())->toHaveCount(6);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */

@@ -303,7 +303,7 @@ test('hashtags', function (string $content, string $parsed) {
     ],
     [
         'content' => '#ab12z9_-',
-        'parsed' => '<span class="text-blue-500">#ab12z9_</span>-',
+        'parsed' => '<span class="text-blue-500">#ab12z9</span>_-',
     ],
     [
         'content' => '#hashtag.',
@@ -348,5 +348,9 @@ test('hashtags', function (string $content, string $parsed) {
         #comment
         </code></pre>
         <span class="text-blue-500">#hashtag</span>',
+    ],
+    [
+        'content' => '#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        'parsed' => '<span class="text-blue-500">#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span>',
     ],
 ]);
