@@ -1,3 +1,9 @@
+## Version 1.38.0
+> 25 August, 2024
+
+- Internal improvements and bug fixes.
+- Count number of bookmarks.
+
 ## Version 1.37.0
 > 19 August, 2024
 
