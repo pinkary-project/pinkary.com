@@ -295,43 +295,43 @@ test('hashtags', function (string $content, string $parsed) {
 })->with([
     [
         'content' => 'This is a #hashtag',
-        'parsed' => 'This is a <span class="text-blue-500">#hashtag</span>',
+        'parsed' => 'This is a <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>',
     ],
     [
         'content' => '#hashtag at the beginning',
-        'parsed' => '<span class="text-blue-500">#hashtag</span> at the beginning',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a> at the beginning',
     ],
     [
         'content' => '#ab12z9_-',
-        'parsed' => '<span class="text-blue-500">#ab12z9</span>_-',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/ab12z9">#ab12z9</a>_-',
     ],
     [
         'content' => '#hashtag.',
-        'parsed' => '<span class="text-blue-500">#hashtag</span>.',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>.',
     ],
     [
         'content' => '#hashtag,',
-        'parsed' => '<span class="text-blue-500">#hashtag</span>,',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>,',
     ],
     [
         'content' => '#hashtag!',
-        'parsed' => '<span class="text-blue-500">#hashtag</span>!',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>!',
     ],
     [
         'content' => '#hashtag?',
-        'parsed' => '<span class="text-blue-500">#hashtag</span>?',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>?',
     ],
     [
         'content' => '#hashtag/',
-        'parsed' => '<span class="text-blue-500">#hashtag</span>/',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>/',
     ],
     [
         'content' => '##hashtag#',
-        'parsed' => '#<span class="text-blue-500">#hashtag</span>#',
+        'parsed' => '#<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>#',
     ],
     [
         'content' => 'Existing <a href="/route#segment">link with #segment</a> and a #hashtag.',
-        'parsed' => 'Existing <a href="/route#segment">link with #segment</a> and a <span class="text-blue-500">#hashtag</span>.',
+        'parsed' => 'Existing <a href="/route#segment">link with #segment</a> and a <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>.',
     ],
     [
         'content' => 'It&#039;ll work with html escapes.',
@@ -347,10 +347,10 @@ test('hashtags', function (string $content, string $parsed) {
         multiline $codeBlocks = <span class="hljs-keyword">true</span>;
         #comment
         </code></pre>
-        <span class="text-blue-500">#hashtag</span>',
+        <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>',
     ],
     [
         'content' => '#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        'parsed' => '<span class="text-blue-500">#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span>',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</a>',
     ],
 ]);

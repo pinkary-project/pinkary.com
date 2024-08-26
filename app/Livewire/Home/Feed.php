@@ -17,6 +17,11 @@ final class Feed extends Component
     use HasLoadMore;
 
     /**
+     * The hashtag name that the queried questions should relate to.
+     */
+    public ?string $hashtag = null;
+
+    /**
      * Ignore the given question.
      */
     #[On('question.ignore')]
@@ -42,7 +47,7 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $questions = (new RecentQuestionsFeed())->builder()->simplePaginate($this->perPage);
+        $questions = (new RecentQuestionsFeed($this->hashtag))->builder()->simplePaginate($this->perPage);
 
         IncrementViews::dispatchUsingSession($questions->getCollection());
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Jobs\IncrementViews;
 use App\Livewire\Home\Feed;
 use App\Livewire\Questions\Create;
+use App\Models\Question;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 
@@ -30,4 +31,21 @@ it('does increment views', function () {
     $this->get(route('home.feed'));
 
     Queue::assertPushed(IncrementViews::class);
+});
+
+it('can filter questions to those with a particular hashtag', function () {
+    $questionWithHashtag = Question::factory()->create(['answer' => 'question 1 with a #hashtag']);
+
+    Question::factory()->create(['answer' => 'question 2 without hashtags']);
+
+    $component = Livewire::test(Feed::class, ['hashtag' => 'hashtag']);
+
+    $component
+        ->assertViewHas('questions', fn (Illuminate\Pagination\Paginator $paginator): bool => $paginator
+            ->pluck('id')
+            ->all() === [$questionWithHashtag->id]
+        )
+        ->assertSee('question 1')
+        ->assertDontSee('question 2')
+        ->assertDontSee('There are no questions to show.');
 });
