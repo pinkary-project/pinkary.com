@@ -27,7 +27,7 @@ test('user can download qr code', function () {
     $backgroundColor = new Rgb(3, 7, 18);
     $foregroundColor = new Rgb(236, 72, 153);
 
-    $base64QrCode = (new Writer(
+    $qrCodeBinary = (new Writer(
         renderer: new ImageRenderer(
             rendererStyle: new RendererStyle(size: 512, margin: 0, fill: Fill::withForegroundColor($backgroundColor, $foregroundColor, EyeFill::inherit(), EyeFill::inherit(), EyeFill::inherit())),
             imageBackEnd: new ImagickImageBackEnd()
@@ -42,7 +42,7 @@ test('user can download qr code', function () {
 
     // Load the QR code image
     $qrCodeImage = new Imagick();
-    $qrCodeImage->readImageBlob($base64QrCode);
+    $qrCodeImage->readImageBlob($qrCodeBinary);
 
     // Load the icon
     $icon = new Imagick(public_path('img/ico.png'));

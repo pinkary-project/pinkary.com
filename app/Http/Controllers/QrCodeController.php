@@ -31,7 +31,7 @@ final readonly class QrCodeController
         $foregroundColor = new Rgb(236, 72, 153);
 
         // Generate the QR code
-        $base64QrCode = (new Writer(
+        $qrCodeBinary = (new Writer(
             renderer: new ImageRenderer(
                 rendererStyle: new RendererStyle(size: 512, margin: 0, fill: Fill::withForegroundColor($backgroundColor, $foregroundColor, EyeFill::inherit(), EyeFill::inherit(), EyeFill::inherit())),
                 imageBackEnd: new ImagickImageBackEnd()
@@ -46,7 +46,7 @@ final readonly class QrCodeController
 
         // Load the QR code image
         $qrCodeImage = new Imagick();
-        $qrCodeImage->readImageBlob($base64QrCode);
+        $qrCodeImage->readImageBlob($qrCodeBinary);
 
         // Load the icon
         $icon = new Imagick(public_path('img/ico.png'));
