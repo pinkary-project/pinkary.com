@@ -26,7 +26,6 @@ export default {
     safelist: [
         'from-blue-500',
         'to-purple-600',
-        'from-blue-500',
         'to-teal-700',
         'from-red-500',
         'to-orange-600',
@@ -39,7 +38,6 @@ export default {
 
         'border-blue-500',
         'border-purple-600',
-        'border-blue-500',
         'border-teal-700',
         'border-red-500',
         'border-orange-600',
@@ -52,7 +50,6 @@ export default {
 
         'ring-blue-500',
         'ring-purple-600',
-        'ring-blue-500',
         'ring-teal-700',
         'ring-red-500',
         'ring-orange-600',
@@ -65,7 +62,6 @@ export default {
 
         'bg-blue-500',
         'bg-purple-600',
-        'bg-blue-500',
         'bg-teal-700',
         'bg-red-500',
         'bg-orange-600',
@@ -78,7 +74,6 @@ export default {
 
         'text-blue-500',
         'text-purple-600',
-        'text-blue-500',
         'text-teal-700',
         'text-red-500',
         'text-orange-600',
