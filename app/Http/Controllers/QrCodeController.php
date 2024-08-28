@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\QrCode;
 use Illuminate\Http\Request;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use SimpleSoftwareIO\QrCode\Generator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final readonly class QrCodeController
@@ -19,19 +18,11 @@ final readonly class QrCodeController
     {
         $user = type($request->user())->as(User::class);
 
-        /** @var Generator $qrCodeGenerator */
-        $qrCodeGenerator = QrCode::getFacadeRoot();
-
-        $qrCode = $qrCodeGenerator
-            ->size(512)
-            ->format('png')
-            ->backgroundColor(3, 7, 18, 100)
-            ->color(236, 72, 153, 100)
-            ->merge('/public/img/ico.png')
-            ->errorCorrection('M')
-            ->generate(route('profile.show', [
+        $qrCode = (new QrCode())->generate(
+            route('profile.show', [
                 'username' => $user->username,
-            ]));
+            ])
+        );
 
         return response()->streamDownload(
             function () use ($qrCode): void {

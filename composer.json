@@ -15,7 +15,7 @@
         "matomo/device-detector": "^6.3.2",
         "pinkary-project/type-guard": "^0.1.0",
         "scrivo/highlight.php": "^9.18.1.10",
-        "simplesoftwareio/simple-qrcode": "^4.2",
+        "bacon/bacon-qr-code": "^2.0",
         "spatie/laravel-mailcoach-mailer": "^1.3.0",
         "ext-imagick": "^3.7.0"
     },
