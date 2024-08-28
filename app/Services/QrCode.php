@@ -42,6 +42,8 @@ final class QrCode
 
         $this->addIconToQrCode($qrCodeImage);
 
+        $qrCodeImage->stripImage();
+
         return new HtmlString($qrCodeImage->getImageBlob());
     }
 
@@ -80,5 +82,10 @@ final class QrCode
         $y = ($qrCodeImage->getImageHeight() - $this->iconSize) / 2;
 
         $qrCodeImage->compositeImage($icon, Imagick::COMPOSITE_OVER, (int) $x, (int) $y);
+    }
+
+    private function stripMetadata(Imagick $image): void
+    {
+        $image->stripImage();
     }
 }
