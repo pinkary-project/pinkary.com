@@ -48,7 +48,7 @@ test('user can download qr code', function () {
     $icon = new Imagick(public_path('img/ico.png'));
 
     $iconSize = 100;
-    $icon->resizeImage($iconSize, $iconSize, Imagick::FILTER_LANCZOS, 1);
+    $icon->resizeImage($iconSize, $iconSize, Imagick::FILTER_POINT, 1);
 
     // Calculate the position to place the icon
     $x = ($qrCodeImage->getImageWidth() - $iconSize) / 2;
