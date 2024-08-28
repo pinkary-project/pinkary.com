@@ -37,8 +37,8 @@ final class QrCode
      */
     public function generate(string $content): HtmlString
     {
-        $qrCodeBinary = $this->createQrCodeData($content);
-        $qrCodeImage = $this->createQrCodeImage($qrCodeBinary);
+        $qrCodeData = $this->createQrCodeData($content);
+        $qrCodeImage = $this->createQrCodeImage($qrCodeData);
 
         $this->addIconToQrCode($qrCodeImage);
 
