@@ -83,9 +83,4 @@ final class QrCode
 
         $qrCodeImage->compositeImage($icon, Imagick::COMPOSITE_OVER, (int) $x, (int) $y);
     }
-
-    private function stripMetadata(Imagick $image): void
-    {
-        $image->stripImage();
-    }
 }
