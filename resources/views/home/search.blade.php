@@ -3,7 +3,7 @@
         <div class="min-h-screen w-full max-w-md overflow-hidden shadow-md">
             <x-home-menu></x-home-menu>
 
-            <livewire:home.users :focus-input="true" />
+            <livewire:home.search :focus-input="true" />
         </div>
     </div>
 </x-app-layout>
