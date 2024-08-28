@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Encoder\Encoder;
+use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
-use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\RendererStyle\EyeFill;
 use BaconQrCode\Renderer\RendererStyle\Fill;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+use Illuminate\Http\Request;
 use Imagick;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -59,7 +59,7 @@ final readonly class QrCodeController
         $y = ($qrCodeImage->getImageHeight() - $iconSize) / 2;
 
         // Overlay the icon onto the QR code
-        $qrCodeImage->compositeImage($icon, Imagick::COMPOSITE_OVER, (int)$x, (int)$y);
+        $qrCodeImage->compositeImage($icon, Imagick::COMPOSITE_OVER, (int) $x, (int) $y);
 
         $qrCode = $qrCodeImage->getImageBlob();
 
@@ -68,7 +68,7 @@ final readonly class QrCodeController
                 /** @var string $qrCode */
                 echo $qrCode;
             },
-            'pinkary_' . $user->username . '.png',
+            'pinkary_'.$user->username.'.png',
             ['Content-Type' => 'image/png']
         );
     }

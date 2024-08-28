@@ -8,9 +8,9 @@ use BaconQrCode\Encoder\Encoder;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Renderer\RendererStyle\EyeFill;
 use BaconQrCode\Renderer\RendererStyle\Fill;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Imagick;
 
@@ -55,7 +55,7 @@ test('user can download qr code', function () {
     $y = ($qrCodeImage->getImageHeight() - $iconSize) / 2;
 
     // Overlay the icon onto the QR code
-    $qrCodeImage->compositeImage($icon, Imagick::COMPOSITE_OVER, (int)$x, (int)$y);
+    $qrCodeImage->compositeImage($icon, Imagick::COMPOSITE_OVER, (int) $x, (int) $y);
 
     $qrCode = $qrCodeImage->getImageBlob();
 
@@ -65,6 +65,6 @@ test('user can download qr code', function () {
     $response
         ->assertOk()
         ->assertHeader('content-type', 'image/png')
-        ->assertDownload('pinkary_' . $user->username . '.png')
+        ->assertDownload('pinkary_'.$user->username.'.png')
         ->assertStreamedContent($qrCode);
 });
