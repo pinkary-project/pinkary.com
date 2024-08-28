@@ -160,7 +160,11 @@
         />
     @endif
 @else
-    <title>{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials.</title>
+    @if(isset($title) && $title)
+        <title>{{ $title }} - {{ config('app.name', 'Pinkary') }}</title>
+    @else
+        <title>{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials.</title>
+    @endif
     <meta
         property="og:type"
         content="website"
