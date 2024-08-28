@@ -46,7 +46,6 @@ test('perform database backup', function () {
         ->with(database_path('backups/backup-1.sql'))
         ->andReturnTrue();
 
-    // Execute the artisan command
     $this->artisan(PerformDatabaseBackupCommand::class)
         ->assertExitCode(0);
 });

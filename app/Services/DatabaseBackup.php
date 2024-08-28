@@ -21,7 +21,6 @@ final class DatabaseBackup implements DatabaseBackupProvider
 
             $sourceDB->backup($backupDB);
         } catch (Exception $e) {
-            // Log the error or handle it as per your application's error handling policy
             throw new Exception('Backup failed: '.$e->getMessage(), 0, $e);
         } finally {
             $this->closeDatabase($backupDB);
