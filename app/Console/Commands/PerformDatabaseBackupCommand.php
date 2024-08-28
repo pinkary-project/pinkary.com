@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Contracts\Services\DatabaseBackupProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
@@ -26,12 +27,20 @@ final class PerformDatabaseBackupCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(DatabaseBackupProvider $backupService): void
     {
         $filename = 'backup-'.now()->timestamp.'.sql';
 
-        File::copy(database_path('database.sqlite'), database_path('backups/'.$filename));
+        $sourcePath = database_path('database.sqlite');
+        $backupPath = database_path('backups/'.$filename);
 
+        $backupService->performBackup($sourcePath, $backupPath);
+
+        $this->cleanupOldBackups();
+    }
+
+    private function cleanupOldBackups(): void
+    {
         $glob = type(File::glob(database_path('backups/*.sql')))->asArray();
 
         collect($glob)->sort()->reverse()->slice(20)->each(

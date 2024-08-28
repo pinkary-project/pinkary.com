@@ -3,12 +3,16 @@
 declare(strict_types=1);
 
 use App\Console\Commands\PerformDatabaseBackupCommand;
+use App\Contracts\Services\DatabaseBackupProvider;
 use Illuminate\Support\Facades\File;
 
 test('perform database backup', function () {
-    File::shouldReceive('copy')
-        ->once()
-        ->with(database_path('database.sqlite'), Mockery::type('string'));
+    $backupService = Mockery::mock(DatabaseBackupProvider::class);
+
+    $this->app->instance(DatabaseBackupProvider::class, $backupService);
+
+    $backupService->shouldReceive('performBackup')
+        ->once();
 
     File::shouldReceive('glob')
         ->once()
@@ -42,6 +46,7 @@ test('perform database backup', function () {
         ->with(database_path('backups/backup-1.sql'))
         ->andReturnTrue();
 
+    // Execute the artisan command
     $this->artisan(PerformDatabaseBackupCommand::class)
         ->assertExitCode(0);
 });
