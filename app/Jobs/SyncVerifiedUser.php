@@ -6,8 +6,8 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Services\GitHub;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
 final class SyncVerifiedUser implements ShouldQueue
 {
