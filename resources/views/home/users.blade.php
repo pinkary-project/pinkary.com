@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="flex flex-col items-center justify-center">
-        <div class="min-h-screen w-full max-w-md overflow-hidden shadow-md">
+        <div class="min-h-screen w-full max-w-md overflow-hidden rounded-2xl px-2 shadow-md sm:px-0">
             <x-home-menu></x-home-menu>
 
             <livewire:home.users :focus-input="true" />
