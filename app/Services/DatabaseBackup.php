@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Contracts\Services\DatabaseBackupProvider;
-use Exception;
 use SQLite3;
-use Throwable;
 
 final class DatabaseBackup implements DatabaseBackupProvider
 {
@@ -21,8 +19,6 @@ final class DatabaseBackup implements DatabaseBackupProvider
             $backupDB = new SQLite3($backupPath, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 
             $sourceDB->backup($backupDB);
-        } catch (Throwable $th) {
-            throw new Exception('Backup failed: '.$th->getMessage(), 0, $th);
         } finally {
             $this->closeDatabase($backupDB);
             $this->closeDatabase($sourceDB);
