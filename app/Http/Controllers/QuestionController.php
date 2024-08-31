@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Jobs\IncrementViews;
 use App\Models\Question;
 use App\Models\User;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -16,7 +15,7 @@ final readonly class QuestionController
     /**
      * Display the question.
      */
-    public function show(User $user, Question $question): Response|View
+    public function show(User $user, Question $question): View
     {
         Gate::authorize('view', $question);
 
