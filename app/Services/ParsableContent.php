@@ -28,10 +28,7 @@ final readonly class ParsableContent
         LinkProviderParsable::class,
         MentionProviderParsable::class,
         HashtagProviderParsable::class,
-    ])
-    {
-        //
-    }
+    ]) {}
 
     /**
      * Parses the given content.

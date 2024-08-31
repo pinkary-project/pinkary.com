@@ -19,10 +19,7 @@ final readonly class Recaptcha implements ValidationRule
     /**
      * Create a new rule instance.
      */
-    public function __construct(private ?string $ip)
-    {
-        //
-    }
+    public function __construct(private ?string $ip) {}
 
     /**
      * Run the validation rule.

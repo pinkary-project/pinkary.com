@@ -56,10 +56,7 @@ final class Show extends Component
      */
     #[On('question.updated')]
     #[On('question.created')]
-    public function refresh(): void
-    {
-        //
-    }
+    public function refresh(): void {}
 
     /**
      * Get the listeners for the component.

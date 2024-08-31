@@ -17,10 +17,7 @@ abstract readonly class Type implements Arrayable // @pest-arch-ignore-line
     /**
      * Creates a new Type instance.
      */
-    final public function __construct()
-    {
-        //
-    }
+    final public function __construct() {}
 
     /**
      * Perform a search using the query to return

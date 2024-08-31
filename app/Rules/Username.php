@@ -626,9 +626,7 @@ final readonly class Username implements ValidationRule
             'yoursite',
             'yourusername',
         ]
-    ) {
-        //
-    }
+    ) {}
 
     /**
      * Run the validation rule.

@@ -21,9 +21,7 @@ final class PendingNotifications extends Mailable implements ShouldQueue
      */
     public function __construct(
         private readonly User $user,
-    ) {
-        //
-    }
+    ) {}
 
     /**
      * Get the message envelope.

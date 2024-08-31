@@ -25,9 +25,7 @@ final class UpdateUserAvatar implements ShouldQueue
         private readonly User $user,
         private readonly ?string $file = null,
         private readonly ?string $service = null
-    ) {
-        //
-    }
+    ) {}
 
     /**
      * Execute the job.

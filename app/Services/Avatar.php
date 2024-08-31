@@ -13,9 +13,7 @@ final readonly class Avatar
      */
     public function __construct(
         private User $user,
-    ) {
-        //
-    }
+    ) {}
 
     /**
      * Get the avatar URL.

@@ -3778,9 +3778,7 @@ final readonly class UnauthorizedEmailProviders implements ValidationRule
             'zzrgg.com',
             'zzz.com',
         ]
-    ) {
-        //
-    }
+    ) {}
 
     /**
      * Run the validation rule.

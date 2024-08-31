@@ -26,10 +26,7 @@ final class CleanUnusedUploadedImages implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private readonly string $disk = 'public')
-    {
-        //
-    }
+    public function __construct(private readonly string $disk = 'public') {}
 
     /**
      * Execute the job.

@@ -17,9 +17,7 @@ final class UserMentioned extends Notification
      */
     public function __construct(
         public Question $question
-    ) {
-        //
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

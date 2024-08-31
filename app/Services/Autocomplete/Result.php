@@ -16,7 +16,5 @@ final readonly class Result
         public string $replacement,
         public string $view,
         public array $payload = [],
-    ) {
-        //
-    }
+    ) {}
 }

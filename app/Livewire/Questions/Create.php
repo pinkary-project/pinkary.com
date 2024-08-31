@@ -187,10 +187,7 @@ final class Create extends Component
         'link-settings.updated',
         'question.created',
     ])]
-    public function refresh(): void
-    {
-        //
-    }
+    public function refresh(): void {}
 
     /**
      * Stores a new question.

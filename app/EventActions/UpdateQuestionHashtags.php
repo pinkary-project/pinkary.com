@@ -16,9 +16,7 @@ final readonly class UpdateQuestionHashtags
      */
     public function __construct(
         public Question $question,
-    ) {
-        //
-    }
+    ) {}
 
     /**
      * @return array{attached: array<int, int>, detached: array<int, int>, updated: array<int, int>}

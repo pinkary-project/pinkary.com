@@ -160,10 +160,7 @@ final class Index extends Component
     #[On('link.created')]
     #[On('link.updated')]
     #[On('link-settings.updated')]
-    public function refresh(): void
-    {
-        //
-    }
+    public function refresh(): void {}
 
     /**
      * Render the component.

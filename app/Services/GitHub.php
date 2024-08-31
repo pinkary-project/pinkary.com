@@ -12,10 +12,7 @@ final readonly class GitHub
     /**
      * Create a new instance of the GitHub service.
      */
-    public function __construct(private string $personalAccessToken)
-    {
-        //
-    }
+    public function __construct(private string $personalAccessToken) {}
 
     /**
      * Check if the given username is sponsoring the Pinkary project.

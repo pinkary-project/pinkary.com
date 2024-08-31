@@ -6,7 +6,4 @@ namespace App\Exceptions;
 
 use RuntimeException;
 
-final class GitHubException extends RuntimeException
-{
-    //
-}
+final class GitHubException extends RuntimeException {}
