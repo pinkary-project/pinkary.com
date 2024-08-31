@@ -1,5 +1,5 @@
 @if ($perPage < 100 && $paginator->hasMorePages())
-    <div x-intersect.margin.600px="$wire.loadMore()" class="text-center">
+    <div x-intersect.margin.200px="$wire.loadMore()" class="text-center">
         <div class="text-center text-slate-400" wire:loading wire:target="loadMore">
             <x-heroicon-o-arrow-path class="w-5 h-5 animate-spin" />
         </div>
