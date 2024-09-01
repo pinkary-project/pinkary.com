@@ -282,7 +282,7 @@
                         @endif
                     </button>
                     <x-dropdown align="left"
-                                width="48"
+                                width=""
                                 dropdown-classes="top-[-3.4rem] shadow-none"
                                 content-classes="flex flex-col space-y-1"
                     >
