@@ -1,19 +1,19 @@
 <div
     class="mb-12 pt-4"
     id="questions-create"
-    x-data="{ ...imageUpload(), showCameraIcon: false }"
-    x-init='() => {
-                uploadLimit = {{ $this->uploadLimit }};
-                maxFileSize = {{ $this->maxFileSize }};
-            }'
 >
     <form
         wire:submit="store"
         wire:keydown.cmd.enter="store"
         wire:keydown.ctrl.enter="store"
+        x-data="imageUpload"
+        x-init='() => {
+            uploadLimit = {{ $this->uploadLimit }};
+            maxFileSize = {{ $this->maxFileSize }};
+        }'
     >
         <div
-            class="relative group/menu" @mouseenter="showCameraIcon = true" @click.outside="showCameraIcon = false">
+            class="relative group/menu">
                 <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }">
                     <x-textarea
                         x-model="content"
@@ -26,14 +26,32 @@
                         autocomplete
                     />
                 </div>
+            <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
+            <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
 
-                <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+            <div x-show="images.length > 0" class="relative mt-2 flex h-20 flex-wrap gap-2">
+                <template x-for="(image, index) in images" :key="index">
+                    <div class="relative h-20 w-20">
+                        <img :src="image.path" :alt="image.originalName"
+                             x-on:click="createMarkdownImage(index)"
+                             title="Reinsert the image"
+                             class="h-full w-full rounded-lg object-cover cursor-pointer"/>
+                        <button @click="removeImage($event, index)"
+                                class="absolute top-0.5 right-0.5 p-1 rounded-md bg-slate-800 bg-opacity-75 text-slate-400 hover:text-pink-500">
+                            <x-icons.close class="size-4"/>
+                        </button>
+                    </div>
+                </template>
+            </div>
 
-                <ul>
-                    <template x-for="(error, index) in errors" :key="index">
-                        <li class="py-2 text-sm text-red-600 w-full"><span x-text="error"></span></li>
-                    </template>
-                </ul>
+            <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+
+            <ul>
+                <template x-for="(error, index) in errors" :key="index">
+                    <li class="py-2 text-sm text-red-600 w-full"><span x-text="error"></span></li>
+                </template>
+            </ul>
+
         </div>
         <div class="mt-4 flex items-center justify-between gap-4">
             <div class="flex items-center gap-4">
@@ -43,6 +61,15 @@
                 >
                     {{ __('Send') }}
                 </x-primary-button>
+                <button
+                    title="Upload an image"
+                    x-ref="imageButton"
+                    :disabled="uploading || images.length >= uploadLimit"
+                    class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
+                    :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
+                >
+                    <x-heroicon-o-camera class="h-5 w-5"/>
+                </button>
             </div>
             @if (! $this->parentId && ! $this->isSharingUpdate)
                 <div class="flex items-center">
@@ -58,35 +85,6 @@
                     >
                 </div>
             @endif
-            <div class="w-full justify-items-start">
-                <div
-                        class="relative top-0 right-0 mr-2 inline-block" x-show="showCameraIcon">
-                    <button title="Upload an image" x-ref="imageButton"
-                            :disabled="uploading || images.length >= uploadLimit"
-                            class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
-                            :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
-                    >
-                        <x-heroicon-o-camera class="h-5 w-5"/>
-                    </button>
-                </div>
-                <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
-                <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
-
-                <div x-show="images.length > 0" class="relative mt-2 flex h-20 flex-wrap gap-2">
-                    <template x-for="(image, index) in images" :key="index">
-                        <div class="relative h-20 w-20">
-                            <img :src="image.path" :alt="image.originalName"
-                                 x-on:click="createMarkdownImage(index)"
-                                 title="Reinsert the image"
-                                 class="h-full w-full rounded-lg object-cover cursor-pointer"/>
-                            <button @click="removeImage($event, index)"
-                                    class="absolute top-0.5 right-0.5 p-1 rounded-md bg-slate-800 bg-opacity-75 text-slate-400 hover:text-pink-500">
-                                <x-icons.close class="size-4"/>
-                            </button>
-                        </div>
-                    </template>
-                </div>
-            </div>
         </div>
     </form>
 </div>
