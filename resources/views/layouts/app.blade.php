@@ -4,25 +4,25 @@
         @include('layouts.components.head')
     </head>
     <body
-        class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased"
+        class="font-sans antialiased bg-center bg-repeat bg-slate-950 text-slate-50"
         style="background-image: url({{ asset('/img/dots.svg') }})"
     >
         @persist('flash-messages')
             <livewire:flash-messages.show />
         @endpersist
-        <div class="flex min-h-screen flex-col">
-            <div class="mx-auto ml-3 mr-3 flex-grow">
+        <div class="flex flex-col min-h-screen">
+            <div class="flex-grow w-full mx-auto sm:w-auto sm:ml-3 sm:mr-3">
                 @include('layouts.navigation')
                 @if (isset($title))
-                    <div class="mb-6 mt-20 flex flex-col items-center sm:mb-12">
-                        <div class="w-full max-w-md px-2 sm:px-0">
-                            <h1 class="font-mona text-2xl font-medium text-slate-200">
+                    <div class="flex flex-col items-center mt-20 mb-6 sm:mb-12">
+                        <div class="w-full px-2 sm:max-w-md sm:px-0">
+                            <h1 class="text-2xl font-medium font-mona text-slate-200">
                                 {{ $title }}
                             </h1>
                         </div>
                     </div>
                 @endif
-                <main class="mt-16">
+                <main class="sm:mt-16">
                     {{ $slot }}
                 </main>
                 <x-image-lightbox />

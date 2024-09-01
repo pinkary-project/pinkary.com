@@ -1,4 +1,4 @@
-<section class="mt-4 space-y-10">
+<section class="divide-y sm:mt-4 divide-slate-800 sm:divide-y-0 sm:space-y-10">
     @foreach ($questions as $question)
         <livewire:questions.show
             :questionId="$question->id"

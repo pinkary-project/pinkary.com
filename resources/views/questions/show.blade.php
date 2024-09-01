@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="flex flex-col items-center py-10">
-        <div class="flex w-full max-w-md flex-col gap-12"
+        <div class="flex flex-col w-full gap-12 sm:max-w-md"
              x-data
              x-init="document.getElementById('q-{{ $question->id }}').scrollIntoView();">
             <a
@@ -16,9 +16,9 @@
                     }
                  }"
                 x-on:click.prevent="back()"
-                class="flex text-slate-400 hover:underline cursor-pointer"
+                class="flex cursor-pointer text-slate-400 hover:underline"
             >
-                <x-icons.chevron-left class="h-6 w-6" />
+                <x-icons.chevron-left class="w-6 h-6" />
                 <span>Back</span>
             </a>
 
@@ -34,7 +34,7 @@
 
             @foreach($parentQuestions as $parentQuestion)
                 <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" />
-                <div class="relative -mt-11 -mb-14 h-6">
+                <div class="relative h-6 -mt-11 -mb-14">
                     <span class="absolute left-8 h-full w-1.5 rounded-full bg-slate-700" aria-hidden="true"></span>
                 </div>
             @endforeach
