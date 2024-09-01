@@ -1,3 +1,9 @@
+## Version 1.39.0
+> 1 September, 2024
+
+- Project got open-sourced at: [https://github.com/pinkary-project/pinkary.com](https://github.com/pinkary-project/pinkary.com)
+- Internal improvements and bug fixes.
+
 ## Version 1.38.0
 > 25 August, 2024
 
