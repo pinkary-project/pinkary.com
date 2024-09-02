@@ -656,15 +656,5 @@ final readonly class Username implements ValidationRule
 
             return;
         }
-
-        $query = User::whereRaw('lower(username) = ?', [mb_strtolower($value)]);
-
-        if ($this->user instanceof User) {
-            $query->where('id', '!=', $this->user->id);
-        }
-
-        if ($query->exists()) {
-            $fail('The :attribute has already been taken.');
-        }
     }
 }
