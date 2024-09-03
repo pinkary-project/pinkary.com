@@ -1,5 +1,5 @@
 <div>
-    <section class="mb-12 min-h-screen space-y-10">
+    <section class="min-h-screen divide-y sm:mb-12 divide-slate-700/70 sm:divide-y-0 sm:space-y-10">
         @forelse ($questions as $question)
             <livewire:questions.show
                 :questionId="$question->id"

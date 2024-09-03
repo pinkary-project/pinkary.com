@@ -4,7 +4,7 @@
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
                     <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                        <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400">
+                        <div class="flex items-center justify-center w-10 h-10 border border-dashed rounded-full border-1 border-slate-400">
                             <span>?</span>
                         </div>
 
@@ -15,15 +15,15 @@
                 @endif
             @endunless
             @if ($question->pinned && $pinnable)
-                <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                    <x-icons.pin class="h-4 w-4 text-slate-400" />
+                <div class="flex items-center px-4 mb-2 space-x-1 text-sm focus:outline-none">
+                    <x-icons.pin class="w-4 h-4 text-slate-400" />
                     <span class="text-slate-400">Pinned</span>
                 </div>
             @endif
         </div>
 
         @unless ($question->isSharedUpdate())
-        <p class="mt-3 px-4 text-slate-200">
+        <p class="px-4 mt-3 text-slate-200">
             {!! $question->content !!}
         </p>
         @endunless
@@ -34,13 +34,13 @@
             data-parent=true
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
-            class="group p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
+            class="group p-4 sm:mt-3 sm:rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
             {{ $commenting ?: "cursor-pointer transition-colors duration-100 ease-in-out hover:bg-slate-700/60" }}"
         >
             <div class="flex justify-between">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                    class="group/profile flex items-center gap-3"
+                    class="flex items-center gap-3 group/profile"
                     data-navigate-ignore="true"
                     wire:navigate
                 >
@@ -52,8 +52,8 @@
                         />
                     </figure>
                     <div class="overflow-hidden text-sm">
-                        <div class="items flex">
-                            <p class="truncate font-medium text-slate-50">
+                        <div class="flex items">
+                            <p class="font-medium truncate text-slate-50">
                                 {{ $question->to->name }}
                             </p>
 
@@ -70,7 +70,7 @@
                             @endif
                         </div>
 
-                        <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-400">
+                        <p class="truncate transition-colors text-slate-500 group-hover/profile:text-slate-400">
                             {{ '@'.$question->to->username }}
                         </p>
                     </div>
@@ -84,8 +84,8 @@
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-400 transition duration-150 ease-in-out hover:text-slate-50 focus:outline-none">
-                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
+                                class="inline-flex items-center py-1 text-sm transition duration-150 ease-in-out border border-transparent rounded-md text-slate-400 hover:text-slate-50 focus:outline-none">
+                                <x-heroicon-o-ellipsis-horizontal class="w-6 h-6" />
                             </button>
                         </x-slot>
 
@@ -96,7 +96,7 @@
                                     wire:click="pin"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.pin class="h-4 w-4 text-slate-50" />
+                                    <x-icons.pin class="w-4 h-4 text-slate-50" />
                                     <span>Pin</span>
                                 </x-dropdown-button>
                             @elseif ($question->pinned)
@@ -105,7 +105,7 @@
                                     wire:click="unpin"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.pin class="h-4 w-4" />
+                                    <x-icons.pin class="w-4 h-4" />
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
@@ -115,7 +115,7 @@
                                     x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-heroicon-m-pencil class="h-4 w-4"/>
+                                    <x-heroicon-m-pencil class="w-4 h-4"/>
                                     <span>Edit</span>
                                 </x-dropdown-button>
                             @endif
@@ -126,7 +126,7 @@
                                     wire:confirm="Are you sure you want to delete this question?"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-heroicon-o-trash class="h-4 w-4" />
+                                    <x-heroicon-o-trash class="w-4 h-4" />
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
@@ -145,7 +145,7 @@
                     }}"
                    data-navigate-ignore="true"
                    wire:navigate
-                   class="truncate text-xs text-slate-500 transition-colors hover:text-slate-400"
+                   class="text-xs truncate transition-colors text-slate-500 hover:text-slate-400"
                 >
                     In response to {{ '@'.$question->parent->to->username }}
                 </a>
@@ -153,7 +153,7 @@
 
             <div x-data="showMore">
                 <div
-                    class="mt-3 break-words text-slate-200 overflow-hidden answer"
+                    class="mt-3 overflow-hidden break-words text-slate-200 answer"
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
@@ -166,13 +166,13 @@
                     <button
                         data-navigate-ignore="true"
                         @click="showButtonAction"
-                        class="text-sm text-pink-500 flex ml-auto"
+                        class="flex ml-auto text-sm text-pink-500"
                         x-text="showMoreButtonText"
                     ></button>
                 </div>
             </div>
 
-            <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
+            <div class="flex items-center justify-between mt-3 text-sm text-slate-500">
                 <div class="flex items-center gap-1">
                     <a
                         @if (! $commenting)
@@ -217,9 +217,9 @@
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($likeExists)
-                            <x-heroicon-s-heart class="h-4 w-4"/>
+                            <x-heroicon-s-heart class="w-4 h-4"/>
                         @else
-                            <x-heroicon-o-heart class="h-4 w-4"/>
+                            <x-heroicon-o-heart class="w-4 h-4"/>
                         @endif
                         @if ($likesCount)
                             <span class="ml-1">
@@ -229,10 +229,10 @@
                     </button>
                     <span>•</span>
                     <p
-                        class="inline-flex cursor-help items-center"
+                        class="inline-flex items-center cursor-help"
                         title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
                     >
-                        <x-icons.chart class="h-4 w-4"/>
+                        <x-icons.chart class="w-4 h-4"/>
                         @if ($question->views > 0)
                             <span class="mx-1">
                                 {{ Number::abbreviate($question->views) }}
@@ -268,12 +268,12 @@
                             wire:click="bookmark()"
                         @endif
                         title="{{ Number::format($question->bookmarks_count) }} {{ str('bookmark')->plural($question->bookmarks_count) }}"
-                        class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
+                        class="flex items-center mr-1 transition-colors hover:text-slate-400 focus:outline-none"
                     >
                         @if ($question->is_bookmarked)
-                            <x-heroicon-s-bookmark class="h-4 w-4" />
+                            <x-heroicon-s-bookmark class="w-4 h-4" />
                         @else
-                            <x-heroicon-o-bookmark class="h-4 w-4" />
+                            <x-heroicon-o-bookmark class="w-4 h-4" />
                         @endif
                         @if ($question->bookmarks_count)
                             <span class="ml-1">
@@ -294,7 +294,7 @@
                                 title="Share"
                                 class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
-                                <x-heroicon-o-paper-airplane class="h-4 w-4" />
+                                <x-heroicon-o-paper-airplane class="w-4 h-4" />
                             </button>
                         </x-slot>
 
@@ -315,7 +315,7 @@
                                     )
                                 "
                                 type="button"
-                                class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                class="transition-colors text-slate-500 hover:text-slate-400 focus:outline-none"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -334,7 +334,7 @@
                                         }}',
                                     })
                                 "
-                                class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                class="transition-colors text-slate-500 hover:text-slate-400 focus:outline-none"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -350,7 +350,7 @@
                                     })
                                 "
                                 type="button"
-                                class="text-slate-500 transition-colors hover:text-slate-400 focus:outline-none"
+                                class="transition-colors text-slate-500 hover:text-slate-400 focus:outline-none"
                             >
                                 <x-icons.twitter-x class="size-4" />
                             </button>

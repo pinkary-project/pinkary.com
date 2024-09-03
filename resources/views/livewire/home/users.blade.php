@@ -1,8 +1,8 @@
-<div class="mb-12 w-full text-slate-200">
-    <div class="mb-8 w-full max-w-md">
-        <div class="relative flex items-center py-1">
+<div class="w-full mb-12 text-slate-200">
+    <div class="w-full sm:mb-8 sm:max-w-md">
+        <div class="relative flex items-center sm:py-1">
 
-            <x-heroicon-o-magnifying-glass class="absolute left-5 z-50 size-5"/>
+            <x-heroicon-o-magnifying-glass class="absolute z-50 left-5 size-5"/>
 
             <x-text-input
                 x-ref="searchInput"
@@ -10,14 +10,14 @@
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
-                class="w-full !rounded-2xl !bg-slate-950 !bg-opacity-80 py-3 pl-14"
+                class="w-full rounded-none sm:!rounded-2xl !bg-slate-950 !bg-opacity-80 py-3 pl-14"
             />
         </div>
     </div>
 
     @if ($users->isEmpty())
         <section class="rounded-lg">
-            <p class="my-8 text-center text-lg text-slate-500">No users found.</p>
+            <p class="my-8 text-lg text-center text-slate-500">No users found.</p>
         </section>
     @else
         <section class="max-w-2xl">
@@ -26,7 +26,7 @@
                     <li>
                         <a
                             href="{{ route('profile.show', ['username' => $user->username]) }}"
-                            class="group flex items-center gap-3 rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900"
+                            class="flex items-center gap-3 p-4 transition-colors border group rounded-2xl border-slate-900 bg-slate-950 bg-opacity-80 hover:bg-slate-900"
                             wire:navigate
                         >
                             <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90">
@@ -38,7 +38,7 @@
                             </figure>
                             <div class="flex flex-col overflow-hidden text-sm">
                                 <div class="flex items-center space-x-2">
-                                    <p class="truncate font-medium">
+                                    <p class="font-medium truncate">
                                         {{ $user->name }}
                                     </p>
 
@@ -54,7 +54,7 @@
                                         />
                                     @endif
                                 </div>
-                                <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
+                                <p class="truncate transition-colors text-slate-500 group-hover:text-slate-400">
                                     {{ '@'.$user->username }}
                                 </p>
                             </div>

@@ -1,27 +1,27 @@
 @php
-    $navClasses = 'fixed z-50 inset-0 h-0 flex md:justify-end md:px-4 ';
+    $navClasses = 'absolute sm:fixed z-50 inset-0 h-0 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
 @endphp
 
-<nav>
+<nav class="fixed bottom-0 z-50 w-full sm:relative">
     <div class="{{ $navClasses }}">
-        <div class="flex h-16 justify-between">
+        <div class="flex items-end justify-between w-full h-16 px-0 -translate-y-full sm:items-start sm:translate-y-0 sm:items-center sm:w-auto">
             <div
-                class="flex items-center space-x-2.5"
+                class="flex items-center sm:divide-x-0 border-t sm:border-t-0 border-slate-800 divide-x divide-slate-800 sm:space-x-2.5 sm:w-auto w-full"
                 x-data
             >
                 @auth
                     <a
                         title="Home"
                         href="{{ route('home.feed') }}"
-                        class=""
+                        class="flex-1"
                         wire:navigate
                     >
                         <button
                             type="button"
-                            class="{{ request()->routeIs('home.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('home.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center justify-center sm:rounded-md border border-transparent bg-slate-900 px-3 py-3.5 sm:py-2 text-sm font-medium leading-4 transition sm:w-auto w-full duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-heroicon-o-home class="h-6 w-6"/>
+                            <x-heroicon-o-home class="w-6 h-6"/>
                         </button>
                     </a>
 
@@ -29,55 +29,55 @@
                         title="Source code"
                         target="_blank"
                         href="https://github.com/pinkary-project/pinkary.com"
-                        class=""
+                        class="flex-1"
                     >
                         <button
                             type="button"
-                            class="text-slate-500 hover:text-slate-100 inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="inline-flex items-center justify-center w-full px-3 py-3.5 text-sm font-medium leading-4 transition duration-150 ease-in-out border border-transparent sm:py-2 sm:rounded-md text-slate-500 hover:text-slate-100 bg-slate-900 sm:w-auto focus:outline-none"
                         >
-                            <x-heroicon-o-code-bracket class="h-6 w-6"/>
+                            <x-heroicon-o-code-bracket class="w-6 h-6"/>
                         </button>
                     </a>
 
                     <a
                         title="Profile"
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class=""
+                        class="flex-1"
                         wire:navigate
                     >
                         <button
                             type="button"
-                            class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center justify-center sm:w-auto w-full sm:rounded-md border border-transparent bg-slate-900 px-3 py-3.5 sm:py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-heroicon-o-user class="h-6 w-6"/>
+                            <x-heroicon-o-user class="w-6 h-6"/>
                         </button>
                     </a>
 
                     <a
                         title="Bookmarks"
                         href="{{ route('bookmarks.index') }}"
-                        class=""
+                        class="flex-1"
                         wire:navigate
                     >
                         <button
                             type="button"
-                            class="{{ request()->routeIs('bookmarks.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('bookmarks.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center justify-center sm:w-auto w-full sm:rounded-md border border-transparent bg-slate-900 px-3 py-3.5 sm:py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-heroicon-o-bookmark class="h-6 w-6"/>
+                            <x-heroicon-o-bookmark class="w-6 h-6"/>
                         </button>
                     </a>
 
                     <a
                         title="Notifications"
                         href="{{ route('notifications.index') }}"
-                        class=""
+                        class="flex-1"
                         wire:navigate
                     >
                         <button
                             type="button"
-                            class="{{ request()->routeIs('notifications.index') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('notifications.index') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center justify-center sm:w-auto w-full sm:rounded-md border border-transparent bg-slate-900 px-3 py-3.5 sm:py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
-                            <x-heroicon-o-bell class="h-6 w-6"/>
+                            <x-heroicon-o-bell class="w-6 h-6"/>
 
                             <livewire:navigation.notifications-count.show/>
                         </button>
@@ -87,11 +87,12 @@
                 <x-dropdown
                     align="right"
                     width="48"
+                    dropdownClasses="sm:mt-0 -mt-16 -translate-y-full sm:translate-y-2"
                 >
                     <x-slot name="trigger">
                         <button
                             title="Menu"
-                            class="inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 text-slate-500 transition duration-150 ease-in-out hover:text-slate-100 focus:outline-none"
+                            class="inline-flex items-center justify-center w-full px-3 py-3.5 sm:py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out border border-transparent sm:w-auto sm:rounded-md bg-slate-900 text-slate-500 hover:text-slate-100 focus:outline-none"
                         >
                             <x-icons.bars class="size-6"/>
                         </button>
