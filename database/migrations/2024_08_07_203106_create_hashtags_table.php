@@ -20,15 +20,26 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->timestamps();
 
-            $table->rawIndex('name collate nocase', 'name_collate_nocase');
+            $table->rawIndex("name", "name_collate_nocase");
         });
 
         Schema::create('hashtag_question', function (Blueprint $table): void {
             $table->id();
-            $table->foreignIdFor(Hashtag::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Question::class)->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('hashtag_id');
 
-            $table->unique(['hashtag_id', 'question_id']);
+            $table->unsignedBigInteger('question_id');
+
+            $table->unique('hashtag_id', 'question_id');
+
+            $table->foreign('question_id')
+                ->references('id')
+                ->on('questions')
+                ->cascadeOnDelete();
+
+            $table->foreign('hashtag_id')
+                ->references('id')
+                ->on('hashtags')
+                ->cascadeOnDelete();
         });
     }
 };

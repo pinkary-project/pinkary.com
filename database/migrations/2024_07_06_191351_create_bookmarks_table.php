@@ -17,10 +17,22 @@ return new class extends Migration
     {
         Schema::create('bookmarks', function (Blueprint $table): void {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Question::class)->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id');
 
-            $table->unique(['user_id', 'question_id']);
+            $table->unsignedBigInteger('question_id');
+
+            $table->unique('user_id', 'question_id');
+
+            $table->foreign('question_id')
+                ->references('id')
+                ->on('questions')
+                ->cascadeOnDelete();
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
+
 
             $table->timestamps();
         });
