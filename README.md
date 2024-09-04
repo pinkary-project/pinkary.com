@@ -27,46 +27,24 @@ In terms of local development, you can use the following requirements:
 - PHP 8.3 - with SQLite, GD, and other common extensions.
 - Node.js 16 or more recent.
 
-If you have these requirements, you can start by cloning the repository and installing the dependencies:
-
+If you have these requirements, you can start by cloning this repository:
 ```bash
-git clone https://github.com/pinkary-project/pinkary.com.git
+git clone git@github.com:pinkary-project/pinkary.com.git
+```
 
+If you want to contribute 💪 then create a fork of this repository and clone the forked repository.
+```bash
+git clone git@github.com:<your-github-username>/pinkary.com.git
+```
+
+Go to the directory.
+```bash
 cd pinkary.com
-
-git checkout -b feat/your-feature # or fix/your-fix
 ```
 
-> **Don't push directly to the `main` branch**. Instead, create a new branch and push it to your branch.
-
-Next, install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
-
+Run below bash script to spin up the project (Follow output shown in the terminal).
 ```bash
-composer install
-
-npm install
-```
-
-After that, set up your `.env` file:
-
-```bash
-cp .env.example .env
-
-php artisan key:generate
-```
-
-Prepare your database and run the migrations:
-
-```bash
-touch database/database.sqlite
-
-php artisan migrate
-```
-
-Link the storage to the public folder:
-
-```bash
-php artisan storage:link
+sh install.sh
 ```
 
 In a **separate terminal**, build the assets in watch mode:
@@ -81,13 +59,12 @@ Also in a **separate terminal**, run the queue worker:
 php artisan queue:work
 ```
 
-Finally, start the development server:
-
-```bash
-php artisan serve
-```
-
 > Note: By default, emails are sent to the `log` driver. You can change this in the `.env` file to something like `mailtrap`.
+
+Now, create a branch for the changes you want to contribute.
+```bash
+git checkout -b feat/your-feature # or fix/your-fix
+```
 
 Once you are done with the code changes, be sure to run the test suite to ensure everything is still working:
 
@@ -95,15 +72,7 @@ Once you are done with the code changes, be sure to run the test suite to ensure
 composer test
 ```
 
-If everything is green, push your branch and create a pull request:
-
-```bash
-git commit -am "Your commit message"
-
-git push
-```
-
-Visit [github.com/pinkary-project/pinkary.com/pulls](https://github.com/pinkary-project/pinkary.com/pulls) and create a pull request.
+If everything is green, push your branch and create a pull request [here](https://github.com/pinkary-project/pinkary.com/pulls).
 
 ## Tooling
 
