@@ -13,6 +13,8 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
+#[On('question.updated')]
+#[On('question.created')]
 final class Show extends Component
 {
     /**
@@ -50,16 +52,6 @@ final class Show extends Component
      */
     #[Url]
     public ?string $previousQuestionId = null;
-
-    /**
-     * Refresh the component.
-     */
-    #[On('question.updated')]
-    #[On('question.created')]
-    public function refresh(): void
-    {
-        //
-    }
 
     /**
      * Get the listeners for the component.
