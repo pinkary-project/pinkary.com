@@ -46,7 +46,7 @@
             data-parent=true
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
-            class="group p-4 sm:mt-3 sm:rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
+            class="group p-4 mt-3 sm:rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
             {{ $commenting ?: "cursor-pointer transition-colors duration-100 ease-in-out hover:bg-slate-700/60" }}"
         >
             <div class="flex justify-between">
