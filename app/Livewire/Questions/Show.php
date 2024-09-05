@@ -266,9 +266,25 @@ final class Show extends Component
             ->withCount(['likes', 'children', 'bookmarks'])
             ->firstOrFail();
 
+        $parentQuestions = [];
+        if ($this->showParents) {
+            $parentQuestion = $question->parent;
+
+            do {
+                $parentQuestions[] = $parentQuestion;
+            } while ($parentQuestion = $parentQuestion?->parent);
+
+            $parentQuestions = collect($parentQuestions)->filter()->reverse();
+            $notShowingAllParents = (! $this->commenting) && $parentQuestions->count() > 2;
+            if ($notShowingAllParents) {
+                $parentQuestions = $parentQuestions->slice(0, 1)->concat($parentQuestions->slice(-1));
+            }
+        }
+
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
+            'parentQuestions' => $parentQuestions,
         ]);
     }
 }

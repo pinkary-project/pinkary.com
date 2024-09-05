@@ -1,20 +1,5 @@
 <article class="block" id="q-{{ $questionId }}" x-data="copyCode">
     @if ($showParents)
-        @php
-            $parentQuestions = [];
-            $parentQuestion = $question->parent;
-
-            do {
-                $parentQuestions[] = $parentQuestion;
-            } while ($parentQuestion = $parentQuestion?->parent);
-
-            $parentQuestions = collect($parentQuestions)->filter()->reverse();
-            $notShowingAllParents = (! $commenting) && $parentQuestions->count() > 2;
-            if ($notShowingAllParents) {
-                $parentQuestions = $parentQuestions->slice(0, 1)->concat($parentQuestions->slice(-1));
-            }
-        @endphp
-
         @foreach($parentQuestions as $parentQuestion)
             <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" />
                 <div class="relative h-6 -mb-3">
