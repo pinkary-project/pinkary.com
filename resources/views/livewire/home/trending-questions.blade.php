@@ -11,7 +11,7 @@
                     :key="'question-' . $question->id"
                     :inIndex="true"
                     :pinnable="false"
-                    :trending="true"
+                    :InTrending="true"
                 />
             @endforeach
 
