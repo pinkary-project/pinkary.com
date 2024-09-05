@@ -12,7 +12,7 @@
         @endforeach
     @endif
     <div>
-        <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
+        <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }} mt-3">
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
                     <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
