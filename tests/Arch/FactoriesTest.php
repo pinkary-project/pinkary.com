@@ -8,6 +8,7 @@ arch('factories')
     ->ignoring('Database\Factories\Concerns')
     ->toUse('Database\Factories\Concerns\RefreshOnCreate')
     ->toHaveMethod('definition')
+    ->ignoring('Database\Factories\Concerns')
     ->toOnlyBeUsedIn([
         'App\Models',
     ]);
