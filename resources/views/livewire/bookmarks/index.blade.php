@@ -1,4 +1,4 @@
-<div class="mb-20 divide-y divide-slate-800 sm:divide-y-0 sm:space-y-10">
+<div class="mb-20 space-y-10">
     @forelse ($bookmarks as $bookmark)
         <livewire:questions.show
             :questionId="$bookmark->question->id"

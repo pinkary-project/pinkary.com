@@ -22,7 +22,7 @@
 @endphp
 
 <div
-    class="relative origin-bottom"
+    class="relative"
     x-data="{ open: false }"
     x-on:click.outside="open = false"
     @close.stop="open = false"
