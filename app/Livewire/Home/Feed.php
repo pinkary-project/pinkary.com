@@ -12,7 +12,6 @@ use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-#[On('question.created')]
 final class Feed extends Component
 {
     use HasLoadMore;
@@ -31,6 +30,12 @@ final class Feed extends Component
 
         $this->dispatch('question.ignored');
     }
+
+    /**
+     * Refresh the feed.
+     */
+    #[On('question.created')]
+    public function refresh(): void {}
 
     /**
      * Render the component.
