@@ -22,7 +22,7 @@
                 <span>Back</span>
             </a>
 
-            <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" />
+            <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" :showParents="true" />
         </div>
     </div>
 </x-app-layout>

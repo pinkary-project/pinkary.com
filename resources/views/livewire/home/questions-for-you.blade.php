@@ -13,6 +13,7 @@
                     :key="'question-' . $question->id"
                     :inIndex="true"
                     :pinnable="false"
+                    :showParents="true"
                 />
             @endforeach
 

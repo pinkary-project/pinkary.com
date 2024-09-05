@@ -30,10 +30,10 @@ final class Show extends Component
     public bool $inIndex = false;
 
     /**
-     * Determine if this is currently being viewed in the trending view.
+     * Determine if the parent question should be shown.
      */
     #[Locked]
-    public bool $inTrending = false;
+    public bool $showParents = false;
 
     /**
      * Determine if this is currently being viewed in thread view.
