@@ -30,6 +30,12 @@ final class Show extends Component
     public bool $inIndex = false;
 
     /**
+     * Determine if this is currently being viewed in the trending view.
+     */
+    #[Locked]
+    public bool $inTrending = false;
+
+    /**
      * Determine if this is currently being viewed in thread view.
      */
     #[Locked]
