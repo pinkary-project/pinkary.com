@@ -1,4 +1,22 @@
 <article class="block" id="q-{{ $questionId }}" x-data="copyCode">
+    @unless ($inTrending || $pinnable || ($inThread && ! $commenting))
+        @php
+            $parentQuestion = $question->parent;
+
+            do {
+                $parentQuestions[] = $parentQuestion;
+            } while ($parentQuestion = $parentQuestion?->parent);
+        @endphp
+
+        @php $parentQuestions = collect($parentQuestions)->filter()->reverse(); @endphp
+
+        @foreach($parentQuestions as $parentQuestion)
+        <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" />
+            <div class="relative h-6 -mb-3">
+                <span class="absolute left-8 h-full w-1.5 rounded-full bg-slate-700" aria-hidden="true"></span>
+            </div>
+        @endforeach
+    @endunless
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
