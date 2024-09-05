@@ -275,8 +275,8 @@ final class Show extends Component
             } while ($parentQuestion = $parentQuestion?->parent);
 
             $parentQuestions = collect($parentQuestions)->filter()->reverse();
-            $notShowingAllParents = (! $this->commenting) && $parentQuestions->count() > 2;
-            if ($notShowingAllParents) {
+            $notDisplayingAllParents = (! $this->commenting) && $parentQuestions->count() > 2;
+            if ($notDisplayingAllParents) {
                 $parentQuestions = $parentQuestions->slice(0, 1)->concat($parentQuestions->slice(-1));
             }
         }
@@ -285,6 +285,7 @@ final class Show extends Component
             'user' => $question->to,
             'question' => $question,
             'parentQuestions' => $parentQuestions,
+            'notDisplayingAllParents' => $notDisplayingAllParents ?? false,
         ]);
     }
 }
