@@ -57,8 +57,7 @@
             style="font-stretch: 120%"
         >
             Create a landing page for all your links and connect with like-minded people
-            <span class="text-pink-500">without the noise</span>
-            .
+            <span class="text-pink-500">without the noise</span>.
         </h2>
 
         <section class="mt-28 w-full max-w-2xl">
@@ -180,13 +179,16 @@
             </div>
 
             <h2 class="text-center">
-                Pinkary is now open-source! You can get early access by
+                Pinkary is now <a
+                    href="https://github.com/pinkary-project/pinkary.com"
+                    target="_blank"
+                    class="underline hover:no-underline"
+                >open-source</a>! You can help us by contributing or
                 <a
                     href="https://github.com/sponsors/nunomaduro"
                     target="_blank"
                     class="underline hover:no-underline"
-                >
-                    sponsoring the project on GitHub
+                >sponsoring the project on GitHub
                 </a>
                 .
             </h2>
