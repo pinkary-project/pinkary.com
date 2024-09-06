@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 final class HashtagFactory extends Factory
 {
+    /**
+     * @use RefreshOnCreate<Hashtag>
+     */
     use RefreshOnCreate;
 
     /**

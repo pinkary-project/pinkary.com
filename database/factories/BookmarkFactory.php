@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 final class BookmarkFactory extends Factory
 {
+    /**
+     * @use RefreshOnCreate<Bookmark>
+     */
     use RefreshOnCreate;
 
     /**

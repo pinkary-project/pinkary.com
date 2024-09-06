@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 final class LikeFactory extends Factory
 {
+    /**
+     * @use RefreshOnCreate<Like>
+     */
     use RefreshOnCreate;
 
     /**
