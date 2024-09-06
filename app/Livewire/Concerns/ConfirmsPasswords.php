@@ -25,8 +25,10 @@ trait ConfirmsPasswords
      */
     protected function passwordIsConfirmed(?int $maximumSecondsSinceConfirmation = null): bool
     {
-        $maximumSecondsSinceConfirmation = $maximumSecondsSinceConfirmation !== null && $maximumSecondsSinceConfirmation !== 0 ? $maximumSecondsSinceConfirmation : config('auth.password_timeout', 900);
+        $maximumSecondsSinceConfirmation = $maximumSecondsSinceConfirmation !== null && $maximumSecondsSinceConfirmation !== 0 ? $maximumSecondsSinceConfirmation : config()->integer('auth.password_timeout', 900);
 
-        return (time() - session('auth.password_confirmed_at', 0)) < $maximumSecondsSinceConfirmation;
+        $confidedAt = is_int(session('auth.password_confirmed_at')) ? session('auth.password_confirmed_at') : 0;
+
+        return (time() - $confidedAt) < $maximumSecondsSinceConfirmation;
     }
 }

@@ -4,9 +4,9 @@
 
 ------
 
-> Telegram group: **[t.me/+Yv9CUTC1q29lNzg8 »](https://t.me/+Yv9CUTC1q29lNzg8)**.
+> Telegram group: **[pinkary.com/telegram »](https://pinkary.com/telegram)**.
 
-**Welcome to Pinkary's early access!** Pinkary is a landing page for all your links and a place to connect with like-minded individuals without the noise.
+**Welcome to Pinkary!** Pinkary is a landing page for all your links and a place to connect with like-minded individuals without the noise.
 
 Initially, it was created to help people share their links in a more organized way. In just 15 hours, we went from `composer create-project` to production, and after 24 hours, we reached over 1,000 users.
 
@@ -14,8 +14,8 @@ The source code still shows some signs of the rush; that's why we think **it's i
 
 Over time, we've managed to add more features, such as feed, explore, questions, likes, and more. We've also improved the design, added tests, and improved the overall quality of the code. There is still a lot to do, but most importantly, there is a huge opportunity to make this a **community-driven project**.
 
-- Early Access Telegram group: **[t.me/+Yv9CUTC1q29lNzg8 »](https://t.me/+Yv9CUTC1q29lNzg8)**
-- Follow us on X at **[@PinkaryProject »](https://twitter.com/PinkaryProject)**
+- Telegram group: **[pinkary.com/telegram »](https://pinkary.com/telegram)**
+- Follow us on X at **[@PinkaryProject »](https://x.com/PinkaryProject)**
 - Wish to contribute? Here is how:
 
 ## Installation

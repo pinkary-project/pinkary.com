@@ -17,8 +17,7 @@
                 <p>
                     Welcome to Pinkary ("we," "us," "our"). We are committed to protecting your personal information and your right to privacy. If you
                     have any questions or concerns about this privacy notice, or our practices with regards to your personal information, please
-                    contact us at team
-                    @pinkary.com.
+                    contact us at team@pinkary.com.
                 </p>
 
                 <h2>1. Information We Collect</h2>

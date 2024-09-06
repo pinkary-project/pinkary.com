@@ -5,6 +5,7 @@
                 :questionId="$question->id"
                 :key="'question-' . $question->id"
                 :inIndex="true"
+                :showParents="true"
             />
         @empty
             <div class="text-center text-slate-400">There are no questions to show.</div>

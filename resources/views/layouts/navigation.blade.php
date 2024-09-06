@@ -28,7 +28,7 @@
                     <a
                         title="Source code"
                         target="_blank"
-                        href="https://github.com/sponsors/nunomaduro"
+                        href="https://github.com/pinkary-project/pinkary.com"
                         class=""
                     >
                         <button
