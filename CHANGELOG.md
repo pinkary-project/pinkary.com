@@ -1,3 +1,12 @@
+## Version 1.40.0
+> 7 September, 2024
+
+- Adds Hashtags support.
+- Mobile improvements
+- Main "feed" improvements
+- Bookmarks count
+- Internal improvements and bug fixes.
+
 ## Version 1.39.0
 > 1 September, 2024
 
