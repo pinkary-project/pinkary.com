@@ -68,7 +68,7 @@
                     class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
-                    <x-heroicon-o-camera class="h-5 w-5"/>
+                    <x-heroicon-o-photo class="h-5 w-5"/>
                 </button>
             </div>
             @if (! $this->parentId && ! $this->isSharingUpdate)
