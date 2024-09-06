@@ -180,7 +180,7 @@
 
             <h2 class="text-center">
                 Pinkary is now <a
-                    href="https://github.com/sponsors/nunomaduro"
+                    href="https://github.com/pinkary-project/pinkary.com"
                     target="_blank"
                     class="underline hover:no-underline"
                 >open-source</a>! You can help us by contributing or
