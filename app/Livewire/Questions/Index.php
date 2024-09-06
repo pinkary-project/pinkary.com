@@ -16,9 +16,6 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-#[On('question.created')]
-#[On('question.updated')]
-#[On('question.reported')]
 final class Index extends Component
 {
     use HasLoadMore;
@@ -60,6 +57,14 @@ final class Index extends Component
             'questions' => $questions,
         ]);
     }
+
+    /**
+     * Refresh the component.
+     */
+    #[On('question.created')]
+    #[On('question.updated')]
+    #[On('question.reported')]
+    public function refresh(): void {}
 
     /**
      * Ignore the given question.

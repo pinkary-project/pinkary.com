@@ -18,9 +18,6 @@ use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\IpUtils;
 
-#[On('link.created')]
-#[On('link.updated')]
-#[On('link-settings.updated')]
 final class Index extends Component
 {
     /**
@@ -155,6 +152,17 @@ final class Index extends Component
         $user->following()->detach($targetId);
 
         $this->dispatch('user.unfollowed');
+    }
+
+    /**
+     * Refresh the component.
+     */
+    #[On('link.created')]
+    #[On('link.updated')]
+    #[On('link-settings.updated')]
+    public function refresh(): void
+    {
+        //
     }
 
     /**
