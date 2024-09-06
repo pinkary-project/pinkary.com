@@ -45,7 +45,7 @@
                     required 
                     autocomplete="current-password"
                 />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 ">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                     <button x-on:click.prevent="showPassword = !showPassword">
                         <x-icons.eye x-show="!showPassword" class="size-5 text-gray-400 hover:text-pink-500" />
                         <x-icons.eye-off x-show="showPassword" class="size-5 text-gray-400 hover:text-pink-500" />
