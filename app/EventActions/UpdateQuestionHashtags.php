@@ -52,7 +52,7 @@ final readonly class UpdateQuestionHashtags
             $matches,
         );
 
-        return collect($matches[1] ?? [])
+        return collect($matches[1] ?? []) // @phpstan-ignore-line
             ->filter()
             ->unique()
             ->values()
