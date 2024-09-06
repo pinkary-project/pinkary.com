@@ -63,3 +63,14 @@ it('builder returns Eloquent\Builder instance', function () {
 
     expect($builder)->toBeInstanceOf(Builder::class);
 });
+
+it('can filter questions to those related to a hashtag name', function () {
+    $questionWithHashtag = Question::factory()->create(['answer' => 'question 1 with a #hashtag']);
+
+    Question::factory()->create(['answer' => 'question 2 without hashtags']);
+
+    $builder = (new RecentQuestionsFeed('hashtag'))->builder();
+
+    expect($builder->get()->pluck('id')->all())
+        ->toBe([$questionWithHashtag->id]);
+});
