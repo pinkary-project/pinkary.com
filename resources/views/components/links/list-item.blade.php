@@ -4,7 +4,10 @@
 ])
 
 @php
-    $isUserProfileOwner = auth()->user()?->is($user);
+        /**
+         * @var App\Models\Link $link
+         */
+        $isUserProfileOwner = auth()->user()?->is($user);
 @endphp
 
 <a

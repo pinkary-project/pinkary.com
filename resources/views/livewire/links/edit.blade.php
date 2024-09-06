@@ -1,7 +1,7 @@
 <form wire:submit="update">
     <div class="space-y-3">
         <div>
-            <x-input-label for="description" :value="__('Description')" />
+            <x-input-label for="description" :value="__('Title')" />
             <x-text-input id="description" type="text" wire:model="description" class="mt-1 block w-full" required autofocus />
             @error('description')
                 <x-input-error :messages="$message" class="mt-2" />

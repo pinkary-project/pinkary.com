@@ -3,7 +3,7 @@
         <div>
             <x-input-label
                 for="description"
-                :value="__('Description')"
+                :value="__('Title')"
             />
             <x-text-input
                 id="description"
