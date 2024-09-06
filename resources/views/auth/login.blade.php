@@ -32,8 +32,11 @@
                 for="password"
                 :value="__('Password')"
             />
-            
-            <div x-data="{ showPassword: false }" class="relative">
+
+            <div 
+                class="relative"
+                x-data="{ showPassword: false }" 
+            >
                 <x-text-input 
                     id="password" 
                     class="mt-1 block w-full pr-10" 
