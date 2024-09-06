@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
@@ -121,6 +122,7 @@ final class Show extends Component
     /**
      * Bookmark the question.
      */
+    #[Renderless]
     public function bookmark(): void
     {
         if (! auth()->check()) {
@@ -143,6 +145,7 @@ final class Show extends Component
     /**
      * Like the question.
      */
+    #[Renderless]
     public function like(): void
     {
         if (! auth()->check()) {
@@ -204,6 +207,7 @@ final class Show extends Component
     /**
      * Unbookmark the question.
      */
+    #[Renderless]
     public function unbookmark(): void
     {
         if (! auth()->check()) {
@@ -228,6 +232,7 @@ final class Show extends Component
     /**
      * Unlike the question.
      */
+    #[Renderless]
     public function unlike(): void
     {
         if (! auth()->check()) {

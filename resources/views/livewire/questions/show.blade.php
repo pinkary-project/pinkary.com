@@ -217,27 +217,16 @@
                     @endphp
 
                     <button
+                        x-data="likeButton('{{ $question->id }}', @js($likeExists), {{ $likesCount }}, @js(auth()->check()))"
+                        x-cloak
                         data-navigate-ignore="true"
-                        @if ($likeExists)
-                            wire:click="unlike"
-                        @else
-                            wire:click="like"
-                        @endif
-                        x-data="particlesEffect"
-                        x-on:click="executeParticlesEffect($event)"
-                        title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
+                        x-on:click="toggleLike"
+                        :title="likeButtonTitle"
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($likeExists)
-                            <x-heroicon-s-heart class="h-4 w-4"/>
-                        @else
-                            <x-heroicon-o-heart class="h-4 w-4"/>
-                        @endif
-                        @if ($likesCount)
-                            <span class="ml-1">
-                                {{ Number::abbreviate($likesCount) }}
-                            </span>
-                        @endif
+                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
+                        <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
+                        <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
                     </button>
                     <span>•</span>
                     <p
@@ -274,24 +263,15 @@
 
                     <button
                         data-navigate-ignore="true"
-                        @if ($question->is_bookmarked)
-                            wire:click="unbookmark()"
-                        @else
-                            wire:click="bookmark()"
-                        @endif
-                        title="{{ Number::format($question->bookmarks_count) }} {{ str('bookmark')->plural($question->bookmarks_count) }}"
+                        x-data="bookmarkButton('{{ $question->id }}', @js($question->is_bookmarked), {{ $question->bookmarks_count }}, @js(auth()->check()))"
+                        x-cloak
+                        x-on:click="toggleBookmark"
+                        :title="bookmarkButtonTitle"
                         class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($question->is_bookmarked)
-                            <x-heroicon-s-bookmark class="h-4 w-4" />
-                        @else
-                            <x-heroicon-o-bookmark class="h-4 w-4" />
-                        @endif
-                        @if ($question->bookmarks_count)
-                            <span class="ml-1">
-                                {{ Number::abbreviate($question->bookmarks_count) }}
-                            </span>
-                        @endif
+                        <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
+                        <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
+                        <span class="ml-1" x-show="count" x-text="bookmarkButtonText"></span>
                     </button>
                     <x-dropdown align="left"
                                 width=""

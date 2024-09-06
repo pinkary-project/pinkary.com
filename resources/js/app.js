@@ -43,9 +43,6 @@ Alpine.data('showMore', showMore)
 import { clickHandler } from './click-handler.js'
 Alpine.data('clickHandler', clickHandler)
 
-import { particlesEffect } from './particles-effect.js'
-Alpine.data('particlesEffect', particlesEffect)
-
 import { copyCode } from './copy-code.js'
 Alpine.data('copyCode', copyCode)
 
@@ -56,8 +53,14 @@ import { autocomplete, usesAutocomplete } from "./autocomplete.js";
 Alpine.data('dynamicAutocomplete', autocomplete);
 Alpine.data('usesDynamicAutocomplete', usesAutocomplete);
 
-import {hasLightBoxImages, lightBox} from './light-box.js';
+import { hasLightBoxImages, lightBox } from './light-box.js';
 Alpine.data('hasLightBoxImages', hasLightBoxImages);
 Alpine.data('lightBox', lightBox);
+
+import { likeButton } from './like-button.js';
+Alpine.data('likeButton', likeButton);
+
+import { bookmarkButton } from './bookmark-button.js';
+Alpine.data('bookmarkButton', bookmarkButton);
 
 Livewire.start()
