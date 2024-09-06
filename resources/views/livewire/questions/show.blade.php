@@ -271,7 +271,7 @@
                     >
                         <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
                         <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
-                        <span class="ml-1" x-text="bookmarkButtonText"></span>
+                        <span class="ml-1" x-show="count" x-text="bookmarkButtonText"></span>
                     </button>
                     <x-dropdown align="left"
                                 width=""
