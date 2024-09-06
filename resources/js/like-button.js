@@ -10,7 +10,6 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
     likeButtonText: '',
 
     init() {
-        this.count = 1150;
         this.setTitle();
         this.setText();
         this.initEventListeners();
@@ -35,15 +34,15 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
 
         if (this.isLiked) {
             this.$wire.unlike(id);
-            this.$dispatch('likeButton.unliked', { id: id });
+            this.$dispatch('question.unliked', { id: id });
         } else {
             this.$wire.like(id);
-            this.$dispatch('likeButton.liked', { id: id });
+            this.$dispatch('question.liked', { id: id });
         }
     },
 
     initEventListeners() {
-        window.addEventListener('likeButton.liked', (event) => {
+        window.addEventListener('question.liked', (event) => {
             if (event.detail.id == this.id) {
                 this.isLiked = true;
                 this.count++;
@@ -52,7 +51,7 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
             }
         });
 
-        window.addEventListener('likeButton.unliked', (event) => {
+        window.addEventListener('question.unliked', (event) => {
             if (event.detail.id == this.id) {
                 this.isLiked = false;
                 this.count--;

@@ -60,4 +60,7 @@ Alpine.data('lightBox', lightBox);
 import { likeButton } from './like-button.js';
 Alpine.data('likeButton', likeButton);
 
+import { bookmarkButton } from './bookmark-button.js';
+Alpine.data('bookmarkButton', bookmarkButton);
+
 Livewire.start()
