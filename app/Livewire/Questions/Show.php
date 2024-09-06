@@ -122,6 +122,7 @@ final class Show extends Component
     /**
      * Bookmark the question.
      */
+    #[Renderless]
     public function bookmark(): void
     {
         if (! auth()->check()) {
@@ -206,6 +207,7 @@ final class Show extends Component
     /**
      * Unbookmark the question.
      */
+    #[Renderless]
     public function unbookmark(): void
     {
         if (! auth()->check()) {
