@@ -9,7 +9,7 @@ use App\Models\Question;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 
-final class SyncMissingQuestionHashtags extends Command
+final class SyncMissingQuestionHashtagsCommand extends Command
 {
     /**
      * The name and signature of the console command.
