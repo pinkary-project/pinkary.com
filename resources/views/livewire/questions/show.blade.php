@@ -217,27 +217,16 @@
                     @endphp
 
                     <button
+                        x-data="likeButton('{{ $question->id }}', @js($likeExists), {{ $likesCount }}, @js(auth()->check()))"
+                        x-cloak
                         data-navigate-ignore="true"
-                        @if ($likeExists)
-                            wire:click="unlike"
-                        @else
-                            wire:click="like"
-                        @endif
-                        x-data="particlesEffect"
-                        x-on:click="executeParticlesEffect($event)"
-                        title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
+                        x-on:click="toggleLike"
+                        :title="likeButtonTitle"
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($likeExists)
-                            <x-heroicon-s-heart class="h-4 w-4"/>
-                        @else
-                            <x-heroicon-o-heart class="h-4 w-4"/>
-                        @endif
-                        @if ($likesCount)
-                            <span class="ml-1">
-                                {{ Number::abbreviate($likesCount) }}
-                            </span>
-                        @endif
+                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
+                        <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
+                        <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
                     </button>
                     <span>•</span>
                     <p
