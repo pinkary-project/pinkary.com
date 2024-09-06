@@ -188,8 +188,9 @@
                     href="https://github.com/sponsors/nunomaduro"
                     target="_blank"
                     class="underline hover:no-underline"
-                >sponsoring the project on GitHub.
+                >sponsoring the project on GitHub
                 </a>
+                .
             </h2>
         </div>
 
