@@ -179,7 +179,11 @@
             </div>
 
             <h2 class="text-center">
-                Pinkary is now open-source! You can get early access by
+                Pinkary is now <a
+                    href="https://github.com/sponsors/nunomaduro"
+                    target="_blank"
+                    class="underline hover:no-underline"
+                >open-source</a>! You can help us by contributing or
                 <a
                     href="https://github.com/sponsors/nunomaduro"
                     target="_blank"
