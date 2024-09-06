@@ -10,12 +10,20 @@ use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-#[On('question.created')]
-#[On('question.updated')]
-#[On('question.reported')]
-#[On('question.ignored')]
 final class Show extends Component
 {
+    /**
+     * Refresh the component.
+     */
+    #[On('question.created')]
+    #[On('question.updated')]
+    #[On('question.reported')]
+    #[On('question.ignored')]
+    public function refresh(): void
+    {
+        //
+    }
+
     /**
      * Render the component.
      */

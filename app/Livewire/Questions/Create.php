@@ -25,8 +25,6 @@ use Livewire\WithFileUploads;
  * @property-read bool $isSharingUpdate
  * @property-read int $maxContentLength
  */
-#[On('link-settings.updated')]
-#[On('link-question.created')]
 final class Create extends Component
 {
     use WithFileUploads;
@@ -180,6 +178,18 @@ final class Create extends Component
         return filled($this->parentId)
             ? "reply_{$this->parentId}"
             : 'post_new';
+    }
+
+    /**
+     * Refresh the component.
+     */
+    #[On([
+        'link-settings.updated',
+        'question.created',
+    ])]
+    public function refresh(): void
+    {
+        //
     }
 
     /**

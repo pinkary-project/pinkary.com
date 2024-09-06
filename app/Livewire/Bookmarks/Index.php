@@ -11,10 +11,15 @@ use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-#[On('question.unbookmarked')]
 final class Index extends Component
 {
     use HasLoadMore;
+
+    /**
+     * Refresh the component.
+     */
+    #[On('question.unbookmarked')]
+    public function refresh(): void {}
 
     /**
      * Render the component.
