@@ -35,6 +35,7 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
         } else {
             this.$wire.bookmark(id);
             this.$dispatch('question.bookmarked', { id: id });
+            this.animateBookmarkButton();
         }
     },
 
@@ -55,6 +56,18 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
                 this.setTitle();
                 this.setText();
             }
+        });
+    },
+
+    animateBookmarkButton() {
+        // fade it from top to bottom
+        this.$el.querySelector('svg').animate([
+            { transform: 'translateY(-100%)', opacity: 0 },
+            { transform: 'translateY(0)', opacity: 1 }
+        ], {
+            duration: 500,
+            easing: 'ease-in-out',
+            fill: 'forwards'
         });
     }
 });
