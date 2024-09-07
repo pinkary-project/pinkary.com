@@ -17,7 +17,7 @@ return new class extends Migration
         //  Schema::drop('questions');
 
         Schema::create('questions', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->foreignIdFor(User::class, 'from_id')->constrained('users')->cascadeOnDelete();
             $table->foreignIdFor(User::class, 'to_id')->constrained('users')->cascadeOnDelete();
 
