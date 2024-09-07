@@ -43,4 +43,27 @@ test('displays notifications', function () {
             'Question content 2',
             'Question content 3',
         ]);
+
+    $component->assertSee('Ignore all');
+});
+
+test('ignores all notifications', function () {
+    $user = User::factory()->create();
+
+    Question::factory(2)->create([
+        'to_id' => $user->id,
+    ]);
+
+    expect($user->notifications()->count())->toBe(2);
+
+    $component = Livewire::actingAs($user->fresh())->test(Index::class)
+        ->call('ignoreAll');
+
+    $component->assertDispatched('notification.ignored');
+    $component->assertDispatched('notification.created', message: 'Notifications ignored.');
+
+    expect($user->notifications()->count())->toBe(0);
+    expect($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
+
+    $component->assertDontSee('Ignore all');
 });
