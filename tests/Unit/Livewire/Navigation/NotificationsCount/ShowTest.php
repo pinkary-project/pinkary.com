@@ -60,6 +60,19 @@ test('displays 20+ notifications when there are more than 20', function () {
     ]);
 });
 
+test('refresh method dispatches refresh event', function () {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Show::class);
+
+    // Call the refresh method directly
+    $component->call('refresh');
+
+    // Assert that the refresh event was dispatched
+    $component->assertDispatched('refresh');
+});
+
 test('is refreshable', function () {
     $user = User::factory()->create();
 

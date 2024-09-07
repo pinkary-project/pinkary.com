@@ -6,7 +6,10 @@ use App\Livewire\Home\TrendingQuestions;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+
+uses(RefreshDatabase::class);
 
 test('renders trending questions', function () {
     $user = User::factory()->create();
