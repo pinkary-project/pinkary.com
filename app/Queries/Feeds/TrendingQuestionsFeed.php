@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class TrendingQuestionsFeed
@@ -42,14 +43,20 @@ final readonly class TrendingQuestionsFeed
         $maxDaysSincePosted = self::MAX_DAYS_SINCE_POSTED;
 
         return Question::query()
-            ->withCount('likes', 'children')
-            ->orderByRaw(<<<SQL
-                (((likes_count * {$likesBias} + 1.0) * (children_count * {$commentsBias} + 1.0))
-                / (strftime('%s') - strftime('%s', answer_created_at) + {$timeBias} + 1.0)) desc
-                SQL,
-            )
-            ->where('is_reported', false)
-            ->where('is_ignored', false)
-            ->where('answer_created_at', '>=', now()->subDays($maxDaysSincePosted));
+            ->leftJoin('likes', 'likes.question_id', '=', 'questions.id')
+            ->leftJoin('questions as child_questions', 'child_questions.parent_id', '=', 'questions.id')
+            ->select('questions.*', DB::raw('COUNT(DISTINCT likes.id) as likes_count'), DB::raw('COUNT(DISTINCT child_questions.id) as children_count'))
+            ->where('questions.is_reported', false)
+            ->where('questions.is_ignored', false)
+            ->where('questions.answer_created_at', '>=', now()->subDays($maxDaysSincePosted))
+            ->groupBy('questions.id')
+            // Exclude questions with no interactions
+            ->havingRaw('COUNT(DISTINCT likes.id) > 0 OR COUNT(DISTINCT child_questions.id) > 0')
+            ->orderByRaw(
+                <<<SQL
+            (((COALESCE(COUNT(DISTINCT likes.id), 0) * {$likesBias} + 1.0) * (COALESCE(COUNT(DISTINCT child_questions.id), 0) * {$commentsBias} + 1.0))
+            / (EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM questions.answer_created_at) + {$timeBias} + 1.0)) desc
+            SQL
+            );
     }
 }
