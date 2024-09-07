@@ -26,6 +26,7 @@ arch('models')
         'App\Rules',
         'App\Services',
         'Database\Factories',
+        'Database\Seeders',
     ])->ignoring('App\Models\Concerns');
 
 arch('ensure factories', function () {
@@ -46,7 +47,7 @@ arch('ensure datetime casts', function () {
         $instance = $model::factory()->create();
 
         $dates = collect($instance->getAttributes())
-            ->filter(fn ($_, $key) => str_ends_with($key, '_at'));
+            ->filter(fn($_, $key) => str_ends_with($key, '_at'));
 
         foreach ($dates as $key => $value) {
             expect($instance->getCasts())->toHaveKey($key, 'datetime');
@@ -61,10 +62,10 @@ arch('ensure datetime casts', function () {
  */
 function getModels(): array
 {
-    $models = type(glob(__DIR__.'/../../app/Models/*.php'))->asArray();
+    $models = type(glob(__DIR__ . '/../../app/Models/*.php'))->asArray();
 
     return collect($models)
         ->map(function ($file) {
-            return 'App\Models\\'.basename($file, '.php');
+            return 'App\Models\\' . basename($file, '.php');
         })->toArray();
 }

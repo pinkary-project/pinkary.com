@@ -16,6 +16,14 @@ use Livewire\Component;
 #[On('question.ignored')]
 final class Show extends Component
 {
+    /**
+     * Dispatch the 'refresh' event to trigger component refresh.
+     *
+     * This method is used to manually trigger the component to refresh by dispatching
+     * the 'refresh' event. Useful when you want to force an update or re-render.
+     *
+     * @return void
+     */
     public function refresh(): void
     {
         $this->dispatch('refresh');
