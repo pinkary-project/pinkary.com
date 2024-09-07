@@ -5,49 +5,43 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Rules\Username;
 
-test('username validation passes for valid usernames', function () {
+test('username validation passes for valid usernames', function (string $username) {
     $rule = new Username();
 
-    $validUsernames = [
-        'valid_username',
-        'User123',
-        '_underscore',
-    ];
-
-    foreach ($validUsernames as $username) {
-        $rule->validate('username', $username, fn(string $errorMessage) => $this->fail($errorMessage));
-    }
+    $rule->validate('username', $username, fn (string $errorMessage) => $this->fail($errorMessage));
 
     expect(true)->toBeTrue();
-});
+})->with([
+    'valid_username',
+    'User123',
+    '_underscore',
+]);
 
-test('username validation fails for invalid usernames', function () {
+test('username validation fails for invalid usernames', function (string $username) {
     $rule = new Username();
 
-    $invalidUsernames = [
-        'invalid username',
-        'invalid@username',
-        'username!',
-        '12345$',
-        '-',
-        '   ',
-    ];
+    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
 
-    foreach ($invalidUsernames as $username) {
-        $fail = fn(string $errorMessage) => throw new InvalidArgumentException($errorMessage);
-
-        $rule->validate('username', $username, $fail);
-    }
-})->throws(InvalidArgumentException::class);
+    $rule->validate('username', $username, $fail);
+})->with([
+    'invalid username',
+    'invalid@username',
+    'username!',
+    '12345$',
+    '-',
+    '   ',
+])->throws(InvalidArgumentException::class);
 
 test('username validation fails for reserved usernames', function () {
     $user = User::factory()->create();
 
     $rule = new Username($user);
 
-    $fail = fn(string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+    $reservedUsername = 'admin'; // Example of a reserved username
 
-    $rule->validate('username', 'administrator', $fail);
+    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+
+    $rule->validate('username', $reservedUsername, $fail);
 })->throws(InvalidArgumentException::class, 'The username is reserved.');
 
 test('username validation fails for existing usernames', function () {
@@ -55,7 +49,7 @@ test('username validation fails for existing usernames', function () {
 
     $rule = new Username();
 
-    $fail = fn(string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('username', 'existingUser', $fail);
 })->throws(InvalidArgumentException::class, 'The username has already been taken.');
