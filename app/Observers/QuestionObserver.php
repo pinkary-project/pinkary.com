@@ -40,6 +40,8 @@ final readonly class QuestionObserver
      */
     public function updated(Question $question): void
     {
+        $question->loadMissing('from', 'to');
+
         if ($question->is_ignored || $question->is_reported) {
             $this->deleted($question);
 
@@ -62,8 +64,8 @@ final readonly class QuestionObserver
             return;
         }
 
-        $question->from->notify(new QuestionAnswered($question));
         $question->mentions()->each->notify(new UserMentioned($question));
+        $question->from->notify(new QuestionAnswered($question));
     }
 
     /**
@@ -77,6 +79,8 @@ final readonly class QuestionObserver
         $question->mentions()->each(function (User $user) use ($question): void {
             $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         });
+
+        $question->loadMissing('children');
 
         $question->children->each->delete();
 
