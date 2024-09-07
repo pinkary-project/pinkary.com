@@ -47,7 +47,7 @@ final readonly class TrendingQuestionsFeed
         // Use strftime for SQLite, otherwise use EXTRACT(EPOCH FROM ...)
         $timeCalculation = $isSQLite
             ? "strftime('%s', 'now') - strftime('%s', questions.answer_created_at)"
-            : "EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM questions.answer_created_at)";
+            : 'EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM questions.answer_created_at)';
 
         return Question::query()
             ->leftJoin('likes', 'likes.question_id', '=', 'questions.id')
