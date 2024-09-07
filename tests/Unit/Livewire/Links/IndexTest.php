@@ -81,8 +81,8 @@ test('is refreshable', function () {
     $component = Livewire::test(Index::class, [
         'userId' => $user->id,
     ]);
-
-    $component->call('refresh');
+    // Refresh the component using Livewire's $refresh instead of refresh
+    $component->call('$refresh');
 
     $this->expectNotToPerformAssertions();
 });

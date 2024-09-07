@@ -16,6 +16,10 @@ use Livewire\Component;
 #[On('question.ignored')]
 final class Show extends Component
 {
+    public function refresh(): void
+    {
+        $this->dispatch('refresh');
+    }
     /**
      * Render the component.
      */

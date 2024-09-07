@@ -18,7 +18,7 @@ final class Edit extends Component
      * The component's question ID.
      */
     #[Locked]
-    public string $questionId;
+    public int $questionId;
 
     /**
      * The component's answer.
@@ -28,7 +28,7 @@ final class Edit extends Component
     /**
      * Mount the component.
      */
-    public function mount(string $questionId): void
+    public function mount(int $questionId): void
     {
         $this->questionId = $questionId;
         $question = Question::findOrFail($questionId);

@@ -36,7 +36,7 @@ final class Index extends Component
     public function click(int $linkId): void
     {
         $ipAddress = type(request()->ip())->asString();
-        $cacheKey = IpUtils::anonymize($ipAddress).'-clicked-'.$linkId;
+        $cacheKey = IpUtils::anonymize($ipAddress) . '-clicked-' . $linkId;
 
         if (auth()->id() === $this->userId || Cache::has($cacheKey)) {
             return;
@@ -49,6 +49,11 @@ final class Index extends Component
         Cache::put($cacheKey, true, now()->addDay());
     }
 
+    public function refresh(): void
+    {
+        $this->dispatch('refresh');
+    }
+
     /**
      * Store the new order of the links.
      *
@@ -59,7 +64,7 @@ final class Index extends Component
         $user = type(auth()->user())->as(User::class);
 
         $sort = collect($sort)
-            ->map(fn (string $linkId): ?int => $user->links->contains($linkId) ? ((int) $linkId) : null)
+            ->map(fn(string $linkId): ?int => $user->links->contains($linkId) ? ((int) $linkId) : null)
             ->filter()
             ->values()
             ->toArray();
@@ -165,9 +170,9 @@ final class Index extends Component
         $user = User::query()
             ->with([
                 // @phpstan-ignore-next-line
-                'links' => fn (HasMany $query): HasMany => $query
+                'links' => fn(HasMany $query): HasMany => $query
                     // @phpstan-ignore-next-line
-                    ->when(auth()->id() !== $this->userId, fn (Builder $query): Builder => $query->where('is_visible', true)),
+                    ->when(auth()->id() !== $this->userId, fn(Builder $query): Builder => $query->where('is_visible', true)),
             ])
             ->withCount('followers')
             ->withCount('following')
