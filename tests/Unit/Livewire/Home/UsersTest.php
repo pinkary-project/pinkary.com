@@ -210,3 +210,54 @@ test('cached famous users are refreshed after a day', function () {
     $this->assertNotEquals($famousUsers->pluck('id')->toArray(), $CachedFamousUsers);
     $this->assertEquals($newFamousUsers->pluck('id')->toArray(), $CachedFamousUsers);
 });
+
+test('users has is_follower and is_following attributes only when authenticated', function () {
+
+    User::factory(10)
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
+        ->create();
+
+    User::factory()
+        ->hasLinks(1, function (array $attributes, User $user) {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->sequence([
+            'name' => 'Nuno Maduro',
+        ], [
+            'name' => 'Punyapal Shah',
+        ])
+        ->create();
+
+    $component = Livewire::test(Users::class);
+
+    $component->viewData('users')->each(function (User $user): void {
+        expect($user)->not->toHaveKey('is_follower');
+        expect($user)->not->toHaveKey('is_following');
+    });
+
+    $component->set('query', 'un');
+
+    $component->viewData('users')->each(function (User $user): void {
+        expect($user)->not->toHaveKey('is_follower');
+        expect($user)->not->toHaveKey('is_following');
+    });
+
+    $component->actingAs(User::factory()->create());
+
+    $component->set('query', '');
+
+    $component->viewData('users')->each(function (User $user): void {
+        expect($user->is_follower)->toBeBool();
+        expect($user->is_following)->toBeBool();
+    });
+
+    $component->set('query', 'un');
+
+    $component->viewData('users')->each(function (User $user): void {
+        expect($user->is_follower)->toBeBool();
+        expect($user->is_following)->toBeBool();
+    });
+});
