@@ -25,7 +25,6 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
 
     toggleLike(e) {
 
-        particlesEffect().executeParticlesEffect(e);
 
         if (!this.isAuthenticated) {
             window.Livewire.navigate('/login');
@@ -38,6 +37,7 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
         } else {
             this.$wire.like(id);
             this.$dispatch('question.liked', { id: id });
+            particlesEffect().executeParticlesEffect(e);
         }
     },
 
