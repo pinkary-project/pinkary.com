@@ -66,4 +66,6 @@
         <p class="mt-10 text-xs leading-5 text-slate-400 sm:text-center">&copy; {{ date('Y') }} {{ config('app.name') }}.</p>
         <p class="text-xs leading-5 text-slate-400 sm:text-center">{{ $version }}</p>
     </div>
+
+    <livewire:views-manager />
 </footer>
