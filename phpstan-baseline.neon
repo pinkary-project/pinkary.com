@@ -1,0 +1,51 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: config/app.php
+
+		-
+			message: "#^Binary operation \"\\.\" between 'api\\-' and mixed results in an error\\.$#"
+			count: 1
+			path: config/broadcasting.php
+
+		-
+			message: "#^Parameter \\#1 \\$title of static method Illuminate\\\\Support\\\\Str\\:\\:slug\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: config/cache.php
+
+		-
+			message: "#^Parameter \\#1 \\$title of static method Illuminate\\\\Support\\\\Str\\:\\:slug\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: config/database.php
+
+		-
+			message: "#^Binary operation \"\\.\" between mixed and '/storage' results in an error\\.$#"
+			count: 1
+			path: config/filesystems.php
+
+		-
+			message: "#^Binary operation \"\\.\" between 'tls\\://' and mixed results in an error\\.$#"
+			count: 1
+			path: config/logging.php
+
+		-
+			message: "#^Binary operation \"\\.\" between non\\-falsy\\-string and mixed results in an error\\.$#"
+			count: 1
+			path: config/logging.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: config/logging.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: config/queue.php
+
+		-
+			message: "#^Parameter \\#1 \\$title of static method Illuminate\\\\Support\\\\Str\\:\\:slug\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: config/session.php
