@@ -19,8 +19,11 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
+        });
 
-            $table->rawIndex('name collate nocase', 'name_collate_nocase');
+        // Crear un índice que ignore las mayúsculas usando la función LOWER
+        Schema::table('hashtags', function (Blueprint $table): void {
+            $table->index([DB::raw('lower(name)')], 'hashtags_name_lower_index');
         });
 
         Schema::create('hashtag_question', function (Blueprint $table): void {
@@ -30,5 +33,14 @@ return new class extends Migration
 
             $table->unique(['hashtag_id', 'question_id']);
         });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('hashtag_question');
+        Schema::dropIfExists('hashtags');
     }
 };
