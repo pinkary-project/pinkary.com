@@ -10,7 +10,6 @@ use App\Services\ParsableContent;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,7 +45,7 @@ use Illuminate\Support\Carbon;
 final class Question extends Model implements Viewable
 {
     /** @use HasFactory<QuestionFactory> */
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     /**
      * Increment the views for the given question IDs.
