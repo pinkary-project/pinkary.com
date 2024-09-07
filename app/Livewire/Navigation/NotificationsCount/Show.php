@@ -19,7 +19,6 @@ final class Show extends Component
     #[On('question.updated')]
     #[On('question.reported')]
     #[On('question.ignored')]
-    #[On('notification.ignored')]
     public function refresh(): void
     {
         //

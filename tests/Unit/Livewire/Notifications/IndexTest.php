@@ -59,7 +59,7 @@ test('ignores all notifications', function () {
     $component = Livewire::actingAs($user->fresh())->test(Index::class)
         ->call('ignoreAll');
 
-    $component->assertDispatched('notification.ignored');
+    $component->assertDispatched('question.ignored');
     $component->assertDispatched('notification.created', message: 'Notifications ignored.');
 
     expect($user->notifications()->count())->toBe(0);

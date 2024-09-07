@@ -34,7 +34,7 @@ final class Index extends Component
 
         $user->notifications()->delete();
 
-        $this->dispatch('notification.ignored');
+        $this->dispatch('question.ignored');
         $this->dispatch('notification.created', message: 'Notifications ignored.');
     }
 
