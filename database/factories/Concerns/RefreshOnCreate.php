@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin Factory
+ * @mixin Factory<Model>
  */
 trait RefreshOnCreate
 {

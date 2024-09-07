@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 final readonly class TrendingQuestionsFeed
 {
@@ -41,6 +41,13 @@ final readonly class TrendingQuestionsFeed
         $commentsBias = self::COMMENTS_BIAS;
         $timeBias = self::TIME_BIAS;
         $maxDaysSincePosted = self::MAX_DAYS_SINCE_POSTED;
+        // Check if the database connection is SQLite
+        $isSQLite = DB::getDriverName() === 'sqlite';
+
+        // Use strftime for SQLite, otherwise use EXTRACT(EPOCH FROM ...)
+        $timeCalculation = $isSQLite
+            ? "strftime('%s', 'now') - strftime('%s', questions.answer_created_at)"
+            : "EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM questions.answer_created_at)";
 
         return Question::query()
             ->leftJoin('likes', 'likes.question_id', '=', 'questions.id')
@@ -50,13 +57,11 @@ final readonly class TrendingQuestionsFeed
             ->where('questions.is_ignored', false)
             ->where('questions.answer_created_at', '>=', now()->subDays($maxDaysSincePosted))
             ->groupBy('questions.id')
-            // Exclude questions with no interactions
-            ->havingRaw('COUNT(DISTINCT likes.id) > 0 OR COUNT(DISTINCT child_questions.id) > 0')
             ->orderByRaw(
                 <<<SQL
-            (((COALESCE(COUNT(DISTINCT likes.id), 0) * {$likesBias} + 1.0) * (COALESCE(COUNT(DISTINCT child_questions.id), 0) * {$commentsBias} + 1.0))
-            / (EXTRACT(EPOCH FROM NOW()) - EXTRACT(EPOCH FROM questions.answer_created_at) + {$timeBias} + 1.0)) desc
-            SQL
+          (((COALESCE(COUNT(DISTINCT likes.id), 0) * {$likesBias} + 1.0) * (COALESCE(COUNT(DISTINCT child_questions.id), 0) * {$commentsBias} + 1.0))
+          / ({$timeCalculation} + {$timeBias} + 1.0)) desc
+          SQL
             );
     }
 }

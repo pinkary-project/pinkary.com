@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Question;
 use Illuminate\Database\Seeder;
 
-class QuestionsTableSeeder extends Seeder
+final class QuestionsTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

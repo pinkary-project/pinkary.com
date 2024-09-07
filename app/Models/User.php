@@ -186,7 +186,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         $sorting = json_decode($value, true);
 
         return collect($sorting)
-            ->map(fn(string $linkId): int => (int) $linkId)
+            ->map(fn (string $linkId): int => (int) $linkId)
             ->values()
             ->all();
     }
