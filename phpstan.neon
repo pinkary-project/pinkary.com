@@ -9,7 +9,6 @@ parameters:
 
     paths:
         - app
-        - config
         - bootstrap
         - database/factories
         - routes
