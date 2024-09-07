@@ -7,9 +7,11 @@ namespace App\Livewire\Links;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\Link;
 use App\Models\User;
+use App\Notifications\UserFollowed;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -125,6 +127,8 @@ final class Index extends Component
 
         $user->following()->attach($targetId);
 
+        $target->notify(new UserFollowed($user));
+
         $this->dispatch('user.followed');
     }
 
@@ -150,6 +154,10 @@ final class Index extends Component
         }
 
         $user->following()->detach($targetId);
+
+        $target->notifications()
+            ->whereJsonContains('data->follower_id', $user->id)
+            ->each(fn (DatabaseNotification $notification): ?bool => $notification->delete());
 
         $this->dispatch('user.unfollowed');
     }

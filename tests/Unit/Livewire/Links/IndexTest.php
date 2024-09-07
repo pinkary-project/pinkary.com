@@ -189,6 +189,8 @@ test('count to be abbreviated', function () {
 });
 
 test('follow is idempotent', function () {
+    Illuminate\Support\Facades\Notification::fake();
+
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -200,6 +202,12 @@ test('follow is idempotent', function () {
     $component->call('follow', $target->id);
 
     expect($user->following->count())->toBe(1);
+
+    Illuminate\Support\Facades\Notification::assertSentToTimes(
+        $target,
+        App\Notifications\UserFollowed::class,
+        1
+    );
 });
 
 test('unfollow is idempotent', function () {
@@ -211,13 +219,20 @@ test('unfollow is idempotent', function () {
     ]);
 
     $component->call('follow', $target->id);
+    expect($target->notifications()->whereJsonContains('data->follower_id', $user->id)->count())->toBe(1);
+
     $component->call('unfollow', $target->id);
     $component->call('unfollow', $target->id);
 
     expect($user->following->count())->toBe(0);
+
+    // Assert the notification was removed.
+    expect($target->notifications()->whereJsonContains('data->follower_id', $user->id)->count())->toBe(0);
 });
 
 test('guest cannot follow', function () {
+    Illuminate\Support\Facades\Notification::fake();
+
     $user = User::factory()->create();
     $component = Livewire::test(Index::class, [
         'userId' => $user->id,
@@ -226,6 +241,8 @@ test('guest cannot follow', function () {
     $component->call('follow', 1);
 
     $component->assertRedirect(route('login'));
+
+    Illuminate\Support\Facades\Notification::assertNothingSent();
 });
 
 test('guest cannot unfollow', function () {

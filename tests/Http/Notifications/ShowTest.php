@@ -53,3 +53,22 @@ test('notifications about questions are not deleted', function () {
     $response->assertRedirectToRoute('questions.show', ['question' => $question, 'username' => $question->to->username]);
     expect($notification->fresh())->not->toBeNull();
 });
+
+test('notifications for UserFollowed are handled correctly', function () {
+    $followed = App\Models\User::factory()->create();
+    $follower = App\Models\User::factory()->create();
+
+    $follower->following()->attach($followed);
+
+    $followed->notify(new App\Notifications\UserFollowed($follower));
+    $notification = $followed->notifications()->first();
+
+    /** @var Illuminate\Testing\TestResponse $response */
+    $response = $this->actingAs($followed)
+        ->get(route('notifications.show', [
+            'notification' => $notification,
+        ]));
+
+    $response->assertRedirectToRoute('profile.show', ['username' => $follower->username]);
+    expect($followed->notifications()->get())->toBeEmpty();
+});
