@@ -16,12 +16,13 @@ final class Index extends Component
     /**
      * Ignore all notifications.
      */
-    public function ignoreAll(): void
+    public function ignoreAll(string $untilDatetime): void
     {
         $user = type(auth()->user())->as(User::class);
 
         $questionsToIgnore = $user
             ->notifications()
+            ->where('created_at', '<=', $untilDatetime)
             ->where('type', QuestionCreated::class)
             ->select('data->question_id');
 
@@ -32,7 +33,9 @@ final class Index extends Component
                 $question->update(['is_ignored' => true]);
             });
 
-        $user->notifications()->delete();
+        $user->notifications()
+            ->where('created_at', '<=', $untilDatetime)
+            ->delete();
 
         $this->dispatch('question.ignored');
         $this->dispatch('notification.created', message: 'Notifications ignored.');

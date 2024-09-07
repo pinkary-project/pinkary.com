@@ -56,8 +56,9 @@ test('ignores all notifications', function () {
 
     expect($user->notifications()->count())->toBe(2);
 
-    $component = Livewire::actingAs($user->fresh())->test(Index::class)
-        ->call('ignoreAll');
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $component->call('ignoreAll', now()->toDateTimeString());
 
     $component->assertDispatched('question.ignored');
     $component->assertDispatched('notification.created', message: 'Notifications ignored.');
@@ -66,4 +67,36 @@ test('ignores all notifications', function () {
     expect($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
 
     $component->assertDontSee('Ignore all');
+});
+
+test('ignores all notifications viewed by user', function () {
+    $user = User::factory()->create();
+
+    Question::factory(2)->create([
+        'to_id' => $user->id,
+    ]);
+
+    expect($user->notifications()->count())->toBe(2);
+
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $untilDatetime = now()->toDateTimeString();
+
+    $this->travel(10)->seconds();
+
+    Question::factory(2)->create([
+        'to_id' => $user->id,
+    ]);
+
+    expect($user->notifications()->count())->toBe(4);
+
+    $component->call('ignoreAll', $untilDatetime);
+
+    $component->assertDispatched('question.ignored');
+    $component->assertDispatched('notification.created', message: 'Notifications ignored.');
+
+    expect($user->notifications()->count())->toBe(2);
+    expect($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
+
+    $component->assertSee('Ignore all');
 });

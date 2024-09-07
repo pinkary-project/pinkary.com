@@ -3,7 +3,7 @@
         <div class="flex items-center justify-end mb-2">
             <button
                 class="text-slate-400"
-                wire:click="ignoreAll"
+                wire:click="ignoreAll('{{ now() }}')"
             >
                 Ignore all
             </button>
