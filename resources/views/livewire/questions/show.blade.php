@@ -2,13 +2,20 @@
     @if ($showParents)
         @foreach($parentQuestions as $parentQuestion)
             <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
-            <div class="relative h-6 -mb-3">
                 @if ($loop->first && $notDisplayingAllParents)
-                    <span class="absolute left-8 h-full border border-slate-600 border-dashed border-2" aria-hidden="true"></span>
+                    <div class="relative h-10 -mb-3 flex items-center">
+                        <span class="absolute left-8 h-2 top-0 border-2 border-slate-600" aria-hidden="true"></span>
+                        <span class="absolute left-8 h-6 border-2 border-slate-600 border-dotted" aria-hidden="true"></span>
+                        <span class="absolute left-8 h-2 bottom-0 border-2 border-slate-600 " aria-hidden="true"></span>
+                        <a href="{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}" class="text-sm text-pink-500 ml-12">
+                            View more comments...
+                        </a>
+                    </div>
                 @else
-                    <span class="absolute left-8 h-full w-1 rounded-full bg-slate-700" aria-hidden="true"></span>
+                    <div class="relative h-6 -mb-3 flex items-center">
+                        <span class="absolute left-8 h-full w-1 rounded-full bg-slate-700" aria-hidden="true"></span>
+                    </div>
                 @endif
-            </div>
         @endforeach
     @endif
     <div>
