@@ -64,8 +64,8 @@ final readonly class QuestionObserver
             return;
         }
 
-        $question->mentions()->each->notify(new UserMentioned($question));
         $question->from->notify(new QuestionAnswered($question));
+        $question->mentions()->each->notify(new UserMentioned($question));
     }
 
     /**
