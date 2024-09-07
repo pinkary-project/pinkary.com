@@ -63,4 +63,7 @@ Alpine.data('likeButton', likeButton);
 import { bookmarkButton } from './bookmark-button.js';
 Alpine.data('bookmarkButton', bookmarkButton);
 
+import {viewManager} from './view-manager.js';
+Alpine.data('viewManager',viewManager);
+
 Livewire.start()
