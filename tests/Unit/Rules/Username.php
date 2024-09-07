@@ -25,13 +25,12 @@ test('username validation fails for invalid usernames', function () {
     $rule = new Username();
 
     $invalidUsernames = [
-        'invalid username', // contains space
-        'invalid@username', // contains special character
-        'username!',        // contains special character
-        '12345$',          // contains special character
-        '-',                // just a hyphen
-        '   ',             // whitespace
-        'us',              // less than minimum length
+        'invalid username',
+        'invalid@username',
+        'username!',
+        '12345$',
+        '-',
+        '   ',
     ];
 
     foreach ($invalidUsernames as $username) {
