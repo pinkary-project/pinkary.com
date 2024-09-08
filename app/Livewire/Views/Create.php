@@ -6,6 +6,7 @@ namespace App\Livewire\Views;
 
 use App\Jobs\IncrementViews;
 use App\Models\Question;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 
 final class Create extends Component
@@ -15,6 +16,7 @@ final class Create extends Component
      *
      * @param  array<array-key, string>  $postIds
      */
+    #[Renderless]
     public function store(array $postIds): void
     {
         $questions = collect($postIds)->map(fn (string $postId): Question => (new Question())->setRawAttributes(['id' => $postId]));
