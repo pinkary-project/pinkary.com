@@ -645,7 +645,7 @@ final readonly class Username implements ValidationRule
             return;
         }
 
-        if (preg_match('/^[A-Za-z0-9_]+$/', $value) === 0) {
+        if (preg_match('/^\w+$/', $value) === 0) {
             $fail('The :attribute may only contain letters, numbers, and underscores.');
 
             return;
