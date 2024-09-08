@@ -19,7 +19,7 @@ test('renders the edit link form with property values', function () {
     $component->call('edit', $link->id);
     $component->assertSet('linkId', $link->id);
     $component->assertSet('url', $link->url);
-    $component->assertSet('description', $link->description);
+    $component->assertSet('title', $link->title);
 });
 
 test('updates link', function () {
@@ -28,14 +28,14 @@ test('updates link', function () {
     $link = Link::factory()->create([
         'user_id' => $user->id,
         'url' => 'https://example.org',
-        'description' => 'Example Org',
+        'title' => 'Example Org',
     ]);
 
     $component = Livewire::actingAs($user)->test(Edit::class);
 
     $component->call('edit', $link->id);
     $component->set('url', 'https://example.com');
-    $component->set('description', 'Example');
+    $component->set('title', 'Example');
 
     $component->call('update');
     $component->assertDispatched('link.updated');
@@ -49,7 +49,7 @@ test('updates link', function () {
 
     expect($link->url)
         ->toBe('https://example.com')
-        ->and($link->description)
+        ->and($link->title)
         ->toBe('Example');
 });
 
@@ -59,14 +59,14 @@ it('prefixes with http or https if missing', function () {
     $link = Link::factory()->create([
         'user_id' => $user->id,
         'url' => 'https://example.org',
-        'description' => 'Example Org',
+        'title' => 'Example Org',
     ]);
 
     $component = Livewire::actingAs($user)->test(Edit::class);
 
     $component->call('edit', $link->id);
     $component->set('url', 'example.com');
-    $component->set('description', 'Example');
+    $component->set('title', 'Example');
 
     $component->call('update');
     $component->assertDispatched('link.updated');
@@ -80,7 +80,7 @@ it('prefixes with http or https if missing', function () {
 
     expect($link->url)
         ->toBe('https://example.com')
-        ->and($link->description)
+        ->and($link->title)
         ->toBe('Example');
 });
 
@@ -108,27 +108,27 @@ test('link click count reset on url update', function () {
 
 });
 
-test('link click count does not reset on only description update', function () {
+test('link click count does not reset on only title update', function () {
     $user = User::factory()->create();
 
     $link = Link::factory()->create([
         'user_id' => $user->id,
         'url' => 'https://example.org',
-        'description' => 'Example Org',
+        'title' => 'Example Org',
         'click_count' => 10,
     ]);
 
     $component = Livewire::actingAs($user)->test(Edit::class);
 
     $component->call('edit', $link->id);
-    $component->set('description', 'Example');
+    $component->set('title', 'Example');
     $component->call('update');
 
     $link->refresh();
 
     expect($link->click_count)
         ->toBe(10)
-        ->and($link->description)
+        ->and($link->title)
         ->toBe('Example')
         ->and($link->url)
         ->toBe('https://example.org');

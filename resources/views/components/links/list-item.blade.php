@@ -4,7 +4,10 @@
 ])
 
 @php
-    $isUserProfileOwner = auth()->user()?->is($user);
+        /**
+        * @var App\Models\Link $link
+        */
+        $isUserProfileOwner = auth()->user()?->is($user);
 @endphp
 
 <a
@@ -15,7 +18,7 @@
 >
     <div class="flex h-full items-center justify-center">
         <p class="truncate">
-            {{ $link->description }}
+            {{ $link->title }}
         </p>
     </div>
 </a>

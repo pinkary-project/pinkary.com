@@ -34,7 +34,7 @@ final class LinkFactory extends Factory
     public function definition(): array
     {
         return [
-            'description' => $this->faker->sentence,
+            'title' => $this->faker->sentence,
             'url' => $this->faker->url,
             'user_id' => User::factory(),
         ];

@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $user_id
  * @property int $click_count
- * @property string $description
+ * @property string $title
  * @property string $url
  * @property Carbon $created_at
  * @property Carbon $updated_at

@@ -14,7 +14,7 @@ test('allows to create link', function () {
     $component = Livewire::actingAs($user)->test(Create::class);
 
     $component->set('url', 'https://example.com');
-    $component->set('description', 'Example');
+    $component->set('title', 'Example');
 
     $component->call('store');
 
@@ -28,7 +28,7 @@ test('allows to create link', function () {
     $link = $user->links->first();
 
     expect($link->url)->toBe('https://example.com')
-        ->and($link->description)->toBe('Example');
+        ->and($link->title)->toBe('Example');
 });
 
 test('https is added to the URL', function () {
@@ -38,7 +38,7 @@ test('https is added to the URL', function () {
     $component = Livewire::actingAs($user)->test(Create::class);
 
     $component->set('url', 'example.com');
-    $component->set('description', 'Example');
+    $component->set('title', 'Example');
 
     $component->call('store');
 
@@ -58,7 +58,7 @@ test('only 10 links are allowed', function () {
     $links = $user->links()->createMany(
         array_fill(0, 9, [
             'url' => 'https://example.com',
-            'description' => 'Example',
+            'title' => 'Example',
         ])
     );
 
@@ -66,7 +66,7 @@ test('only 10 links are allowed', function () {
     $component = Livewire::actingAs($user)->test(Create::class);
 
     $component->set('url', 'https://example.com');
-    $component->set('description', 'Example');
+    $component->set('title', 'Example');
 
     $component->call('store');
 
@@ -90,7 +90,7 @@ test('only 20 links are allowed for "is_verified" users', function () {
     $links = $user->links()->createMany(
         array_fill(0, 19, [
             'url' => 'https://example.com',
-            'description' => 'Example',
+            'title' => 'Example',
         ])
     );
 
@@ -98,7 +98,7 @@ test('only 20 links are allowed for "is_verified" users', function () {
     $component = Livewire::actingAs($user)->test(Create::class);
 
     $component->set('url', 'https://example.com');
-    $component->set('description', 'Example');
+    $component->set('title', 'Example');
 
     $component->call('store');
 

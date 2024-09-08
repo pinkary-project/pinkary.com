@@ -13,9 +13,9 @@ use Livewire\Component;
 final class Create extends Component
 {
     /**
-     * The component's description.
+     * The component's title.
      */
-    public string $description = '';
+    public string $title = '';
 
     /**
      * The component's URL.
@@ -48,13 +48,13 @@ final class Create extends Component
         }
 
         $validated = $this->validate([
-            'description' => 'required|max:100',
+            'title' => 'required|max:100',
             'url' => ['required', 'max:100', 'url', 'starts_with:https'],
         ]);
 
         $user->links()->create($validated);
 
-        $this->description = '';
+        $this->title = '';
         $this->url = '';
 
         $this->dispatch('link.created');

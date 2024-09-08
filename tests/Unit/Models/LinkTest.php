@@ -10,7 +10,7 @@ test('to array', function () {
 
     expect(array_keys($question->toArray()))->toBe([
         'id',
-        'description',
+        'title',
         'url',
         'user_id',
         'created_at',

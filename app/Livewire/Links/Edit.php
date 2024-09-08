@@ -22,9 +22,9 @@ final class Edit extends Component
     public ?int $linkId = null;
 
     /**
-     * The component's description.
+     * The component's title.
      */
-    public string $description = '';
+    public string $title = '';
 
     /**
      * The component's URL.
@@ -43,7 +43,7 @@ final class Edit extends Component
         }
 
         $validated = $this->validate([
-            'description' => 'required|max:100',
+            'title' => 'required|max:100',
             'url' => ['required', 'max:100', 'url', 'starts_with:https'],
         ]);
 
@@ -69,7 +69,7 @@ final class Edit extends Component
     public function edit(Link $link): void
     {
         $this->linkId = $link->id;
-        $this->description = $link->description;
+        $this->title = $link->title;
         $this->url = $link->url;
         $this->dispatch('open-modal', 'link-edit-modal');
     }

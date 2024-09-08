@@ -1,9 +1,9 @@
 <form wire:submit="update">
     <div class="space-y-3">
         <div>
-            <x-input-label for="description" :value="__('Description')" />
-            <x-text-input id="description" type="text" wire:model="description" class="mt-1 block w-full" required autofocus />
-            @error('description')
+            <x-input-label for="title" :value="__('Title')" />
+            <x-text-input id="title" type="text" wire:model="title" class="mt-1 block w-full" required autofocus />
+            @error('title')
                 <x-input-error :messages="$message" class="mt-2" />
             @enderror
         </div>

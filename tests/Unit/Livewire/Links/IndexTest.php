@@ -22,7 +22,7 @@ test('renders a list of links', function () {
 
     foreach ($links as $link) {
         $component->assertSee($link->url);
-        $component->assertSee($link->description);
+        $component->assertSee($link->title);
     }
 });
 

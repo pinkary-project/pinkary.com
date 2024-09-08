@@ -2,18 +2,18 @@
     <div class="space-y-3">
         <div>
             <x-input-label
-                for="description"
-                :value="__('Description')"
+                for="title"
+                :value="__('Title')"
             />
             <x-text-input
-                id="description"
+                id="title"
                 type="text"
-                wire:model="description"
+                wire:model="title"
                 class="mt-1 block w-full"
                 required
                 autofocus
             />
-            @error('description')
+            @error('title')
                 <x-input-error
                     :messages="$message"
                     class="mt-2"

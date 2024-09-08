@@ -62,7 +62,7 @@ test('order by the number of answered questions', function () {
 
     $punyapal->links()->create([
         'url' => 'https://twitter.com/mrpunyapal',
-        'description' => 'twitter',
+        'title' => 'twitter',
     ]);
 
     $nuno = User::factory()->create([
@@ -72,7 +72,7 @@ test('order by the number of answered questions', function () {
 
     $nuno->links()->create([
         'url' => 'https://twitter.com/enunomaduro',
-        'description' => 'twitter',
+        'title' => 'twitter',
     ]);
 
     $nuno->questionsReceived()->createMany([[
