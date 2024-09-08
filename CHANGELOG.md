@@ -1,4 +1,4 @@
-## Version 1.40.0
+## Version 1.41.0
 > 8 September, 2024
 
 - Allows to ignore all notifications.
