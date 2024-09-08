@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire;
+namespace App\Livewire\Views;
 
 use App\Jobs\IncrementViews;
 use App\Models\Question;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
-final class ViewsManager extends Component
+final class Create extends Component
 {
     /**
      * Send the viewed posts to the job.

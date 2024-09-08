@@ -67,5 +67,5 @@
         <p class="text-xs leading-5 text-slate-400 sm:text-center">{{ $version }}</p>
     </div>
 
-    <livewire:views-manager />
+    <livewire:views.create />
 </footer>

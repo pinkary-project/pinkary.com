@@ -3,20 +3,20 @@
 declare(strict_types=1);
 
 use App\Jobs\IncrementViews;
-use App\Livewire\ViewsManager;
+use App\Livewire\Views\Create;
 use App\Models\Question;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
 test('component can be rendered', function () {
-    Livewire::test(ViewsManager::class)->assertStatus(200);
+    Livewire::test(Create::class)->assertStatus(200);
 });
 
 test('updateViews dispatches the job with the correct data', function () {
     Queue::fake();
 
-    $component = Livewire::test(ViewsManager::class);
+    $component = Livewire::test(Create::class);
 
     $postIds = [1, 2, 3];
     $collection = new Collection();
