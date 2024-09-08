@@ -13,6 +13,7 @@ arch('livewire components')
     ->toOnlyBeUsedIn([
         'App\Http\Controllers',
         'App\Http\Livewire',
+        'App\Providers\AppServiceProvider',
     ])
     ->ignoring('App\Livewire\Concerns')
     ->not->toUse(['redirect', 'to_route', 'back']);
