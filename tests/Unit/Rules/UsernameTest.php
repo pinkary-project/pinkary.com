@@ -42,7 +42,7 @@ test('username validation fails for reserved usernames', function () {
     $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('username', $reservedUsername, $fail);
-})->throws(InvalidArgumentException::class, 'The username is reserved.');
+})->throws(InvalidArgumentException::class, 'The :attribute is reserved.');
 
 test('username validation fails for existing usernames', function () {
     User::factory()->create(['username' => 'existingUser']);
@@ -52,4 +52,4 @@ test('username validation fails for existing usernames', function () {
     $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('username', 'existingUser', $fail);
-})->throws(InvalidArgumentException::class, 'The username has already been taken.');
+})->throws(InvalidArgumentException::class, 'The :attribute has already been taken.');
