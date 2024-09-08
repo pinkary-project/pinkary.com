@@ -39,6 +39,7 @@ const lightBox = () => ({
         });
 
         this.attachKeyboardEvents();
+        this.attachTouchEvents();
     },
 
     nextImage() {
@@ -76,6 +77,40 @@ const lightBox = () => ({
                     this.prevImage();
                 }
             }
+        });
+    },
+
+    attachTouchEvents() {
+        let xDown = null;
+        let yDown = null;
+
+        document.addEventListener('touchstart', (e) => {
+            const firstTouch = e.touches[0];
+            xDown = firstTouch.clientX;
+            yDown = firstTouch.clientY;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!xDown || !yDown) {
+                return;
+            }
+
+            let xUp = e.touches[0].clientX;
+            let yUp = e.touches[0].clientY;
+
+            let xDiff = xDown - xUp;
+            let yDiff = yDown - yUp;
+
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                if (xDiff > 0) {
+                    this.nextImage();
+                } else {
+                    this.prevImage();
+                }
+            }
+
+            xDown = null;
+            yDown = null;
         });
     }
 });
