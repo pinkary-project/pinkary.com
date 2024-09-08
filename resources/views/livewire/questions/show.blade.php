@@ -51,6 +51,7 @@
     @if ($question->answer)
         <div
             data-parent=true
+            x-intersect.once.full="$dispatch('post-viewed', { postId: '{{ $questionId }}' })"
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
             class="group p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}

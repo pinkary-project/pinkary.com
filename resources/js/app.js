@@ -63,4 +63,7 @@ Alpine.data('likeButton', likeButton);
 import { bookmarkButton } from './bookmark-button.js';
 Alpine.data('bookmarkButton', bookmarkButton);
 
+import { viewCreate } from './view-cerate.js';
+Alpine.data('viewCreate', viewCreate);
+
 Livewire.start()

@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Jobs\IncrementViews;
 use App\Livewire\Home\Feed;
 use App\Livewire\Questions\Create;
 use App\Models\Question;
 use App\Models\User;
-use Illuminate\Support\Facades\Queue;
+use Livewire\Livewire;
 
 it('can see the "feed" view', function () {
     $response = $this->get(route('home.feed'));
@@ -23,14 +22,6 @@ it('can see the question create component when logged in', function () {
 
     $response->assertOk()
         ->assertSeeLivewire(Create::class);
-});
-
-it('does increment views', function () {
-    Queue::fake(IncrementViews::class);
-
-    $this->get(route('home.feed'));
-
-    Queue::assertPushed(IncrementViews::class);
 });
 
 it('can filter questions to those with a particular hashtag', function () {
