@@ -1,12 +1,14 @@
 const viewCreate = () => ({
     posts: [],
+
     addPost(postId) {
         this.posts = [...this.posts, postId];
         if (this.posts.length >= 10) {
-            this.store();
+            this.storeViewedPosts();
         }
     },
-    store() {
+
+    storeViewedPosts() {
         let data = JSON.parse(localStorage.getItem('viewedPosts')) || [];
         let recentlyViewedPosts = data.filter(function (post) {
             if (post === null) {
@@ -16,48 +18,49 @@ const viewCreate = () => ({
             return new Date().getTime() - post.dateTime < twoHours;
         });
         let recentlyViewedPostIds = recentlyViewedPosts.map(post => post.postId);
-        let posts = this.posts.filter(postId => !recentlyViewedPostIds.includes(postId));
+        let viewedPosts = this.posts.filter(postId => !recentlyViewedPostIds.includes(postId));
         this.posts = [];
-        if (posts.length > 0) {
-            this.$wire.call('store', posts);
-            posts = posts.map(function (postId) {
+        if (viewedPosts.length > 0) {
+            this.$wire.call('store', viewedPosts);
+            viewedPosts = viewedPosts.map(function (postId) {
                 return {
                     postId: postId,
                     dateTime: new Date().getTime()
                 };
             });
-            newPosts = [...recentlyViewedPosts, ...posts];
+            let posts = [...recentlyViewedPosts, ...viewedPosts];
 
             try {
-                localStorage.setItem('viewedPosts', JSON.stringify(newPosts));
+                localStorage.setItem('viewedPosts', JSON.stringify(posts));
             } catch (error) {
                 // If the localStorage is full, we will only store the new posts
                 // and let the server handle the rest.
-                localStorage.setItem('viewedPosts', JSON.stringify(posts));
+                localStorage.setItem('viewedPosts', JSON.stringify(viewedPosts));
             }
         }
     },
+
     init() {
         window.addEventListener('post-viewed', (event) => {
             this.addPost(event.detail.postId);
         });
 
         document.addEventListener('livewire:navigate', () => {
-            this.store();
+            this.storeViewedPosts();
         });
 
         window.addEventListener('beforeunload', () => {
-            this.store();
+            this.storeViewedPosts();
         });
 
         window.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
-                this.store();
+                this.storeViewedPosts();
             }
         });
 
         window.addEventListener('popstate', () => {
-            this.store();
+            this.storeViewedPosts();
         });
     }
 });
