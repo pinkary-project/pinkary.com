@@ -6,7 +6,6 @@ namespace App\Livewire\Views;
 
 use App\Jobs\IncrementViews;
 use App\Models\Question;
-use Illuminate\Support\Collection;
 use Livewire\Component;
 
 final class Create extends Component
@@ -16,14 +15,11 @@ final class Create extends Component
      *
      * @param  array<array-key, string>  $postIds
      */
-    public function updateViews(array $postIds): void
+    public function store(array $postIds): void
     {
-        $collection = new Collection();
-        foreach ($postIds as $postId) {
-            $collection->push((new Question())->setRawAttributes(['id' => $postId]));
-        }
+        $questions = collect($postIds)->map(fn (string $postId): Question => (new Question())->setRawAttributes(['id' => $postId]));
 
-        IncrementViews::dispatchUsingSession($collection);
+        IncrementViews::dispatchUsingSession($questions);
     }
 
     /**

@@ -19,7 +19,7 @@ const viewManager = () => ({
         let viewedPosts = this.viewedPosts.filter(postId => !previousViewedPostIds.includes(postId));
         this.viewedPosts = [];
         if (viewedPosts.length > 0) {
-            this.$wire.call('updateViews', viewedPosts);
+            this.$wire.call('store', viewedPosts);
             viewedPosts = viewedPosts.map(function (postId) {
                 return {
                     postId: postId,
