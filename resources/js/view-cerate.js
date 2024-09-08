@@ -26,8 +26,15 @@ const viewCreate = () => ({
                     dateTime: new Date().getTime()
                 };
             });
-            posts = [...recentlyViewedPosts, ...posts];
-            localStorage.setItem('viewedPosts', JSON.stringify(posts));
+            newPosts = [...recentlyViewedPosts, ...posts];
+
+            try {
+                localStorage.setItem('viewedPosts', JSON.stringify(newPosts));
+            } catch (error) {
+                // If the localStorage is full, we will only store the new posts
+                // and let the server handle the rest.
+                localStorage.setItem('viewedPosts', JSON.stringify(posts));
+            }
         }
     },
     init() {
