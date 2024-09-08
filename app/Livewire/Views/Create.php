@@ -28,7 +28,7 @@ final class Create extends Component
     public function render(): string
     {
         return <<<'HTML'
-            <div x-data="viewManager"></div>
+            <div x-data="viewCreate"></div>
         HTML;
     }
 }
