@@ -1,4 +1,11 @@
 ## Version 1.40.0
+> 8 September, 2024
+
+- Allows to ignore all notifications.
+- Internal improvements and bug fixes.
+
+
+## Version 1.40.0
 > 7 September, 2024
 
 - Adds Hashtags support.
