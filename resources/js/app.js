@@ -1,6 +1,5 @@
 import './bootstrap'
 import autosize from 'autosize';
-import focus from '@alpinejs/focus'
 import notifications from 'alpinejs-notify'
 import Sortable from 'sortablejs'
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm'
@@ -8,7 +7,6 @@ import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.e
 window.Alpine = Alpine
 window.Sortable = Sortable
 
-Alpine.plugin(focus)
 Alpine.plugin(notifications)
 
 Alpine.magic('clipboard', () => {
