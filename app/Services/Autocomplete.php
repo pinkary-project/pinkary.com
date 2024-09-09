@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Services\Autocomplete\Result;
+use App\Services\Autocomplete\Types\Hashtags;
 use App\Services\Autocomplete\Types\Mentions;
 use App\Services\Autocomplete\Types\Type;
 use Illuminate\Support\Collection;
@@ -18,6 +19,7 @@ final class Autocomplete
      * @var array<string, class-string<Type>>
      */
     private static array $types = [
+        'hashtags' => Hashtags::class,
         'mentions' => Mentions::class,
     ];
 
