@@ -26,6 +26,7 @@ test('to array', function () {
         'views',
         'answer_updated_at',
         'parent_id',
+        'root_id',
     ]);
 });
 

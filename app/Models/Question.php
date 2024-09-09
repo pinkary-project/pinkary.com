@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property string $id
+ * @property string|null $root_id
  * @property string|null $parent_id
  * @property int $from_id
  * @property int $to_id
