@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Models\Question;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
@@ -231,6 +232,7 @@ final class Create extends Component
 
         if (filled($this->parentId)) {
             $validated['parent_id'] = $this->parentId;
+            $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
         $user->questionsSent()->create([
