@@ -3,13 +3,17 @@
 declare(strict_types=1);
 
 use App\Services\Autocomplete;
+use App\Services\Autocomplete\Types\Hashtags;
 use App\Services\Autocomplete\Types\Mentions;
 use Tests\Fixtures\TestType;
 
 test('types method returns registered autocomplete types', function () {
     $types = Autocomplete::types();
 
-    expect($types)->toBe(['mentions' => Mentions::class]);
+    expect($types)->toBe([
+        'hashtags' => Hashtags::class,
+        'mentions' => Mentions::class,
+    ]);
 });
 
 test('typeClassFor method returns the correct class for a given type', function () {

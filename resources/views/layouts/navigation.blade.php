@@ -1,5 +1,10 @@
+@php
+    $navClasses = 'fixed z-50 inset-0 h-0 flex md:justify-end md:px-4 ';
+    $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
+@endphp
+
 <nav>
-    <div class="fixed inset-0 h-0 flex justify-center md:justify-end md:px-4">
+    <div class="{{ $navClasses }}">
         <div class="flex h-16 justify-between">
             <div
                 class="flex items-center space-x-2.5"
@@ -23,7 +28,7 @@
                     <a
                         title="Source code"
                         target="_blank"
-                        href="https://github.com/sponsors/nunomaduro"
+                        href="https://github.com/pinkary-project/pinkary.com"
                         class=""
                     >
                         <button

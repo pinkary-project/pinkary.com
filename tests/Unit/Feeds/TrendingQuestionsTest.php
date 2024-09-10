@@ -18,7 +18,7 @@ it('render questions with right conditions', function () {
             'answer' => 'By modifying the likes in the database :-)',
             'from_id' => $user->id,
             'to_id' => $user->id,
-            'answer_created_at' => now()->subDays(7),
+            'answer_created_at' => now()->subDays(7)->addMinute(),
         ]);
 
     $builder = (new TrendingQuestionsFeed())->builder();

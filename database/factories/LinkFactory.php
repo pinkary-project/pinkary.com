@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 final class LinkFactory extends Factory
 {
+    /**
+     * @use RefreshOnCreate<Link>
+     */
     use RefreshOnCreate;
 
     /**

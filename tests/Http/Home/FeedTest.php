@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Jobs\IncrementViews;
 use App\Livewire\Home\Feed;
 use App\Livewire\Questions\Create;
+use App\Models\Question;
 use App\Models\User;
-use Illuminate\Support\Facades\Queue;
+use Livewire\Livewire;
 
 it('can see the "feed" view', function () {
     $response = $this->get(route('home.feed'));
@@ -24,10 +24,19 @@ it('can see the question create component when logged in', function () {
         ->assertSeeLivewire(Create::class);
 });
 
-it('does increment views', function () {
-    Queue::fake(IncrementViews::class);
+it('can filter questions to those with a particular hashtag', function () {
+    $questionWithHashtag = Question::factory()->create(['answer' => 'question 1 with a #hashtag']);
 
-    $this->get(route('home.feed'));
+    Question::factory()->create(['answer' => 'question 2 without hashtags']);
 
-    Queue::assertPushed(IncrementViews::class);
+    $component = Livewire::test(Feed::class, ['hashtag' => 'hashtag']);
+
+    $component
+        ->assertViewHas('questions', fn (Illuminate\Pagination\Paginator $paginator): bool => $paginator
+            ->pluck('id')
+            ->all() === [$questionWithHashtag->id]
+        )
+        ->assertSee('question 1')
+        ->assertDontSee('question 2')
+        ->assertDontSee('There are no questions to show.');
 });

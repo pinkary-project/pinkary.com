@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
@@ -26,6 +27,12 @@ final class Show extends Component
      */
     #[Locked]
     public bool $inIndex = false;
+
+    /**
+     * Determine if the parent question should be shown.
+     */
+    #[Locked]
+    public bool $showParents = false;
 
     /**
      * Determine if this is currently being viewed in thread view.
@@ -115,6 +122,7 @@ final class Show extends Component
     /**
      * Bookmark the question.
      */
+    #[Renderless]
     public function bookmark(): void
     {
         if (! auth()->check()) {
@@ -137,6 +145,7 @@ final class Show extends Component
     /**
      * Like the question.
      */
+    #[Renderless]
     public function like(): void
     {
         if (! auth()->check()) {
@@ -198,6 +207,7 @@ final class Show extends Component
     /**
      * Unbookmark the question.
      */
+    #[Renderless]
     public function unbookmark(): void
     {
         if (! auth()->check()) {
@@ -222,6 +232,7 @@ final class Show extends Component
     /**
      * Unlike the question.
      */
+    #[Renderless]
     public function unlike(): void
     {
         if (! auth()->check()) {
@@ -253,19 +264,41 @@ final class Show extends Component
     public function render(): View
     {
         $question = Question::where('id', $this->questionId)
-            ->with(['to', 'from', 'bookmarks', 'likes'])
+            ->with(['to', 'from'])
+            ->withExists(['bookmarks as is_bookmarked' => function (Builder $query): void {
+                $query->where('user_id', auth()->id());
+            }, 'likes as is_liked' => function (Builder $query): void {
+                $query->where('user_id', auth()->id());
+            }])
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
             ->when($this->inThread, function (Builder $query): void {
                 $query->with(['children']);
             })
-            ->withCount(['likes', 'children'])
+            ->withCount(['likes', 'children', 'bookmarks'])
             ->firstOrFail();
+
+        $parentQuestions = [];
+        if ($this->showParents) {
+            $parentQuestion = $question->parent;
+
+            do {
+                $parentQuestions[] = $parentQuestion;
+            } while ($parentQuestion = $parentQuestion?->parent);
+
+            $parentQuestions = collect($parentQuestions)->filter()->reverse();
+            $notDisplayingAllParents = (! $this->commenting) && $parentQuestions->count() > 2;
+            if ($notDisplayingAllParents) {
+                $parentQuestions = $parentQuestions->slice(0, 1)->concat($parentQuestions->slice(-1));
+            }
+        }
 
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
+            'parentQuestions' => $parentQuestions,
+            'notDisplayingAllParents' => $notDisplayingAllParents ?? false,
         ]);
     }
 }

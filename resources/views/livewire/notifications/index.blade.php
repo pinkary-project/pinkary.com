@@ -1,4 +1,15 @@
 <div class="mb-20 flex flex-col gap-2">
+    @if ($notifications->count() > 0)
+        <div class="flex items-center justify-end mb-2">
+            <button
+                class="text-slate-400"
+                wire:click="ignoreAll('{{ now() }}')"
+            >
+                Ignore all
+            </button>
+        </div>
+    @endif
+
     @foreach ($notifications as $notification)
         @php
             $question = \App\Models\Question::find($notification->data['question_id']);

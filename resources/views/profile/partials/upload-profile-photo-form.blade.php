@@ -86,7 +86,7 @@
         <form
             method="post"
             class="absolute -top-[34px] left-[100px]"
-            action="{{ route('profile.avatar.delete') }}"
+            action="{{ route('profile.avatar.destroy') }}"
         >
             @csrf
             @method('delete')

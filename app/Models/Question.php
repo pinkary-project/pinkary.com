@@ -14,11 +14,13 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
  * @property string $id
+ * @property string|null $root_id
  * @property string|null $parent_id
  * @property int $from_id
  * @property int $to_id
@@ -39,6 +41,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
+ * @property-read Collection<int, Hashtag> $hashtags
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
@@ -154,7 +157,7 @@ final class Question extends Model implements Viewable
         }
 
         preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
-        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->answer)->asString(), $answerMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", $this->answer, $answerMatches);
 
         $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
 
@@ -185,5 +188,13 @@ final class Question extends Model implements Viewable
         return $this->hasMany(self::class, 'parent_id')
             ->where('is_ignored', false)
             ->where('is_reported', false);
+    }
+
+    /**
+     * @return BelongsToMany<Hashtag>
+     */
+    public function hashtags(): BelongsToMany
+    {
+        return $this->belongsToMany(Hashtag::class);
     }
 }

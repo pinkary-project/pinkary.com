@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @implements Arrayable<string, string>
  */
-abstract readonly class Type implements Arrayable
+abstract readonly class Type implements Arrayable // @pest-arch-ignore-line
 {
     /**
      * Creates a new Type instance.

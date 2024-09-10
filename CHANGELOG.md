@@ -1,3 +1,42 @@
+## Version 1.41.0
+> 8 September, 2024
+
+- Allows to ignore all notifications.
+- Internal improvements and bug fixes.
+
+
+## Version 1.40.0
+> 7 September, 2024
+
+- Adds Hashtags support.
+- Mobile improvements
+- Main "feed" improvements
+- Bookmarks count
+- Internal improvements and bug fixes.
+
+## Version 1.39.0
+> 1 September, 2024
+
+- Project got open-sourced at: [https://github.com/pinkary-project/pinkary.com](https://github.com/pinkary-project/pinkary.com)
+- Internal improvements and bug fixes.
+
+## Version 1.38.0
+> 25 August, 2024
+
+- Internal improvements and bug fixes.
+- Count number of bookmarks.
+
+## Version 1.37.0
+> 19 August, 2024
+
+- Adds support for pasting images directly into the text area for creating posts.
+- Internal improvements and bug fixes.
+
+## Version 1.36.1
+> 8 August, 2024
+
+- Internal improvements and bug fixes.
+  
 ## Version 1.36.0
 > 5 August, 2024
 

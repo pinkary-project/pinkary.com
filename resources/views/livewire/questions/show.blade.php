@@ -1,4 +1,23 @@
 <article class="block" id="q-{{ $questionId }}" x-data="copyCode">
+    @if ($showParents)
+        @foreach($parentQuestions as $parentQuestion)
+            <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
+                @if ($loop->first && $notDisplayingAllParents)
+                    <div class="relative h-10 -mb-3 flex items-center">
+                        <span class="absolute left-8 h-2 top-0 border-2 border-slate-600" aria-hidden="true"></span>
+                        <span class="absolute left-8 h-6 border-2 border-slate-600 border-dotted" aria-hidden="true"></span>
+                        <span class="absolute left-8 h-2 bottom-0 border-2 border-slate-600 " aria-hidden="true"></span>
+                        <a href="{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}" class="text-sm text-pink-500 ml-12">
+                            View more comments...
+                        </a>
+                    </div>
+                @else
+                    <div class="relative h-6 -mb-3 flex items-center">
+                        <span class="absolute left-8 h-full w-1 rounded-full bg-slate-700" aria-hidden="true"></span>
+                    </div>
+                @endif
+        @endforeach
+    @endif
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
@@ -32,6 +51,7 @@
     @if ($question->answer)
         <div
             data-parent=true
+            x-intersect.once.full="$dispatch('post-viewed', { postId: '{{ $questionId }}' })"
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
             class="group p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'bg-slate-700/60' : 'bg-slate-900' }}
@@ -157,7 +177,7 @@
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
-                    <p data-has-lightbox-images>
+                    <p x-data="hasLightBoxImages">
                         {!! $question->answer !!}
                     </p>
                 </div>
@@ -200,32 +220,21 @@
                     <span>•</span>
 
                     @php
-                        $likeExists = $question->likes->contains('user_id', auth()->id());
+                        $likeExists = $question->is_liked;
                         $likesCount = $question->likes_count;
                     @endphp
 
                     <button
+                        x-data="likeButton('{{ $question->id }}', @js($likeExists), {{ $likesCount }}, @js(auth()->check()))"
+                        x-cloak
                         data-navigate-ignore="true"
-                        @if ($likeExists)
-                            wire:click="unlike"
-                        @else
-                            wire:click="like"
-                        @endif
-                        x-data="particlesEffect"
-                        x-on:click="executeParticlesEffect($event)"
-                        title="{{ Number::format($likesCount) }} {{ str('like')->plural($likesCount) }}"
+                        x-on:click="toggleLike"
+                        :title="likeButtonTitle"
                         class="flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($likeExists)
-                            <x-heroicon-s-heart class="h-4 w-4"/>
-                        @else
-                            <x-heroicon-o-heart class="h-4 w-4"/>
-                        @endif
-                        @if ($likesCount)
-                            <span class="ml-1">
-                                {{ Number::abbreviate($likesCount) }}
-                            </span>
-                        @endif
+                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
+                        <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
+                        <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
                     </button>
                     <span>•</span>
                     <p
@@ -260,28 +269,20 @@
 
                     <span class="mx-1">•</span>
 
-                    @php
-                        $bookmarkExists = $question->bookmarks->contains('user_id', auth()->id());
-                    @endphp
-
                     <button
                         data-navigate-ignore="true"
-                        @if ($bookmarkExists)
-                            wire:click="unbookmark()"
-                        @else
-                            wire:click="bookmark()"
-                        @endif
-
+                        x-data="bookmarkButton('{{ $question->id }}', @js($question->is_bookmarked), {{ $question->bookmarks_count }}, @js(auth()->check()))"
+                        x-cloak
+                        x-on:click="toggleBookmark"
+                        :title="bookmarkButtonTitle"
                         class="mr-1 flex items-center transition-colors hover:text-slate-400 focus:outline-none"
                     >
-                        @if ($bookmarkExists)
-                            <x-heroicon-s-bookmark class="h-4 w-4" />
-                        @else
-                            <x-heroicon-o-bookmark class="h-4 w-4" />
-                        @endif
+                        <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
+                        <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
+                        <span class="ml-1" x-show="count" x-text="bookmarkButtonText"></span>
                     </button>
                     <x-dropdown align="left"
-                                width="48"
+                                width=""
                                 dropdown-classes="top-[-3.4rem] shadow-none"
                                 content-classes="flex flex-col space-y-1"
                     >
