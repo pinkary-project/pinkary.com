@@ -18,3 +18,11 @@ arch('requests')
     ->toExtend('Illuminate\Foundation\Http\FormRequest')
     ->toHaveMethod('rules')
     ->toBeUsedIn('App\Http\Controllers');
+
+arch('api controllers')
+    ->expect('App\Http\Controllers\Api')
+    ->toExtendNothing();
+
+arch('api resources')
+    ->expect('App\Http\Resources')
+    ->toExtend('Illuminate\Http\Resources\Json\JsonResource');

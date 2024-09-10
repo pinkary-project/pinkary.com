@@ -47,6 +47,7 @@ arch('avoid mutation')
         'App\Notifications',
         'App\Providers',
         'App\View',
+        'App\Http\Resources',
         App\Services\Autocomplete::class,
     ]);
 
@@ -66,6 +67,7 @@ arch('avoid inheritance')
         'App\Notifications',
         'App\Providers',
         'App\View',
+        'App\Http\Resources',
         'App\Services\Autocomplete\Types',
     ]);
 

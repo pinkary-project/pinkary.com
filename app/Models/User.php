@@ -21,6 +21,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property bool $prefers_anonymous_questions
@@ -62,7 +63,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that should be hidden for serialization.
