@@ -74,3 +74,76 @@ it('can filter questions to those related to a hashtag name', function () {
     expect($builder->get()->pluck('id')->all())
         ->toBe([$questionWithHashtag->id]);
 });
+
+it('render roots of latest comments or roots without comments', function () {
+    $root = Question::factory()->create(['answer' => 'root question']);
+    $rootWithoutComments = Question::factory()->create(['answer' => 'root question without comments']);
+
+    $this->travel(1)->seconds();
+
+    Question::factory()->create([
+        'answer' => 'child question',
+        'root_id' => $root->id,
+    ]);
+
+    $builder = (new RecentQuestionsFeed())->builder();
+
+    expect($builder->get()->pluck('id')->all())
+        ->toBe([$root->id, $rootWithoutComments->id]);
+});
+
+it('render roots in correct order', function () {
+
+    // create 5 roots
+    $roots = Question::factory(5)
+        ->sequence(
+            ['answer' => 'root 1'],
+            ['answer' => 'root 2'],
+            ['answer' => 'root 3'],
+            ['answer' => 'root 4'],
+            ['answer' => 'root 5'],
+        )->create();
+
+    // create a child for each root
+    $roots->each(function ($root) {
+
+        $this->travel(1)->seconds();
+
+        Question::factory()->create([
+            'answer' => 'child question',
+            'root_id' => $root->id,
+            'parent_id' => $root->id,
+        ]);
+    });
+
+    $roots->load('children');
+
+    // create a root without descendants
+    $this->travel(1)->seconds();
+    $rootWithoutDescendants = Question::factory()->create(['answer' => 'root without descendants']);
+
+    // create a child for each child of even roots
+    $roots->filter(fn ($root, $key) => ($key + 1) % 2 === 0) // even
+        ->each(function ($root) {
+            $this->travel(1)->seconds();
+
+            Question::factory()->create([
+                'answer' => 'child question',
+                'parent_id' => $root->children->first()->id,
+                'root_id' => $root->id,
+            ]);
+        });
+
+    $builder = (new RecentQuestionsFeed())->builder();
+
+    // final output needs to be root without descendants divided odds and evens in descending order
+    expect($builder->get()->pluck('id')->all())
+        ->toBe([
+            $roots->where('answer', 'root 4')->first()->id,
+            $roots->where('answer', 'root 2')->first()->id,
+            $rootWithoutDescendants->id,
+            $roots->where('answer', 'root 5')->first()->id,
+            $roots->where('answer', 'root 3')->first()->id,
+            $roots->where('answer', 'root 1')->first()->id,
+        ]);
+});
