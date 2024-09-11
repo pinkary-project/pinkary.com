@@ -371,15 +371,7 @@
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
     @endif
 
-    @if($inThread && $question->children->isNotEmpty() && $commenting)
-        <div class="pl-3">
-            @foreach($question->children as $comment)
-                @break($loop->depth > 5)
-
-                <livewire:questions.show :question-id="$comment->id" :$inThread :wire:key="$comment->id" />
-            @endforeach
-        </div>
-    @elseif($inThread && $question->descendants->isNotEmpty())
+    @if($inThread && !$commenting && $question->descendants->isNotEmpty())
         @php
             $lastComment = $question->descendants->first();
             $parentCommentOfLastComment = $lastComment->parent;
@@ -394,5 +386,13 @@
         @endif
         <x-post-divider />
         <livewire:questions.show :questionId="$lastComment->id" :in-thread="false" :key="$lastComment->id" />
+    @elseif($inThread && $question->children->isNotEmpty())
+        <div class="pl-3">
+            @foreach($question->children as $comment)
+                @break($loop->depth > 5)
+
+                <livewire:questions.show :question-id="$comment->id" :$inThread :wire:key="$comment->id" />
+            @endforeach
+        </div>
     @endif
 </article>
