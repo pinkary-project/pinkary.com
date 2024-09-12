@@ -6,6 +6,7 @@ use App\Models\Question;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -42,7 +43,9 @@ return new class extends Migration
             Question::withoutTimestamps(function () use ($questions, $rootId): void {
                 $questions->each(function (Question $question) use ($rootId): void {
                     $question->load('children');
-                    $question->updateQuietly(['root_id' => $rootId]);
+                    DB::table('questions')->where('id', $question->id)->update([
+                        'root_id' => $rootId
+                    ]);
                     $this->updateRootId($question->children, $rootId);
                 });
             });
