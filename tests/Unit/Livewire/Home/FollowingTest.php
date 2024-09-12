@@ -8,29 +8,10 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('renders questions with likes of authenticated user', function () {
-    $user = User::factory()->create();
+test('/for-you redirects to /following', function () {
+    $response = $this->get('/for-you');
 
-    $questionContent = 'This is a question with a like from the authenticated user';
-
-    $question = Question::factory()->create([
-        'content' => $questionContent,
-        'answer' => 'Cool question',
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-    ]);
-
-    $like = Like::factory()->create([
-        'user_id' => $user->id,
-    ]);
-
-    $question->likes()->save($like);
-
-    $component = Livewire::actingAs($user)->test(QuestionsFollowing::class);
-
-    $component
-        ->assertDontSee('We haven\'t found any questions that may interest you based on the activity you\'ve done on Pinkary.')
-        ->assertSee($questionContent);
+    $response->assertRedirect('/following');
 });
 
 test('do not renders questions without likes of authenticated user', function () {
