@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/about', 'about')->name('about');
 
 Route::view('/', 'home/feed')->name('home.feed');
-Route::get('/for-you', fn () => redirect()->route('home.following'))->name('home.for_you');
+Route::redirect('/for-you', '/following')->name('home.for_you');
 Route::view('/following', 'home/following')->name('home.following');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');
 Route::view('/users', 'home/users')->name('home.users');
