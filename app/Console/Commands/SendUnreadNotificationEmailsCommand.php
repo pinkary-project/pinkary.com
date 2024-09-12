@@ -18,7 +18,7 @@ final class SendUnreadNotificationEmailsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'send:reminder-emails
+    protected $signature = 'send:unread-notifications-emails
                             {--weekly : Send the reminder emails to the users who have set their mail preference to weekly.}';
 
     /**
