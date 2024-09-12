@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Livewire\Home\QuestionsFollowing;
-use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;

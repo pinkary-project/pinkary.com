@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
 use App\Queries\Feeds\QuestionsFollowingFeed;
