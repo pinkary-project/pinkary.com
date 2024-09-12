@@ -7,7 +7,7 @@ namespace App\Livewire\Questions;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -278,9 +278,11 @@ final class Show extends Component
                 $query->with(['children']);
             })
             ->when($this->inThread && ! $this->commenting, function (Builder $query): void {
-                // @phpstan-ignore-next-line
-                $query->with(['descendants' => function (Builder|HasMany $query): void {
-                    $query->with('parent')->limit(1)->orderByDesc('updated_at');
+                $query->with(['descendants' => function (Relation $relation): void {
+                    $relation->getQuery()
+                        ->with('parent')
+                        ->limit(1)
+                        ->orderByDesc('updated_at');
                 }]);
             })
             ->withCount(['likes', 'children', 'bookmarks'])

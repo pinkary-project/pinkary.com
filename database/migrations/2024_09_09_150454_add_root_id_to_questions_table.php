@@ -39,16 +39,12 @@ return new class extends Migration
             return;
         }
 
-        Question::withoutEvents(function () use ($questions, $rootId): void {
-            Question::withoutTimestamps(function () use ($questions, $rootId): void {
-                $questions->each(function (Question $question) use ($rootId): void {
-                    $question->load('children');
-                    DB::table('questions')->where('id', $question->id)->update([
-                        'root_id' => $rootId
-                    ]);
-                    $this->updateRootId($question->children, $rootId);
-                });
-            });
+        $questions->each(function (Question $question) use ($rootId): void {
+            $question->load('children');
+            DB::table('questions')->where('id', $question->id)->update([
+                'root_id' => $rootId,
+            ]);
+            $this->updateRootId($question->children, $rootId);
         });
     }
 };
