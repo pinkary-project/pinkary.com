@@ -3,17 +3,12 @@
 declare(strict_types=1);
 
 use App\Mail\PendingNotifications;
-use App\Models\Question;
 use App\Models\User;
 
 test('envelope', function () {
     $user = User::factory()->create();
 
-    Question::factory()->create([
-        'to_id' => $user->id,
-    ]);
-
-    $mail = new PendingNotifications($user);
+    $mail = new PendingNotifications($user, 1);
 
     $envelope = $mail->envelope();
 
@@ -24,11 +19,7 @@ test('envelope', function () {
 test('content', function () {
     $user = User::factory()->create();
 
-    Question::factory()->create([
-        'to_id' => $user->id,
-    ]);
-
-    $mail = new PendingNotifications($user);
+    $mail = new PendingNotifications($user, 1);
 
     foreach ([
         '# Hello, '.$user->name.'!',

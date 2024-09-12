@@ -40,6 +40,7 @@ final class SendUnreadNotificationEmailsCommand extends Command
                 $query->where('mail_preference_time', UserMailPreference::Daily);
             })
             ->whereHas('notifications')
-            ->each(fn (User $user) => Mail::to($user)->queue(new PendingNotifications($user)));
+            ->withCount('notifications')
+            ->each(fn (User $user) => Mail::to($user)->queue(new PendingNotifications($user, $user->notifications_count)));
     }
 }
