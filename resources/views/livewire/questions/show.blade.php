@@ -2,20 +2,7 @@
     @if ($showParents)
         @foreach($parentQuestions as $parentQuestion)
             <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
-                @if ($loop->first && $notDisplayingAllParents)
-                    <div class="relative h-10 -mb-3 flex items-center">
-                        <span class="absolute left-8 h-2 top-0 border-2 border-slate-600" aria-hidden="true"></span>
-                        <span class="absolute left-8 h-6 border-2 border-slate-600 border-dotted" aria-hidden="true"></span>
-                        <span class="absolute left-8 h-2 bottom-0 border-2 border-slate-600 " aria-hidden="true"></span>
-                        <a href="{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}" class="text-sm text-pink-500 ml-12">
-                            View more comments...
-                        </a>
-                    </div>
-                @else
-                    <div class="relative h-6 -mb-3 flex items-center">
-                        <span class="absolute left-8 h-full w-1 rounded-full bg-slate-700" aria-hidden="true"></span>
-                    </div>
-                @endif
+            <x-post-divider />
         @endforeach
     @endif
     <div>
@@ -384,7 +371,22 @@
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
     @endif
 
-    @if($inThread && $question->children->isNotEmpty())
+    @if($inThread && !$commenting && $question->descendants->isNotEmpty())
+        @php
+            $lastComment = $question->descendants->first();
+            $parentCommentOfLastComment = $lastComment->parent;
+        @endphp
+        @if($parentCommentOfLastComment && $question->id !== $parentCommentOfLastComment->id)
+            @if($parentCommentOfLastComment->parent_id === $question->id)
+               <x-post-divider />
+            @else
+                <x-post-divider :link="route('questions.show', ['username' => $question->to->username, 'question' => $question])" :text="'View more comments...'" />
+            @endif
+            <livewire:questions.show :questionId="$parentCommentOfLastComment->id" :in-thread="false" :key="$parentCommentOfLastComment->id" />
+        @endif
+        <x-post-divider />
+        <livewire:questions.show :questionId="$lastComment->id" :in-thread="false" :key="$lastComment->id" />
+    @elseif($inThread && $question->children->isNotEmpty())
         <div class="pl-3">
             @foreach($question->children as $comment)
                 @break($loop->depth > 5)
