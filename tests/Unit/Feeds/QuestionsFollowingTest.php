@@ -8,7 +8,7 @@ use App\Queries\Feeds\QuestionsFollowingFeed;
 use Illuminate\Database\Eloquent\Builder;
 
 it('render questions with right conditions', function () {
-    $likerUser = User::factory()->create();
+    $followerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
 
@@ -18,7 +18,7 @@ it('render questions with right conditions', function () {
         'is_reported' => false,
     ]);
 
-    $likerUser->following()->attach($userTo->id);
+    $followerUser->following()->attach($userTo->id);
 
     Question::factory()->create([
         'to_id' => $userTo->id,
@@ -26,13 +26,13 @@ it('render questions with right conditions', function () {
         'is_reported' => false,
     ]);
 
-    $builder = (new QuestionsFollowingFeed($likerUser))->builder();
+    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
 
     expect($builder->count())->toBe(2);
 });
 
 it('do not render questions without answer', function () {
-    $likerUser = User::factory()->create();
+    $followerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
 
@@ -44,7 +44,7 @@ it('do not render questions without answer', function () {
         'is_reported' => false,
     ]);
 
-    $likerUser->following()->attach($userTo->id);
+    $followerUser->following()->attach($userTo->id);
 
     Question::factory()->create([
         'to_id' => $userTo->id,
@@ -52,7 +52,7 @@ it('do not render questions without answer', function () {
         'answer' => null,
     ]);
 
-    $builder = (new QuestionsFollowingFeed($likerUser))->builder();
+    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
 
     expect($builder->where('answer', $answer)->count())->toBe(1);
 });
@@ -75,7 +75,7 @@ it('includes questions made to users i follow', function () {
 });
 
 it('do not render reported questions', function () {
-    $likerUser = User::factory()->create();
+    $followerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
 
@@ -85,7 +85,7 @@ it('do not render reported questions', function () {
         'is_reported' => false,
     ]);
 
-    $likerUser->following()->attach($userTo->id);
+    $followerUser->following()->attach($userTo->id);
 
     Question::factory()->create([
         'to_id' => $userTo->id,
@@ -93,7 +93,7 @@ it('do not render reported questions', function () {
         'is_reported' => true,
     ]);
 
-    $builder = (new QuestionsFollowingFeed($likerUser))->builder();
+    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
 
     expect($builder->where('is_reported', false)->count())->toBe(1);
 });

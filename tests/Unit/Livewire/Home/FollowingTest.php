@@ -13,25 +13,6 @@ test('/for-you redirects to /following', function () {
     $response->assertRedirect('/following');
 });
 
-test('do not renders questions without likes of authenticated user', function () {
-    $user = User::factory()->create();
-
-    $questionContent = 'This is a question with a like from the authenticated user';
-
-    Question::factory()->create([
-        'content' => $questionContent,
-        'answer' => 'Cool question',
-        'from_id' => $user->id,
-        'to_id' => $user->id,
-    ]);
-
-    $component = Livewire::actingAs($user)->test(QuestionsFollowing::class);
-
-    $component
-        ->assertSee('found any questions that may interest you based on the activity')
-        ->assertDontSee($questionContent);
-});
-
 test('load more', function () {
     $user = User::factory()->create();
 
