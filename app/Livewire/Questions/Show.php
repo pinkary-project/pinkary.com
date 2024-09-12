@@ -278,6 +278,7 @@ final class Show extends Component
                 $query->with(['children']);
             })
             ->when($this->inThread && ! $this->commenting, function (Builder $query): void {
+                // @phpstan-ignore-next-line
                 $query->with(['descendants' => function (Builder|HasMany $query): void {
                     $query->with('parent')->limit(1)->orderByDesc('updated_at');
                 }]);
