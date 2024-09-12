@@ -19,10 +19,7 @@ it('render questions with right conditions', function () {
         'is_reported' => false,
     ]);
 
-    Like::factory()->create([
-        'user_id' => $likerUser->id,
-        'question_id' => $questionWithLike->id,
-    ]);
+    $likerUser->following()->attach($userTo->id);
 
     Question::factory()->create([
         'to_id' => $userTo->id,
