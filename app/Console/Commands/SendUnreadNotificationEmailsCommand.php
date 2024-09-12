@@ -11,7 +11,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Mail;
 
-final class SendReminderEmailsCommand extends Command
+final class SendUnreadNotificationEmailsCommand extends Command
 {
     /**
      * The name and signature of the console command.

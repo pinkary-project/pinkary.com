@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Console\Commands\SendReminderEmailsCommand;
+use App\Console\Commands\SendUnreadNotificationEmailsCommand;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
@@ -33,7 +33,7 @@ test('sends daily emails', function () {
 
     Mail::fake();
 
-    $this->artisan(SendReminderEmailsCommand::class)
+    $this->artisan(SendUnreadNotificationEmailsCommand::class)
         ->assertExitCode(0);
 
     Mail::assertQueuedCount(5);
@@ -66,7 +66,7 @@ test('sends weekly emails', function () {
 
     Mail::fake();
 
-    $this->artisan(SendReminderEmailsCommand::class, ['--weekly' => true])
+    $this->artisan(SendUnreadNotificationEmailsCommand::class, ['--weekly' => true])
         ->assertExitCode(0);
 
     Mail::assertQueuedCount(2);
