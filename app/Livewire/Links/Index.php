@@ -171,7 +171,7 @@ final class Index extends Component
     public function render(): View
     {
         $user = User::query()
-            ->with([
+            ->with([ // @phpstan-ignore-line
                 // @phpstan-ignore-next-line
                 'links' => fn (HasMany $query): HasMany => $query
                     // @phpstan-ignore-next-line
