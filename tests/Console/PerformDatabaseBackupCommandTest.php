@@ -19,22 +19,6 @@ test('perform database backup', function () {
             database_path('backups/backup-3.sql'),
             database_path('backups/backup-4.sql'),
             database_path('backups/backup-5.sql'),
-            database_path('backups/backup-6.sql'),
-            database_path('backups/backup-7.sql'),
-            database_path('backups/backup-8.sql'),
-            database_path('backups/backup-9.sql'),
-            database_path('backups/backup-10.sql'),
-            database_path('backups/backup-11.sql'),
-            database_path('backups/backup-12.sql'),
-            database_path('backups/backup-13.sql'),
-            database_path('backups/backup-14.sql'),
-            database_path('backups/backup-15.sql'),
-            database_path('backups/backup-16.sql'),
-            database_path('backups/backup-17.sql'),
-            database_path('backups/backup-18.sql'),
-            database_path('backups/backup-19.sql'),
-            database_path('backups/backup-20.sql'),
-            database_path('backups/backup-21.sql'),
         ]);
 
     File::shouldReceive('delete')
