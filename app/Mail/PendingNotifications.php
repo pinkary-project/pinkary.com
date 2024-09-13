@@ -20,7 +20,8 @@ final class PendingNotifications extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public function __construct(
-        private readonly User $user,
+        public readonly User $user,
+        public readonly int $pendingNotificationsCount,
     ) {
         //
     }
@@ -30,10 +31,8 @@ final class PendingNotifications extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $notificationsCount = $this->user->notifications()->count();
-
         return new Envelope(
-            subject: '🌸 Pinkary: You Have '.$notificationsCount.' '.str('Notification')->plural($notificationsCount).'! - '.now()->format('F j, Y'),
+            subject: '🌸 Pinkary: You Have '.$this->pendingNotificationsCount.' '.str('Notification')->plural($this->pendingNotificationsCount).'! - '.now()->format('F j, Y'),
         );
     }
 
@@ -47,7 +46,7 @@ final class PendingNotifications extends Mailable implements ShouldQueue
             with: [
                 'date' => now()->format('Y-m-d'),
                 'user' => $this->user,
-                'pendingNotificationsCount' => $this->user->notifications()->count(),
+                'pendingNotificationsCount' => $this->pendingNotificationsCount,
             ],
         );
     }
