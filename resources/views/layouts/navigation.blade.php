@@ -98,6 +98,16 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-button x-data="themeSwitch()" @click="toggleTheme" class="text-sm text-slate-400">
+                            <div class="flex flex-row items-center justify-between">
+                                <span x-text="toggleThemeButtonText"></span>
+                                <span class="mr-2">
+                                    <x-heroicon-o-moon x-show="theme == 'dark'" class="h-4 w-4"/>
+                                    <x-heroicon-o-sun x-show="theme == 'light'" class="h-4 w-4"/>
+                                    <x-heroicon-o-computer-desktop x-show="theme == 'system'" class="h-4 w-4"/>
+                                </span>
+                            </div>
+                        </x-dropdown-button>
                         <x-dropdown-link :href="route('about')">
                             {{ __('About') }}
                         </x-dropdown-link>
