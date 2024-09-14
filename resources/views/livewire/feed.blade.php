@@ -8,7 +8,7 @@
                 :inThread="$hashtag === null"
             />
         @empty
-            <div class="text-center text-slate-400">There are no questions to show.</div>
+            <div class="text-center dark:text-slate-400 text-slate-600">There are no questions to show.</div>
         @endforelse
 
         <x-load-more-button

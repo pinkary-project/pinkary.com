@@ -1,4 +1,4 @@
-<div class="mb-12 w-full text-slate-200">
+<div class="mb-12 w-full dark:text-slate-200 text-slate-800">
     @if ($forYouQuestions->isEmpty())
         <section class="rounded-lg">
             <p class="my-8 text-center text-lg text-slate-500">
