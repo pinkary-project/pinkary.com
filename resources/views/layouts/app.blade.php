@@ -38,13 +38,6 @@
     <script>
         window.onload = function() {
             let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-            // Map deprecated timezones to their modern names
-            const timezoneMappings = {
-                "Asia/Calcutta": "Asia/Kolkata",
-            };
-            if (timezoneMappings[timezone]) {
-                timezone = timezoneMappings[timezone];
-            }
             if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
                 axios.post('{{ route('profile.timezone.update') }}', {
                     timezone
