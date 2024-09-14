@@ -34,7 +34,7 @@ test('invalid timezone', function (string $timezone) {
     'Asia/Tokyo0',
 ])->fails();
 
-test('support for deprecated timezones', function () {
+test('support for deprecated timezones', function (string $timezone) {
     $rule = new ValidTimezone();
 
     $fail = fn (string $errorMessage) => $this->fail($errorMessage);
@@ -43,8 +43,8 @@ test('support for deprecated timezones', function () {
 
     expect(true)->toBeTrue();
 })->with([
-  'Asia/Calcutta',
-  'Asia/Katmandu',
-  'America/Godthab',
-  'US/Pacific-New',
+    'Asia/Calcutta',
+    'Asia/Katmandu',
+    'America/Godthab',
+    'US/Pacific',
 ]);
