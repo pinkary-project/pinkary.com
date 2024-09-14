@@ -33,3 +33,19 @@ test('invalid timezone', function (string $timezone) {
     'Europe/Londonn',
     'Asia/Tokyo0',
 ])->fails();
+
+test('a deprecated timezone must be valid attempt 1', function () {
+    $response = $this->post(route('profile.timezone.update'), [
+        'timezone' => 'Asia/Calcutta',
+    ]);
+
+    $response->assertStatus(200);
+});
+
+test('a deprecated timezone must be valid attempt 2', function () {
+    $response = $this->post(route('profile.timezone.update'), [
+        'timezone' => 'Asia/Katmandu',
+    ]);
+
+    $response->assertStatus(200);
+});
