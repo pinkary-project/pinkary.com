@@ -2,7 +2,7 @@ const themeSwitch = () => ({
     
     theme: 'dark', // default theme
 
-    availableModes: ['dark', 'light', 'system'],
+    availableModes: ['dark', 'light'], // e.g. system
 
     modeIndex: 0,
 
@@ -46,7 +46,7 @@ const themeSwitch = () => ({
     },
 
     toggleTheme() {
-        const newModeIndex = (this.modeIndex + 1) % 3
+        const newModeIndex = (this.modeIndex + 1) % this.availableModes.length
         
         this.modeIndex = newModeIndex
         this.setTheme(this.availableModes[newModeIndex])
