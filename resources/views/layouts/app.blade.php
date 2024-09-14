@@ -4,7 +4,7 @@
         @include('layouts.components.head')
     </head>
     <body
-        class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased"
+        class="dark:bg-slate-950 bg-slate-100 bg-center bg-repeat font-sans dark:text-slate-50 text-slate-950 antialiased"
         style="background-image: url({{ asset('/img/dots.svg') }})"
     >
         @persist('flash-messages')
@@ -16,7 +16,7 @@
                 @if (isset($title))
                     <div class="mb-6 mt-20 flex flex-col items-center sm:mb-12">
                         <div class="w-full max-w-md px-2 sm:px-0">
-                            <h1 class="font-mona text-2xl font-medium text-slate-200">
+                            <h1 class="font-mona text-2xl font-medium dark:text-slate-200 text-slate-900">
                                 {{ $title }}
                             </h1>
                         </div>
