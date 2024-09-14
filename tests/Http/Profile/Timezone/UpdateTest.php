@@ -29,3 +29,11 @@ test('timezone must be valid', function () {
 
     $response->assertStatus(302);
 });
+
+test('a deprecated timezone must be valid', function () {
+    $response = $this->post(route('profile.timezone.update'), [
+        'timezone' => 'Asia/Calcutta',
+    ]);
+
+    $response->assertStatus(200);
+});

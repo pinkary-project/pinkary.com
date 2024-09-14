@@ -19,18 +19,20 @@ final readonly class ValidTimezone implements ValidationRule
     {
         $value = type($value)->asString();
 
-        if (! in_array($value, $this->getTimezones())) {
+        if (empty($this->getTimezones()[$value])) {
             $fail(__('The :attribute must be a valid timezone.'));
         }
     }
 
     /**
-     * Get the list of valid timezones.
+     * Get the list of valid timezones as keys.
      *
-     * @return array<int, string>
+     * @return array<string, int>
      */
     private function getTimezones(): array
     {
-        return DateTimeZone::listIdentifiers(DateTimeZone::ALL_WITH_BC);
+        $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL_WITH_BC);
+
+        return array_flip($timezones);
     }
 }
