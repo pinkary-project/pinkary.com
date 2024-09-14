@@ -34,18 +34,17 @@ test('invalid timezone', function (string $timezone) {
     'Asia/Tokyo0',
 ])->fails();
 
-test('a deprecated timezone must be valid attempt 1', function () {
-    $response = $this->post(route('profile.timezone.update'), [
-        'timezone' => 'Asia/Calcutta',
-    ]);
+test('support for deprecated timezones', function () {
+    $rule = new ValidTimezone();
 
-    $response->assertStatus(200);
-});
+    $fail = fn (string $errorMessage) => $this->fail($errorMessage);
 
-test('a deprecated timezone must be valid attempt 2', function () {
-    $response = $this->post(route('profile.timezone.update'), [
-        'timezone' => 'Asia/Katmandu',
-    ]);
+    $rule->validate('timezone', $timezone, $fail);
 
-    $response->assertStatus(200);
-});
+    expect(true)->toBeTrue();
+})->with([
+  'Asia/Calcutta',
+  'Asia/Katmandu',
+  'America/Godthab',
+  'US/Pacific-New',
+]);
