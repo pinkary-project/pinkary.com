@@ -29,7 +29,9 @@ final readonly class UserController
      */
     public function show(User $user): View
     {
-        IncrementViews::dispatchUsingSession($user);
+        if (auth()->id() !== $user->id) {
+            IncrementViews::dispatchUsingSession($user);
+        }
 
         return view('profile.show', [
             'user' => $user,
