@@ -1,4 +1,4 @@
-<div class="border-l border-slate-900">
+<div class="border-l dark:border-slate-900 border-slate-200">
     <form wire:submit="update">
         <div class="mt-4 flex items-center justify-between">
             <div class="w-full">
@@ -13,7 +13,7 @@
                         id="{{ 'answer_question_'.$question->id }}"
                         wire:model="answer"
                         x-autosize
-                        class="h-24 w-full resize-none border-none border-transparent bg-transparent text-white focus:border-transparent focus:outline-0 focus:ring-0"
+                        class="h-24 w-full resize-none border-none border-transparent bg-transparent dark:text-white text-black focus:border-transparent focus:outline-0 focus:ring-0"
                         placeholder="Write your answer..."
                         maxlength="1000"
                         rows="3"

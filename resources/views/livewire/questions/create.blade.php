@@ -65,7 +65,7 @@
                     title="Upload an image"
                     x-ref="imageButton"
                     :disabled="uploading || images.length >= uploadLimit"
-                    class="rounded-lg dark:bg-slate-800 bg-slate-200 text-sm dark:text-slate-400 text-slate-600 p-1.5 hover:text-pink-500"
+                    class="p-1.5 rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-800 bg-slate-50 text-sm dark:text-slate-400 text-slate-600 hover:text-pink-500 dark:hover:bg-slate-700 hover:bg-slate-100"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-photo class="h-5 w-5"/>
