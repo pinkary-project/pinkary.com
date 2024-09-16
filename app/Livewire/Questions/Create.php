@@ -9,13 +9,13 @@ use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
 use Closure;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Imagick;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -267,9 +267,14 @@ final class Create extends Component
 
             /** @var string $path */
             $path = $image->store("images/{$today}", 'public');
-            $this->optimizeImage($path);
 
             if ($path) {
+                ImageOptimizer::optimize(
+                    path: $path,
+                    width: 1000,
+                    height: 1000
+                );
+
                 session()->push('images', $path);
 
                 $this->dispatch(
@@ -284,25 +289,6 @@ final class Create extends Component
         });
 
         $this->reset('images');
-    }
-
-    /**
-     * Optimize the images.
-     */
-    public function optimizeImage(string $path): void
-    {
-        $imagePath = Storage::disk('public')->path($path);
-        $imagick = new Imagick($imagePath);
-
-        $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-
-        $imagick->stripImage();
-
-        $imagick->setImageCompressionQuality(80);
-        $imagick->writeImage($imagePath);
-
-        $imagick->clear();
-        $imagick->destroy();
     }
 
     /**
