@@ -4,7 +4,6 @@
     "require": {
         "php": "^8.3",
         "filament/filament": "^3.2.111",
-        "intervention/image": "^3.8.0",
         "laravel/fortify": "^1.21.1",
         "laravel/framework": "^11.23.2",
         "laravel/pennant": "^1.11.0",
