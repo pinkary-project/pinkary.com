@@ -91,7 +91,7 @@ test('it optimizes an image', function () {
         height: 200,
         quality: 80,
         isThumbnail: false,
-        imagick: $imagickMock
+        instance: $imagickMock
     );
 
     $imagickMock->shouldHaveReceived('resizeImage');
@@ -123,7 +123,7 @@ test('it optimizes a thumbnail image', function () {
         height: 150,
         quality: 80,
         isThumbnail: true,
-        imagick: $imagickMock
+        instance: $imagickMock
     );
 
     $imagickMock->shouldHaveReceived('getImageWidth');

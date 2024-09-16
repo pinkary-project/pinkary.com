@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Livewire\Questions\Create;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
-use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 

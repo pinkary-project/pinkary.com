@@ -7,7 +7,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Storage;
 use Imagick;
 
-final class ImageOptimizer
+final readonly class ImageOptimizer
 {
     /**
      * The image path.
@@ -15,18 +15,23 @@ final class ImageOptimizer
     private string $image;
 
     /**
+     * The Imagick instance.
+     */
+    private Imagick $imagick;
+
+    /**
      * Create a new ImageOptimizer instance.
      */
     public function __construct(
-        private readonly string $path,
-        private readonly int $width,
-        private readonly int $height,
-        private readonly int $quality,
-        private readonly bool $isThumbnail,
-        private ?Imagick $imagick = null,
+        private string $path,
+        private int $width,
+        private int $height,
+        private int $quality,
+        private bool $isThumbnail,
+        private ?Imagick $instance = null,
     ) {
         $this->image = Storage::disk('public')->path($this->path);
-        $this->imagick = $this->imagick ?? new Imagick($this->image);
+        $this->imagick = $this->instance ?? new Imagick($this->image);
         $this->optimizeImage();
     }
 
@@ -40,7 +45,7 @@ final class ImageOptimizer
         ?int $quality = null,
         bool $isThumbnail = false,
     ): void {
-        $quality = $quality ?? ($isThumbnail ? 100 : 80);
+        $quality ??= $isThumbnail ? 100 : 80;
         new self($path, $width, $height, $quality, $isThumbnail);
     }
 
@@ -51,10 +56,6 @@ final class ImageOptimizer
     {
         if ($this->isThumbnail) {
             $this->coverDown($this->width, $this->height);
-        }
-
-        if ($this->imagick === null) {
-            return;
         }
 
         $this->imagick->autoOrient();
@@ -81,9 +82,6 @@ final class ImageOptimizer
      */
     private function coverDown(int $width, int $height): void
     {
-        if ($this->imagick === null) {
-            return;
-        }
         $originalWidth = $this->imagick->getImageWidth();
         $originalHeight = $this->imagick->getImageHeight();
 
