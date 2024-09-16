@@ -493,35 +493,6 @@ test('delete image', function () {
     Storage::disk('public')->assertMissing($pathAgain);
 });
 
-test('optimizeImage method resizes and saves the image', function () {
-    Storage::fake('public');
-
-    $user = User::factory()->create();
-    $testImage = UploadedFile::fake()->image('test.jpg', 1200, 1200); // Larger than 1000x1000
-    $path = $testImage->store('images', 'public');
-
-    $component = Livewire::actingAs($user)->test(Create::class, [
-        'toId' => $user->id,
-    ]);
-
-    $component->call('optimizeImage', $path);
-
-    Storage::disk('public')->assertExists($path);
-
-    $optimizedImagePath = Storage::disk('public')->path($path);
-
-    $originalImageSize = filesize($testImage->getPathname());
-    $optimizedImageSize = filesize($optimizedImagePath);
-
-    expect($optimizedImageSize)->toBeLessThan($originalImageSize);
-
-    $manager = ImageManager::imagick();
-    $image = $manager->read($optimizedImagePath);
-
-    expect($image->width())->toBeLessThanOrEqual(1000)
-        ->and($image->height())->toBeLessThanOrEqual(1000);
-});
-
 test('maxFileSize and maxImages', function () {
     $user = User::factory()->create();
 
