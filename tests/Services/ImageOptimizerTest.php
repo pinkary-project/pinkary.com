@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Storage;
 use Imagick;
 use Mockery;
 
+covers(ImageOptimizer::class);
+
 beforeEach(function () {
     Storage::fake('public');
     $this->image = UploadedFile::fake()->image(
@@ -102,6 +104,22 @@ test('it optimizes an image', function () {
     $imagickMock->shouldHaveReceived('clear');
     $imagickMock->shouldHaveReceived('destroy');
 });
+
+test('where original aspect is greater than the thumbnail aspect', function () {
+    new ImageOptimizer(
+        path: $this->path,
+        width: 50,
+        height: 100,
+        quality: 80,
+        isThumbnail: true
+    );
+
+    $imagick = new Imagick($this->file);
+
+    expect($imagick->getImageWidth())->toBe(50)
+        ->and($imagick->getImageHeight())->toBe(100);
+});
+
 
 test('it optimizes a thumbnail image', function () {
     $imagickMock = Mockery::mock(Imagick::class);
