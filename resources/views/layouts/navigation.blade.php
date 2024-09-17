@@ -5,7 +5,7 @@
 
 <nav>
     <div class="{{ $navClasses }}">
-        <div class="flex h-16 md:justify-end bg-pink-500/50 w-full justify-center md:bg-transparent ">
+        <div class="flex h-16 md:justify-end bg-slate-900/50 backdrop-blur-sm w-full justify-center md:bg-transparent md:backdrop-blur-none">
             <div
                 class="flex items-center space-x-2.5"
                 x-data
