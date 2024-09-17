@@ -20,7 +20,7 @@
                                 <div class="size-1.5 rounded-full bg-pink-500 ring-1 ring-pink-500"></div>
                             </div>
 
-                            <div class="relative flex-1 overflow-hidden rounded-xl border dark:border-slate-900 border-slate-100 dark:shadow-none shadow-sm shadow-slate-200">
+                            <div class="relative flex-1 overflow-hidden rounded-xl border dark:bg-transparent bg-slate-100 dark:border-slate-900 border-slate-200 dark:shadow-none shadow-sm shadow-slate-200">
                                 <header class="flex w-full flex-1 items-center justify-between border-b dark:border-slate-900 border-slate-200 px-4 py-3.5 dark:text-slate-200 text-slate-800">
                                     <h2 class="font-bold">Version {{ $version }}</h2>
                                     <time
@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="absolute -right-[200px] -top-[200px] z-10 transform-gpu opacity-20 blur-3xl">
                                     <div
-                                        class="size-[600px] bg-gradient-to-r dark:from-pink-900 from-pink-200 to-pink-500"
+                                        class="size-[600px] bg-gradient-to-r dark:from-pink-900 from-pink-50 dark:to-pink-500 to-pink-200"
                                         style="
                                             clip-path: polygon(
                                                 50% 0%,
