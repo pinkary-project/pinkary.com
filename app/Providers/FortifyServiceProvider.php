@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -38,5 +41,16 @@ final class FortifyServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('two-factor', fn (Request $request) => Limit::perMinute(5)->by($request->session()->get('login.id')));
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where(fn (Builder $q) => $q->where('email', $request->email)->orWhere('username', $request->email))
+                ->whereNotNull('email_verified_at')
+                ->first();
+
+            if ($user &&
+                Hash::check(type($request->password)->asString(), $user->password)) {
+                return $user;
+            }
+        });
     }
 }

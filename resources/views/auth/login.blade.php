@@ -9,12 +9,12 @@
         <div>
             <x-input-label
                 for="email"
-                :value="__('Email')"
+                :value="__('Email or Username')"
             />
             <x-text-input
                 id="email"
                 class="mt-1 block w-full"
-                type="email"
+                type="text"
                 name="email"
                 :value="old('email')"
                 required
@@ -33,16 +33,16 @@
                 :value="__('Password')"
             />
 
-            <div 
+            <div
                 class="relative"
-                x-data="{ showPassword: false }" 
+                x-data="{ showPassword: false }"
             >
-                <x-text-input 
-                    id="password" 
-                    class="mt-1 block w-full pr-10" 
+                <x-text-input
+                    id="password"
+                    class="mt-1 block w-full pr-10"
                     x-bind:type="showPassword ? 'text' : 'password'"
                     name="password"
-                    required 
+                    required
                     autocomplete="current-password"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
