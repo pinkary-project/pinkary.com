@@ -77,6 +77,7 @@ final readonly class GitHub
             ));
         }
 
+        /** @var array<int, array{monthlyPriceInDollars: int}>|bool|null */
         $body = $response->json('data.user.sponsorshipForViewerAsSponsorable');
 
         return is_array($body) ? $body : [];

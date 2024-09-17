@@ -6,34 +6,26 @@
         wire:submit="store"
         wire:keydown.cmd.enter="store"
         wire:keydown.ctrl.enter="store"
+        x-data="imageUpload"
+        x-init='() => {
+            uploadLimit = {{ $this->uploadLimit }};
+            maxFileSize = {{ $this->maxFileSize }};
+        }'
     >
         <div
-            x-data="imageUpload"
-            x-init='() => {
-                uploadLimit = {{ $this->uploadLimit }};
-                maxFileSize = {{ $this->maxFileSize }};
-            }'
             class="relative group/menu">
-            <x-textarea
-                wire:model="content"
-                placeholder="{{ $this->placeholder }}"
-                maxlength="{{ $this->maxContentLength }}"
-                rows="3"
-                required
-                x-autosize
-                x-ref="content"
-            />
-
-            <div
-                class="absolute top-0 right-0 mt-2 mr-2 group-hover/menu:inline-block hidden">
-                <button title="Upload an image" x-ref="imageButton"
-                        :disabled="uploading || images.length >= uploadLimit"
-                        class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
-                        :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
-                >
-                    <x-heroicon-o-camera class="h-5 w-5"/>
-                </button>
-            </div>
+                <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }">
+                    <x-textarea
+                        x-model="content"
+                        placeholder="{{ $this->placeholder }}"
+                        maxlength="{{ $this->maxContentLength }}"
+                        rows="3"
+                        required
+                        x-autosize
+                        x-ref="content"
+                        autocomplete
+                    />
+                </div>
             <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
             <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
 
@@ -69,6 +61,15 @@
                 >
                     {{ __('Send') }}
                 </x-primary-button>
+                <button
+                    title="Upload an image"
+                    x-ref="imageButton"
+                    :disabled="uploading || images.length >= uploadLimit"
+                    class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
+                    :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
+                >
+                    <x-heroicon-o-photo class="h-5 w-5"/>
+                </button>
             </div>
             @if (! $this->parentId && ! $this->isSharingUpdate)
                 <div class="flex items-center">

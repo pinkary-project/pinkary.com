@@ -36,11 +36,17 @@ const particlesEffect = () => ({
                 particle.style.height = `${size}px`
 
                 // Random color within the configured color palette
-                particle.style.background = `hsl(
+                particle.style.setProperty('--c', `hsl(
                     ${this.config.colorPalette},
                     ${this.config.colorSaturationInPercent}%,
                     ${this.config.colorLuminosityInPercent}%
-                )`
+                )`)
+                particle.style.background = `
+                    radial-gradient(at 70% 31%,var(--c) 29%,#0000 30%),
+                    radial-gradient(at 30% 31%,var(--c) 29%,#0000 30%),
+                    conic-gradient(from -45deg at 50% 84%,var(--c) 90deg,#0000 0)
+                    bottom/100% 50% no-repeat
+                `
 
                 const particleAnimation = particle.animate([
                     // Origin position of the particle, in the center of the click

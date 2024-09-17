@@ -15,6 +15,9 @@ use Illuminate\Support\Str;
  */
 final class UserFactory extends Factory
 {
+    /**
+     * @use RefreshOnCreate<User>
+     */
     use RefreshOnCreate;
 
     /**

@@ -12,14 +12,14 @@
         <div class="flex min-h-screen flex-col">
             <main class="flex-grow">
                 <div class="fixed right-0 z-50">
-                    @if (! request()->routeIs('welcome'))
+                    @if (! request()->routeIs('about'))
                         @include('layouts.navigation')
                     @endif
                 </div>
 
                 <div>
                     <a
-                        href="{{ route('welcome') }}"
+                        href="{{ route('home.feed') }}"
                         wire:navigate
                         class="mt-20 flex justify-center"
                     >

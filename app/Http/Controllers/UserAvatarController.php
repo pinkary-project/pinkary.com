@@ -30,7 +30,7 @@ final readonly class UserAvatarController
     /**
      * Delete the existing avatar.
      */
-    public function delete(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
         $user = type($request->user())->as(User::class);
 

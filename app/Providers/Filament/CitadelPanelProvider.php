@@ -31,7 +31,7 @@ final class CitadelPanelProvider extends PanelProvider
             ->default()
             ->id('citadel')
             ->path('citadel')
-            ->homeUrl(fn (): string => route('welcome'))
+            ->homeUrl(fn (): string => route('home.feed'))
             ->spa()
             ->favicon(asset('/img/ico.svg'))
             ->brandLogo(asset('/img/logo-text.svg'))

@@ -25,6 +25,7 @@
                 <main class="mt-16">
                     {{ $slot }}
                 </main>
+                <x-image-lightbox />
             </div>
 
             @persist('footer')

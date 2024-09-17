@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Models\Question;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Intervention\Image\ImageManager;
+use Imagick;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -94,13 +96,33 @@ final class Create extends Component
                 'images.*' => [
                     File::image()
                         ->types(['jpeg', 'png', 'gif', 'webp', 'jpg'])
-                        ->max($this->maxFileSize),
+                        ->max($this->maxFileSize)
+                        ->dimensions(
+                            Rule::dimensions()->maxWidth(4000)->maxHeight(4000)
+                        ),
+
+                    static function (string $attribute, mixed $value, Closure $fail): void {
+                        /** @var UploadedFile $value */
+                        $dimensions = $value->dimensions();
+                        if (is_array($dimensions)) {
+                            [$width, $height] = $dimensions;
+                            $aspectRatio = $width / $height;
+                            $maxAspectRatio = 2 / 5;
+                            if ($aspectRatio < $maxAspectRatio) {
+                                $fail('The image aspect ratio must be less than 2/5.');
+                            }
+                        } else {
+                            $fail('The image aspect ratio could not be determined.');
+                        }
+                    },
+
                 ],
             ],
             messages: [
                 'images.*.image' => 'The file must be an image.',
                 'images.*.mimes' => 'The image must be a file of type: :values.',
                 'images.*.max' => 'The image may not be greater than :max kilobytes.',
+                'images.*.dimensions' => 'The image must be less than :max_width x :max_height pixels.',
             ]
         );
     }
@@ -146,6 +168,17 @@ final class Create extends Component
     public function maxContentLength(): int
     {
         return $this->isSharingUpdate ? 1000 : 255;
+    }
+
+    /**
+     * Get the draft key.
+     */
+    #[Computed]
+    public function draftKey(): string
+    {
+        return filled($this->parentId)
+            ? "reply_{$this->parentId}"
+            : 'post_new';
     }
 
     /**
@@ -199,6 +232,7 @@ final class Create extends Component
 
         if (filled($this->parentId)) {
             $validated['parent_id'] = $this->parentId;
+            $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
         $user->questionsSent()->create([
@@ -258,12 +292,17 @@ final class Create extends Component
     public function optimizeImage(string $path): void
     {
         $imagePath = Storage::disk('public')->path($path);
-        $manager = ImageManager::imagick();
+        $imagick = new Imagick($imagePath);
 
-        $image = $manager->read($imagePath);
-        $image->scaleDown(1000, 1000);
+        $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
 
-        $image->save($imagePath, quality: 80);
+        $imagick->stripImage();
+
+        $imagick->setImageCompressionQuality(80);
+        $imagick->writeImage($imagePath);
+
+        $imagick->clear();
+        $imagick->destroy();
     }
 
     /**

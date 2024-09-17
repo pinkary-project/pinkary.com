@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Home;
 
-use App\Jobs\IncrementViews;
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Queries\Feeds\RecentQuestionsFeed;
@@ -15,6 +14,11 @@ use Livewire\Component;
 final class Feed extends Component
 {
     use HasLoadMore;
+
+    /**
+     * The hashtag name that the queried questions should relate to.
+     */
+    public ?string $hashtag = null;
 
     /**
      * Ignore the given question.
@@ -42,9 +46,9 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $questions = (new RecentQuestionsFeed())->builder()->simplePaginate($this->perPage);
-
-        IncrementViews::dispatchUsingSession($questions->getCollection());
+        $questions = (new RecentQuestionsFeed($this->hashtag))
+            ->builder()
+            ->simplePaginate($this->perPage);
 
         return view('livewire.feed', [
             'questions' => $questions,

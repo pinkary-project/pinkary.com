@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
+use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
@@ -15,12 +16,14 @@ use App\Http\Controllers\UserTimezoneController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('welcome');
+Route::view('/about', 'about')->name('about');
 
-Route::view('/feed', 'home/feed')->name('home.feed');
+Route::view('/', 'home/feed')->name('home.feed');
 Route::view('/for-you', 'home/questions-for-you')->name('home.for_you');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');
 Route::view('/users', 'home/users')->name('home.users');
+
+Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
 
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
@@ -51,8 +54,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::patch('/profile/avatar', [UserAvatarController::class, 'update'])
         ->name('profile.avatar.update');
-    Route::delete('/profile/avatar', [UserAvatarController::class, 'delete'])
-        ->name('profile.avatar.delete');
+    Route::delete('/profile/avatar', [UserAvatarController::class, 'destroy'])
+        ->name('profile.avatar.destroy');
 });
 
 Route::middleware('auth')->group(function () {

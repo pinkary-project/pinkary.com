@@ -1,6 +1,5 @@
 import './bootstrap'
-
-import focus from '@alpinejs/focus'
+import autosize from 'autosize';
 import notifications from 'alpinejs-notify'
 import Sortable from 'sortablejs'
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm'
@@ -8,7 +7,6 @@ import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.e
 window.Alpine = Alpine
 window.Sortable = Sortable
 
-Alpine.plugin(focus)
 Alpine.plugin(notifications)
 
 Alpine.magic('clipboard', () => {
@@ -26,15 +24,10 @@ Alpine.directive('sortable', (el) => {
 })
 
 Alpine.directive('autosize', (el) => {
-    const offset = (el.offsetHeight - el.clientHeight) + 8
-    const resize = () => {
-        el.style.height = 'auto';
-        el.style.height = el.scrollHeight + offset + 'px';
-    };
-
-    el.addEventListener('input', resize);
-    el.resize = resize;
-})
+    if (el) {
+        autosize(el);
+    }
+});
 
 import { shareProfile } from './share-profile.js'
 Alpine.data('shareProfile', shareProfile)
@@ -48,13 +41,27 @@ Alpine.data('showMore', showMore)
 import { clickHandler } from './click-handler.js'
 Alpine.data('clickHandler', clickHandler)
 
-import { particlesEffect } from './particles-effect.js'
-Alpine.data('particlesEffect', particlesEffect)
-
 import { copyCode } from './copy-code.js'
 Alpine.data('copyCode', copyCode)
 
 import { imageUpload } from './image-upload.js'
 Alpine.data('imageUpload', imageUpload)
+
+import { autocomplete, usesAutocomplete } from "./autocomplete.js";
+Alpine.data('dynamicAutocomplete', autocomplete);
+Alpine.data('usesDynamicAutocomplete', usesAutocomplete);
+
+import { hasLightBoxImages, lightBox } from './light-box.js';
+Alpine.data('hasLightBoxImages', hasLightBoxImages);
+Alpine.data('lightBox', lightBox);
+
+import { likeButton } from './like-button.js';
+Alpine.data('likeButton', likeButton);
+
+import { bookmarkButton } from './bookmark-button.js';
+Alpine.data('bookmarkButton', bookmarkButton);
+
+import { viewCreate } from './view-cerate.js';
+Alpine.data('viewCreate', viewCreate);
 
 Livewire.start()

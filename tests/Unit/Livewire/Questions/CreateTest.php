@@ -66,7 +66,9 @@ test('store', function () {
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)
         ->and($question->content)->toBe('Hello World')
-        ->and($question->anonymously)->toBeTrue();
+        ->and($question->anonymously)->toBeTrue()
+        ->and($question->parent_id)->toBeNull()
+        ->and($question->root_id)->toBeNull();
 });
 
 test('store auth', function () {
@@ -130,7 +132,6 @@ test('store rate limit', function () {
 
 test('store comment', function () {
     $userA = User::factory()->create();
-    $userB = User::factory()->create();
 
     $question = App\Models\Question::factory()->create();
 
@@ -140,7 +141,42 @@ test('store comment', function () {
         'parentId' => $question->id,
     ]);
 
-    sleep(1);
+    $this->travel(1)->seconds(); // To avoid time conflicts
+    $component->set('content', 'My comment');
+
+    $component->call('store');
+    $component->assertSet('content', '');
+
+    $component->assertDispatched('notification.created', message: 'Comment sent.');
+    $component->assertDispatched('question.created');
+
+    $comment = App\Models\Question::latest()->limit(1)->first();
+
+    expect($comment->from_id)->toBe($userA->id)
+        ->and($comment->to_id)->toBe($userA->id)
+        ->and($comment->answer)->toBe('My comment')
+        ->and($comment->parent_id)->toBe($question->id)
+        ->and($comment->root_id)->toBe($question->id);
+});
+
+test('store comment on a comment', function () {
+    $userA = User::factory()->create();
+
+    $question = App\Models\Question::factory()->create();
+
+    $questionWithComment = App\Models\Question::factory()->create([
+        'to_id' => $userA->id,
+        'parent_id' => $question->id,
+        'root_id' => $question->id,
+    ]);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userA->id,
+        'parentId' => $questionWithComment->id,
+    ]);
+
+    $this->travel(1)->seconds(); // To avoid time conflicts
 
     $component->set('content', 'My comment');
 
@@ -155,7 +191,9 @@ test('store comment', function () {
     expect($comment->from_id)->toBe($userA->id)
         ->and($comment->to_id)->toBe($userA->id)
         ->and($comment->answer)->toBe('My comment')
-        ->and($comment->parent_id)->toBe($question->id);
+        ->and($comment->parent_id)->toBe($questionWithComment->id)
+        ->and($comment->root_id)->toBe($questionWithComment->root_id)
+        ->and($comment->root_id)->toBe($question->id);
 });
 
 test('max 30 questions per day', function () {
@@ -599,5 +637,33 @@ test('max file size error', function () {
 
     $component->assertHasErrors([
         'images.0' => "The image may not be greater than {$maxFileSize} kilobytes.",
+    ]);
+});
+
+test('max size & ratio validation', function () {
+    $user = User::factory()->create([
+        'is_verified' => true,
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('images', [
+        UploadedFile::fake()->image('test.jpg', '4005', '4005'),
+    ]);
+    $component->call('runImageValidation');
+
+    $component->assertHasErrors([
+        'images.0' => 'The image must be less than 4000 x 4000 pixels.',
+    ]);
+
+    $component->set('images', [
+        UploadedFile::fake()->image('test.jpg', '429', '1100'),
+    ]);
+    $component->call('runImageValidation');
+
+    $component->assertHasErrors([
+        'images.0' => 'The image aspect ratio must be less than 2/5.',
     ]);
 });

@@ -14,6 +14,12 @@
                     :trending="true"
                 />
             @endforeach
+
+            <x-load-more-button
+                :perPage="$perPage"
+                :paginator="$trendingQuestions"
+                message="There are no more questions to load, or you have scrolled too far."
+            />
         </section>
     @endif
 </div>

@@ -33,14 +33,25 @@
                 :value="__('Password')"
             />
 
-            <x-text-input
-                id="password"
-                class="mt-1 block w-full"
-                type="password"
-                name="password"
-                required
-                autocomplete="current-password"
-            />
+            <div 
+                class="relative"
+                x-data="{ showPassword: false }" 
+            >
+                <x-text-input 
+                    id="password" 
+                    class="mt-1 block w-full pr-10" 
+                    x-bind:type="showPassword ? 'text' : 'password'"
+                    name="password"
+                    required 
+                    autocomplete="current-password"
+                />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <button type="button" x-on:click="showPassword = !showPassword">
+                        <x-icons.eye x-show="showPassword" class="size-5 text-gray-400 hover:text-pink-500" />
+                        <x-icons.eye-off x-show="!showPassword" class="size-5 text-gray-400 hover:text-pink-500" />
+                    </button>
+                </div>
+            </div>
 
             <x-input-error
                 :messages="$errors->get('password')"

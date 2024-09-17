@@ -161,6 +161,64 @@ test('links with query params', function (string $content, string $parsed) {
     ],
 ]);
 
+test('links within <pre> and <code> blocks are ignored', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a url</span>
+                    <br>
+                    $url = <span class="hljs-string">'https://example.com/route?param=1'</span>
+                </code>
+            </pre>
+            https://linkoutsidecodeblock.com
+            CODE,
+        'parsed' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a url</span>
+                    <br>
+                    $url = <span class="hljs-string">'https://example.com/route?param=1'</span>
+                </code>
+            </pre>
+            <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://linkoutsidecodeblock.com">linkoutsidecodeblock.com</a>
+            CODE,
+    ],
+]);
+
+test('mentions within <pre> and <code> blocks are ignored', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\MentionProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a mention</span>
+                    <br>
+                    $username = <span class="hljs-string">'@username'</span>
+                </code>
+            </pre>
+            @username
+            CODE,
+        'parsed' => <<<'CODE'
+            <pre style="position: relative;">
+                <code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+                    <span class="hljs-comment">// code block with a mention</span>
+                    <br>
+                    $username = <span class="hljs-string">'@username'</span>
+                </code>
+            </pre>
+            <a href="/@username" data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@username</a>
+            CODE,
+    ],
+]);
+
 test('code', function (string $content) {
     $provider = new App\Services\ParsableContentProviders\CodeProviderParsable();
 
@@ -229,3 +287,70 @@ test('image does not exists', function () {
 
     expect($provider->parse($content))->toBe('other content ');
 });
+
+test('hashtags', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\HashtagProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'This is a #hashtag',
+        'parsed' => 'This is a <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>',
+    ],
+    [
+        'content' => '#hashtag at the beginning',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a> at the beginning',
+    ],
+    [
+        'content' => '#ab12z9_-',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/ab12z9">#ab12z9</a>_-',
+    ],
+    [
+        'content' => '#hashtag.',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>.',
+    ],
+    [
+        'content' => '#hashtag,',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>,',
+    ],
+    [
+        'content' => '#hashtag!',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>!',
+    ],
+    [
+        'content' => '#hashtag?',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>?',
+    ],
+    [
+        'content' => '#hashtag/',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>/',
+    ],
+    [
+        'content' => '##hashtag#',
+        'parsed' => '#<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>#',
+    ],
+    [
+        'content' => 'Existing <a href="/route#segment">link with #segment</a> and a #hashtag.',
+        'parsed' => 'Existing <a href="/route#segment">link with #segment</a> and a <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>.',
+    ],
+    [
+        'content' => 'It&#039;ll work with html escapes.',
+        'parsed' => 'It&#039;ll work with html escapes.',
+    ],
+    [
+        'content' => 'It works with <pre style="position: relative;"><code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+        multiline $codeBlocks = <span class="hljs-keyword">true</span>;
+        #comment
+        </code></pre>
+        #hashtag',
+        'parsed' => 'It works with <pre style="position: relative;"><code class="p-4 rounded-lg hljs php text-xs group/code" style="background-color: #23262E">
+        multiline $codeBlocks = <span class="hljs-keyword">true</span>;
+        #comment
+        </code></pre>
+        <a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/hashtag">#hashtag</a>',
+    ],
+    [
+        'content' => '#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        'parsed' => '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="/hashtag/extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">#extremelylonghashtagswillbeallowedaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</a>',
+    ],
+]);

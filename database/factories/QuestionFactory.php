@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 final class QuestionFactory extends Factory
 {
+    /**
+     * @use RefreshOnCreate<Question>
+     */
     use RefreshOnCreate;
 
     /**

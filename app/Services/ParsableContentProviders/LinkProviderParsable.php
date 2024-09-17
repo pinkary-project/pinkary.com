@@ -15,8 +15,12 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     public function parse(string $content): string
     {
         return (string) preg_replace_callback(
-            '/(?<!src=")((https?:\/\/)?((localhost)|((?:\d{1,3}\.){3}\d{1,3})|[\w\-._@:%\+~#=]{1,256}(\.[a-zA-Z]{2,})+)(:\d+)?(\/[\w\-._@:%\+~#=\/]*)?(\?[\w\-._@:%\+~#=\/&]*)?)(?<!\.)((?![^<]*>|[^<>]*<\/))/',
+            '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!src=")((https?:\/\/)?((localhost)|((?:\d{1,3}\.){3}\d{1,3})|[\w\-._@:%\+~#=]{1,256}(\.[a-zA-Z]{2,})+)(:\d+)?(\/[\w\-._@:%\+~#=\/]*)?(\?[\w\-._@:%\+~#=\/&]*)?)(?<!\.)((?![^<]*>|[^<>]*<\/))/is',
             function (array $matches): string {
+                if ($matches[1] !== '') {
+                    return $matches[1];
+                }
+
                 $url = preg_match('/^https?:\/\//', $matches[0]) ? $matches[0] : 'https://'.$matches[0];
                 $humanUrl = (string) preg_replace('/^https?:\/\//', '', $matches[0]);
                 $isMail = preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $humanUrl);

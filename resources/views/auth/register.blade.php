@@ -135,6 +135,7 @@
                     >
                     and
                     <a
+                        target="_blank"
                         href="{{ route('privacy') }}"
                         class="text-pink-500 underline hover:no-underline"
                         >Privacy Policy</a

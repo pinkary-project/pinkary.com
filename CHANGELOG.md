@@ -1,3 +1,86 @@
+## Version 1.41.0
+> 8 September, 2024
+
+- Allows to ignore all notifications.
+- Internal improvements and bug fixes.
+
+
+## Version 1.40.0
+> 7 September, 2024
+
+- Adds Hashtags support.
+- Mobile improvements
+- Main "feed" improvements
+- Bookmarks count
+- Internal improvements and bug fixes.
+
+## Version 1.39.0
+> 1 September, 2024
+
+- Project got open-sourced at: [https://github.com/pinkary-project/pinkary.com](https://github.com/pinkary-project/pinkary.com)
+- Internal improvements and bug fixes.
+
+## Version 1.38.0
+> 25 August, 2024
+
+- Internal improvements and bug fixes.
+- Count number of bookmarks.
+
+## Version 1.37.0
+> 19 August, 2024
+
+- Adds support for pasting images directly into the text area for creating posts.
+- Internal improvements and bug fixes.
+
+## Version 1.36.1
+> 8 August, 2024
+
+- Internal improvements and bug fixes.
+  
+## Version 1.36.0
+> 5 August, 2024
+
+- Improves viewing of images on posts.
+
+## Version 1.35.0
+> 3 August, 2024
+
+- Improves trending algorithm.
+
+## Version 1.34.0
+> 2 August, 2024
+
+- Improves trending algorithm.
+- Internal improvements and bug fixes.
+
+## Version 1.33.0
+> 1 August, 2024
+
+- Infinite scrolling on the trending page.
+- Fixes buttons on links in the user's profile.
+- Internal improvements and bug fixes.
+
+## Version 1.32.0
+> 31 July, 2024
+
+- Adds mentions autocomplete to the post editor.
+
+## Version 1.31.0
+> 30 July, 2024
+
+- Makes `/` the default route for feeds.
+
+## Version 1.30.0
+> 30 July, 2024
+
+- Added 2FA
+
+## Version 1.29.0
+> 29 July, 2024
+
+- Internal improvements and bug fixes.
+- Preserves the state of written answers when the user navigates.
+
 ## Version 1.28.0
 > 27 July, 2024
 

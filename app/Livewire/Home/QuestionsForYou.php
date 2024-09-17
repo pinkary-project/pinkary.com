@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Home;
 
-use App\Jobs\IncrementViews;
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\User;
 use App\Queries\Feeds\QuestionsForYouFeed;
@@ -23,8 +22,6 @@ final class QuestionsForYou extends Component
         $user = type(auth()->user())->as(User::class);
 
         $questions = (new QuestionsForYouFeed($user))->builder()->simplePaginate($this->perPage);
-
-        IncrementViews::dispatchUsingSession($questions->getCollection());
 
         return view('livewire.home.questions-for-you', [
             'forYouQuestions' => $questions,
