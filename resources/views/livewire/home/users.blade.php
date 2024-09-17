@@ -10,7 +10,7 @@
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
-                class="w-full mx-1 !rounded-2xl dark:!bg-slate-950 !bg-slate-100 !bg-opacity-80 py-3 pl-14"
+                class="w-full mx-1 !rounded-2xl dark:!bg-slate-950 !bg-slate-50 !bg-opacity-80 py-3 pl-14"
             />
         </div>
     </div>

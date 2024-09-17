@@ -167,7 +167,7 @@
                 <span class="text-slate-500">Already have an account?</span>
 
                 <a
-                    class="rounded-md text-sm text-slate-200 underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+                    class="rounded-md text-sm dark:text-slate-200 text-slate-800 underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
                     href="{{ route('login') }}"
                     wire:navigate
                 >
