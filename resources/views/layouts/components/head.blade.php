@@ -59,6 +59,12 @@
     href="https://pinkary.com/img/ico.svg"
     type="image/x-icon"
 />
+
+<link
+    rel="apple-touch-icon"
+    href="https://pinkary.com/img/apple-touch-icon.png"
+/>
+
 <link
     rel="manifest"
     href="/manifest.json"
