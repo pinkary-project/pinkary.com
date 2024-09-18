@@ -44,7 +44,7 @@ describe('user can download qr code', function () {
         $user = $this->user;
 
         $qrCode = $this->qrCodeObj
-            ->backgroundColor(255, 255, 255, 100)
+            ->backgroundColor(248, 250, 252, 100)
             ->generate(route('profile.show', [
                 'username' => $user->username,
             ]));
