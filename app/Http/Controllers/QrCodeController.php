@@ -22,7 +22,7 @@ final readonly class QrCodeController
         /** @var Generator $qrCodeGenerator */
         $qrCodeGenerator = QrCode::getFacadeRoot();
 
-        $light = [255, 255, 255, 100];
+        $light = [248, 250, 252, 100];
         $dark = [3, 7, 18, 100];
         $bgColor = $request->query('theme') === 'light' ? $light : $dark;
 
