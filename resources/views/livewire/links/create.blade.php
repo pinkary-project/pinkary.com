@@ -49,7 +49,7 @@
             <button
                 x-on:click="showLinksForm = false"
                 type="button"
-                class="text-slate-400 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                class="dark:text-slate-400 text-slate-600 dark:hover:text-slate-600 hover:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
                 Cancel
             </button>

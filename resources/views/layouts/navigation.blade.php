@@ -19,7 +19,7 @@
                     >
                         <button
                             type="button"
-                            class="{{ request()->routeIs('home.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('home.*') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-heroicon-o-home class="h-6 w-6"/>
                         </button>
@@ -33,7 +33,7 @@
                     >
                         <button
                             type="button"
-                            class="text-slate-500 hover:text-slate-100 inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900 inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-heroicon-o-code-bracket class="h-6 w-6"/>
                         </button>
@@ -47,7 +47,7 @@
                     >
                         <button
                             type="button"
-                            class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-heroicon-o-user class="h-6 w-6"/>
                         </button>
@@ -61,7 +61,7 @@
                     >
                         <button
                             type="button"
-                            class="{{ request()->routeIs('bookmarks.*') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('bookmarks.*') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-heroicon-o-bookmark class="h-6 w-6"/>
                         </button>
@@ -75,7 +75,7 @@
                     >
                         <button
                             type="button"
-                            class="{{ request()->routeIs('notifications.index') ? 'text-slate-100' : 'text-slate-500 hover:text-slate-100' }} inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('notifications.index') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
                         >
                             <x-heroicon-o-bell class="h-6 w-6"/>
 
@@ -91,13 +91,21 @@
                     <x-slot name="trigger">
                         <button
                             title="Menu"
-                            class="inline-flex items-center rounded-md border border-transparent bg-slate-900 px-3 py-2 text-sm font-medium leading-4 text-slate-500 transition duration-150 ease-in-out hover:text-slate-100 focus:outline-none"
+                            class="inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 dark:text-slate-500 text-slate-400 transition duration-150 ease-in-out dark:hover:text-slate-100 hover:text-slate-900 focus:outline-none"
                         >
                             <x-icons.bars class="size-6"/>
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-button x-data="themeSwitch()" @click="toggleTheme" class="flex flex-row items-center justify-between">
+                            <span x-text="toggleThemeButtonText"></span>
+                            <span class="mr-2">
+                                <x-heroicon-o-moon x-show="theme == 'dark'" class="h-4 w-4"/>
+                                <x-heroicon-o-sun x-show="theme == 'light'" class="h-4 w-4"/>
+                                <x-heroicon-o-computer-desktop x-show="theme == 'system'" class="h-4 w-4"/>
+                            </span>
+                        </x-dropdown-button>
                         <x-dropdown-link :href="route('about')">
                             {{ __('About') }}
                         </x-dropdown-link>
@@ -120,21 +128,21 @@
                         @else
                             <x-dropdown-link
                                 :href="route('home.feed')"
-                                :class="request()->routeIs('home.feed') ? 'bg-slate-800' : ''"
+                                :class="request()->routeIs('home.feed') ? 'dark:bg-slate-800 bg-slate-200' : ''"
                             >
                                 {{ __('Feed') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link
                                 :href="route('login')"
-                                :class="request()->routeIs('login') ? 'bg-slate-800' : ''"
+                                :class="request()->routeIs('login') ? 'dark:bg-slate-800 bg-slate-200' : ''"
                             >
                                 {{ __('Log in') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link
                                 :href="route('register')"
-                                :class="request()->routeIs('register') ? 'bg-slate-800' : ''"
+                                :class="request()->routeIs('register') ? 'dark:bg-slate-800 bg-slate-200' : ''"
                             >
                                 {{ __('Register') }}
                             </x-dropdown-link>

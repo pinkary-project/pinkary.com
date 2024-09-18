@@ -82,7 +82,7 @@
     </div>
     <div
         x-show="show"
-        class="{{ $maxWidth }} {{$contentOverflowStyle}} transform rounded-lg bg-slate-950 shadow-xl transition-all sm:mx-auto sm:w-auto"
+        class="{{ $maxWidth }} {{$contentOverflowStyle}} transform rounded-lg dark:bg-slate-950 bg-slate-50 shadow-xl transition-all sm:mx-auto sm:w-auto"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
