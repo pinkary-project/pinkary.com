@@ -22,10 +22,15 @@ final readonly class QrCodeController
         /** @var Generator $qrCodeGenerator */
         $qrCodeGenerator = QrCode::getFacadeRoot();
 
+        $light = [248, 250, 252, 100];
+        $dark = [3, 7, 18, 100];
+        $bgColor = $request->query('theme') === 'light' ? $light : $dark;
+
         $qrCode = $qrCodeGenerator
+            ->margin(2)
             ->size(512)
             ->format('png')
-            ->backgroundColor(3, 7, 18, 100)
+            ->backgroundColor(...$bgColor)
             ->color(236, 72, 153, 100)
             ->merge('/public/img/ico.png')
             ->errorCorrection('M')
