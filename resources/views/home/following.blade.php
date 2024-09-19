@@ -4,7 +4,7 @@
             <x-home-menu></x-home-menu>
 
             @auth
-                <livewire:home.questions-for-you :focus-input="true" />
+                <livewire:home.questions-following :focus-input="true"/>
             @else
                 <div class="mb-4">
                     <div class="mb-4">Log in or sign up to access personalized content.</div>
