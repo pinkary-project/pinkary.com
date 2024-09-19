@@ -50,4 +50,5 @@ test('without blank characters', function (string $name) {
 })->with([
     'Nuno Maduro',
     'Taylor Otwell',
+    'ManukMinasyan'
 ]);

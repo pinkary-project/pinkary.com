@@ -25,7 +25,7 @@ final readonly class NoBlankCharacters implements ValidationRule
         $value = type($value)->asString();
 
         if (preg_match(self::BLANK_CHARACTERS_PATTERN, $value) || preg_match(self::FORMAT_CHARACTERS_PATTERN, $value)) {
-            $fail('The :attribute field cannot be empty or contain only blank characters.');
+            $fail('The :attribute field cannot contain blank characters.');
         }
     }
 }
