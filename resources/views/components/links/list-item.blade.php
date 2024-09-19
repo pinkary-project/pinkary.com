@@ -15,15 +15,9 @@
 >
     <div class="flex h-full items-center justify-center">
 
-        @php
-            $social = App\Enums\Social::getSocialFromUrl($link->url);
-        @endphp
-
-        @if($social!== null)
-            <span class="[&>svg]:h-5 [&>svg]:w-5 mr-2">
-                @includeIf('components.icons.socials.' . $social->value)
-            </span>
-        @endif
+        <span class="[&>svg]:h-5 [&>svg]:w-5 mr-2">
+            @include('components.icons.socials.' . App\Enums\Social::getSocialFromUrl($link->url)->value)
+        </span>
 
         <p class="truncate">
             {{ $link->description }}
