@@ -40,15 +40,22 @@ test('content', function () {
 
 test('relations', function () {
     $question = Question::factory()
+        ->hasDescendants(2)
+        ->hasChildren(2)
         ->hasHashtags(1)
         ->create();
 
     $question->likes()->saveMany(Like::factory()->count(3)->make());
 
+    $child = $question->children()->with('parent')->first();
+
     expect($question->from)->toBeInstanceOf(User::class)
         ->and($question->to)->toBeInstanceOf(User::class)
         ->and($question->likes)->each->toBeInstanceOf(Like::class)
-        ->and($question->hashtags)->each->toBeInstanceOf(Hashtag::class);
+        ->and($question->hashtags)->each->toBeInstanceOf(Hashtag::class)
+        ->and($question->children)->each->toBeInstanceOf(Question::class)
+        ->and($child->parent)->toBeInstanceOf(Question::class)
+        ->and($question->descendants)->each->toBeInstanceOf(Question::class);
 });
 
 test('mentions', function () {

@@ -130,3 +130,75 @@ test('refresh', function () {
     $component->assertSee('This is the answer')
         ->assertDontSee('There are no questions to show.');
 });
+
+it('renders the threads in the right order', function () {
+
+    // create 5 roots
+    $roots = Question::factory()
+        ->forEachSequence(
+            ['answer' => 'root 1'],
+            ['answer' => 'root 2'],
+            ['answer' => 'root 3'],
+            ['answer' => 'root 4'],
+        )->create();
+
+    // create a child for each root
+    $roots->each(function (Question $root) {
+
+        $this->travel(1)->seconds();
+
+        Question::factory()->create([
+            'answer' => '1st child question for '.str($root->answer)->snake(),
+            'root_id' => $root->id,
+            'parent_id' => $root->id,
+        ]);
+    });
+
+    $roots->load('children');
+
+    // create a root without descendants
+    $this->travel(1)->seconds();
+    Question::factory()->create(['answer' => 'root without descendants']);
+
+    // create a child for each child of even roots
+    $roots->filter(fn (Question $root, int $key) => ($key + 1) % 2 === 0) // evens
+        ->each(function (Question $root) {
+            $this->travel(1)->seconds();
+
+            Question::factory()->create([
+                'answer' => '2nd nested child question for '.str($root->answer)->snake(),
+                'parent_id' => $root->children->first()->id,
+                'root_id' => $root->id,
+            ]);
+        });
+
+    $this->travel(1)->seconds();
+
+    // 3rd nested child question for root 2 so child needs to be missing from feed
+    Question::factory()->create([
+        'answer' => '3rd nested child question for root2',
+        'root_id' => $roots->where('answer', 'root 2')->first()->id,
+        'parent_id' => Question::where('answer', '2nd nested child question for root2')->first()->id,
+    ]);
+
+    $component = Livewire::test(Feed::class);
+
+    // final output needs to be root without descendants divided odds and evens in descending order
+    // in this case, root 2 has a child that has a child so it should not be in the feed
+    // and as we added 3rd nested child question for root2, it should be first in the feed
+    $component->assertSeeInOrder([
+        'root 2',
+        '2nd nested child question for root2',
+        '3rd nested child question for root2',
+        'root 4',
+        '1st child question for root4',
+        '2nd nested child question for root4',
+        'root without descendants',
+        'root 3',
+        '1st child question for root3',
+        'root 1',
+        '1st child question for root1',
+    ]);
+
+    $component->assertDontSee('1st child question for root2');
+});

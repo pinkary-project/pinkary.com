@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -273,8 +274,16 @@ final class Show extends Component
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
-            ->when($this->inThread, function (Builder $query): void {
+            ->when($this->inThread && $this->commenting, function (Builder $query): void {
                 $query->with(['children']);
+            })
+            ->when($this->inThread && ! $this->commenting, function (Builder $query): void {
+                $query->with(['descendants' => function (Relation $relation): void {
+                    $relation->getQuery()
+                        ->with('parent')
+                        ->limit(1)
+                        ->orderByDesc('updated_at');
+                }]);
             })
             ->withCount(['likes', 'children', 'bookmarks'])
             ->firstOrFail();
@@ -288,17 +297,12 @@ final class Show extends Component
             } while ($parentQuestion = $parentQuestion?->parent);
 
             $parentQuestions = collect($parentQuestions)->filter()->reverse();
-            $notDisplayingAllParents = (! $this->commenting) && $parentQuestions->count() > 2;
-            if ($notDisplayingAllParents) {
-                $parentQuestions = $parentQuestions->slice(0, 1)->concat($parentQuestions->slice(-1));
-            }
         }
 
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
             'parentQuestions' => $parentQuestions,
-            'notDisplayingAllParents' => $notDisplayingAllParents ?? false,
         ]);
     }
 }

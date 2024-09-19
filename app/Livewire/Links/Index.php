@@ -9,7 +9,7 @@ use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -171,12 +171,12 @@ final class Index extends Component
     public function render(): View
     {
         $user = User::query()
-            ->with([
-                // @phpstan-ignore-next-line
-                'links' => fn (HasMany $query): HasMany => $query
-                    // @phpstan-ignore-next-line
-                    ->when(auth()->id() !== $this->userId, fn (Builder $query): Builder => $query->where('is_visible', true)),
-            ])
+            ->with(['links' => function (Relation $relation): void {
+                $relation->getQuery()
+                    ->when(auth()->id() !== $this->userId, function (Builder $query): void {
+                        $query->where('is_visible', true);
+                    });
+            }])
             ->withCount('followers')
             ->withCount('following')
             ->findOrFail($this->userId);

@@ -400,33 +400,6 @@ test('it shows the parent questions', function () {
     $component = Livewire::test(Show::class, [
         'questionId' => $question->id,
         'showParents' => true,
-    ]);
-
-    $component->assertViewHas('parentQuestions', function ($parentQuestions) use ($parent1, $parent3) {
-        return $parentQuestions->pluck('id')->toArray() === [
-            $parent1->id,
-            $parent3->id,
-        ];
-    });
-
-    $component->assertViewHas('notDisplayingAllParents', true);
-});
-
-test('it shows the parent questions with all parents', function () {
-    $parent1 = Question::factory()->create();
-    $parent2 = Question::factory()->create([
-        'parent_id' => $parent1->id,
-    ]);
-    $parent3 = Question::factory()->create([
-        'parent_id' => $parent2->id,
-    ]);
-    $question = Question::factory()->create([
-        'parent_id' => $parent3->id,
-    ]);
-
-    $component = Livewire::test(Show::class, [
-        'questionId' => $question->id,
-        'showParents' => true,
         'commenting' => true,
     ]);
 
@@ -437,8 +410,6 @@ test('it shows the parent questions with all parents', function () {
             $parent3->id,
         ];
     });
-
-    $component->assertViewHas('notDisplayingAllParents', false);
 });
 
 test('it does not show the parent questions', function () {

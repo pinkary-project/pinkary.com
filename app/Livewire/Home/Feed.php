@@ -46,7 +46,9 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $questions = (new RecentQuestionsFeed($this->hashtag))->builder()->simplePaginate($this->perPage);
+        $questions = (new RecentQuestionsFeed($this->hashtag))
+            ->builder()
+            ->simplePaginate($this->perPage);
 
         return view('livewire.feed', [
             'questions' => $questions,

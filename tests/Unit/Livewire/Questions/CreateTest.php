@@ -141,6 +141,7 @@ test('store comment', function () {
         'parentId' => $question->id,
     ]);
 
+    $this->travel(1)->seconds(); // To avoid time conflicts
     $component->set('content', 'My comment');
 
     $component->call('store');
@@ -149,7 +150,7 @@ test('store comment', function () {
     $component->assertDispatched('notification.created', message: 'Comment sent.');
     $component->assertDispatched('question.created');
 
-    $comment = App\Models\Question::latest('id')->limit(1)->first();
+    $comment = App\Models\Question::latest()->limit(1)->first();
 
     expect($comment->from_id)->toBe($userA->id)
         ->and($comment->to_id)->toBe($userA->id)
@@ -175,6 +176,8 @@ test('store comment on a comment', function () {
         'parentId' => $questionWithComment->id,
     ]);
 
+    $this->travel(1)->seconds(); // To avoid time conflicts
+
     $component->set('content', 'My comment');
 
     $component->call('store');
@@ -183,7 +186,7 @@ test('store comment on a comment', function () {
     $component->assertDispatched('notification.created', message: 'Comment sent.');
     $component->assertDispatched('question.created');
 
-    $comment = App\Models\Question::latest('id')->limit(1)->first();
+    $comment = App\Models\Question::latest()->limit(1)->first();
 
     expect($comment->from_id)->toBe($userA->id)
         ->and($comment->to_id)->toBe($userA->id)

@@ -1,6 +1,6 @@
 <section class="space-y-6">
     <header>
-        <h2 class="text-lg font-medium text-slate-400">
+        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
             {{ __('Two factor authentication') }}
         </h2>
 
@@ -10,7 +10,7 @@
     </header>
 
     <section>
-        <h3 class="text-lg font-medium text-slate-300">
+        <h3 class="text-lg font-medium dark:text-slate-300 text-slate-800">
             @if ($enabled)
                 @if ($showingConfirmation)
                     {{ __('Finish enabling two factor authentication.') }}
