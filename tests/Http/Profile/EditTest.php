@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\HomePageTabs;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -40,6 +41,7 @@ test('profile information can be updated', function () {
             'email' => 'test@example.com',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
+            'default_tab' => HomePageTabs::Following->value,
         ]);
 
     $response
@@ -344,6 +346,29 @@ test('prefers_anonymous_questions can be updated', function () {
         ->assertRedirect('/profile');
 
     expect($user->refresh()->prefers_anonymous_questions)->toBeFalse();
+});
+
+test('default_tab can be updated', function () {
+    $user = User::factory()->create([
+        'default_tab' => HomePageTabs::Feed->value,
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Test User',
+            'username' => 'testuser',
+            'email' => $user->email,
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+            'default_tab' => HomePageTabs::Following->value,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    expect($user->refresh()->default_tab)->toBe(HomePageTabs::Following->value);
 });
 
 test('user can upload an avatar', function () {
