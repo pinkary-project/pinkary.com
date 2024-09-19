@@ -11,6 +11,11 @@ const themeSwitch = () => ({
 
         this.modeIndex = this.availableModes.indexOf(currentTheme)
 
+        if (this.modeIndex < 0) {
+            this.setTheme(this.theme)
+            return
+        }
+
         this.setTheme(currentTheme)
     },
 
