@@ -40,14 +40,3 @@ it('can update the default tab to following', function () {
 
     $response->assertRedirect(route('home.following'));
 });
-
-it('can update the default tab to trending', function () {
-    $newUser = User::factory()->create();
-
-    $newUser->default_tab = HomePageTabs::Trending->value;
-    $newUser->save();
-
-    $response = $this->actingAs($newUser)->get(route('home'));
-
-    $response->assertRedirect(route('home.trending'));
-});

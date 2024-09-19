@@ -1,5 +1,6 @@
 @php
-    use App\Enums\HomePageTabs;use App\Enums\UserMailPreference;
+    use App\Enums\HomePageTabs;
+    use App\Enums\UserMailPreference;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
 
