@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+        <script>
+            const currentTheme = localStorage.getItem('theme') || this.theme
+            document.documentElement.classList.add(currentTheme)
+        </script>
         @include('layouts.components.head')
     </head>
     <body
