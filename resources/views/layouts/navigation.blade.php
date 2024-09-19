@@ -1,11 +1,11 @@
 @php
-    $navClasses = 'fixed z-50 inset-0 h-0 flex md:justify-end md:px-4 ';
+    $navClasses = 'fixed z-50 inset-0 h-16 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
 @endphp
 
 <nav>
-    <div class="{{ $navClasses }}">
-        <div class="flex h-16 md:justify-end bg-slate-900/50 backdrop-blur-sm w-full justify-center md:bg-transparent md:backdrop-blur-none">
+    <div class="{{ $navClasses }} backdrop-blur-sm md:backdrop-blur-none">
+        <div class="flex h-16 justify-between">
             <div
                 class="flex items-center space-x-2.5"
                 x-data
