@@ -1,6 +1,6 @@
 <section class="space-y-6">
     <header>
-        <h2 class="text-lg font-medium text-slate-400">
+        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
             {{ __('Delete Account') }}
         </h2>
 
@@ -29,7 +29,7 @@
             @csrf
             @method('delete')
 
-            <h2 class="text-lg font-medium text-slate-400">
+            <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
                 {{ __('Are you sure you want to delete your account?') }}
             </h2>
 

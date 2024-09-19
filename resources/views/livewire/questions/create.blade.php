@@ -37,14 +37,14 @@
                              title="Reinsert the image"
                              class="h-full w-full rounded-lg object-cover cursor-pointer"/>
                         <button @click="removeImage($event, index)"
-                                class="absolute top-0.5 right-0.5 p-1 rounded-md bg-slate-800 bg-opacity-75 text-slate-400 hover:text-pink-500">
+                                class="absolute top-0.5 right-0.5 p-1 rounded-md dark:bg-slate-800 bg-slate-200 bg-opacity-75 dark:text-slate-400 text-slate-600 hover:text-pink-500">
                             <x-icons.close class="size-4"/>
                         </button>
                     </div>
                 </template>
             </div>
 
-            <p class="text-right text-xs text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+            <p class="text-right text-xs dark:text-slate-400 text-slate-600"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
 
             <ul>
                 <template x-for="(error, index) in errors" :key="index">
@@ -65,7 +65,7 @@
                     title="Upload an image"
                     x-ref="imageButton"
                     :disabled="uploading || images.length >= uploadLimit"
-                    class="rounded-lg bg-slate-800 text-sm text-slate-400 p-1.5 hover:text-pink-500"
+                    class="p-1.5 rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-800 bg-slate-50 text-sm dark:text-slate-400 text-slate-600 hover:text-pink-500 dark:hover:bg-slate-700 hover:bg-slate-100"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-photo class="h-5 w-5"/>
@@ -80,7 +80,7 @@
 
                     <label
                         for="anonymously"
-                        class="ml-2 text-slate-400"
+                        class="ml-2 dark:text-slate-400 text-slate-600"
                         >Anonymously</label
                     >
                 </div>

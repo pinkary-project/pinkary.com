@@ -3,14 +3,14 @@
     gradient: '{{ $user->gradient }}',
     link_shape: '{{ $user->link_shape }}',
 }" @endif>
-    <div class="relative bg-gradient-to-r p-5 text-center text-white">
+    <div class="relative bg-gradient-to-r p-5 text-center dark:text-white text-black">
         <div class="absolute left-0 top-6 flex">
             <x-dropdown-link-profile>
                 <x-slot name="trigger">
                     <button
-                        x-bind:class="{ 'bg-pink-500 hover:bg-pink-500': open,
-                                        'bg-slate-900 hover:bg-slate-800': !open }"
-                                    class="mr-2 flex size-10 items-center justify-center rounded-lg text-slate-300 hover:text-white transition duration-150 ease-in-out "
+                        x-bind:class="{ 'bg-pink-500 hover:bg-pink-500 text-white hover:text-white': open,
+                                        'dark:bg-slate-900 bg-slate-50 dark:hover:bg-slate-800 hover:bg-slate-100 border dark:border-transparent border-slate-200': !open }"
+                                    class="mr-2 flex size-10 items-center justify-center rounded-lg dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out "
                     >
                         <x-heroicon-o-share class="size-5" />
                     </button>
@@ -22,7 +22,7 @@
                         x-show="isVisible"
                         x-on:click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        class="mr-2 flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
                     >
                         <x-heroicon-o-link class="size-5" />
                     </button>
@@ -35,7 +35,7 @@
                             )
                         "
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        class="mr-2 flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
                     >
                         <x-heroicon-o-link class="size-5" />
                     </button>
@@ -48,7 +48,7 @@
                             })
                         "
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        class="mr-2 flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
                     >
                         <x-icons.twitter-x class="size-5" />
                     </button>
@@ -56,7 +56,7 @@
             </x-dropdown-link-profile>
             @if (auth()->user()?->is($user))
                 <button
-                    class="flex size-10 items-center justify-center rounded-lg bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    class="flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
                     x-on:click.prevent="$dispatch('open-modal', 'show-qr-code')"
                 >
                     <span class="sr-only">See QR Code</span>
@@ -73,7 +73,7 @@
                     <button
                         type="button"
                         wire:click="unfollow({{ $user->id }})"
-                        class="flex items-center justify-center rounded-lg bg-slate-900 px-2 py-1 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        class="flex items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-2 py-1 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-200 dark:hover:text-white hover:text-black"
                     >
                         Following
                     </button>
@@ -81,7 +81,7 @@
                     <button
                         type="button"
                         wire:click="follow({{ $user->id }})"
-                        class="flex items-center justify-center rounded-lg bg-slate-900 px-2 py-1 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                        class="flex items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-2 py-1 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-200 dark:hover:text-white hover:text-black"
                     >
                         Follow
                     </button>
@@ -101,7 +101,7 @@
                 x-show="showAvatar"
                 x-cloak
                 x-on:click="showAvatar = false"
-                class="fixed inset-0 flex items-center justify-center bg-slate-900 bg-opacity-75 z-50"
+                class="fixed inset-0 flex items-center justify-center dark:bg-slate-900 bg-slate-50 bg-opacity-75 z-50"
             >
                 <img
                     src="{{ $user->avatar_url }}"
@@ -113,7 +113,7 @@
 
             @if (auth()->user()?->is($user))
                 <button
-                    class="absolute right-0 top-0 rounded bg-slate-900 text-slate-300 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white"
+                    class="absolute right-0 top-0 p-0.5 m-0.5 rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-500 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
                     href="{{ route('profile.edit') }}"
                     wire:navigate
                     title="Upload Avatar"
@@ -123,7 +123,7 @@
             @endif
         </div>
 
-        <div class="items center flex items-center justify-center">
+        <div class="items center flex items-center justify-center mt-2">
             <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
 
             @if ($user->is_verified && $user->is_company_verified)
@@ -140,7 +140,7 @@
         </div>
 
         <a
-            class="text-slate-400"
+            class="dark:text-slate-400 text-slate-600"
             href="{{ route('profile.show', ['username' => $user->username]) }}"
             wire:navigate
         >
@@ -162,7 +162,7 @@
         <livewire:following.index :userId="$user->id" />
 
         <div class="mt-2 text-sm">
-            <p class="text-slate-400">
+            <p class="dark:text-slate-400 text-slate-600">
                 @if ($user->followers_count > 0)
                     <button x-on:click.prevent="$dispatch('open-modal', 'followers')">
                         <span
@@ -238,7 +238,7 @@
                         >
                             <div
                                 x-sortable-handle
-                                class="absolute left-0 sm:-left-10 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none group-hover:left-0 transition-all duration-500 z-10"
+                                class="absolute left-0 sm:-left-10 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none group-hover:left-0 transition-all duration-500 z-10"
                             >
                                 <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
@@ -252,7 +252,7 @@
                             <div
                                 x-on:click="showActions = !showActions"
                                 x-bind:class="{ 'invisible': isDragging }"
-                                class="absolute right-0 sm:-right-10 top-0 bottom-0 flex w-11 cursor-pointer items-center justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none transition-all duration-500 z-10 group-hover:right-0"
+                                class="absolute right-0 sm:-right-10 top-0 bottom-0 flex w-11 cursor-pointer items-center justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none transition-all duration-500 z-10 group-hover:right-0"
                             >
                                 <x-heroicon-o-chevron-double-left class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
                                     x-bind:class="{ 'rotate-180': showActions }"
@@ -264,7 +264,7 @@
                                 x-bind:class="{ 'group-hover:inset-0' : showActions }"
                             >
                                 <div
-                                    class="min-w-fit cursor-help items-center gap-1 text-xs"
+                                    class="text-white min-w-fit cursor-help items-center gap-1 text-xs"
                                     title="Clicked {{ Number::format($link->click_count) }} times"
                                     x-bind:class="{ 'invisible': isDragging }"
                                 >
@@ -275,7 +275,7 @@
                                 <button
                                     wire:click="setVisibility({{ $link->id }})"
                                     type="button"
-                                    class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                    class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
                                     @if ($link->is_visible)
                                         <x-heroicon-o-eye class="size-5"
@@ -291,7 +291,7 @@
                                 <button
                                     wire:click="$dispatchTo('links.edit', 'link.edit', { link: {{ $link->id }} })"
                                     type="button"
-                                    class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                    class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
                                     <x-heroicon-o-pencil
                                         class="size-5"
@@ -303,7 +303,7 @@
                                     <button
                                         onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
                                         type="submit"
-                                        class="flex w-10 justify-center text-slate-300 opacity-50 hover:opacity-100 focus:outline-none"
+                                        class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
                                         <x-heroicon-o-trash
                                             class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"

@@ -20,3 +20,4 @@ package-lock.json
 /.vscode
 /database/backups/*.sql
 debugbar
+.DS_Store

@@ -4,7 +4,7 @@
         @include('layouts.components.head')
     </head>
     <body
-        class="bg-slate-950 bg-center bg-repeat font-sans text-slate-50 antialiased"
+        class="dark:bg-slate-950 bg-slate-100 bg-center bg-repeat font-sans dark:text-slate-50 text-slate-900 antialiased"
         style="background-image: url({{ asset('/img/dots.svg') }})"
     >
         <livewire:flash-messages.show />
