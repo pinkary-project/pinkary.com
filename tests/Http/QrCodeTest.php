@@ -10,24 +10,51 @@ test('can QR Code be downloaded only by authenticated users', function () {
     $response->assertRedirect(route('login'));
 });
 
-test('user can download qr code', function () {
-    $user = User::factory()->create();
+describe('user can download qr code', function () {
+    beforeEach(function () {
+        $this->user = User::factory()->create();
 
-    $qrCode = QrCode::size(512)
-        ->format('png')
-        ->backgroundColor(3, 7, 18, 100)
-        ->color(236, 72, 153, 100)
-        ->merge('/public/img/ico.png')
-        ->errorCorrection('M')
-        ->generate(route('profile.show', [
-            'username' => $user->username,
-        ]));
+        $this->qrCodeObj = QrCode::size(512)
+            ->margin(2)
+            ->format('png')
+            ->color(236, 72, 153, 100)
+            ->merge('/public/img/ico.png')
+            ->errorCorrection('M');
+    });
 
-    $response = $this->actingAs($user)->get(route('qr-code.image'));
+    test('for dark or default theme', function () {
+        $user = $this->user;
 
-    $response
-        ->assertOk()
-        ->assertStreamedContent($qrCode->toHtml())
-        ->assertHeader('content-type', 'image/png')
-        ->assertDownload('pinkary_'.$user->username.'.png');
+        $qrCode = $this->qrCodeObj
+            ->backgroundColor(3, 7, 18, 100)
+            ->generate(route('profile.show', [
+                'username' => $user->username,
+            ]));
+
+        $response = $this->actingAs($user)->get(route('qr-code.image'));
+
+        $response
+            ->assertOk()
+            ->assertStreamedContent($qrCode->toHtml())
+            ->assertHeader('content-type', 'image/png')
+            ->assertDownload('pinkary_'.$user->username.'.png');
+    });
+
+    test('for light theme', function () {
+        $user = $this->user;
+
+        $qrCode = $this->qrCodeObj
+            ->backgroundColor(248, 250, 252, 100)
+            ->generate(route('profile.show', [
+                'username' => $user->username,
+            ]));
+
+        $response = $this->actingAs($user)->get(route('qr-code.image', ['theme' => 'light']));
+
+        $response
+            ->assertOk()
+            ->assertStreamedContent($qrCode->toHtml())
+            ->assertHeader('content-type', 'image/png')
+            ->assertDownload('pinkary_'.$user->username.'.png');
+    });
 });

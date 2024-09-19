@@ -2,12 +2,12 @@
     <div class="relative flex justify-center">
         <div class="absolute -top-48 -z-10 size-[400px] -rotate-45 rounded-full bg-gradient-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl lg:size-[500px]"></div>
     </div>
-    <nav class="fixed top-0 z-20 flex w-full justify-end gap-2 border-b border-slate-200/10 bg-slate-950/20 p-4 shadow-2xl backdrop-blur-md">
+    <nav class="fixed top-0 z-20 flex w-full justify-end gap-2 border-b dark:border-slate-200/10 border-slate-900/10 dark:bg-slate-950/20 bg-slate-100/20 p-4 shadow-2xl backdrop-blur-md">
         <a
             href="{{ route('home.feed') }}"
             wire:navigate
         >
-            <x-primary-colorless-button class="flex items-center justify-center gap-2">
+            <x-primary-colorless-button class="flex items-center justify-center gap-2 dark:border-white border-slate-900">
                 <x-heroicon-o-home class="h-4 w-4" />
                 <span class="sr-only sm:not-sr-only">Feed</span>
             </x-primary-colorless-button>
@@ -62,40 +62,40 @@
 
         <section class="mt-28 w-full max-w-2xl">
             <div class="grid w-full gap-4 md:grid-cols-2">
-                <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 transition-colors md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
+                <div class="rounded-2xl dark:border-t border-none dark:border-slate-800 dark:shadow-none shadow-sm dark:bg-slate-900 bg-slate-50 p-4 transition-colors md:aspect-video">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full dark:bg-slate-950 bg-slate-200">
                         <x-heroicon-o-bolt class="h-5 w-5" />
                     </div>
 
                     <h3>Create a profile</h3>
-                    <p class="text-slate-400">Choose a username, add a bio, and you're good to go.</p>
+                    <p class="dark:text-slate-400 text-slate-500 text-sm">Choose a username, add a bio, and you're good to go.</p>
                 </div>
 
-                <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
+                <div class="rounded-2xl dark:border-t border-none dark:border-slate-800 dark:shadow-none shadow-sm dark:bg-slate-900 bg-slate-50 p-4 md:aspect-video">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full dark:bg-slate-950 bg-slate-200">
                         <x-heroicon-o-link class="h-5 w-5" />
                     </div>
 
                     <h3>Share your links</h3>
-                    <p class="text-slate-400">Collect links of your social profiles, your work, and what matters to you.</p>
+                    <p class="dark:text-slate-400 text-slate-500 text-sm">Collect links of your social profiles, your work, and what matters to you.</p>
                 </div>
 
-                <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
+                <div class="rounded-2xl dark:border-t border-none dark:border-slate-800 dark:shadow-none shadow-sm dark:bg-slate-900 bg-slate-50 p-4 md:aspect-video">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full dark:bg-slate-950 bg-slate-200">
                         <x-heroicon-o-chat-bubble-oval-left class="h-5 w-5" />
                     </div>
 
                     <h3>Ask and answer questions</h3>
-                    <p class="text-slate-400">Engage with the community in an open and friendly way.</p>
+                    <p class="dark:text-slate-400 text-slate-500 text-sm">Engage with the community in an open and friendly way.</p>
                 </div>
 
-                <div class="rounded-2xl border-t border-slate-800 bg-slate-900 p-4 md:aspect-video">
-                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-950">
+                <div class="rounded-2xl dark:border-t border-none dark:border-slate-800 dark:shadow-none shadow-sm dark:bg-slate-900 bg-slate-50 p-4 md:aspect-video">
+                    <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full dark:bg-slate-950 bg-slate-200">
                         <x-heroicon-o-globe-americas class="h-5 w-5" />
                     </div>
 
                     <h3>Discover</h3>
-                    <p class="text-slate-400">keep an eye on the people you admire, and expand your circle.</p>
+                    <p class="dark:text-slate-400 text-slate-500 text-sm">Keep an eye on the people you admire, and expand your circle.</p>
                 </div>
             </div>
         </section>

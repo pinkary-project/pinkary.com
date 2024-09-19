@@ -15,7 +15,7 @@
     }
 }'>
     <header>
-        <h2 class="text-lg font-medium text-slate-400">
+        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
             {{ __('Profile Photo') }}
         </h2>
 

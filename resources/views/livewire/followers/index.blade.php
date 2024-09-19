@@ -4,14 +4,14 @@
 >
     <div class="p-10" x-on:open-modal.window="$event.detail == 'followers' ? $wire.set('isOpened', true) : null">
         <div>
-            @if ($followers->count())
-                <strong> <span>@</span>{{ $user->username }} followers </strong>
-            @else
+            @if ($followers->isEmpty())
                 <strong> <span>@</span>{{ $user->username }} does not have any followers </strong>
+            @else
+                <strong> <span>@</span>{{ $user->username }} followers </strong>
             @endif
         </div>
 
-        @if ($followers->count())
+        @if ($followers->isNotEmpty())
             <section class="mt-10 max-w-2xl max-h-96 overflow-y-auto">
                 <ul class="flex flex-col gap-2">
                     @foreach ($followers as $follower)

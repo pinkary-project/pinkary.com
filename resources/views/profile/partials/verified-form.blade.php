@@ -1,8 +1,8 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-slate-400">
+        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
             <div class="items flex items-center space-x-3">
-                <h2 class="text-lg font-medium text-slate-400">
+                <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
                     {{ $user->is_verified ? __('Manage Verified Badge') : __('Get Verified') }}
                 </h2>
                 <x-icons.verified

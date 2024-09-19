@@ -41,6 +41,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
+ * @property-read Collection<int, Question> $descendants
  * @property-read Collection<int, Hashtag> $hashtags
  */
 #[ObservedBy(QuestionObserver::class)]
@@ -186,6 +187,16 @@ final class Question extends Model implements Viewable
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')
+            ->where('is_ignored', false)
+            ->where('is_reported', false);
+    }
+
+    /**
+     * @return HasMany<Question>
+     */
+    public function descendants(): HasMany
+    {
+        return $this->hasMany(self::class, 'root_id')
             ->where('is_ignored', false)
             ->where('is_reported', false);
     }
