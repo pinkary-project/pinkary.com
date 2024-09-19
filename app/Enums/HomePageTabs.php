@@ -8,7 +8,6 @@ enum HomePageTabs: string
 {
     case Feed = 'feed';
     case Following = 'following';
-    case Trending = 'trending';
 
     /**
      * Get the values of the enum.
@@ -20,7 +19,6 @@ enum HomePageTabs: string
         return [
             self::Feed->value => 'Feed',
             self::Following->value => 'Following',
-            self::Trending->value => 'Trending',
         ];
     }
 }
