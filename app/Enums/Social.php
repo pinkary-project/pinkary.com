@@ -13,8 +13,10 @@ enum Social: string
     case Facebook = 'facebook';
     case Instagram = 'instagram';
     case YouTube = 'youtube';
+    case WhatsApp = 'whatsapp';
+    case Website = 'website';
 
-    public static function getSocialFromUrl(string $url): ?self
+    public static function getSocialFromUrl(string $url): self
     {
         return match (true) {
             str_contains($url, 'twitter.com'),
@@ -25,7 +27,8 @@ enum Social: string
             str_contains($url, 'facebook.com') => self::Facebook,
             str_contains($url, 'instagram.com') => self::Instagram,
             str_contains($url, 'youtube.com') => self::YouTube,
-            default => null,
+            str_contains($url, 'whatsapp.com') => self::WhatsApp,
+            default => self::Website,
         };
     }
 }
