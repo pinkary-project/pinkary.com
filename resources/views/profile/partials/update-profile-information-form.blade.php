@@ -1,5 +1,5 @@
 @php
-    use App\Enums\UserMailPreference;
+    use App\Enums\HomePageTabs;use App\Enums\UserMailPreference;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
 
@@ -161,6 +161,25 @@
             <x-input-error
                 class="mt-2"
                 :messages="$errors->get('prefers_anonymous_questions')"
+            />
+        </div>
+
+        <div>
+            <x-input-label
+                for="default_tab"
+                :value="__('What tab would you like to see by default?')"
+            />
+            <x-select-input
+                id="default_tab"
+                name="default_tab"
+                class="mt-1 block w-full"
+                :options="HomePageTabs::toArray()"
+                :value="old('default_tab', $user->default_tab)"
+                required
+            />
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('default_tab')"
             />
         </div>
 

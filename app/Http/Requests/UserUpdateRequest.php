@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\HomePageTabs;
 use App\Enums\UserMailPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
@@ -39,6 +40,7 @@ final class UserUpdateRequest extends FormRequest
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
             'bio' => ['nullable', 'string', 'max:255'],
             'prefers_anonymous_questions' => ['required', 'boolean'],
+            'default_tab' => [Rule::enum(HomePageTabs::class)],
         ];
     }
 }

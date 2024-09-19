@@ -21,7 +21,7 @@ test('users can authenticate', function () {
 
     $this->assertAuthenticated();
 
-    $response->assertRedirect(route('home.feed', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 });
 
 test('users are rate limited', function () {
