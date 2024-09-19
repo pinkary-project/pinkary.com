@@ -19,7 +19,7 @@ return new class extends Migration
         Schema::create('hashtags', function (Blueprint $table): void {
             $table->id();
 
-            if(env('DB_CONNECTION') == 'sqlite'){
+            if(env('DB_CONNECTION') == 'sqlite') {
                 $table->string('name')->unique();
                 $table->rawIndex('name collate nocase', 'name_collate_nocase');
             } else {
