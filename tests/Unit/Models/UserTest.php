@@ -179,7 +179,7 @@ test('purge notifications with user', function () {
 });
 
 test('purge questions, comments and decendants with user', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->hasQuestionsSent(2)->create();
     Question::factory()
         ->hasChildren(2)
         ->hasDescendants(2)
@@ -188,7 +188,7 @@ test('purge questions, comments and decendants with user', function () {
             'to_id' => $user->id,
         ]);
 
-    $this->assertDatabaseCount('questions', 5);
+    $this->assertDatabaseCount('questions', 7);
 
     $this->actingAs($user)
         ->delete(route('profile.destroy'), [

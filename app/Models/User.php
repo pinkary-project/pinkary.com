@@ -252,6 +252,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         $this->notifications()->delete();
 
         $this->questionsReceived->each->delete();
+        $this->questionsSent->each->delete();
 
         $this->delete();
     }
