@@ -19,9 +19,12 @@ use Illuminate\Support\Facades\Route;
 Route::view('/about', 'about')->name('about');
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect(route('home.'.auth()->user()->default_tab)) // @phpstan-ignore-line
-        : redirect(route('home.feed'));
+    $tab = 'feed';
+    if (auth()->check()) {
+        $tab = type(auth()->user())->as(User::class)->default_tab;
+    }
+
+    return to_route('home.'.$tab);
 })->name('home');
 
 Route::view('/feed', 'home/feed')->name('home.feed');
