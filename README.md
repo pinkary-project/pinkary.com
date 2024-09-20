@@ -1,6 +1,6 @@
-<p align="center">
+<div style="text-align: center;">
     <img src="https://pinkary.com/img/logo.svg" width="600" alt="Illustration of Pinkary logo. The logo is composed of stylized white text spelling out 'Pinkary' with a pink dot at the end.">
-</p>
+</div>
 
 ------
 
@@ -20,98 +20,119 @@ Over time, we've managed to add more features, such as feed, explore, questions,
 
 ## Installation
 
-Pinkary is a regular Laravel application; it's build on top of Laravel 11 and uses Livewire / Tailwind CSS for the frontend. If you are familiar with Laravel, you should feel right at home.
+Pinkary is a Laravel application built on Laravel 11 and uses Livewire / Tailwind CSS for the frontend. If you are familiar with Laravel, you should feel right at home.
 
-In terms of local development, you can use the following requirements:
+### Requirements
+Make sure you have the following installed before starting:
 
 - PHP 8.3 - with SQLite, GD, and other common extensions.
 - Node.js 16 or more recent.
 
-If you have these requirements, you can start by cloning the repository and installing the dependencies:
+Once the requirements are met, follow these steps to set up the project locally:
 
-```bash
-git clone https://github.com/pinkary-project/pinkary.com.git
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/pinkary-project/pinkary.com.git
+   cd pinkary.com
+   ```
 
-cd pinkary.com
+2. **Install dependencies**:
+   ```bash
+   composer install
+   npm install
+   ```
 
-git checkout -b feat/your-feature # or fix/your-fix
-```
+3. **Set up the `.env` file**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-> **Don't push directly to the `main` branch**. Instead, create a new branch and push it to your branch.
+4. **Prepare your database**:
+   ```bash
+   touch database/database.sqlite
+   php artisan migrate
+   ```
 
-Next, install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
+5. **Link the storage**:
+   ```bash
+   php artisan storage:link
+   ```
 
-```bash
-composer install
+6. **Build assets and run the queue worker**:
+   Open a separate terminal and run:
+   ```bash
+   npm run dev
+   php artisan queue:work
+   ```
 
-npm install
-```
+7. **Start the development server**:
+   ```bash
+   php artisan serve
+   ```
 
-After that, set up your `.env` file:
+> **Note**: Emails are sent to the `log` driver by default. You can change this to something like `mailtrap` in the `.env` file.
 
-```bash
-cp .env.example .env
+---
 
-php artisan key:generate
-```
+## Contributing
 
-Prepare your database and run the migrations:
+We welcome contributions to Pinkary! To ensure a smooth process, please follow the guidelines below.
 
-```bash
-touch database/database.sqlite
+- Before jumping into a PR be sure to search existing [PRs](https://github.com/pinkary-project/pinkary.com/pulls) or [issues](https://github.com/pinkary-project/pinkary.com/issues) for an open or closed item that relates to your submission.
 
-php artisan migrate
-```
+### Step-by-step Contribution Guide
 
-Link the storage to the public folder:
+1. **Fork the repository**:
+   Head over to the [Pinkary GitHub repository](https://github.com/pinkary-project/pinkary.com) and click the **Fork** button to create a copy under your own account.
 
-```bash
-php artisan storage:link
-```
+2. **Clone your fork**:
+   After forking, clone your own copy of the repository to your local machine:
+   ```bash
+   git clone https://github.com/your-username/pinkary.com.git
+   cd pinkary.com
+   ```
 
-In a **separate terminal**, build the assets in watch mode:
+3. **Create a new branch**:
+   For any feature or bug fix, create a new branch:
+   ```bash
+   git checkout -b feat/your-feature # or fix/your-fix
+   ```
 
-```bash
-npm run dev
-```
+4. **Make your changes**:
+   Implement your changes or new features as needed.
 
-Also in a **separate terminal**, run the queue worker:
+5. **Run the test suite**:
+   Before committing, ensure everything works as expected:
+   ```bash
+   composer test
+   ```
+   > **Note**:    Pull requests that don't pass the test suite will not be merged. Always ensure tests are green before submitting.
 
-```bash
-php artisan queue:work
-```
+6. **Commit and push your changes**:
+   Once your changes are tested and ready, commit them:
+   ```bash
+   git commit -am "Description of your changes"
+   git push origin feat/your-feature
+   ```
 
-Finally, start the development server:
+7. **Create a pull request**:
+   Go to the original Pinkary repository and [create a pull request](https://github.com/pinkary-project/pinkary.com/pulls) from your branch to the `main` branch.
 
-```bash
-php artisan serve
-```
-
-> Note: By default, emails are sent to the `log` driver. You can change this in the `.env` file to something like `mailtrap`.
-
-Once you are done with the code changes, be sure to run the test suite to ensure everything is still working:
-
-```bash
-composer test
-```
-
-If everything is green, push your branch and create a pull request:
-
-```bash
-git commit -am "Your commit message"
-
-git push
-```
-
-Visit [github.com/pinkary-project/pinkary.com/pulls](https://github.com/pinkary-project/pinkary.com/pulls) and create a pull request.
+---
 
 ## Tooling
 
-Pinkary uses a few tools to ensure the code quality and consistency. Of course, [Pest](https://pestphp.com) is the testing framework of choice, and we also use [PHPStan](https://phpstan.org) for static analysis.  Pest's type coverage is at 100%, and the test suite is also at 100% coverage.
+We use several tools to ensure code quality and consistency. The key ones include:
 
-In terms of code style, we use [Laravel Pint](https://laravel.com/docs/11.x/pint) to ensure the code is consistent and follows the Laravel conventions. We also use [Rector](https://getrector.org) to ensure the code is up to date with the latest PHP version.
+- [Pest](https://pestphp.com) for testing.
+- [PHPStan](https://phpstan.org) for static analysis.
+- [Laravel Pint](https://laravel.com/docs/11.x/pint) for code style.
+- [Rector](https://getrector.org) for keeping code up to date with the latest PHP version.
 
-You run these tools individually using the following commands:
+### Running the Tools
+
+You can run these tools individually with the following commands:
 
 ```bash
 # Lint the code using Pint
@@ -131,8 +152,6 @@ composer test:unit
 # Run all the tools
 composer test
 ```
-
-Pull requests that don't pass the test suite will not be merged. So, as suggested on the [Installation](#installation) section, be sure to run the test suite before pushing your branch.
 
 ## Production
 
