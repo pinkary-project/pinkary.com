@@ -18,7 +18,7 @@
                         <li>
                             <a
                                 href="{{ route('profile.show', ['username' => $followingUser->username]) }}"
-                                class="group flex items-center gap-3 rounded-2xl border border-slate-900 bg-slate-950 bg-opacity-80 p-4 transition-colors hover:bg-slate-900"
+                                class="group flex items-center gap-3 rounded-2xl border dark:border-slate-900 border-slate-200 dark:bg-slate-950 bg-slate-100 bg-opacity-80 p-4 transition-colors dark:hover:bg-slate-900 hover:bg-slate-200"
                                 wire:navigate
                             >
                                 <figure class="{{ $followingUser->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90">
