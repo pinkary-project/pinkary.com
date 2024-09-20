@@ -81,6 +81,7 @@ test('it optimizes an image', function () {
     $imagickMock = Mockery::mock(Imagick::class);
     $imagickMock->shouldReceive('resizeImage')->once();
     $imagickMock->shouldReceive('autoOrient')->once();
+    $imagickMock->shouldReceive('getNumberImages')->andReturn(1);
     $imagickMock->shouldReceive('stripImage')->once();
     $imagickMock->shouldReceive('setImageCompressionQuality')->once();
     $imagickMock->shouldReceive('writeImage')->once();
@@ -98,6 +99,7 @@ test('it optimizes an image', function () {
 
     $imagickMock->shouldHaveReceived('resizeImage');
     $imagickMock->shouldHaveReceived('autoOrient');
+    $imagickMock->shouldHaveReceived('getNumberImages');
     $imagickMock->shouldHaveReceived('stripImage');
     $imagickMock->shouldHaveReceived('setImageCompressionQuality');
     $imagickMock->shouldHaveReceived('writeImage');
@@ -120,7 +122,6 @@ test('where original aspect is greater than the thumbnail aspect', function () {
         ->and($imagick->getImageHeight())->toBe(100);
 });
 
-
 test('it optimizes a thumbnail image', function () {
     $imagickMock = Mockery::mock(Imagick::class);
     $imagickMock->shouldReceive('getImageWidth')->andReturn(300);
@@ -128,6 +129,7 @@ test('it optimizes a thumbnail image', function () {
     $imagickMock->shouldReceive('cropImage')->once();
     $imagickMock->shouldReceive('setImagePage')->once();
     $imagickMock->shouldReceive('autoOrient')->once();
+    $imagickMock->shouldReceive('getNumberImages')->andReturn(1);
     $imagickMock->shouldReceive('resizeImage')->once();
     $imagickMock->shouldReceive('stripImage')->once();
     $imagickMock->shouldReceive('setImageCompressionQuality')->once();
@@ -148,6 +150,7 @@ test('it optimizes a thumbnail image', function () {
     $imagickMock->shouldHaveReceived('getImageHeight');
     $imagickMock->shouldHaveReceived('cropImage');
     $imagickMock->shouldHaveReceived('setImagePage');
+    $imagickMock->shouldHaveReceived('getNumberImages');
     $imagickMock->shouldHaveReceived('resizeImage');
     $imagickMock->shouldHaveReceived('autoOrient');
     $imagickMock->shouldHaveReceived('stripImage');

@@ -60,18 +60,19 @@ final readonly class ImageOptimizer
 
         $this->imagick->autoOrient();
 
-        $this->imagick->resizeImage(
-            $this->width,
-            $this->height,
-            Imagick::FILTER_LANCZOS,
-            1,
-            true
-        );
+        if ($this->imagick->getNumberImages() > 1) {
+            $frames = $this->imagick->coalesceImages();
 
-        $this->imagick->stripImage();
+            foreach ($frames as $frame) {
+                $this->resizeStripAndCompressImage($frame);
+            }
 
-        $this->imagick->setImageCompressionQuality($this->quality);
-        $this->imagick->writeImage($this->image);
+            $imagick = $frames->deconstructImages();
+            $imagick->writeImages($this->image, true);
+        } else {
+            $this->resizeStripAndCompressImage($this->imagick);
+            $this->imagick->writeImage($this->image);
+        }
 
         $this->imagick->clear();
         $this->imagick->destroy();
@@ -101,5 +102,21 @@ final readonly class ImageOptimizer
 
         $this->imagick->cropImage($newWidth, $newHeight, $x, $y);
         $this->imagick->setImagePage($newWidth, $newHeight, 0, 0);
+    }
+
+    /**
+     * Resize, strip and compress the image.
+     */
+    private function resizeStripAndCompressImage(Imagick $instance): void
+    {
+        $instance->resizeImage(
+            $this->width,
+            $this->height,
+            Imagick::FILTER_LANCZOS,
+            1,
+            true
+        );
+        $instance->stripImage();
+        $instance->setImageCompressionQuality($this->quality);
     }
 }
