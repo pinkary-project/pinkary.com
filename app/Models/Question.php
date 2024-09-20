@@ -102,13 +102,11 @@ final class Question extends Model implements Viewable
     {
         $contextKey = "question.{$this->id}.{$attribute}.parsed";
         if (Context::hasHidden($contextKey)) {
+            if ($this->isDirty($attribute)) {
+                return $this->parseAndCache($value, $contextKey);
+            }
             /** @var string|null $parsed */
             $parsed = Context::getHidden($contextKey);
-
-            if ($this->isDirty($attribute)) {
-                $parsed = $this->parseAndCache($value, $contextKey);
-            }
-
             return $parsed;
         }
 
