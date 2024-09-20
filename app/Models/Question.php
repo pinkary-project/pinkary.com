@@ -100,7 +100,7 @@ final class Question extends Model implements Viewable
      */
     public function runParser(string $attribute, mixed $value): ?string
     {
-        $contextKey = "question.{$this->id}.{$attribute}";
+        $contextKey = "question.{$this->id}.{$attribute}.parsed";
         if (Context::hasHidden($contextKey)) {
             /** @var string|null $parsed */
             $parsed = Context::getHidden($contextKey);

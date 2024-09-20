@@ -105,3 +105,49 @@ test('does not increment views without answer', function () {
 
     expect($question->fresh()->views)->toBe(0);
 });
+
+test('caches the parsed answer', function () {
+    $question = Question::factory()->create([
+        'answer' => 'Hello',
+    ]);
+
+    $contextKey = "question.{$question->id}.answer.parsed";
+
+    expect(Context::getHidden($contextKey))->toBe($question->answer);
+});
+
+test('re-caches the parsed answer when the answer is updated', function () {
+    $question = Question::factory()->create([
+        'answer' => 'Hello',
+    ]);
+
+    $contextKey = "question.{$question->id}.answer.parsed";
+
+    $question->answer = 'Hi';
+    $question->save();
+
+    expect(Context::getHidden($contextKey))->toBe($question->answer);
+});
+
+test('caches the parsed content', function () {
+    $question = Question::factory()->create([
+        'content' => 'Hello',
+    ]);
+
+    $contextKey = "question.{$question->id}.content.parsed";
+
+    expect(Context::getHidden($contextKey))->toBe($question->content);
+});
+
+test('re-caches the parsed content when the content is updated', function () {
+    $question = Question::factory()->create([
+        'content' => 'Hello',
+    ]);
+
+    $contextKey = "question.{$question->id}.content.parsed";
+
+    $question->content = 'Hi';
+    $question->save();
+
+    expect(Context::getHidden($contextKey))->toBe($question->content);
+});
