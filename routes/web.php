@@ -21,7 +21,7 @@ Route::view('/about', 'about')->name('about');
 Route::get('/', function () {
     $tab = 'feed';
     if (auth()->check()) {
-        $tab = type(auth()->user())->as(User::class)->default_tab;
+        $tab = type(auth()->user())->as(App\Models\User::class)->default_tab;
     }
 
     return to_route('home.'.$tab);
