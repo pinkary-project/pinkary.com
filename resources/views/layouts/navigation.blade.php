@@ -87,6 +87,7 @@
                 <x-dropdown
                     align="right"
                     width="48"
+                    :content-classes="'space-y-1 dark:bg-slate-900 bg-slate-100 dark:border-none border border-slate-100 py-1 text-slate-500'"
                 >
                     <x-slot name="trigger">
                         <button
