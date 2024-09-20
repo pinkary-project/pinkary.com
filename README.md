@@ -3,10 +3,10 @@
 </p>
 
 ------
-
+# Welcome to Pinkary!
 > Telegram group: **[pinkary.com/telegram »](https://pinkary.com/telegram)**.
 
-**Welcome to Pinkary!** Pinkary is a landing page for all your links and a place to connect with like-minded individuals without the noise.
+Pinkary is a landing page for all your links and a place to connect with like-minded individuals without the noise.
 
 Initially, it was created to help people share their links in a more organized way. In just 15 hours, we went from `composer create-project` to production, and after 24 hours, we reached over 1,000 users.
 
@@ -16,7 +16,22 @@ Over time, we've managed to add more features, such as feed, explore, questions,
 
 - Telegram group: **[pinkary.com/telegram »](https://pinkary.com/telegram)**
 - Follow us on X at **[@PinkaryProject »](https://x.com/PinkaryProject)**
-- Wish to contribute? Here is how:
+
+---
+
+## Table of Contents
+
+1. [Welcome to Pinkary](#welcome-to-pinkary)
+2. [Installation](#installation)
+   - [Requirements](#requirements)
+   - [Steps to Install](#steps-to-install)
+3. [Contributing](#contributing)
+   - [Step-by-step Contribution Guide](#step-by-step-contribution-guide)
+4. [Tooling](#tooling)
+   - [Running the Tools](#running-the-tools)
+5. [Production](#production)
+
+---
 
 ## Installation
 
