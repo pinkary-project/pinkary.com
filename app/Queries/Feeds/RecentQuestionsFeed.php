@@ -38,6 +38,10 @@ final readonly class RecentQuestionsFeed
                 })->orderByDesc('updated_at');
             }, function (Builder $query): void {
                 $query->select(DB::Raw('IFNULL(root_id, id) as newest_id'), DB::Raw('IFNULL(root_id, id) as id'))
+                    ->where(function (Builder $query): void {
+                        $query->whereNull('root_id')
+                            ->orHas('root');
+                    })
                     ->groupBy('newest_id')
                     ->orderByDesc(DB::raw('MAX(`updated_at`)'));
             });
