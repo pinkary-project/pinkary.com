@@ -47,8 +47,8 @@
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                     <button type="button" x-on:click="showPassword = !showPassword">
-                        <x-icons.eye x-show="showPassword" class="size-5 text-gray-400 hover:text-pink-500" />
-                        <x-icons.eye-off x-show="!showPassword" class="size-5 text-gray-400 hover:text-pink-500" />
+                        <x-icons.eye x-show="showPassword" class="size-5 text-slate-400 hover:text-pink-500" />
+                        <x-icons.eye-off x-show="!showPassword" class="size-5 text-slate-400 hover:text-pink-500" />
                     </button>
                 </div>
             </div>
@@ -77,7 +77,7 @@
         <div class="mt-4 flex items-center justify-end space-x-3.5">
             @if (Route::has('password.request'))
                 <a
-                    class="text-sm text-slate-200 underline hover:no-underline"
+                    class="text-sm dark:text-slate-200 text-slate-800 underline hover:no-underline"
                     href="{{ route('password.request') }}"
                     wire:navigate
                 >
@@ -97,7 +97,7 @@
         Don't have an account?
         <a
             href="{{ route('register') }}"
-            class="text-slate-200 underline hover:no-underline"
+            class="dark:text-slate-200 text-slate-800 underline hover:no-underline"
             wire:navigate
         >
             {{ __('Sign up here') }}
