@@ -19,7 +19,7 @@ final class TrendingQuestions extends Component
      */
     public function render(Request $request): View
     {
-        $questions = (new TrendingQuestionsFeed())->builder()->paginate($this->perPage);
+        $questions = (new TrendingQuestionsFeed())->builder()->simplePaginate($this->perPage);
 
         return view('livewire.home.trending-questions', [
             'trendingQuestions' => $questions,
