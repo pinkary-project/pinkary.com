@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->string('default_tab')->default('feed')->after('mail_preference_time');
+            $table->string('default_tab')->default('following')->after('mail_preference_time');
         });
     }
 

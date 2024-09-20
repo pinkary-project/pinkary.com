@@ -15,10 +15,10 @@ it('unauthorized user redirects to feed', function () {
     $response->assertRedirect(route('home.feed'));
 });
 
-it('default tab is feed for new user', function () {
+it('default tab is following for new user', function () {
     $newUser = User::factory()->create();
     $response = $this->actingAs($newUser)->get(route('home'));
-    $response->assertRedirect(route('home.feed'));
+    $response->assertRedirect(route('home.following'));
 });
 
 it('/ redirects to the selected default feed.', function () {
