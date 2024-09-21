@@ -1,6 +1,6 @@
-const themeSwitch = () => ({
+const themeToggles = () => ({
     
-    theme: 'dark', // default theme
+    theme: 'dark',
 
     init() {
         const currentTheme = localStorage.getItem('theme') || this.theme
@@ -46,4 +46,4 @@ const themeSwitch = () => ({
 
 })
 
-export { themeSwitch }
+export { themeToggles }
