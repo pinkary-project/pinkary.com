@@ -24,11 +24,13 @@
 
             <div>
                 @foreach($parentQuestions as $parentQuestion)
-                    <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
+                    <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="true" :key="$parentQuestion->id" />
                     <x-post-divider />
                 @endforeach
 
                 <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" />
+
+                <x-comments :question="$question" />
             </div>
         </div>
     </div>
