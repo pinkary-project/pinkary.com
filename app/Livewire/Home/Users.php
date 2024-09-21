@@ -82,7 +82,7 @@ final class Users extends Component
             ->shuffle()
             ->load('links')
             ->when(auth()->check(), function (Collection $users): void {
-                $users->loadExists([
+                $users->loadExists([ // @phpstan-ignore-line
                     'following as is_follower' => function (Builder $query): void {
                         $query->where('user_id', auth()->id());
                     },
