@@ -64,7 +64,7 @@ Alpine.data('bookmarkButton', bookmarkButton);
 import { viewCreate } from './view-cerate.js';
 Alpine.data('viewCreate', viewCreate);
 
-import { themeToggles } from './theme-toggles.js';
-Alpine.data('themeToggles', themeToggles);
+import { themeSwitch } from './theme-switch.js';
+Alpine.data('themeSwitch', themeSwitch);
 
 Livewire.start()

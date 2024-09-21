@@ -1,4 +1,4 @@
-const themeToggles = () => ({
+const themeSwitch = () => ({
     
     theme: 'dark',
 
@@ -46,4 +46,4 @@ const themeToggles = () => ({
 
 })
 
-export { themeToggles }
+export { themeSwitch }
