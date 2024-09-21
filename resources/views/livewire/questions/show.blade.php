@@ -1,10 +1,4 @@
 <article class="block" id="q-{{ $questionId }}" x-data="copyCode">
-    @if ($showParents)
-        @foreach($parentQuestions as $parentQuestion)
-            <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
-            <x-post-divider />
-        @endforeach
-    @endif
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
