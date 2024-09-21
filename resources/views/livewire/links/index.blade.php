@@ -229,7 +229,7 @@
                 >
                     @foreach ($links as $link)
                         <li
-                            class="relative h-12 hover:darken-gradient group flex {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }} overflow-hidden"
+                            class="relative h-12 hover:darken-gradient group flex {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }} overflow-hidden shadow-md"
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
@@ -328,7 +328,7 @@
                 <div class="space-y-3">
                     @foreach ($links as $link)
                         <div
-                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 hover:darken-gradient flex justify-center bg-gradient-to-r"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 hover:darken-gradient flex justify-center bg-gradient-to-r shadow-md"
                             wire:click="click({{ $link->id }})"
                         >
                             <x-links.list-item
