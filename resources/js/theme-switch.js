@@ -1,49 +1,26 @@
 const themeSwitch = () => ({
-  
-    theme: 'dark',
+
+    theme: 'system',
 
     init() {
-        const currentTheme = localStorage.getItem('theme') || this.theme
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
 
-        if (['dark', 'light', 'system'].indexOf(currentTheme) < 0) {
-            this.setTheme(this.theme)
-            return
-        }
+        const currentTheme = localStorage.getItem('theme') || this.theme;
 
-        this.setTheme(currentTheme)
+        this.setTheme(currentTheme);
     },
 
     setTheme(theme) {
         this.theme = theme
-        localStorage.setItem('theme', theme)
 
-        if (theme === 'dark') {
-            this.setDarkMode()
-            return
+        if (theme == 'dark' || theme == 'light') {
+            localStorage.setItem('theme', theme)
+        } else {
+            localStorage.removeItem('theme');
         }
 
-        if (theme === 'light') {
-            this.setLightMode()
-            return
-        }
-
-        this.setSystemMode()
+        updateTheme();
     },
-
-    setLightMode() {
-        document.documentElement.classList.remove('dark')
-        document.documentElement.classList.add(this.theme)
-    },
-
-    setDarkMode() {
-        document.documentElement.classList.remove('light')
-        document.documentElement.classList.add(this.theme)
-    },
-
-    setSystemMode() {
-        document.documentElement.classList.remove('dark', 'light')
-    },
-
 })
 
 export { themeSwitch }
