@@ -99,26 +99,15 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between dark:hover:bg-transparent hover:bg-transparent">
+                        <x-dropdown-button x-data="themeToggles()" class="flex flex-col items-center justify-between dark:hover:bg-transparent hover:bg-transparent">
                             <div class="flex flex-row justify-between gap-2">
-                                <div x-show="theme == 'light'" class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200 bg-pink-600 text-slate-50">
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'light' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('light')">
                                     <x-heroicon-o-sun class="w-4 h-4"/>
                                 </div>
-                                <div x-show="theme != 'light'"  class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200 dark:hover:bg-slate-800/50 hover:bg-slate-200/50" @click="setTheme('light')">
-                                    <x-heroicon-o-sun class="w-4 h-4"/>
-                                </div>
-
-                                <div x-show="theme == 'dark'" class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200 bg-pink-600 text-slate-50">
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'dark' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('dark')">
                                     <x-heroicon-o-moon class="w-4 h-4"/>
                                 </div>
-                                <div x-show="theme != 'dark'"  class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200 dark:hover:bg-slate-800/50 hover:bg-slate-200/50" @click="setTheme('dark')">
-                                    <x-heroicon-o-moon class="w-4 h-4"/>
-                                </div>
-
-                                <div x-show="theme == 'system'" class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200 bg-pink-600 text-slate-50">
-                                    <x-heroicon-o-computer-desktop class="w-4 h-4"/>
-                                </div>
-                                <div x-show="theme != 'system'"  class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200 dark:hover:bg-slate-800/50 hover:bg-slate-200/50" @click="setTheme('system')">
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'system' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('system')">
                                     <x-heroicon-o-computer-desktop class="w-4 h-4"/>
                                 </div>
                             </div>
