@@ -1,5 +1,5 @@
 const themeSwitch = () => ({
-    
+
     theme: 'dark', // default theme
 
     availableModes: ['dark', 'light'], // e.g. system
@@ -52,15 +52,14 @@ const themeSwitch = () => ({
 
     toggleTheme() {
         const newModeIndex = (this.modeIndex + 1) % this.availableModes.length
-        
+
         this.modeIndex = newModeIndex
         this.setTheme(this.availableModes[newModeIndex])
     },
 
     toggleThemeButtonText() {
-        return this.theme.charAt(0).toUpperCase() + this.theme.slice(1)
+        return this.availableModes.filter((mode) => mode !== this.theme)[0]
     }
-
 })
 
 export { themeSwitch }

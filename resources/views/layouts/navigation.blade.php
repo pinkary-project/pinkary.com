@@ -101,8 +101,8 @@
                         <x-dropdown-button x-data="themeSwitch()" @click="toggleTheme" class="flex flex-row items-center justify-between">
                             <span x-text="toggleThemeButtonText"></span>
                             <span class="mr-2">
-                                <x-heroicon-o-moon x-show="theme == 'dark'" class="h-4 w-4"/>
-                                <x-heroicon-o-sun x-show="theme == 'light'" class="h-4 w-4"/>
+                                <x-heroicon-o-moon x-show="theme == 'light'" class="h-4 w-4"/>
+                                <x-heroicon-o-sun x-show="theme == 'dark'" class="h-4 w-4"/>
                                 <x-heroicon-o-computer-desktop x-show="theme == 'system'" class="h-4 w-4"/>
                             </span>
                         </x-dropdown-button>
