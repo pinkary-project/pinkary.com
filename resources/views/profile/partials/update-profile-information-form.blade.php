@@ -1,5 +1,5 @@
 @php
-    use App\Enums\HomePageTabs;
+    use App\Enums\Feeds;
     use App\Enums\UserMailPreference;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
@@ -174,7 +174,7 @@
                 id="default_tab"
                 name="default_tab"
                 class="mt-1 block w-full"
-                :options="HomePageTabs::toArray()"
+                :options="Feeds::toArray()"
                 :value="old('default_tab', $user->default_tab)"
                 required
             />

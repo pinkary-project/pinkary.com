@@ -17,14 +17,4 @@ return new class extends Migration
             $table->string('default_tab')->default('following')->after('mail_preference_time');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table): void {
-            $table->dropColumn('default_tab');
-        });
-    }
 };
