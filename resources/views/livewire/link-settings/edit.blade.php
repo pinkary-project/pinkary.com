@@ -1,7 +1,7 @@
 <div>
     <form wire:submit="update">
         <div class="mt-12">
-            <label class="text-base font-semibold text-slate-500">Link Shape</label>
+            <label class="text-base font-semibold dark:text-slate-400 text-slate-600">Link Shape</label>
             <p class="text-sm text-slate-500">In what shape do you want to present your links?</p>
             <fieldset class="mt-4">
                 <legend class="sr-only">Shape for links</legend>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="mt-12">
-            <label class="text-base font-semibold text-slate-500">Link Color</label>
+            <label class="text-base font-semibold dark:text-slate-400 text-slate-600">Link Color</label>
             <p class="text-sm text-slate-500">What color are you choosing for your links?</p>
             <fieldset class="mt-4">
                 <legend class="sr-only">Link color</legend>
