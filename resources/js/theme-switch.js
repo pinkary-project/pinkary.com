@@ -58,7 +58,8 @@ const themeSwitch = () => ({
     },
 
     toggleThemeButtonText() {
-        return this.availableModes.filter((mode) => mode !== this.theme)[0]
+        let themeLabel = this.availableModes.filter((mode) => mode !== this.theme)[0]
+        return themeLabel.charAt(0).toUpperCase() + themeLabel.slice(1)
     }
 })
 
