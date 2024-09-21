@@ -12,7 +12,7 @@ it('have a default tab', function () {
 
 it('unauthorized user redirects to feed', function () {
     $response = $this->get(route('home'));
-    $response->assertRedirect(route('home.feed'));
+    $response->assertRedirect(route('home.recent'));
 });
 
 it('default tab is following for new user', function () {

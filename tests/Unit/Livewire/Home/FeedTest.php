@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Home\Feed;
+use App\Livewire\Home\Recent;
 use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
@@ -12,7 +12,7 @@ test('renders questions with answers', function () {
         'answer' => 'This is the answer',
     ]);
 
-    $component = Livewire::test(Feed::class);
+    $component = Livewire::test(Recent::class);
 
     $component->assertSee('This is the answer')
         ->assertDontSee('There are no questions to show.');
@@ -25,7 +25,7 @@ test('do not renders questions without answers', function () {
         'answer' => null,
     ]);
 
-    $component = Livewire::actingAs($user)->test(Feed::class);
+    $component = Livewire::actingAs($user)->test(Recent::class);
 
     $component->assertSee('There are no questions to show.');
 });
@@ -36,7 +36,7 @@ test('do not renders ignored questions', function () {
         'is_ignored' => true,
     ]);
 
-    $component = Livewire::test(Feed::class);
+    $component = Livewire::test(Recent::class);
 
     $component->assertSee('There are no questions to show.');
 });
@@ -48,7 +48,7 @@ test('ignore', function () {
         'to_id' => $user->id,
     ]);
 
-    $component = Livewire::actingAs($user)->test(Feed::class);
+    $component = Livewire::actingAs($user)->test(Recent::class);
 
     $component->assertSee($question->content);
 
@@ -68,7 +68,7 @@ test('ignore auth', function () {
         'to_id' => $userB->id,
     ]);
 
-    $component = Livewire::actingAs($userA)->test(Feed::class);
+    $component = Livewire::actingAs($userA)->test(Recent::class);
 
     $component->dispatch('question.ignore', $question->id);
 
@@ -82,7 +82,7 @@ test('load more', function () {
 
     $questions = Question::factory(120)->create();
 
-    $component = Livewire::actingAs($user)->test(Feed::class);
+    $component = Livewire::actingAs($user)->test(Recent::class);
 
     $component->call('loadMore');
     $component->assertSet('perPage', 10);
@@ -110,13 +110,13 @@ it('displays questions from users I am following', function () {
         'to_id' => $following,
     ]);
 
-    $component = Livewire::actingAs($user)->test(Feed::class);
+    $component = Livewire::actingAs($user)->test(Recent::class);
 
     $component->assertSee('Do you like star wars?');
 });
 
 test('refresh', function () {
-    $component = Livewire::test(Feed::class);
+    $component = Livewire::test(Recent::class);
 
     Question::factory()->create([
         'answer' => 'This is the answer',
@@ -181,7 +181,7 @@ it('renders the threads in the right order', function () {
         'parent_id' => Question::where('answer', '2nd nested child question for root2')->first()->id,
     ]);
 
-    $component = Livewire::test(Feed::class);
+    $component = Livewire::test(Recent::class);
 
     // final output needs to be root without descendants divided odds and evens in descending order
     // in this case, root 2 has a child that has a child so it should not be in the feed

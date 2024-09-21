@@ -4,10 +4,10 @@
             <x-home-menu></x-home-menu>
 
             @auth
-                <livewire:questions.create :toId="auth()->id()" />
+                <livewire:questions.create :toId="auth()->id()"/>
             @endauth
 
-            <livewire:home.feed />
+            <livewire:home.recent/>
         </div>
     </div>
 </x-app-layout>

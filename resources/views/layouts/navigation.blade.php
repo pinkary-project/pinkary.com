@@ -13,7 +13,7 @@
                 @auth
                     <a
                         title="Home"
-                        href="{{ route('home.feed') }}"
+                        href="{{ route('home.recent') }}"
                         class=""
                         wire:navigate
                     >
@@ -127,10 +127,10 @@
                             </form>
                         @else
                             <x-dropdown-link
-                                :href="route('home.feed')"
-                                :class="request()->routeIs('home.feed') ? 'dark:bg-slate-800 bg-slate-200' : ''"
+                                :href="route('home.recent')"
+                                :class="request()->routeIs('home.recent') ? 'dark:bg-slate-800 bg-slate-200' : ''"
                             >
-                                {{ __('Feed') }}
+                                {{ __('Recent') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link

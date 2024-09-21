@@ -6,7 +6,7 @@ namespace App\Enums;
 
 enum Feeds: string
 {
-    case Feed = 'feed';
+    case Recent = 'recent';
     case Following = 'following';
 
     /**
@@ -17,7 +17,7 @@ enum Feeds: string
     public static function toArray(): array
     {
         return [
-            self::Feed->value => 'Feed',
+            self::Recent->value => 'Recent',
             self::Following->value => 'Following',
         ];
     }

@@ -4,7 +4,7 @@
     </div>
     <nav class="fixed top-0 z-20 flex w-full justify-end gap-2 border-b dark:border-slate-200/10 border-slate-900/10 dark:bg-slate-950/20 bg-slate-100/20 p-4 shadow-2xl backdrop-blur-md">
         <a
-            href="{{ route('home.feed') }}"
+            href="{{ route('home.recent') }}"
             wire:navigate
         >
             <x-primary-colorless-button class="flex items-center justify-center gap-2 dark:border-white border-slate-900">
