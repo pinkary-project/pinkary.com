@@ -7,10 +7,11 @@
         x-data="{
             link: '{{ route('qr-code.image') }}',
             update(){
-                this.link = '{{ route('qr-code.image') }}' + '?theme=' + localStorage.getItem('theme');
+                this.link = '{{ route('qr-code.image') }}'
+                + '?theme='
+                +  (document.documentElement.classList.contains('dark') ? 'dark' : 'light');
             }
         }"
-        x-init="update()"
         x-on:open-modal.window="$event.detail == 'show-qr-code' && update()"
     >
         <img
