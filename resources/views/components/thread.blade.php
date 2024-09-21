@@ -6,37 +6,40 @@
     'username' => null,
 ])
 
-<div>
+<div wire:key="thread-{{ $questionId.'-'.$rootId.'-'.$parentId }}">
     @if ($rootId !== null)
         <livewire:questions.show
             :questionId="$rootId"
             :in-thread="true"
-            :key="$rootId"
+            :key="'question-'.$rootId"
         />
     @endif
     @if ($parentId !== null && $rootId !== $parentId)
-        @if ($grandParentId === $rootId)
-            <x-post-divider />
-        @else
-            <x-post-divider
-                :link="route('questions.show', ['username' => $username, 'question' => $rootId])"
-                :text="'View more comments...'"
-            />
+        @if($rootId !== null)
+            @if ($grandParentId === $rootId)
+                <x-post-divider wire:key="divider-{{ $parentId }}" />
+            @else
+                <x-post-divider
+                    :link="route('questions.show', ['username' => $username, 'question' => $questionId])"
+                    :text="'View more comments...'"
+                    wire:key="divider-{{ $parentId }}"
+                />
+            @endif
         @endif
         <livewire:questions.show
             :questionId="$parentId"
-            :in-thread="true"
-            :key="$parentId"
+            :in-thread="$rootId !== null"
+            :key="'question-'.$parentId"
         />
     @endif
-
     @if ($parentId !== null || $rootId !== null)
-        <x-post-divider />
+        <x-post-divider
+            wire:key="divider-{{ $questionId }}"
+        />
     @endif
-
     <livewire:questions.show
         :questionId="$questionId"
-        :in-thread="true"
-        :key="$questionId"
+        :in-thread="$rootId !== null || $parentId !== null"
+        :key="'question-'.$questionId"
     />
 </div>
