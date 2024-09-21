@@ -1,5 +1,5 @@
 const themeSwitch = () => ({
-    
+  
     theme: 'dark',
 
     init() {
