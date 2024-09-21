@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Home;
 
+use App\Livewire\Concerns\Followable;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,6 +15,8 @@ use Livewire\Component;
 
 final class Users extends Component
 {
+    use Followable;
+
     /**
      * The component's search query.
      */
@@ -51,6 +54,16 @@ final class Users extends Component
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
+            ->when(auth()->check(), function (Builder $query): void {
+                $query->withExists([
+                    'following as is_follower' => function (Builder $query): void {
+                        $query->where('user_id', auth()->id());
+                    },
+                    'followers as is_following' => function (Builder $query): void {
+                        $query->where('follower_id', auth()->id());
+                    },
+                ]);
+            })
             ->limit(10)
             ->get();
     }
@@ -67,7 +80,17 @@ final class Users extends Component
         return $this->famousUsers($verifiedUsers)
             ->merge($verifiedUsers)
             ->shuffle()
-            ->load('links');
+            ->load('links')
+            ->when(auth()->check(), function (Collection $users): void {
+                $users->loadExists([ // @phpstan-ignore-line
+                    'following as is_follower' => function (Builder $query): void {
+                        $query->where('user_id', auth()->id());
+                    },
+                    'followers as is_following' => function (Builder $query): void {
+                        $query->where('follower_id', auth()->id());
+                    },
+                ]);
+            });
     }
 
     /**

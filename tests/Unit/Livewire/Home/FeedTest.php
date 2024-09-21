@@ -133,7 +133,7 @@ test('refresh', function () {
 
 it('renders the threads in the right order', function () {
 
-    // create 5 roots
+    // create 4 roots
     $roots = Question::factory()
         ->forEachSequence(
             ['answer' => 'root 1'],

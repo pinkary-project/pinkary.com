@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Question;
 use App\Models\User;
 
 test('to array', function () {
@@ -160,4 +161,41 @@ test('purge links with user', function () {
 
     $this->assertNull($user->fresh());
     $this->assertDatabaseCount('links', 0);
+});
+
+test('purge notifications with user', function () {
+    $user = User::factory()->create();
+    Question::factory(2)->create([
+        'to_id' => $user->id,
+    ]);
+    $this->assertDatabaseCount('notifications', 2);
+
+    $this->actingAs($user)
+        ->delete(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+    $this->assertNull($user->fresh());
+    $this->assertDatabaseCount('notifications', 0);
+});
+
+test('purge questions, comments and decendants with user', function () {
+    $user = User::factory()->hasQuestionsSent(2)->create();
+    Question::factory()
+        ->hasChildren(2)
+        ->hasDescendants(2)
+        ->create([
+            'from_id' => $user->id,
+            'to_id' => $user->id,
+        ]);
+
+    $this->assertDatabaseCount('questions', 7);
+
+    $this->actingAs($user)
+        ->delete(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+    $this->assertNull($user->fresh());
+    $this->assertDatabaseCount('questions', 0);
 });

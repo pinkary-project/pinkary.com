@@ -207,6 +207,20 @@
     }
 </style>
 
+<script>
+    function isDarkTheme() {
+        return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    }
+    function updateTheme() {
+        if (isDarkTheme()) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    }
+    updateTheme();
+</script>
+
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 

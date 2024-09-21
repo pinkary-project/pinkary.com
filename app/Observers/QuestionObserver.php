@@ -80,9 +80,11 @@ final readonly class QuestionObserver
             $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         });
 
-        $question->loadMissing('children');
+        $question->loadMissing(['children', 'descendants']);
 
         $question->children->each->delete();
+
+        $question->descendants->each->delete();
 
         $question->hashtags()->detach();
     }
