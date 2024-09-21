@@ -2,16 +2,10 @@ const themeSwitch = () => ({
     
     theme: 'dark', // default theme
 
-    availableModes: ['dark', 'light'], // e.g. system
-
-    modeIndex: 0,
-
     init() {
         const currentTheme = localStorage.getItem('theme') || this.theme
 
-        this.modeIndex = this.availableModes.indexOf(currentTheme)
-
-        if (this.modeIndex < 0) {
+        if (['dark', 'light', 'system'].indexOf(currentTheme) < 0) {
             this.setTheme(this.theme)
             return
         }
@@ -49,17 +43,6 @@ const themeSwitch = () => ({
     setSystemMode() {
         document.documentElement.classList.remove('dark', 'light')
     },
-
-    toggleTheme() {
-        const newModeIndex = (this.modeIndex + 1) % this.availableModes.length
-        
-        this.modeIndex = newModeIndex
-        this.setTheme(this.availableModes[newModeIndex])
-    },
-
-    toggleThemeButtonText() {
-        return this.theme.charAt(0).toUpperCase() + this.theme.slice(1)
-    }
 
 })
 
