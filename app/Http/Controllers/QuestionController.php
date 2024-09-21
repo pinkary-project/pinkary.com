@@ -20,8 +20,18 @@ final readonly class QuestionController
 
         abort_unless($question->to_id === $user->id, 404);
 
+        $parentQuestions = [];
+            $parentQuestion = $question->parent;
+
+        do {
+            $parentQuestions[] = $parentQuestion;
+        } while ($parentQuestion = $parentQuestion?->parent);
+
+        $parentQuestions = collect($parentQuestions)->filter()->reverse()->all();
+
         return view('questions.show', [
             'question' => $question,
+            'parentQuestions' => $parentQuestions,
         ]);
     }
 }

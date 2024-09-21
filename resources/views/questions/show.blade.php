@@ -22,7 +22,14 @@
                 <span>Back</span>
             </a>
 
-            <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" :showParents="true" />
+            <div>
+                @foreach($parentQuestions as $parentQuestion)
+                    <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
+                    <x-post-divider />
+                @endforeach
+
+                <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" />
+            </div>
         </div>
     </div>
 </x-app-layout>
