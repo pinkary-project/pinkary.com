@@ -7,7 +7,7 @@
         x-data="{
             link: '{{ route('qr-code.image') }}',
             update(){
-                this.link = '{{ route('qr-code.image') }}' + '?theme=' + localStorage.getItem('theme');
+                this.link = '{{ route('qr-code.image') }}' + '?theme=' + (isDarkTheme() ? 'dark' : 'light');
             }
         }"
         x-init="update()"
