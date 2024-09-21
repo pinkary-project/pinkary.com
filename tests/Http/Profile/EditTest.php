@@ -471,7 +471,7 @@ test('user can re-fetch avatar from GitHub', function () {
         ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
 });
 
-test('profile information update with fake email', function () {
+test('reject profile information update with fake email', function () {
     $user = User::factory()->create();
 
     $response = $this
