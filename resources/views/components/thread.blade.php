@@ -10,7 +10,7 @@
     @if ($rootId !== null)
         <livewire:questions.show
             :questionId="$rootId"
-            :in-thread="false"
+            :in-thread="true"
             :key="$rootId"
         />
     @endif
@@ -25,14 +25,18 @@
         @endif
         <livewire:questions.show
             :questionId="$parentId"
-            :in-thread="false"
+            :in-thread="true"
             :key="$parentId"
         />
     @endif
-    <x-post-divider />
+
+    @if ($parentId !== null || $rootId !== null)
+        <x-post-divider />
+    @endif
+
     <livewire:questions.show
         :questionId="$questionId"
-        :in-thread="false"
+        :in-thread="true"
         :key="$questionId"
     />
 </div>

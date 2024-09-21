@@ -109,7 +109,6 @@ test('it shows the parent questions', function () {
         'parent_id' => $parent3->id,
     ]);
 
-
     $response = $this->actingAs($user)->get(route('questions.show', [
         'username' => $question->to->username,
         'question' => $question->id,

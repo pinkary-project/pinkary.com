@@ -364,14 +364,4 @@
     @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
     @endif
-
-    @if($inThread && $question->children->isNotEmpty())
-        <div class="pl-3">
-            @foreach($question->children as $comment)
-                @break($loop->depth > 5)
-
-                <livewire:questions.show :question-id="$comment->id" :$inThread :wire:key="$comment->id" />
-            @endforeach
-        </div>
-    @endif
 </article>

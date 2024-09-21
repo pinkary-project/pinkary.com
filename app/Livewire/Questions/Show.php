@@ -267,9 +267,6 @@ final class Show extends Component
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
-            ->when($this->inThread && $this->commenting, function (Builder $query): void {
-                $query->with(['children']);
-            })
             ->withCount(['likes', 'children', 'bookmarks'])
             ->firstOrFail();
 
