@@ -22,7 +22,7 @@ test('new users can register', function () {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'm@9v_.*.XCN',
         'password_confirmation' => 'm@9v_.*.XCN',
         'terms' => true,
@@ -40,7 +40,7 @@ test('required fields', function (string $field) {
     $payload = [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ];
@@ -85,7 +85,7 @@ test('password must be confirmed', function () {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'not-password',
     ]);
@@ -98,7 +98,7 @@ test('users must be at least 18 years old', function () {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'not-password',
         'terms' => false,
@@ -116,7 +116,7 @@ test('username must be unique', function () {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
@@ -127,13 +127,13 @@ test('username must be unique', function () {
 
 test('email must be unique', function () {
     User::factory()->create([
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
     ]);
 
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser1',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
@@ -148,7 +148,7 @@ test('password must be at least 8 characters', function () {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'pass',
         'password_confirmation' => 'pass',
     ]);
@@ -299,11 +299,31 @@ test('anonymously preference is set to true by default', function () {
     $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser1',
-        'email' => 'test@example.com',
+        'email' => 'test@laravel.com',
         'password' => 'password',
         'password_confirmation' => 'password',
         'terms' => true,
     ]);
 
     expect(User::first()->prefers_anonymous_questions)->toBeTrue();
+});
+
+test('reject fake emails', function () {
+    Http::fake([
+        'https://www.google.com/recaptcha/api/siteverify' => Http::response([
+            'success' => true,
+        ]),
+    ]);
+
+    $response = $this->from('/register')->post('/register', [
+        'name' => 'Test User',
+        'username' => 'testuser',
+        'email' => 'test@example.com',
+        'password' => 'm@9v_.*.XCN',
+        'password_confirmation' => 'm@9v_.*.XCN',
+        'terms' => true,
+        'g-recaptcha-response' => 'valid',
+    ]);
+
+    $response->assertInvalid('email');
 });
