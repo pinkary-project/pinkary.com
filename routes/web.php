@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/about', 'about')->name('about');
 
 Route::get('/', function () {
-    $tab = 'feed';
+    $tab = 'recent';
     if (auth()->check()) {
         $tab = type(auth()->user())->as(App\Models\User::class)->default_tab;
     }
@@ -27,7 +27,7 @@ Route::get('/', function () {
     return to_route('home.'.$tab);
 })->name('home');
 
-Route::view('/feed', 'home/feed')->name('home.feed');
+Route::view('/recent', 'home/recent')->name('home.recent');
 Route::redirect('/for-you', '/following')->name('home.for_you');
 Route::view('/following', 'home/following')->name('home.following');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');
