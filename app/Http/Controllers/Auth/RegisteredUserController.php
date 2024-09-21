@@ -37,7 +37,7 @@ final readonly class RegisteredUserController
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, new UnauthorizedEmailProviders()],
+            'email' => ['required', 'string', 'lowercase', 'email:rfc,dns', 'max:255', 'unique:'.User::class, new UnauthorizedEmailProviders()],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
             'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
