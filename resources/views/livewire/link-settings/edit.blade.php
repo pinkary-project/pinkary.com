@@ -62,10 +62,10 @@
                             />
                             <label
                                 for="{{ $gradient }}"
-                                class="{{ $gradient }} relative block w-full cursor-pointer rounded-lg border bg-white bg-gradient-to-r px-6 py-4 shadow-sm focus:outline-none sm:flex sm:justify-between"
+                                class="{{ $gradient }} relative block w-full cursor-pointer rounded-lg border bg-gradient-to-r px-6 py-4 shadow-sm focus:outline-none sm:flex sm:justify-between"
                             >
                                 <span
-                                    class="pointer-events-none absolute -inset-px rounded-lg border-2"
+                                    class="pointer-events-none absolute -inset-px rounded-lg border-2 dark:border-slate-100 border-slate-50 dark:shadow-none shadow-md"
                                     aria-hidden="true"
                                 ></span>
                             </label>
