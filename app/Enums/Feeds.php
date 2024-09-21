@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum HomePageTabs: string
+enum Feeds: string
 {
     case Feed = 'feed';
     case Following = 'following';

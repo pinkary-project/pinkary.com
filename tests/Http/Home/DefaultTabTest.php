@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\HomePageTabs;
+use App\Enums\Feeds;
 use App\Models\User;
 
 it('have a default tab', function () {
@@ -33,7 +33,7 @@ it('/ redirects to the selected default feed.', function () {
 it('can update the default tab to following', function () {
     $newUser = User::factory()->create();
 
-    $newUser->default_tab = HomePageTabs::Following->value;
+    $newUser->default_tab = Feeds::Following->value;
     $newUser->save();
 
     $response = $this->actingAs($newUser)->get(route('home'));
