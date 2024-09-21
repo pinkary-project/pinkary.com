@@ -8,7 +8,6 @@ use App\Livewire\Concerns\Followable;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
@@ -84,11 +83,11 @@ final class Users extends Component
             ->load('links')
             ->when(auth()->check(), function (Collection $users): void {
                 $users->loadExists([
-                    'following as is_follower' => function (Relation $relation): void {
-                        $relation->getQuery()->where('user_id', auth()->id());
+                    'following as is_follower' => function (Builder $query): void {
+                        $query->where('user_id', auth()->id());
                     },
-                    'followers as is_following' => function (Relation $relation): void {
-                        $relation->getQuery()->where('follower_id', auth()->id());
+                    'followers as is_following' => function (Builder $query): void {
+                        $query->where('follower_id', auth()->id());
                     },
                 ]);
             });
