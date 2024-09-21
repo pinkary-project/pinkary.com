@@ -12,7 +12,7 @@ it('render questions with right conditions', function () {
 
     $userTo = User::factory()->create();
 
-    $questionWithLike = Question::factory()->create([
+    $question1 = Question::factory()->create([
         'to_id' => $userTo->id,
         'answer' => 'Answer',
         'is_reported' => false,
@@ -20,7 +20,7 @@ it('render questions with right conditions', function () {
 
     $followerUser->following()->attach($userTo->id);
 
-    Question::factory()->create([
+    $question2 = Question::factory()->create([
         'to_id' => $userTo->id,
         'answer' => 'Answer 2',
         'is_reported' => false,
@@ -28,7 +28,7 @@ it('render questions with right conditions', function () {
 
     $builder = (new QuestionsFollowingFeed($followerUser))->builder();
 
-    expect($builder->count())->toBe(2);
+    expect($builder->pluck('id')->all())->toEqual([$question2->id, $question1->id]);
 });
 
 it('do not render questions without answer', function () {
@@ -38,7 +38,7 @@ it('do not render questions without answer', function () {
 
     $answer = 'Answer to the question that needs to be rendered';
 
-    $questionWithLike = Question::factory()->create([
+    Question::factory()->create([
         'to_id' => $userTo->id,
         'answer' => $answer,
         'is_reported' => false,
@@ -79,7 +79,7 @@ it('do not render reported questions', function () {
 
     $userTo = User::factory()->create();
 
-    $questionWithLike = Question::factory()->create([
+    Question::factory()->create([
         'to_id' => $userTo->id,
         'answer' => 'Answer',
         'is_reported' => false,
@@ -96,6 +96,29 @@ it('do not render reported questions', function () {
     $builder = (new QuestionsFollowingFeed($followerUser))->builder();
 
     expect($builder->where('is_reported', false)->count())->toBe(1);
+});
+
+it('does not show the comments if it\'s on non following user\'s post', function () {
+    $followerUser = User::factory()->create();
+
+    $userTo = User::factory()->create();
+
+    $followerUser->following()->attach($userTo->id);
+
+    $question = Question::factory()->create([
+        'answer' => 'Answer',
+    ]);
+
+    Question::factory()->create([
+        'parent_id' => $question->id,
+        'answer' => 'Answer 2',
+        'from_id' => $userTo->id,
+        'to_id' => $userTo->id,
+    ]);
+
+    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
+
+    expect($builder->count())->toBe(0);
 });
 
 it('builder returns Eloquent\Builder instance', function () {
