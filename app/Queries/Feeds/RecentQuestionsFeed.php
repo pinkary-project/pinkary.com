@@ -25,11 +25,12 @@ final readonly class RecentQuestionsFeed
     public function builder(): Builder
     {
         return Question::query()
+            ->select('id')
             ->whereNotNull('answer')
             ->where('is_ignored', false)
             ->where('is_reported', false)
             ->when($this->hashtag, function (Builder $query): void {
-                $query->select('id')->whereHas('hashtags', function (Builder $query): void {
+                $query->whereHas('hashtags', function (Builder $query): void {
                     $query
                     // using 'like' for this query (with no wildcards) will
                     // result in a case-insensitive lookup from sqlite,
@@ -37,7 +38,9 @@ final readonly class RecentQuestionsFeed
                         ->where('name', 'like', $this->hashtag);
                 })->orderByDesc('updated_at');
             }, function (Builder $query): void {
-                $query->select(DB::Raw('IFNULL(root_id, id) as id'))
+                $query->addSelect('root_id', 'parent_id')
+                    ->withAggregate('to as username', 'username')
+                    ->withAggregate('parent as grand_parent_id', 'parent_id')
                     ->where(function (Builder $query): void {
                         $query->whereNull('root_id')
                             ->orHas('root');

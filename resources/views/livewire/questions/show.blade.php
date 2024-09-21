@@ -1,10 +1,4 @@
 <article class="block" id="q-{{ $questionId }}" x-data="copyCode">
-    @if ($showParents)
-        @foreach($parentQuestions as $parentQuestion)
-            <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
-            <x-post-divider />
-        @endforeach
-    @endif
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
@@ -369,30 +363,5 @@
 
     @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
-    @endif
-
-    @if($inThread && !$commenting && $question->descendants->isNotEmpty())
-        @php
-            $lastComment = $question->descendants->first();
-            $parentCommentOfLastComment = $lastComment->parent;
-        @endphp
-        @if($parentCommentOfLastComment && $question->id !== $parentCommentOfLastComment->id)
-            @if($parentCommentOfLastComment->parent_id === $question->id)
-               <x-post-divider />
-            @else
-                <x-post-divider :link="route('questions.show', ['username' => $question->to->username, 'question' => $question])" :text="'View more comments...'" />
-            @endif
-            <livewire:questions.show :questionId="$parentCommentOfLastComment->id" :in-thread="false" :key="$parentCommentOfLastComment->id" />
-        @endif
-        <x-post-divider />
-        <livewire:questions.show :questionId="$lastComment->id" :in-thread="false" :key="$lastComment->id" />
-    @elseif($inThread && $question->children->isNotEmpty())
-        <div class="pl-3">
-            @foreach($question->children as $comment)
-                @break($loop->depth > 5)
-
-                <livewire:questions.show :question-id="$comment->id" :$inThread :wire:key="$comment->id" />
-            @endforeach
-        </div>
     @endif
 </article>
