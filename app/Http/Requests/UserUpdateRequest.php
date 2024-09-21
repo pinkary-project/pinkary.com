@@ -33,7 +33,7 @@ final class UserUpdateRequest extends FormRequest
                 new Username($user),
             ],
             'email' => [
-                'required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id),
+                'required', 'string', 'lowercase', 'email:rfc,dns', 'max:255', Rule::unique(User::class)->ignore($user->id),
                 new UnauthorizedEmailProviders(),
             ],
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],

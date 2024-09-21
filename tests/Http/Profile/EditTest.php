@@ -37,7 +37,7 @@ test('profile information can be updated', function () {
         ->patch('/profile', [
             'name' => 'Test User',
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email' => 'test@laravel.com',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
@@ -49,7 +49,7 @@ test('profile information can be updated', function () {
     $user->refresh();
 
     $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
+    $this->assertSame('test@laravel.com', $user->email);
     $this->assertSame('testuser', $user->username);
     $this->assertNull($user->email_verified_at);
     $this->assertFalse($user->prefers_anonymous_questions);
@@ -78,6 +78,7 @@ test('email provider must be authorized', function () {
 test('username can be updated to uppercase', function () {
     $user = User::factory()->create([
         'username' => 'testuser',
+        'email' => 'test@laravel.com',
     ]);
 
     $response = $this
@@ -126,7 +127,9 @@ test('can not update to an existing username using uppercase', function () {
 });
 
 test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'email' => 'test@laravel.com',
+    ]);
 
     $response = $this
         ->actingAs($user)
@@ -147,13 +150,15 @@ test('email verification status is unchanged when the email address is unchanged
 
 test('email verification job sent & status reset when the email address is changed', function () {
     Notification::fake();
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'email' => 'test@laravel.com',
+    ]);
 
     $this->actingAs($user)
         ->patch('/profile', [
             'name' => $user->name,
             'username' => 'valid_username',
-            'email' => 'new@email.address',
+            'email' => 'new@laravel.com',
             'prefers_anonymous_questions' => false,
         ])
         ->assertSessionHasNoErrors();
@@ -165,7 +170,9 @@ test('email verification job sent & status reset when the email address is chang
 
 test('only updates avatar if email changes & avatar not been uploaded', function () {
     Queue::fake();
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'email' => 'test@laravel.com',
+    ]);
 
     $this->actingAs($user)
         ->patch('/profile', [
@@ -327,6 +334,7 @@ test("can not update user's name with blank characters", function () {
 test('prefers_anonymous_questions can be updated', function () {
     $user = User::factory()->create([
         'prefers_anonymous_questions' => true,
+        'email' => 'test@laravel.com',
     ]);
 
     $response = $this
@@ -461,4 +469,20 @@ test('user can re-fetch avatar from GitHub', function () {
         ->and($user->avatar_updated_at)->not->toBeNull()
         ->and($user->is_uploaded_avatar)->toBeFalse()
         ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
+});
+
+test('profile information update with fake email', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Test User',
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response->assertInvalid('email');
 });
