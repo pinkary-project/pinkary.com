@@ -99,13 +99,18 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-button x-data="themeSwitch()" @click="toggleTheme" class="flex flex-row items-center justify-between">
-                            <span x-text="toggleThemeButtonText"></span>
-                            <span class="mr-2">
-                                <x-heroicon-o-moon x-show="theme == 'light'" class="h-4 w-4"/>
-                                <x-heroicon-o-sun x-show="theme == 'dark'" class="h-4 w-4"/>
-                                <x-heroicon-o-computer-desktop x-show="theme == 'system'" class="h-4 w-4"/>
-                            </span>
+                        <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between dark:hover:bg-transparent hover:bg-transparent">
+                            <div class="flex flex-row justify-between gap-2">
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'light' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('light')">
+                                    <x-heroicon-o-sun class="w-4 h-4"/>
+                                </div>
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'dark' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('dark')">
+                                    <x-heroicon-o-moon class="w-4 h-4"/>
+                                </div>
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'system' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('system')">
+                                    <x-heroicon-o-computer-desktop class="w-4 h-4"/>
+                                </div>
+                            </div>
                         </x-dropdown-button>
                         <x-dropdown-link :href="route('about')">
                             {{ __('About') }}
