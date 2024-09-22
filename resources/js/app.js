@@ -69,4 +69,7 @@ Alpine.data('viewCreate', viewCreate);
 import { themeSwitch } from './theme-switch.js';
 Alpine.data('themeSwitch', themeSwitch);
 
+import { repostButton} from "./repost-button.js";
+Alpine.data('repostButton', repostButton);
+
 Livewire.start()

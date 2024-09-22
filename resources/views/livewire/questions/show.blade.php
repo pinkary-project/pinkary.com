@@ -4,28 +4,29 @@
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
                     <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                        <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed dark:border-slate-400 border-slate-600">
+                        <div
+                            class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed dark:border-slate-400 border-slate-600">
                             <span>?</span>
                         </div>
 
                         <p class="font-medium">Anonymously</p>
                     </div>
                 @else
-                    <x-avatar-with-name :user="$question->from" />
+                    <x-avatar-with-name :user="$question->from"/>
                 @endif
             @endunless
             @if ($question->pinned && $pinnable)
                 <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                    <x-icons.pin class="h-4 w-4 dark:text-slate-400 text-slate-600" />
+                    <x-icons.pin class="h-4 w-4 dark:text-slate-400 text-slate-600"/>
                     <span class="dark:text-slate-400 text-slate-600">Pinned</span>
                 </div>
             @endif
         </div>
 
         @unless ($question->isSharedUpdate())
-        <p class="mt-3 px-4 dark:text-slate-200 text-slate-800">
-            {!! $question->content !!}
-        </p>
+            <p class="mt-3 px-4 dark:text-slate-200 text-slate-800">
+                {!! $question->content !!}
+            </p>
         @endunless
     </div>
 
@@ -45,7 +46,8 @@
                     data-navigate-ignore="true"
                     wire:navigate
                 >
-                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-100 transition-opacity group-hover/profile:opacity-90">
+                    <figure
+                        class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-100 transition-opacity group-hover/profile:opacity-90">
                         <img
                             src="{{ $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
@@ -86,7 +88,7 @@
                             <button
                                 data-navigate-ignore="true"
                                 class="inline-flex items-center rounded-md border border-transparent py-1 text-sm dark:text-slate-400 text-slate-600 transition duration-150 ease-in-out dark:hover:text-slate-50 hover:text-slate-950 focus:outline-none">
-                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
+                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6"/>
                             </button>
                         </x-slot>
 
@@ -97,7 +99,7 @@
                                     wire:click="pin"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.pin class="h-4 w-4" />
+                                    <x-icons.pin class="h-4 w-4"/>
                                     <span>Pin</span>
                                 </x-dropdown-button>
                             @elseif ($question->pinned)
@@ -106,7 +108,7 @@
                                     wire:click="unpin"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-icons.pin class="h-4 w-4" />
+                                    <x-icons.pin class="h-4 w-4"/>
                                     <span>Unpin</span>
                                 </x-dropdown-button>
                             @endif
@@ -127,7 +129,7 @@
                                     wire:confirm="Are you sure you want to delete this question?"
                                     class="flex items-center gap-1.5"
                                 >
-                                    <x-heroicon-o-trash class="h-4 w-4" />
+                                    <x-heroicon-o-trash class="h-4 w-4"/>
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
@@ -178,11 +180,11 @@
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
-                            href="{{Route('questions.show', [
+                        href="{{Route('questions.show', [
                                 'question' => $question->id,
                                 'username' => $question->to->username,
                             ])}}"
-                            wire:navigate
+                        wire:navigate
                         @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
                         @class([
@@ -190,14 +192,31 @@
                             "cursor-pointer" => ! $commenting,
                         ])
                     >
-                        <x-heroicon-o-chat-bubble-left-right class="size-4" />
+                        <x-heroicon-o-chat-bubble-left-right class="size-4"/>
                         @if ($question->children_count > 0)
                             <span class="ml-1">
                                 {{ Number::abbreviate($question->children_count) }}
                             </span>
                         @endif
                     </a>
+                    <span>•</span>
+                    @php
+                        $repostExists = $question->auth_reposted;
+                        $repostsCount = $question->reposts->count();
+                    @endphp
 
+                    <button
+                        x-data="repostButton('{{ $question->id }}', @js($repostExists), {{ $repostsCount }}, @js(auth()->check()))"
+                        x-cloak
+                        data-navigate-ignore="true"
+                        x-on:click="toggleRepost"
+                        :title="repostButtonTitle"
+                        class="flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                    >
+                        <x-icons.reset class="size-4 text-pink-500" x-show="isReposted"/>
+                        <x-icons.reset class="size-4 text-slate-500" x-show="!isReposted"/>
+                        <span class="ml-1" x-show="count" x-text="repostButtonText"></span>
+                    </button>
                     <span>•</span>
 
                     @php
@@ -213,8 +232,8 @@
                         :title="likeButtonTitle"
                         class="flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
                     >
-                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
-                        <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
+                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked"/>
+                        <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked"/>
                         <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
                     </button>
                     <span>•</span>
@@ -258,8 +277,8 @@
                         :title="bookmarkButtonTitle"
                         class="mr-1 flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
                     >
-                        <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
-                        <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
+                        <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked"/>
+                        <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked"/>
                         <span class="ml-1" x-show="count" x-text="bookmarkButtonText"></span>
                     </button>
                     <x-dropdown align="left"
@@ -275,7 +294,7 @@
                                 title="Share"
                                 class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
                             >
-                                <x-heroicon-o-paper-airplane class="h-4 w-4" />
+                                <x-heroicon-o-paper-airplane class="h-4 w-4"/>
                             </button>
                         </x-slot>
 
@@ -298,7 +317,7 @@
                                 type="button"
                                 class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
                             >
-                                <x-heroicon-o-link class="size-4" />
+                                <x-heroicon-o-link class="size-4"/>
                             </button>
                             <button
                                 data-navigate-ignore="true"
@@ -317,7 +336,7 @@
                                 "
                                 class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
                             >
-                                <x-heroicon-o-link class="size-4" />
+                                <x-heroicon-o-link class="size-4"/>
                             </button>
                             <button
                                 data-navigate-ignore="true"
@@ -333,7 +352,7 @@
                                 type="button"
                                 class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
                             >
-                                <x-icons.twitter-x class="size-4" />
+                                <x-icons.twitter-x class="size-4"/>
                             </button>
                         </x-slot>
                     </x-dropdown>
@@ -362,6 +381,6 @@
     @endif
 
     @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
-        <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
+        <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()"/>
     @endif
 </article>

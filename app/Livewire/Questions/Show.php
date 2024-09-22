@@ -156,6 +156,55 @@ final class Show extends Component
     }
 
     /**
+     * Repost the question.
+     */
+    #[Renderless]
+    public function repost(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+        $user = type(auth()->user())->as(User::class);
+
+        $questionClone = $question->replicate();
+        $questionClone->is_repost = true;
+        $questionClone->from_id = $user->id;
+        $questionClone->to_id = $user->id;
+        $questionClone->root_id = $question->id;
+        $questionClone->parent_id = $question->id;
+
+        $questionClone->save();
+    }
+
+    /**
+     * unRepost the question.
+     */
+    #[Renderless]
+    public function unRepost(): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        /**
+         * @var Question $question
+         */
+        $question = Question::query()
+            ->where('root_id', $this->questionId)
+            ->where('from_id', auth()->id())
+            ->where('is_repost', true)
+            ->firstOrFail();
+
+        $question->delete();
+    }
+
+    /**
      * Pin a question.
      */
     public function pin(): void
@@ -257,7 +306,7 @@ final class Show extends Component
      */
     public function render(): View
     {
-        $question = Question::where('id', $this->questionId)
+        $question = Question::query()->where('id', $this->questionId)
             ->with(['to', 'from'])
             ->withExists(['bookmarks as is_bookmarked' => function (Builder $query): void {
                 $query->where('user_id', auth()->id());
