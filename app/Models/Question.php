@@ -66,61 +66,25 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * The accessor for the content attribute.
-     *
-     * @return Attribute<string, string>
+     * The attributes that should be cast.
      */
-    public function content(): Attribute
+    public function getContentAttribute(?string $value): ?string
     {
-        return Attribute::make(
-            fn (mixed $value): ?string => $this->runParser(
-                attribute: 'content',
-                value: $value,
-            )
+        return $this->runParser(
+            value: $value,
+            attribute: 'content',
         );
     }
 
     /**
-     * The accessor for the answer attribute.
-     *
-     * @return Attribute<string, string>
+     * The attributes that should be cast.
      */
-    public function answer(): Attribute
+    public function getAnswerAttribute(?string $value): ?string
     {
-        return Attribute::make(
-            fn (mixed $value): ?string => $this->runParser(
-                attribute: 'answer',
-                value: $value,
-            )
+        return $this->runParser(
+            value: $value,
+            attribute: 'answer',
         );
-    }
-
-    /**
-     * Run the parser for the given attribute.
-     */
-    public function runParser(string $attribute, mixed $value): ?string
-    {
-        $contextKey = "question.{$this->id}.{$attribute}.parsed";
-        if (Context::hasHidden($contextKey)) {
-            if ($this->isDirty($attribute)) {
-                return $this->parseAndCache($value, $contextKey);
-            }
-            /** @var string|null $parsed */
-            $parsed = Context::getHidden($contextKey);
-            return $parsed;
-        }
-
-        return $this->parseAndCache($value, $contextKey);
-    }
-
-    public function parseAndCache(mixed $value, string $contextKey): ?string
-    {
-        $content = new ParsableContent();
-        /** @var string|null $parsed */
-        $parsed = ! empty($value) && is_string($value) ? $content->parse($value) : null;
-        Context::addHidden($contextKey, $parsed);
-
-        return $parsed;
     }
 
     /**
@@ -197,7 +161,7 @@ final class Question extends Model implements Viewable
             return $mentionedUsers;
         }
 
-        preg_match_all("/@([^\s,.?!\/@<]+)/i", $this->content, $contentMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
         preg_match_all("/@([^\s,.?!\/@<]+)/i", $this->answer, $answerMatches);
 
         $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
@@ -259,5 +223,36 @@ final class Question extends Model implements Viewable
     public function hashtags(): BelongsToMany
     {
         return $this->belongsToMany(Hashtag::class);
+    }
+
+    /**
+     * Run the parser for the given attribute and value.
+     */
+    private function runParser(?string $value, string $attribute): ?string
+    {
+        $key = "question.{$this->id}.{$attribute}.parsed";
+
+        if (Context::hasHidden($key)) {
+            if ($this->isDirty($attribute)) {
+                return $this->cacheAndParse($value, $key);
+            }
+
+            $returned = Context::getHidden($key);
+
+            return is_string($returned) ? $returned : null;
+        }
+
+        return $this->cacheAndParse($value, $key);
+    }
+
+    /**
+     * Cache and parse the given value.
+     */
+    private function cacheAndParse(?string $value, string $key): ?string
+    {
+        $parsed = (new ParsableContent)->parse((string)$value);
+        Context::addHidden($key, $parsed);
+
+        return $value === null || $value === '' || $value === '0' ? null : $parsed;
     }
 }
