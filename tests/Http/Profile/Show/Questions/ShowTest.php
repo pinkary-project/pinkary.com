@@ -94,3 +94,30 @@ test('question is not visible for other usernames on the url', function () {
 
     $response->assertStatus(404);
 });
+
+test('it shows the parent questions', function () {
+    $user = User::factory()->create();
+
+    $parent1 = Question::factory()->create();
+    $parent2 = Question::factory()->create([
+        'parent_id' => $parent1->id,
+    ]);
+    $parent3 = Question::factory()->create([
+        'parent_id' => $parent2->id,
+    ]);
+    $question = Question::factory()->create([
+        'parent_id' => $parent3->id,
+    ]);
+
+    $response = $this->actingAs($user)->get(route('questions.show', [
+        'username' => $question->to->username,
+        'question' => $question->id,
+    ]));
+
+    $response->assertOk()
+        ->assertViewHas('parentQuestions', function (array $parentQuestions) use ($parent1, $parent2, $parent3) {
+            return $parentQuestions[0]->id === $parent3->id
+                && $parentQuestions[1]->id === $parent2->id
+                && $parentQuestions[2]->id === $parent1->id;
+        });
+});

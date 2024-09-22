@@ -59,6 +59,12 @@
     href="https://pinkary.com/img/ico.svg"
     type="image/x-icon"
 />
+
+<link
+    rel="apple-touch-icon"
+    href="https://pinkary.com/img/apple-touch-icon.png"
+/>
+
 <link
     rel="manifest"
     href="/manifest.json"
@@ -200,6 +206,20 @@
         font-stretch: 75% 125%;
     }
 </style>
+
+<script>
+    function isDarkTheme() {
+        return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    }
+    function updateTheme() {
+        if (isDarkTheme()) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    }
+    updateTheme();
+</script>
 
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])

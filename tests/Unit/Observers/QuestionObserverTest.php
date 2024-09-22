@@ -197,7 +197,11 @@ test('ignored', function () {
     $mentionedUser = User::factory()->create([
         'username' => 'johndoe',
     ]);
-    $question = Question::factory()->create();
+    $question = Question::factory()
+        ->has(Question::factory()->sharedUpdate()->count(3)->state([
+            'answer' => 'descendant',
+        ]), 'descendants')
+        ->create();
     $question->update([
         'answer' => 'My favourite developer is to @johndoe',
     ]);
@@ -208,6 +212,7 @@ test('ignored', function () {
         ->create();
 
     expect($question->children()->count())->toBe(3);
+    expect($question->descendants()->count())->toBe(3);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -217,6 +222,7 @@ test('ignored', function () {
     expect($question->from->fresh()->notifications()->count())->toBe(0);
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
     expect($question->children()->count())->toBe(0);
+    expect($question->descendants()->count())->toBe(0);
 });
 
 test('deleted', function () {
@@ -242,7 +248,11 @@ test('deleted', function () {
         'username' => 'johndoe',
     ]);
 
-    $question = Question::factory()->create();
+    $question = Question::factory()
+        ->has(Question::factory()->sharedUpdate()->count(3)->state([
+            'answer' => 'descendant',
+        ]), 'descendants')
+        ->create();
     $question->update([
         'answer' => 'My favourite developer is to @johndoe',
     ]);
@@ -257,6 +267,7 @@ test('deleted', function () {
 
     expect($question->children()->count())->toBe(3);
     expect(Question::where('answer', 'grandchild')->count())->toBe(9);
+    expect(Question::where('answer', 'descendant')->count())->toBe(3);
     expect($question->to->notifications()->count())->toBe(0);
     expect($question->from->notifications()->count())->toBe(1);
     expect($mentionedUser->notifications()->count())->toBe(1);
@@ -267,6 +278,7 @@ test('deleted', function () {
     expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
     expect($question->children()->count())->toBe(0);
     expect(Question::where('answer', 'grandchild')->count())->toBe(0);
+    expect(Question::where('answer', 'descendant')->count())->toBe(0);
 });
 
 test('hashtags are synced when created', function () {

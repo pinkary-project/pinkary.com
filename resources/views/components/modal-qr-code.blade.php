@@ -3,10 +3,19 @@
     maxWidth="lg"
     showCloseButton="false"
 >
-    <div class="p-6">
+    <div class="p-6"
+        x-data="{
+            link: '{{ route('qr-code.image') }}',
+            update(){
+                this.link = '{{ route('qr-code.image') }}' + '?theme=' + (isDarkTheme() ? 'dark' : 'light');
+            }
+        }"
+        x-init="update()"
+        x-on:open-modal.window="$event.detail == 'show-qr-code' && update()"
+    >
         <img
             loading="lazy"
-            src="{{ route('qr-code.image') }}"
+            :src="link"
             class="mx-auto w-full max-w-lg"
         />
 
@@ -15,7 +24,7 @@
             <x-primary-button
                 as="a"
                 x-on:click="$dispatch('close')"
-                href="{{ route('qr-code.image') }}"
+                ::href="link"
                 download
             >
                 Download

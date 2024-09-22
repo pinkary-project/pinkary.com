@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 use App\Rules\NoBlankCharacters;
 
-test('with blank characters', function (string $name) {
+test('validation fails for strings containing blank characters', function (string $name) {
     $rule = new NoBlankCharacters;
 
-    $fail = fn (string $errorMessage) => $this->fail($errorMessage);
+    $fail = function (string $errorMessage) {
+        // Capture the error message
+        $this->errorMessage = $errorMessage;
+    };
 
+    // Validate the input
     $rule->validate('name', $name, $fail);
 
-    expect(true)->toBeFalse();
+    expect(isset($this->errorMessage))->toBeTrue();
 })->with([
     "\u{200E}",
     "\u{200E}\u{200E}",
@@ -22,7 +26,18 @@ test('with blank characters', function (string $name) {
     "测试\u{200E}",
     "ⓣⓔⓢⓣ\u{200E}",
     '  ',
-])->fails();
+    "\u{2005}",
+    "\u{2006}",
+    "\u{2007}",
+    "\u{2008}",
+    "\u{2009}",
+    "\u{200A}",
+    "\u{2028}",
+    "\u{205F}",
+    "\u{3000}",
+    " \u{2005} ",
+    "\u{2007}\u{2008}\u{2009}",
+]);
 
 test('without blank characters', function (string $name) {
     $rule = new NoBlankCharacters;
@@ -35,4 +50,5 @@ test('without blank characters', function (string $name) {
 })->with([
     'Nuno Maduro',
     'Taylor Otwell',
+    'ManukMinasyan',
 ]);

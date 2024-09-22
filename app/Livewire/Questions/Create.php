@@ -255,6 +255,12 @@ final class Create extends Component
         };
 
         $this->dispatch('notification.created', message: $message);
+
+        if (filled($this->parentId)) {
+            $this->js(<<<'JS'
+                Livewire.navigate(window.location.href);
+            JS);
+        }
     }
 
     /**
@@ -294,12 +300,23 @@ final class Create extends Component
         $imagePath = Storage::disk('public')->path($path);
         $imagick = new Imagick($imagePath);
 
-        $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
+        if ($imagick->getNumberImages() > 1) {
+            $imagick = $imagick->coalesceImages();
 
-        $imagick->stripImage();
+            foreach ($imagick as $frame) {
+                $frame->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
+                $frame->stripImage();
+                $frame->setImageCompressionQuality(80);
+            }
 
-        $imagick->setImageCompressionQuality(80);
-        $imagick->writeImage($imagePath);
+            $imagick = $imagick->deconstructImages();
+            $imagick->writeImages($imagePath, true);
+        } else {
+            $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
+            $imagick->stripImage();
+            $imagick->setImageCompressionQuality(80);
+            $imagick->writeImage($imagePath);
+        }
 
         $imagick->clear();
         $imagick->destroy();
