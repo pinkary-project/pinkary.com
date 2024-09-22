@@ -36,8 +36,7 @@ final readonly class QuestionsFollowingFeed
                 'root as showRoot' => $followQueryClosure,
                 'parent as showParent' => $followQueryClosure,
             ])
-            ->withAggregate('to as username', 'username')
-            ->withAggregate('parent as grand_parent_id', 'parent_id')
+            ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
             ->whereNotNull('answer')
             ->where('is_reported', false)
             ->where('is_ignored', false)
