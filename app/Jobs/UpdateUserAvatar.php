@@ -6,12 +6,11 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Services\Avatar;
+use App\Services\ImageOptimizer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers;
-use Intervention\Image\ImageManager;
 use Throwable;
 
 final class UpdateUserAvatar implements ShouldQueue
@@ -60,15 +59,20 @@ final class UpdateUserAvatar implements ShouldQueue
 
         Storage::disk('public')->put($avatar, $contents, 'public');
 
-        $this->resizer()->read($disk->path($avatar))
-            ->coverDown(200, 200)
-            ->save();
-
-        $this->user->update([
-            'avatar' => "$avatar",
+        $updated = $this->user->update([
+            'avatar' => $avatar,
             'avatar_updated_at' => now(),
             'is_uploaded_avatar' => $this->file !== null,
         ]);
+
+        if ($updated) {
+            ImageOptimizer::optimize(
+                path: $avatar,
+                width: 300,
+                height: 300,
+                isThumbnail: true
+            );
+        }
 
         $this->ensureFileIsDeleted();
     }
@@ -92,18 +96,8 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     private function ensureFileIsDeleted(): void
     {
-        if ($this->file !== null) {
+        if (($this->file !== null) && File::exists($this->file)) {
             File::delete($this->file);
         }
-    }
-
-    /**
-     * Creates a new image resizer.
-     */
-    private function resizer(): ImageManager
-    {
-        return new ImageManager(
-            new Drivers\Gd\Driver(),
-        );
     }
 }

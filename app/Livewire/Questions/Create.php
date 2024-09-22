@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
+use App\Services\ImageOptimizer;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Imagick;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -273,9 +273,14 @@ final class Create extends Component
 
             /** @var string $path */
             $path = $image->store("images/{$today}", 'public');
-            $this->optimizeImage($path);
 
             if ($path) {
+                ImageOptimizer::optimize(
+                    path: $path,
+                    width: 1000,
+                    height: 1000
+                );
+
                 session()->push('images', $path);
 
                 $this->dispatch(
@@ -290,36 +295,6 @@ final class Create extends Component
         });
 
         $this->reset('images');
-    }
-
-    /**
-     * Optimize the images.
-     */
-    public function optimizeImage(string $path): void
-    {
-        $imagePath = Storage::disk('public')->path($path);
-        $imagick = new Imagick($imagePath);
-
-        if ($imagick->getNumberImages() > 1) {
-            $imagick = $imagick->coalesceImages();
-
-            foreach ($imagick as $frame) {
-                $frame->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-                $frame->stripImage();
-                $frame->setImageCompressionQuality(80);
-            }
-
-            $imagick = $imagick->deconstructImages();
-            $imagick->writeImages($imagePath, true);
-        } else {
-            $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-            $imagick->stripImage();
-            $imagick->setImageCompressionQuality(80);
-            $imagick->writeImage($imagePath);
-        }
-
-        $imagick->clear();
-        $imagick->destroy();
     }
 
     /**
