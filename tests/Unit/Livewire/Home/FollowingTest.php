@@ -163,5 +163,5 @@ it('renders the threads in the right order', function () {
 
     $component->assertDontSee('1st child question for '.str($answerForAnotherFollowingUser)->snake());
     $component->assertDontSee($answerForNonFollowingUser);
-    $component->assertDontSee('3rd nested child question for '.str($answerForAuthUser)->snake());
+    $component->assertDontSee('3rd nested child question for '.str($answerForNonFollowingUser)->snake());
 });
