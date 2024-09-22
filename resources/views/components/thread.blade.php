@@ -6,7 +6,7 @@
     'username' => null,
 ])
 
-<div wire:key="thread-{{ $questionId.'-'.$rootId.'-'.$parentId }}">
+<div wire:key="thread-inner-{{ $questionId.'-'.$rootId.'-'.$parentId }}">
     @if ($rootId !== null)
         <livewire:questions.show
             :questionId="$rootId"
@@ -20,7 +20,7 @@
                 <x-post-divider wire:key="divider-{{ $parentId }}" />
             @else
                 <x-post-divider
-                    :link="route('questions.show', ['username' => $username, 'question' => $questionId])"
+                    :link="route('questions.show', ['username' => $username, 'question' => $rootId])"
                     :text="'View more comments...'"
                     wire:key="divider-{{ $parentId }}"
                 />

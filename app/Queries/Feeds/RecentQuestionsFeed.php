@@ -39,8 +39,7 @@ final readonly class RecentQuestionsFeed
                 })->orderByDesc('updated_at');
             }, function (Builder $query): void {
                 $query->addSelect('root_id', 'parent_id')
-                    ->withAggregate('to as username', 'username')
-                    ->withAggregate('parent as grand_parent_id', 'parent_id')
+                    ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
                     ->where(function (Builder $query): void {
                         $query->whereNull('root_id')
                             ->orHas('root');
