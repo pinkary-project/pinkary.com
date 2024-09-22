@@ -5,48 +5,35 @@ declare(strict_types=1);
 namespace App\Services;
 
 use DOMDocument;
-use DOMElement;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
-/**
- * @phpstan-type MetaData = array{
- *     title: string,
- *     type: string,
- *     image: string,
- *     url: string,
- *     description: string,
- *     site_name: string,
- *     locale: string,
- * }
- * @phpstan-type MetaDataCollection = Collection<int, MetaData>
- */
 final readonly class MetaData
 {
     /**
      * The Open Graph data.
-     *
-     * @var MetaDataCollection
      */
     private Collection $data;
 
     /**
      * Fetch the Open Graph data for a given URL.
      */
-    public function __construct(
-        private string $url
-    ) {
-        $this->data = Cache::get(
-            $this->url,
+    public function __construct(private string $url)
+    {
+        $this->data = Cache::remember(
+            Str::of($url)->slug()->prepend('preview_')->value(),
+            now()->addYear(),
+            // NOTE: check why this data is not being cached, we are just caching a Collection in the DB & I can't see the data in the DB
             fn () => $this->getData()
         );
     }
 
     /**
-     * Get the open graph data for a given external URL.
+     * Fetch the parsed meta-data for a given URL.
      *
-     * @return MetaDataCollection
+     * @return Collection<string, string>
      */
     public static function fetch(string $url): Collection
     {
@@ -54,96 +41,60 @@ final readonly class MetaData
     }
 
     /**
-     * Get the Open Graph data.
+     * Get the meta-data for a given URL.
      *
-     * @return MetaDataCollection
+     * @return Collection<string, string>
      */
     public function getData(): Collection
     {
         $response = Http::get($this->url);
 
         if ($response->ok()) {
-            $opg = $this->parse($response->body());
-            //Cache::put($this->url, $opg, now()->addDay());
-            dump($opg);
-
-            return $opg;
+            // TODO: add unit test for this service
+            return $this->parse($response->body());
         }
 
         return collect();
     }
 
-    // ensure fb, twitter card, open graph, and oembed are all parsed,
-    // so we can use them in the view to generate a preview
+    /**
+     * Fetch Twitter oEmbed data for a given tweet URL.
+     *
+     * @return Collection<string, string>
+     */
+    private function fetchTwitterOEmbed(string $tweetUrl): Collection
+    {
+        $oEmbedUrl = 'https://publish.twitter.com/oembed?url='.urlencode($tweetUrl);
+
+        $response = Http::get($oEmbedUrl);
+
+        if ($response->ok()) {
+            return collect($response->json());
+        }
+
+        return collect();
+    }
 
     /**
      * Parse the response body for MetaData.
      *
-     * @return Collection<int, DOMElement>
+     * @return Collection<string, string>
      */
     private function parse(string $content): Collection
     {
         $doc = new DOMDocument();
         @$doc->loadHTML($content);
 
-        $interested_in = ['og', 'fb', 'twitter'];
-
+        $interested_in = ['og', 'twitter'];
         $data = collect();
-
-        // Open graph
         $metas = $doc->getElementsByTagName('meta');
-        if ($metas->length > 0) {
-            dump($metas);
-            for ($n = 0; $n < $metas->length; $n++) {
-                $meta = $metas->item($n);
 
-                collect(['name', 'property'])->each(function ($name) use ($meta, $interested_in, $data) {
-                    $meta_bits = explode(':', $meta->getAttribute($name));
-                    //dump($meta_bits);
-                    if (in_array($meta_bits[0], $interested_in)) {
-                        if ($data->has($meta->getAttribute($name)) && ! is_array($data->get($meta->getAttribute($name)))) {
-                            $data->put($meta_bits[0], [$data->get($meta->getAttribute($name)), $meta->getAttribute('content')]);
-                        } elseif ($data->has($meta->getAttribute($name)) && is_array($data->get($meta->getAttribute($name)))) {
-                            $data->push($meta->getAttribute('content'));
-                        } else {
-                            $data->put($meta_bits[0], $meta->getAttribute('content'));
-                        }
-                    }
-                });
-            }
-        }
-
-        // OEmbed
-        $metas = $doc->getElementsByTagName('link');
-        if ($metas->length > 0) {
-            for ($n = 0; $n < $metas->length; $n++) {
-                $meta = $metas->item($n);
-
-                if (mb_strtolower($meta->getAttribute('rel')) === 'alternate') {
-                    if (mb_strtolower($meta->getAttribute('type')) === 'application/json+oembed') {
-                        $data->put('oembed.json', $meta->getAttribute('href'));
-                    }
-                    if (mb_strtolower($meta->getAttribute('type')) === 'text/json+oembed') {
-                        $data->put('oembed.json', $meta->getAttribute('href'));
-                    }
-                    if (mb_strtolower($meta->getAttribute('type')) === 'text/xml+oembed') {
-                        $data->put('oembed.xml', $meta->getAttribute('href'));
-                    }
+        if ($metas->count() > 0) {
+            foreach ($metas as $meta) {
+                // basic meta tags
+                if (mb_strtolower($meta->getAttribute('name')) === 'title') {
+                    $data->put('title', $meta->getAttribute('content'));
                 }
-            }
-
-            $data = $this->parseTwitterOEmbed(collect($metas), $data);
-        }
-
-        // Basics
-        $basic = 'title';
-        if (preg_match("#<$basic>(.*?)</$basic>#siu", $content, $matches)) {
-            $data->put($basic, trim($matches[1], " \n"));
-        }
-        $metas = $doc->getElementsByTagName('meta');
-        if ($metas->length > 0) {
-            for ($n = 0; $n < $metas->length; $n++) {
-                $meta = $metas->item($n);
 
                 if (mb_strtolower($meta->getAttribute('name')) === 'description') {
                     $data->put('description', $meta->getAttribute('content'));
@@ -151,42 +102,30 @@ final readonly class MetaData
                 if (mb_strtolower($meta->getAttribute('name')) === 'keywords') {
                     $data->put('keywords', $meta->getAttribute('content'));
                 }
+
+                // og & twitter meta tags
+                collect(['name', 'property'])
+                    ->map(fn ($name) => $meta->getAttribute($name))
+                    ->filter(fn ($attribute) => in_array(explode(':', $attribute)[0], $interested_in))
+                    ->each(function ($attribute) use ($data, $meta) {
+                        $key = explode(':', $attribute)[1];
+                        if (! $data->has($key)) {
+                            $data->put($key, $meta->getAttribute('content'));
+                        }
+                    });
             }
         }
 
-        return $data;
-    }
-
-    /**
-     * Parse Twitter OEmbed data.
-     *
-     * @param  Collection<int, DOMElement>  $metas
-     * @param  Collection<string, array<int, string>>  $data
-     * @return Collection<int, string>
-     */
-    private function parseTwitterOEmbed(Collection $metas, Collection $data): Collection
-    {
-        if ($data->has('oembed.jsonp')) {
-            return $data;
-        }
-
-        $canonicalLinks = $metas->filter(function ($meta) {
-            $canonicalLinks = collect(iterator_to_array($meta->attributes))
-                ->filter(fn ($attr) => $attr->name === 'rel' && $attr->value === 'canonical');
-
-            return $canonicalLinks->isNotEmpty();
-        });
-
-        if ($canonicalLinks->isNotEmpty()) {
-            $firstCanonicalLink = $canonicalLinks->first()->getAttribute('href');
-
-            if (! empty(trim($firstCanonicalLink)) && preg_match('#^https://(www\.|mobile\.)?twitter\.com#i', $firstCanonicalLink) === 1) {
-                $data->put('oembed.jsonp', [
-                    'https://publish.twitter.com/oembed?url='.$firstCanonicalLink.'&align=center',
-                ]);
+        // if the title is x.com, fetch twitter oEmbed & add to data
+        if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
+            $x = $this->fetchTwitterOEmbed($this->url);
+            if ($x->isNotEmpty()) {
+                foreach ($x as $key => $value) {
+                    $data->put($key, $value);
+                }
             }
         }
 
-        return $data;
+        return $data->unique();
     }
 }

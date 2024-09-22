@@ -35,6 +35,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                     $metadata = MetaData::fetch($url);
 
                     if ($metadata->isNotEmpty()) {
+                        // TODO: add tests for this logic to the parser unit test
                         return view('components.link-preview-card', [
                             'data' => $metadata,
                             'url' => $url,
