@@ -1,21 +1,23 @@
-<section x-data='{
-    avatar: null,
-    errors: @json($errors->get('avatar')),
-    checkFileSize(target) {
-        const maxFileSize = 8 * 1024 * 1024;
+<section
+    x-data="{
+        avatar: null,
+        errors: @json($errors->get('avatar')),
+        checkFileSize(target) {
+            const maxFileSize = 8 * 1024 * 1024
 
-        if ((target.files[0]?.size ?? 0) > maxFileSize) {
-            this.errors = ["The avatar may not be greater than 2MB."];
-            target.value = null;
-            this.avatar = null;
-        } else {
-            this.errors = [];
-            this.avatar = target.files[0];
-        }
-    }
-}'>
+            if ((target.files[0]?.size ?? 0) > maxFileSize) {
+                this.errors = ['The avatar may not be greater than 2MB.']
+                target.value = null
+                this.avatar = null
+            } else {
+                this.errors = []
+                this.avatar = target.files[0]
+            }
+        },
+    }"
+>
     <header>
-        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
+        <h2 class="text-lg font-medium text-slate-600 dark:text-slate-400">
             {{ __('Profile Photo') }}
         </h2>
 
@@ -49,20 +51,12 @@
         @endif
     </div>
 
-    <form
-        method="post"
-        enctype="multipart/form-data"
-        action="{{ route('profile.avatar.update') }}"
-    >
+    <form method="post" enctype="multipart/form-data" action="{{ route('profile.avatar.update') }}">
         @csrf
         @method('patch')
 
         <div>
-            <x-input-label
-                for="avatar"
-                :value="__('Avatar')"
-                class="sr-only"
-            />
+            <x-input-label for="avatar" :value="__('Avatar')" class="sr-only" />
             <x-text-input
                 type="file"
                 accept="image/*"
@@ -83,11 +77,7 @@
         </div>
     </form>
     <div class="relative">
-        <form
-            method="post"
-            class="absolute -top-[34px] left-[100px]"
-            action="{{ route('profile.avatar.destroy') }}"
-        >
+        <form method="post" class="absolute -top-[34px] left-[100px]" action="{{ route('profile.avatar.destroy') }}">
             @csrf
             @method('delete')
 

@@ -1,13 +1,12 @@
 const themeSwitch = () => ({
-
     theme: 'system',
 
     init() {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme)
 
-        const currentTheme = localStorage.getItem('theme') || this.theme;
+        const currentTheme = localStorage.getItem('theme') || this.theme
 
-        this.setTheme(currentTheme);
+        this.setTheme(currentTheme)
     },
 
     setTheme(theme) {
@@ -16,10 +15,10 @@ const themeSwitch = () => ({
         if (theme == 'dark' || theme == 'light') {
             localStorage.setItem('theme', theme)
         } else {
-            localStorage.removeItem('theme');
+            localStorage.removeItem('theme')
         }
 
-        updateTheme();
+        updateTheme()
     },
 })
 

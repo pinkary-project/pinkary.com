@@ -1,5 +1,4 @@
 const copyUrl = () => ({
-
     isVisible: false,
 
     init() {
@@ -15,9 +14,9 @@ const copyUrl = () => ({
             wrapperId: 'flashMessageWrapper',
             templateId: 'flashMessageTemplate',
             autoClose: 3000,
-            autoRemove: 4000
+            autoRemove: 4000,
         })
-    }
+    },
 })
 
 export { copyUrl }

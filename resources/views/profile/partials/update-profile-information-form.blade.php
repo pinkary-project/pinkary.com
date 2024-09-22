@@ -5,7 +5,7 @@
 
 <section>
     <header>
-        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
+        <h2 class="text-lg font-medium text-slate-600 dark:text-slate-400">
             {{ __('Profile Information') }}
         </h2>
 
@@ -14,27 +14,16 @@
         </p>
     </header>
 
-    <form
-        id="send-verification"
-        method="post"
-        action="{{ route('verification.send') }}"
-    >
+    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
 
-    <form
-        method="post"
-        action="{{ route('profile.update') }}"
-        class="mt-6 space-y-6"
-    >
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
         <div>
-            <x-input-label
-                for="name"
-                :value="__('Name')"
-            />
+            <x-input-label for="name" :value="__('Name')" />
             <x-text-input
                 id="name"
                 name="name"
@@ -44,17 +33,11 @@
                 required
                 autocomplete="name"
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('name')"
-            />
+            <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label
-                for="username"
-                :value="__('Username')"
-            />
+            <x-input-label for="username" :value="__('Username')" />
             <x-text-input
                 id="username"
                 name="username"
@@ -64,17 +47,11 @@
                 required
                 autocomplete="username"
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('username')"
-            />
+            <x-input-error class="mt-2" :messages="$errors->get('username')" />
         </div>
 
         <div>
-            <x-input-label
-                for="email"
-                :value="__('Email')"
-            />
+            <x-input-label for="email" :value="__('Email')" />
             <x-text-input
                 id="email"
                 name="email"
@@ -84,10 +61,7 @@
                 required
                 autocomplete="username"
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('email')"
-            />
+            <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
@@ -106,10 +80,7 @@
         </div>
 
         <div>
-            <x-input-label
-                for="bio"
-                :value="__('Bio')"
-            />
+            <x-input-label for="bio" :value="__('Bio')" />
             <x-text-input
                 id="bio"
                 name="bio"
@@ -119,17 +90,11 @@
                 required
                 autocomplete="bio"
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('bio')"
-            />
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
 
         <div>
-            <x-input-label
-                for="mail_preference_time"
-                :value="__('Mail Preference Time')"
-            />
+            <x-input-label for="mail_preference_time" :value="__('Mail Preference Time')" />
             <x-select-input
                 id="mail_preference_time"
                 name="mail_preference_time"
@@ -139,10 +104,7 @@
                 required
                 autocomplete="mail_preference_time"
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('mail_preference_time')"
-            />
+            <x-input-error class="mt-2" :messages="$errors->get('mail_preference_time')" />
         </div>
 
         <div>
@@ -158,10 +120,7 @@
                 :value="old('prefers_anonymous_questions', $user->prefers_anonymous_questions)"
                 required
             />
-            <x-input-error
-                class="mt-2"
-                :messages="$errors->get('prefers_anonymous_questions')"
-            />
+            <x-input-error class="mt-2" :messages="$errors->get('prefers_anonymous_questions')" />
         </div>
 
         <div class="flex items-center gap-4">

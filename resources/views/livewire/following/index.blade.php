@@ -1,42 +1,52 @@
-<x-modal
-    name="following"
-    maxWidth="2xl"
->
-    <div class="p-4 md:p-10" x-on:open-modal.window="$event.detail == 'following' ? $wire.set('isOpened', true) : null">
+<x-modal name="following" maxWidth="2xl">
+    <div
+        class="p-4 md:p-10"
+        x-on:open-modal.window="$event.detail == 'following' ? $wire.set('isOpened', true) : null"
+    >
         <div>
             @if ($following->isEmpty())
-                <strong> <span>@</span>{{ $user->username }} does not have any following </strong>
+                <strong>
+                    <span>@</span>
+                    {{ $user->username }} does not have any following
+                </strong>
             @else
-                <strong> <span>@</span>{{ $user->username }} following </strong>
+                <strong>
+                    <span>@</span>
+                    {{ $user->username }} following
+                </strong>
             @endif
         </div>
 
         @if ($following->isNotEmpty())
-            <section class="mt-10 max-w-2xl max-h-96 overflow-y-auto">
+            <section class="mt-10 max-h-96 max-w-2xl overflow-y-auto">
                 <ul class="flex flex-col gap-2">
                     @foreach ($following as $followingUser)
                         <li
-                            data-parent=true
+                            data-parent="true"
                             x-data="clickHandler"
                             x-on:click="handleNavigation($event)"
                             wire:key="following-{{ $followingUser->id }}"
                         >
-                            <div class="group flex items-center gap-3 rounded-2xl border dark:border-slate-900 border-slate-200 dark:bg-slate-950 bg-slate-100 bg-opacity-80 p-4 transition-colors dark:hover:bg-slate-900 hover:bg-slate-200">
-                                <figure class="{{ $followingUser->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90">
+                            <div
+                                class="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-100 bg-opacity-80 p-4 transition-colors hover:bg-slate-200 dark:border-slate-900 dark:bg-slate-950 dark:hover:bg-slate-900"
+                            >
+                                <figure
+                                    class="{{ $followingUser->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90"
+                                >
                                     <img
-                                    class="{{ $followingUser->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12"
-                                    src="{{ $followingUser->avatar_url }}"
-                                    alt="{{ $followingUser->username }}"
+                                        class="{{ $followingUser->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12"
+                                        src="{{ $followingUser->avatar_url }}"
+                                        alt="{{ $followingUser->username }}"
                                     />
                                 </figure>
-                                <div class="flex flex-col overflow-hidden text-sm text-left">
+                                <div class="flex flex-col overflow-hidden text-left text-sm">
                                     <a
                                         class="flex items-center space-x-2"
                                         href="{{ route('profile.show', ['username' => $followingUser->username]) }}"
                                         wire:navigate
                                         x-ref="parentLink"
                                     >
-                                        <p class="text-wrap truncate font-medium">
+                                        <p class="truncate text-wrap font-medium">
                                             {{ $followingUser->name }}
                                         </p>
 
@@ -46,18 +56,15 @@
                                                 class="size-4"
                                             />
                                         @elseif ($followingUser->is_verified)
-                                            <x-icons.verified
-                                                :color="$followingUser->right_color"
-                                                class="size-4"
-                                            />
+                                            <x-icons.verified :color="$followingUser->right_color" class="size-4" />
                                         @endif
                                     </a>
-                                    <p class="truncate text-left text-slate-500 transition-colors group-hover:text-slate-400">
-                                        {{ '@'.$followingUser->username }}
+                                    <p
+                                        class="truncate text-left text-slate-500 transition-colors group-hover:text-slate-400"
+                                    >
+                                        {{ '@' . $followingUser->username }}
                                         @if ($followingUser->is_follower)
-                                            <x-badge class="ml-1">
-                                                Follows you
-                                            </x-badge>
+                                            <x-badge class="ml-1">Follows you</x-badge>
                                         @endif
                                     </p>
                                 </div>

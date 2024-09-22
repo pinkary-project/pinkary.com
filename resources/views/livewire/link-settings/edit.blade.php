@@ -27,10 +27,7 @@
                     @endforeach
 
                     @error('link_shape')
-                        <x-input-error
-                            :messages="$message"
-                            class="mt-2"
-                        />
+                        <x-input-error :messages="$message" class="mt-2" />
                     @enderror
                 </div>
             </fieldset>
@@ -43,13 +40,14 @@
                 <legend class="sr-only">Link color</legend>
                 <div class="space-y-4">
                     @foreach ([
-                                  'from-blue-500 to-teal-700',
-                                  'from-red-500 to-orange-600',
-                                  'from-blue-500 to-purple-600',
-                                  'from-purple-500 to-pink-500',
-                                  'from-indigo-500 to-lime-700',
-                                  'from-yellow-600 to-blue-600',
-                              ] as $gradient)
+                            'from-blue-500 to-teal-700',
+                            'from-red-500 to-orange-600',
+                            'from-blue-500 to-purple-600',
+                            'from-purple-500 to-pink-500',
+                            'from-indigo-500 to-lime-700',
+                            'from-yellow-600 to-blue-600'
+                        ]
+                        as $gradient)
                         <div class="flex justify-between">
                             <input
                                 class="text-{{ $user->left_color }} focus:ring-{{ $user->left_color }} mr-3 mt-2 border-slate-300"
@@ -73,10 +71,7 @@
                     @endforeach
 
                     @error('gradient')
-                        <x-input-error
-                            :messages="$message"
-                            class="mt-2"
-                        />
+                        <x-input-error :messages="$message" class="mt-2" />
                     @enderror
                 </div>
             </fieldset>

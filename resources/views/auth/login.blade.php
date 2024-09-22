@@ -1,16 +1,9 @@
 <x-guest-layout>
-    <form
-        method="POST"
-        action="{{ route('login') }}"
-        onsubmit="event.submitter.disabled = true"
-    >
+    <form method="POST" action="{{ route('login') }}" onsubmit="event.submitter.disabled = true">
         @csrf
 
         <div>
-            <x-input-label
-                for="email"
-                :value="__('Email')"
-            />
+            <x-input-label for="email" :value="__('Email')" />
             <x-text-input
                 id="email"
                 class="mt-1 block w-full"
@@ -21,28 +14,19 @@
                 autofocus
                 autocomplete="username"
             />
-            <x-input-error
-                :messages="$errors->get('email')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div class="mt-4">
-            <x-input-label
-                for="password"
-                :value="__('Password')"
-            />
+            <x-input-label for="password" :value="__('Password')" />
 
-            <div 
-                class="relative"
-                x-data="{ showPassword: false }" 
-            >
-                <x-text-input 
-                    id="password" 
-                    class="mt-1 block w-full pr-10" 
+            <div class="relative" x-data="{ showPassword: false }">
+                <x-text-input
+                    id="password"
+                    class="mt-1 block w-full pr-10"
                     x-bind:type="showPassword ? 'text' : 'password'"
                     name="password"
-                    required 
+                    required
                     autocomplete="current-password"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -53,21 +37,12 @@
                 </div>
             </div>
 
-            <x-input-error
-                :messages="$errors->get('password')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div class="mt-4 block">
-            <label
-                for="remember_me"
-                class="flex items-center"
-            >
-                <x-checkbox
-                    id="remember_me"
-                    name="remember"
-                />
+            <label for="remember_me" class="flex items-center">
+                <x-checkbox id="remember_me" name="remember" />
                 <span class="ml-2 text-sm text-slate-500">
                     {{ __('Remember me') }}
                 </span>
@@ -77,7 +52,7 @@
         <div class="mt-4 flex items-center justify-end space-x-3.5">
             @if (Route::has('password.request'))
                 <a
-                    class="text-sm dark:text-slate-200 text-slate-800 underline hover:no-underline"
+                    class="text-sm text-slate-800 underline hover:no-underline dark:text-slate-200"
                     href="{{ route('password.request') }}"
                     wire:navigate
                 >
@@ -97,7 +72,7 @@
         Don't have an account?
         <a
             href="{{ route('register') }}"
-            class="dark:text-slate-200 text-slate-800 underline hover:no-underline"
+            class="text-slate-800 underline hover:no-underline dark:text-slate-200"
             wire:navigate
         >
             {{ __('Sign up here') }}

@@ -6,22 +6,14 @@
 <nav>
     <div class="{{ $navClasses }} backdrop-blur-sm md:backdrop-blur-none">
         <div class="flex h-16 justify-between">
-            <div
-                class="flex items-center space-x-2.5"
-                x-data
-            >
+            <div class="flex items-center space-x-2.5" x-data>
                 @auth
-                    <a
-                        title="Home"
-                        href="{{ route('home.feed') }}"
-                        class=""
-                        wire:navigate
-                    >
+                    <a title="Home" href="{{ route('home.feed') }}" class="" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('home.*') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('home.*') ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-100' }} inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none dark:border-transparent dark:bg-slate-900"
                         >
-                            <x-heroicon-o-home class="h-6 w-6"/>
+                            <x-heroicon-o-home class="h-6 w-6" />
                         </button>
                     </a>
 
@@ -33,9 +25,9 @@
                     >
                         <button
                             type="button"
-                            class="dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900 inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 text-slate-400 transition duration-150 ease-in-out hover:text-slate-900 focus:outline-none dark:border-transparent dark:bg-slate-900 dark:text-slate-500 dark:hover:text-slate-100"
                         >
-                            <x-heroicon-o-code-bracket class="h-6 w-6"/>
+                            <x-heroicon-o-code-bracket class="h-6 w-6" />
                         </button>
                     </a>
 
@@ -47,39 +39,29 @@
                     >
                         <button
                             type="button"
-                            class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-100' }} inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none dark:border-transparent dark:bg-slate-900"
                         >
-                            <x-heroicon-o-user class="h-6 w-6"/>
+                            <x-heroicon-o-user class="h-6 w-6" />
                         </button>
                     </a>
 
-                    <a
-                        title="Bookmarks"
-                        href="{{ route('bookmarks.index') }}"
-                        class=""
-                        wire:navigate
-                    >
+                    <a title="Bookmarks" href="{{ route('bookmarks.index') }}" class="" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('bookmarks.*') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('bookmarks.*') ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-100' }} inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none dark:border-transparent dark:bg-slate-900"
                         >
-                            <x-heroicon-o-bookmark class="h-6 w-6"/>
+                            <x-heroicon-o-bookmark class="h-6 w-6" />
                         </button>
                     </a>
 
-                    <a
-                        title="Notifications"
-                        href="{{ route('notifications.index') }}"
-                        class=""
-                        wire:navigate
-                    >
+                    <a title="Notifications" href="{{ route('notifications.index') }}" class="" wire:navigate>
                         <button
                             type="button"
-                            class="{{ request()->routeIs('notifications.index') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }} inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
+                            class="{{ request()->routeIs('notifications.index') ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-100' }} inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none dark:border-transparent dark:bg-slate-900"
                         >
-                            <x-heroicon-o-bell class="h-6 w-6"/>
+                            <x-heroicon-o-bell class="h-6 w-6" />
 
-                            <livewire:navigation.notifications-count.show/>
+                            <livewire:navigation.notifications-count.show />
                         </button>
                     </a>
                 @endauth
@@ -92,23 +74,50 @@
                     <x-slot name="trigger">
                         <button
                             title="Menu"
-                            class="inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 dark:text-slate-500 text-slate-400 transition duration-150 ease-in-out dark:hover:text-slate-100 hover:text-slate-900 focus:outline-none"
+                            class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 text-slate-400 transition duration-150 ease-in-out hover:text-slate-900 focus:outline-none dark:border-transparent dark:bg-slate-900 dark:text-slate-500 dark:hover:text-slate-100"
                         >
-                            <x-icons.bars class="size-6"/>
+                            <x-icons.bars class="size-6" />
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between dark:hover:bg-transparent hover:bg-transparent">
+                        <x-dropdown-button
+                            x-data="themeSwitch()"
+                            class="flex flex-col items-center justify-between hover:bg-transparent dark:hover:bg-transparent"
+                        >
                             <div class="flex flex-row justify-between gap-2">
-                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'light' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('light')">
-                                    <x-heroicon-o-sun class="w-4 h-4"/>
+                                <div
+                                    class="rounded-md border border-slate-200 px-4 py-2 dark:border-slate-800"
+                                    x-bind:class="
+                                        theme == 'light'
+                                            ? 'bg-pink-600 text-slate-50'
+                                            : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'
+                                    "
+                                    @click="setTheme('light')"
+                                >
+                                    <x-heroicon-o-sun class="h-4 w-4" />
                                 </div>
-                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'dark' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('dark')">
-                                    <x-heroicon-o-moon class="w-4 h-4"/>
+                                <div
+                                    class="rounded-md border border-slate-200 px-4 py-2 dark:border-slate-800"
+                                    x-bind:class="
+                                        theme == 'dark'
+                                            ? 'bg-pink-600 text-slate-50'
+                                            : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'
+                                    "
+                                    @click="setTheme('dark')"
+                                >
+                                    <x-heroicon-o-moon class="h-4 w-4" />
                                 </div>
-                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'system' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('system')">
-                                    <x-heroicon-o-computer-desktop class="w-4 h-4"/>
+                                <div
+                                    class="rounded-md border border-slate-200 px-4 py-2 dark:border-slate-800"
+                                    x-bind:class="
+                                        theme == 'system'
+                                            ? 'bg-pink-600 text-slate-50'
+                                            : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'
+                                    "
+                                    @click="setTheme('system')"
+                                >
+                                    <x-heroicon-o-computer-desktop class="h-4 w-4" />
                                 </div>
                             </div>
                         </x-dropdown-button>
@@ -120,11 +129,7 @@
                                 {{ __('Settings') }}
                             </x-dropdown-link>
 
-                            <form
-                                method="POST"
-                                action="{{ route('logout') }}"
-                                x-data
-                            >
+                            <form method="POST" action="{{ route('logout') }}" x-data>
                                 @csrf
 
                                 <x-dropdown-button onclick="event.preventDefault();this.closest('form').submit();">

@@ -1,3 +1,3 @@
-import axios from 'axios';
+import axios from 'axios'
 
-window.axios = axios;
+window.axios = axios

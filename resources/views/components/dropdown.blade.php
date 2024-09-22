@@ -1,4 +1,4 @@
-@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'dark:bg-slate-900 bg-slate-100 dark:border-none border border-slate-100 py-1 text-slate-500', 'dropdownClasses' => ''])
+@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'border border-slate-100 bg-slate-100 py-1 text-slate-500 dark:border-none dark:bg-slate-900', 'dropdownClasses' => ''])
 
 @php
     switch ($align) {
@@ -21,12 +21,7 @@
     }
 @endphp
 
-<div
-    class="relative"
-    x-data="{ open: false }"
-    x-on:click.outside="open = false"
-    @close.stop="open = false"
->
+<div class="relative" x-data="{ open: false }" x-on:click.outside="open = false" @close.stop="open = false">
     <div x-on:click="open = ! open">
         {{ $trigger }}
     </div>

@@ -4,7 +4,7 @@
     'maxWidth' => '2xl',
     'showCloseButton' => true,
     'closeButtonOutsideModal' => false,
-    'shouldCenterModalContent' => false
+    'shouldCenterModalContent' => false,
 ])
 
 @php
@@ -16,9 +16,9 @@
         '2xl' => 'sm:max-w-2xl',
     ][$maxWidth];
 
-    $closeButtonPosition = $closeButtonOutsideModal ? 'right-0 -top-10' : 'right-2 top-2';
-    $contentOverflowStyle = ($closeButtonOutsideModal && !$shouldCenterModalContent) ? 'mt-10' : '';
-    $modalContentPosition = $shouldCenterModalContent ? 'flex justify-center items-center' : '';
+    $closeButtonPosition = $closeButtonOutsideModal ? '-top-10 right-0' : 'right-2 top-2';
+    $contentOverflowStyle = $closeButtonOutsideModal && ! $shouldCenterModalContent ? 'mt-10' : '';
+    $modalContentPosition = $shouldCenterModalContent ? 'flex items-center justify-center' : '';
 @endphp
 
 <div
@@ -64,7 +64,7 @@
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 z-50 overflow-y-auto {{$modalContentPosition}} bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
+    class="{{ $modalContentPosition }} fixed inset-0 z-50 overflow-y-auto bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
     style="display: {{ $show ? 'block' : 'none' }}"
 >
     <div
@@ -82,7 +82,7 @@
     </div>
     <div
         x-show="show"
-        class="{{ $maxWidth }} {{$contentOverflowStyle}} transform rounded-lg dark:bg-slate-950 bg-slate-50 shadow-xl transition-all sm:mx-auto sm:w-auto"
+        class="{{ $maxWidth }} {{ $contentOverflowStyle }} transform rounded-lg bg-slate-50 shadow-xl transition-all sm:mx-auto sm:w-auto dark:bg-slate-950"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
@@ -94,7 +94,7 @@
             <button
                 x-show="showCloseButton == true"
                 x-on:click="show = false"
-                class="absolute text-xl focus:outline-none z-50 {{$closeButtonPosition}}"
+                class="{{ $closeButtonPosition }} absolute z-50 text-xl focus:outline-none"
             >
                 <x-heroicon-o-x-mark class="h-6 w-6" />
             </button>
