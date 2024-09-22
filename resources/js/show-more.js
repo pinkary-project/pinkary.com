@@ -8,29 +8,29 @@ const showMore = () => ({
     showMore: false,
 
     init() {
-        this.initialHeight = this.$refs.parentDiv.scrollHeight
+        this.initialHeight = this.$refs.parentDiv.scrollHeight;
 
         if (this.initialHeight > this.maxHeight + 40) {
-            this.$refs.parentDiv.style.maxHeight = this.maxHeight + 'px'
-            this.showMore = true
+            this.$refs.parentDiv.style.maxHeight = this.maxHeight + 'px';
+            this.showMore = true;
         }
     },
 
     showButtonAction() {
-        let height = this.open === false ? this.initialHeight : this.maxHeight
+        let height = this.open === false ? this.initialHeight : this.maxHeight;
 
-        this.$refs.parentDiv.style.maxHeight = height + 'px'
+        this.$refs.parentDiv.style.maxHeight = height + 'px';
 
-        this.open = !this.open
+        this.open = !this.open;
     },
 
     showMoreButtonText() {
         if (this.open === false) {
-            return 'Show more'
+            return 'Show more';
         }
 
-        return 'Show less'
+        return 'Show less';
     },
-})
+});
 
-export { showMore }
+export { showMore };

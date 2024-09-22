@@ -39,19 +39,19 @@
 
         <script>
             window.onload = function () {
-                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
-                    axios.post('{{ route('profile.timezone.update') }}', { timezone })
+                    axios.post('{{ route('profile.timezone.update') }}', { timezone });
                 }
 
                 Livewire.hook('request', ({ uri, options, payload, respond, succeed, fail }) => {
                     fail(({ status, content, preventDefault }) => {
                         if (status === 419) {
-                            preventDefault()
+                            preventDefault();
                         }
-                    })
-                })
-            }
+                    });
+                });
+            };
         </script>
     </body>
 </html>

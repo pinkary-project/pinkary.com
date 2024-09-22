@@ -1,26 +1,26 @@
 const clickHandler = () => ({
     handleNavigation(event) {
         if (window.getSelection().toString().length !== 0) {
-            return
+            return;
         }
 
         const hasDataNavigateIgnore = (el) => {
             if (!el || el.dataset.parent === 'true') {
-                return false
+                return false;
             }
             if (el.dataset.navigateIgnore === 'true') {
-                return true
+                return true;
             }
-            return hasDataNavigateIgnore(el.parentElement)
-        }
+            return hasDataNavigateIgnore(el.parentElement);
+        };
 
         if (!hasDataNavigateIgnore(event.target)) {
-            const parentLink = this.$refs.parentLink
+            const parentLink = this.$refs.parentLink;
             if (parentLink) {
-                parentLink.click()
+                parentLink.click();
             }
         }
     },
-})
+});
 
-export { clickHandler }
+export { clickHandler };

@@ -23,17 +23,17 @@ const particlesEffect = () => ({
             for (let iParticle = 0; iParticle < this.config.particleCount; iParticle++) {
                 // Coordinates of the mouse/finger
                 let x = e.clientX,
-                    y = e.clientY
+                    y = e.clientY;
 
-                const particle = document.createElement('particleEffect')
-                document.body.appendChild(particle)
+                const particle = document.createElement('particleEffect');
+                document.body.appendChild(particle);
 
                 // Calculate a random size
                 const size = Math.floor(
                     Math.random() * this.config.particleMaxSizeInPx + this.config.particleMinSizeInPx,
-                )
-                particle.style.width = `${size}px`
-                particle.style.height = `${size}px`
+                );
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
 
                 // Random color within the configured color palette
                 particle.style.setProperty(
@@ -43,13 +43,13 @@ const particlesEffect = () => ({
                     ${this.config.colorSaturationInPercent}%,
                     ${this.config.colorLuminosityInPercent}%
                 )`,
-                )
+                );
                 particle.style.background = `
                     radial-gradient(at 70% 31%,var(--c) 29%,#0000 30%),
                     radial-gradient(at 30% 31%,var(--c) 29%,#0000 30%),
                     conic-gradient(from -45deg at 50% 84%,var(--c) 90deg,#0000 0)
                     bottom/100% 50% no-repeat
-                `
+                `;
 
                 const particleAnimation = particle.animate(
                     [
@@ -73,14 +73,14 @@ const particlesEffect = () => ({
                         easing: 'cubic-bezier(0, .9, .57, 1)',
                         delay: Math.random() * this.config.animationParticleDelayInMs,
                     },
-                )
+                );
 
                 particleAnimation.onfinish = () => {
-                    particle.remove()
-                }
+                    particle.remove();
+                };
             }
         }
     },
-})
+});
 
-export { particlesEffect }
+export { particlesEffect };
