@@ -1,14 +1,32 @@
-<div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
-    <div class="md:flex">
-        @if(isset($ogData['image']))
-            <div class="md:flex-shrink-0">
-                <img class="h-48 w-full object-cover md:w-48" src="{{ $ogData['image'] }}" alt="OpenGraph Image">
+@if($data->has('image'))
+    <div class="mx-auto min-w-full">
+        <div class="relative w-full overflow-hidden rounded-lg bg-white shadow-md">
+            <a href="{{ $url }}" target="_blank" rel="noopener noreferrer">
+                <img
+                    x-init="const image = new Image().src = '{{ $data->get('image') }}';
+                    window.onload = (image) => {
+                        if (image.width < 300) {
+                         $el.classList.remove('object-cover');
+                         }
+                    }
+                    "
+
+                    src="{{ $data->get('image') }}" alt="{{ $data->get('title') ?? $url }}"
+                    title="Click to visit: {{ $data->get('title') ?? $url }}"
+                     class="h-[228px] w-[513px] object-cover object-center"/>
+            </a>
+
+            <div class="absolute bottom-0 left-0 w-full bg-pink-900 bg-opacity-15 backdrop-filter backdrop-blur-md p-2 text-white">
+                <h3 class="text-sm font-semibold">{{ $data->get('title') ?? $url }}</h3>
             </div>
-        @endif
-        <div class="p-8">
-            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{{ $ogData['site_name'] ?? 'Link Preview' }}</div>
-            <a href="{{ $url }}" class="block mt-1 text-lg leading-tight font-medium text-black hover:underline">{{ $ogData['title'] ?? $url }}</a>
-            <p class="mt-2 text-gray-500">{{ $ogData['description'] ?? '' }}</p>
         </div>
     </div>
-</div>
+    <!-- Footer Section -->
+    <div class="flex items-center justify-between p-4">
+        <span class="text-xs text-gray-500">From {{ parse_url($url)['host'] }}</span>
+    </div>
+@elseif ($data->has('html'))
+    <div class="md:flex-shrink-0">
+        {!! $data->get('html') !!}
+    </div>
+@endif
