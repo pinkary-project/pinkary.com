@@ -160,6 +160,7 @@ final class Index extends Component
     #[On('link.created')]
     #[On('link.updated')]
     #[On('link-settings.updated')]
+    #[On('following.updated')]
     public function refresh(): void
     {
         //

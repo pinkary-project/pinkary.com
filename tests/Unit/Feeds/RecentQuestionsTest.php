@@ -88,7 +88,7 @@ it('render roots of latest comments or roots without comments', function () {
 
     $builder = (new RecentQuestionsFeed())->builder();
 
-    expect($builder->get()->pluck('id')->all())
+    expect($builder->get()->map(fn ($root) => $root->root_id ?: $root->id)->all())
         ->toBe([$root->id, $rootWithoutComments->id]);
 });
 
@@ -137,7 +137,7 @@ it('render roots in correct order', function () {
     $builder = (new RecentQuestionsFeed())->builder();
 
     // final output needs to be root without descendants divided odds and evens in descending order
-    expect($builder->get()->pluck('id')->all())
+    expect($builder->get()->map(fn ($root) => $root->root_id ?: $root->id)->all())
         ->toBe([
             $roots->where('answer', 'root 4')->first()->id,
             $roots->where('answer', 'root 2')->first()->id,

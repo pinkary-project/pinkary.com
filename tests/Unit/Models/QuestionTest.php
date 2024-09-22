@@ -49,12 +49,15 @@ test('relations', function () {
 
     $child = $question->children()->with('parent')->first();
 
+    $descendant = $question->descendants()->with('root')->first();
+
     expect($question->from)->toBeInstanceOf(User::class)
         ->and($question->to)->toBeInstanceOf(User::class)
         ->and($question->likes)->each->toBeInstanceOf(Like::class)
         ->and($question->hashtags)->each->toBeInstanceOf(Hashtag::class)
         ->and($question->children)->each->toBeInstanceOf(Question::class)
         ->and($child->parent)->toBeInstanceOf(Question::class)
+        ->and($descendant->root)->toBeInstanceOf(Question::class)
         ->and($question->descendants)->each->toBeInstanceOf(Question::class);
 });
 

@@ -7,7 +7,6 @@ namespace App\Livewire\Questions;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -28,12 +27,6 @@ final class Show extends Component
      */
     #[Locked]
     public bool $inIndex = false;
-
-    /**
-     * Determine if the parent question should be shown.
-     */
-    #[Locked]
-    public bool $showParents = false;
 
     /**
      * Determine if this is currently being viewed in thread view.
@@ -274,35 +267,12 @@ final class Show extends Component
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
-            ->when($this->inThread && $this->commenting, function (Builder $query): void {
-                $query->with(['children']);
-            })
-            ->when($this->inThread && ! $this->commenting, function (Builder $query): void {
-                $query->with(['descendants' => function (Relation $relation): void {
-                    $relation->getQuery()
-                        ->with('parent')
-                        ->limit(1)
-                        ->orderByDesc('updated_at');
-                }]);
-            })
             ->withCount(['likes', 'children', 'bookmarks'])
             ->firstOrFail();
-
-        $parentQuestions = [];
-        if ($this->showParents) {
-            $parentQuestion = $question->parent;
-
-            do {
-                $parentQuestions[] = $parentQuestion;
-            } while ($parentQuestion = $parentQuestion?->parent);
-
-            $parentQuestions = collect($parentQuestions)->filter()->reverse();
-        }
 
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
-            'parentQuestions' => $parentQuestions,
         ]);
     }
 }

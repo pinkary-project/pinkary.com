@@ -7,6 +7,7 @@ namespace App\Queries\Feeds;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 final readonly class QuestionsFollowingFeed
 {
@@ -24,13 +25,27 @@ final readonly class QuestionsFollowingFeed
      */
     public function builder(): Builder
     {
+        $followQueryClosure = function (Builder $query): void {
+            $query->where('to_id', $this->user->id)
+                ->orWhereIn('to_id', $this->user->following()->select('users.id'));
+        };
+
         return Question::query()
-            ->whereHas('to', function (Builder $toQuery): void {
-                $toQuery->whereIn('id', $this->user->following()->select('users.id'));
-            })
-            ->orderByDesc('updated_at')
+            ->select('id', 'root_id', 'parent_id')
+            ->withExists([
+                'root as showRoot' => $followQueryClosure,
+                'parent as showParent' => $followQueryClosure,
+            ])
+            ->withAggregate('to as username', 'username')
+            ->withAggregate('parent as grand_parent_id', 'parent_id')
             ->whereNotNull('answer')
             ->where('is_reported', false)
-            ->where('is_ignored', false);
+            ->where('is_ignored', false)
+            ->where($followQueryClosure)
+            ->where(function (Builder $query): void {
+                $query->whereNull('parent_id')->orWhere('showParent', true)->orWhere('showRoot', true);
+            })
+            ->groupBy(DB::Raw('IFNULL(root_id, id)'))
+            ->orderByDesc(DB::raw('MAX(`updated_at`)'));
     }
 }

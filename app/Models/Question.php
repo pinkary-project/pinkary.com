@@ -216,9 +216,21 @@ final class Question extends Model implements Viewable
     /**
      * @return BelongsTo<Question, Question>
      */
+    public function root(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'root_id')
+            ->where('is_ignored', false)
+            ->where('is_reported', false);
+    }
+
+    /**
+     * @return BelongsTo<Question, Question>
+     */
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class, 'parent_id');
+        return $this->belongsTo(self::class, 'parent_id')
+            ->where('is_ignored', false)
+            ->where('is_reported', false);
     }
 
     /**

@@ -255,6 +255,12 @@ final class Create extends Component
         };
 
         $this->dispatch('notification.created', message: $message);
+
+        if (filled($this->parentId)) {
+            $this->js(<<<'JS'
+                Livewire.navigate(window.location.href);
+            JS);
+        }
     }
 
     /**
