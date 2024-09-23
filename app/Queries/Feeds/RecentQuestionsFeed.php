@@ -25,27 +25,32 @@ final readonly class RecentQuestionsFeed
     public function builder(): Builder
     {
         return Question::query()
-            ->select('id')
-            ->whereNotNull('answer')
-            ->where('is_ignored', false)
-            ->where('is_reported', false)
+            ->select('questions.id')
+            ->whereNotNull('questions.answer')
+            ->where('questions.is_ignored', false)
+            ->where('questions.is_reported', false)
             ->when($this->hashtag, function (Builder $query): void {
                 $query->whereHas('hashtags', function (Builder $query): void {
-                    $query
-                    // using 'like' for this query (with no wildcards) will
-                    // result in a case-insensitive lookup from sqlite,
-                    // which is what we want.
-                        ->where('name', 'like', $this->hashtag);
+                    $query->where('name', 'like', $this->hashtag);
                 })->orderByDesc('updated_at');
             }, function (Builder $query): void {
-                $query->addSelect('root_id', 'parent_id')
-                    ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
+                $query
+                    ->leftJoin('questions as root', 'root.id', '=', 'questions.root_id')
+                    ->leftJoin('questions as parent', 'parent.id', '=', 'questions.parent_id')
                     ->where(function (Builder $query): void {
-                        $query->whereNull('root_id')
-                            ->orHas('root');
+                        $query->whereNull('questions.parent_id')->orWhere(function (Builder $query): void {
+                            $query->whereNotNull('questions.parent_id')->where('parent.is_ignored', false)->where('parent.is_reported', false);
+                        });
                     })
-                    ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-                    ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+                    ->where(function (Builder $query) {
+                        $query->whereNull('questions.root_id')->orWhere(function (Builder $query): void {
+                            $query->whereNotNull('questions.root_id')->where('root.is_ignored', false)->where('root.is_reported', false);
+                        });
+                    })
+                    ->addSelect('root.id as root_id', 'parent.id as parent_id')
+                    ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
+                    ->groupBy(DB::Raw('IFNULL(questions.root_id, questions.id)'))
+                    ->orderByDesc(DB::raw('MAX(`questions`.`updated_at`)'));
             });
     }
 }
