@@ -31,13 +31,14 @@ test('auth', function () {
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
+    $freeEmail = fake()->unique()->freeEmail();
 
     $response = $this
         ->actingAs($user)
         ->patch('/profile', [
             'name' => 'Test User',
             'username' => 'testuser',
-            'email' => 'test@laravel.com',
+            'email' => $freeEmail,
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
@@ -49,7 +50,7 @@ test('profile information can be updated', function () {
     $user->refresh();
 
     $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@laravel.com', $user->email);
+    $this->assertSame($freeEmail, $user->email);
     $this->assertSame('testuser', $user->username);
     $this->assertNull($user->email_verified_at);
     $this->assertFalse($user->prefers_anonymous_questions);
@@ -78,7 +79,6 @@ test('email provider must be authorized', function () {
 test('username can be updated to uppercase', function () {
     $user = User::factory()->create([
         'username' => 'testuser',
-        'email' => 'test@laravel.com',
     ]);
 
     $response = $this
@@ -127,9 +127,7 @@ test('can not update to an existing username using uppercase', function () {
 });
 
 test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create([
-        'email' => 'test@laravel.com',
-    ]);
+    $user = User::factory()->create();
 
     $response = $this
         ->actingAs($user)
@@ -150,15 +148,13 @@ test('email verification status is unchanged when the email address is unchanged
 
 test('email verification job sent & status reset when the email address is changed', function () {
     Notification::fake();
-    $user = User::factory()->create([
-        'email' => 'test@laravel.com',
-    ]);
+    $user = User::factory()->create();
 
     $this->actingAs($user)
         ->patch('/profile', [
             'name' => $user->name,
             'username' => 'valid_username',
-            'email' => 'new@laravel.com',
+            'email' => fake()->unique()->freeEmail(),
             'prefers_anonymous_questions' => false,
         ])
         ->assertSessionHasNoErrors();
@@ -170,9 +166,7 @@ test('email verification job sent & status reset when the email address is chang
 
 test('only updates avatar if email changes & avatar not been uploaded', function () {
     Queue::fake();
-    $user = User::factory()->create([
-        'email' => 'test@laravel.com',
-    ]);
+    $user = User::factory()->create();
 
     $this->actingAs($user)
         ->patch('/profile', [
@@ -334,7 +328,6 @@ test("can not update user's name with blank characters", function () {
 test('prefers_anonymous_questions can be updated', function () {
     $user = User::factory()->create([
         'prefers_anonymous_questions' => true,
-        'email' => 'test@laravel.com',
     ]);
 
     $response = $this
