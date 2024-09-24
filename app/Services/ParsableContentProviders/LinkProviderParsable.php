@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\ParsableContentProviders;
 
 use App\Contracts\Services\ParsableContentProvider;
+use Illuminate\Support\Str;
 
 final readonly class LinkProviderParsable implements ParsableContentProvider
 {
@@ -20,13 +21,19 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                     return $matches[1];
                 }
 
-                $url = preg_match('/^https?:\/\//', $matches[0]) ? $matches[0] : 'https://'.$matches[0];
-                $humanUrl = (string) preg_replace('/^https?:\/\//', '', $matches[0]);
-                $isMail = preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $humanUrl);
+                $humanUrl = Str::of($matches[0])
+                    ->replaceMatches('/^https?:\/\//', '')
+                    ->rtrim('/')
+                    ->toString();
 
-                if (mb_substr($humanUrl, -1) === '/') {
-                    $humanUrl = mb_substr($humanUrl, 0, -1);
+                $isMail = (bool) preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $humanUrl);
+                $isHttp = Str::startsWith($matches[0], ['http://', 'https://']);
+
+                if ((! $isMail) && (! $isHttp)) {
+                    return $matches[0];
                 }
+
+                $url = $isHttp ? $matches[0] : 'https://'.$matches[0];
 
                 $url = $isMail ? 'mailto:'.$humanUrl : $url;
 
