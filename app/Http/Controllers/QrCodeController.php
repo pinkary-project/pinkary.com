@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use SimpleSoftwareIO\QrCode\Generator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use SimpleSoftwareIO\QrCode\Exceptions\InvalidArgumentException;
+use SimpleSoftwareIO\QrCode\Exceptions\RuntimeException;
 
 final readonly class QrCodeController
 {
@@ -38,9 +40,12 @@ final readonly class QrCodeController
                 ->generate(route('profile.show', [
                     'username' => $user->username,
                 ]));
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['error' => 'Invalid QR code parameters: ' . $e->getMessage()], 400);
+        } catch (RuntimeException $e) {
+            return response()->json(['error' => 'QR code generation failed: ' . $e->getMessage()], 500);
         } catch (\Exception $e) {
-            // Handle the error appropriately
-            return response()->json(['error' => 'Failed to generate QR code'], 500);
+            return response()->json(['error' => 'Unexpected error during QR code generation'], 500);
         }
 
         return response()->streamDownload(
