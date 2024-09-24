@@ -40,10 +40,6 @@ final readonly class RecentQuestionsFeed
             }, function (Builder $query): void {
                 $query->addSelect('root_id', 'parent_id')
                     ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
-                    ->where(function (Builder $query): void {
-                        $query->whereNull('root_id')
-                            ->orHas('root');
-                    })
                     ->groupBy(DB::Raw('IFNULL(root_id, id)'))
                     ->orderByDesc(DB::raw('MAX(`updated_at`)'));
             });
