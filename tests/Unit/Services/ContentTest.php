@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 test('link', function () {
-    $content = 'Sure, here is the link: example.com. Let me know if you have any questions.';
+    $content = 'Sure, here is the link: https://example.com. Let me know if you have any questions.';
 
     $provider = new App\Services\ParsableContent();
 
