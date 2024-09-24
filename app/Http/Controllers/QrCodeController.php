@@ -26,17 +26,22 @@ final readonly class QrCodeController
         $dark = [3, 7, 18, 100];
         $bgColor = $request->query('theme') === 'light' ? $light : $dark;
 
-        $qrCode = $qrCodeGenerator
-            ->margin(2)
-            ->size(512)
-            ->format('png')
-            ->backgroundColor(...$bgColor)
-            ->color(236, 72, 153, 100)
-            ->merge('/public/img/ico.png')
-            ->errorCorrection('M')
-            ->generate(route('profile.show', [
-                'username' => $user->username,
-            ]));
+        try {
+            $qrCode = $qrCodeGenerator
+                ->margin(2)
+                ->size(512)
+                ->format('png')
+                ->backgroundColor(...$bgColor)
+                ->color(236, 72, 153, 100)
+                ->merge('/public/img/ico.png')
+                ->errorCorrection('M')
+                ->generate(route('profile.show', [
+                    'username' => $user->username,
+                ]));
+        } catch (\Exception $e) {
+            // Handle the error appropriately
+            return response()->json(['error' => 'Failed to generate QR code'], 500);
+        }
 
         return response()->streamDownload(
             function () use ($qrCode): void {
