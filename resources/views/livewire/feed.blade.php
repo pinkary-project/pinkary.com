@@ -10,9 +10,9 @@
                     />
                 @else
                     <x-thread
-                        :rootId="$question->root_id"
+                        :rootId="$question->root?->id"
                         :grandParentId="$question->parent?->parent_id"
-                        :parentId="$question->parent_id"
+                        :parentId="$question->parent?->id"
                         :questionId="$question->id"
                         :username="$question->root?->to->username"
                     />
