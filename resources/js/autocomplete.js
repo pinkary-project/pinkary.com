@@ -77,8 +77,10 @@ export const autocomplete = (config) => ({
     },
 
     select(replacement) {
+        replacement ??= this.getReplacementFromSelectedResult() ?? this.activeToken.word;
+
         Livewire.dispatch('autocompleteSelected', {
-            newValue: this.formatReplacement(replacement ?? this.getReplacementFromSelectedResult())
+            newValue: this.formatReplacement(replacement)
         })
 
         this.activeToken = false;
