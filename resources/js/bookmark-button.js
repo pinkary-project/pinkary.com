@@ -1,4 +1,4 @@
-import { abbreviate } from "./abbreviate";
+import { abbreviate } from './abbreviate';
 
 const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
     id,
@@ -23,7 +23,6 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
     },
 
     toggleBookmark() {
-
         if (!this.isAuthenticated) {
             window.Livewire.navigate('/login');
             return;
@@ -61,15 +60,18 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
 
     animateBookmarkButton() {
         // fade it from top to bottom
-        this.$el.querySelector('svg').animate([
-            { transform: 'translateY(-100%)', opacity: 0 },
-            { transform: 'translateY(0)', opacity: 1 }
-        ], {
-            duration: 500,
-            easing: 'ease-in-out',
-            fill: 'forwards'
-        });
-    }
+        this.$el.querySelector('svg').animate(
+            [
+                { transform: 'translateY(-100%)', opacity: 0 },
+                { transform: 'translateY(0)', opacity: 1 },
+            ],
+            {
+                duration: 500,
+                easing: 'ease-in-out',
+                fill: 'forwards',
+            },
+        );
+    },
 });
 
 export { bookmarkButton };

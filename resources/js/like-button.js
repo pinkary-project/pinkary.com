@@ -1,5 +1,5 @@
-import { abbreviate } from "./abbreviate";
-import { particlesEffect } from "./particles-effect";
+import { abbreviate } from './abbreviate';
+import { particlesEffect } from './particles-effect';
 
 const likeButton = (id, isLiked, count, isAuthenticated) => ({
     id,
@@ -24,8 +24,6 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
     },
 
     toggleLike(e) {
-
-
         if (!this.isAuthenticated) {
             window.Livewire.navigate('/login');
             return;
@@ -59,7 +57,7 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
                 this.setText();
             }
         });
-    }
+    },
 });
 
 export { likeButton };

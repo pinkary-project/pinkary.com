@@ -4,7 +4,7 @@
     display: none;
 }
 
-:not(.answer)>pre {
+:not(.answer) > pre {
     padding-left: 1rem;
     padding-right: 1rem;
 }
@@ -25,7 +25,7 @@ particleEffect {
 
 ::-webkit-scrollbar {
     height: 5px;
-    width: 5px
+    width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -37,7 +37,7 @@ particleEffect {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #c9cbcd
+    background: #c9cbcd;
 }
 
 .dark ::-webkit-scrollbar-track {

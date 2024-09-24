@@ -4,8 +4,9 @@
     'isFollowing' => false,
 ])
 
-@if(auth()->id() !== $id)
-    <div {{ $attributes }}
+@if (auth()->id() !== $id)
+    <div
+        {{ $attributes }}
         x-data="followButton({{ $id }}, @js($isFollowing), @js($isFollower), @js(auth()->check()))"
     >
         <x-secondary-button
@@ -13,9 +14,9 @@
             data-navigate-ignore="true"
             type="button"
             x-on:click="toggleFollow()"
-            class="text-xs md:text-sm text-nowrap"
+            class="text-nowrap text-xs md:text-sm"
         >
-            <span x-text='buttonText' :title='buttonText' ></span>
+            <span x-text='buttonText' :title="buttonText"></span>
         </x-secondary-button>
     </div>
 @endif

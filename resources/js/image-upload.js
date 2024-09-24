@@ -37,7 +37,7 @@ const imageUpload = () => ({
             this.errors = [];
         });
 
-        Livewire.hook('morph.updated', ({el, component}) => {
+        Livewire.hook('morph.updated', ({ el, component }) => {
             if (this.$el === el) {
                 const errors = component.snapshot.memo.errors;
                 this.addErrors(errors);
@@ -52,7 +52,7 @@ const imageUpload = () => ({
         }
 
         // don't allow multiple uploads at once
-        if(this.uploading) {
+        if (this.uploading) {
             return;
         }
 
@@ -72,7 +72,7 @@ const imageUpload = () => ({
 
     addErrors(errors) {
         this.$nextTick(() => {
-            const incomingErrors = Object.values(errors).flat()
+            const incomingErrors = Object.values(errors).flat();
             const uniqueErrors = new Set([...this.errors, ...incomingErrors]);
             this.errors = Array.from(uniqueErrors);
             this.uploading = false;
@@ -85,7 +85,7 @@ const imageUpload = () => ({
         if (files.length) {
             this.errors = [];
             Array.from(files).forEach((file) => {
-                if ((file.size / 1024) > this.maxFileSize) {
+                if (file.size / 1024 > this.maxFileSize) {
                     this.addErrors([`The image may not be greater than ${this.maxFileSize} kilobytes.`]);
                 }
             });
@@ -96,23 +96,18 @@ const imageUpload = () => ({
     },
 
     handleUploading(files) {
-        if ((files.length + this.images.length) > this.uploadLimit) {
+        if (files.length + this.images.length > this.uploadLimit) {
             this.addErrors([`You can only upload ${this.uploadLimit} images.`]);
         } else {
             this.uploading = true;
             this.$refs.imageUpload.files = files;
             this.$refs.imageUpload.dispatchEvent(new Event('change'));
-            this.insertAtCorrectPosition(
-                'Uploading image...',
-            );
+            this.insertAtCorrectPosition('Uploading image...');
         }
     },
 
     replaceUploadingText() {
-        this.textarea.value = this.textarea.value.replace(
-            /Uploading image\.\.\./g,
-            ''
-        );
+        this.textarea.value = this.textarea.value.replace(/Uploading image\.\.\./g, '');
     },
 
     insertAtCorrectPosition(content) {
@@ -133,9 +128,7 @@ const imageUpload = () => ({
 
     removeImage(event, index) {
         event.preventDefault();
-        this.$wire.deleteImage(
-            this.normalizePath(this.images[index].path)
-        );
+        this.$wire.deleteImage(this.normalizePath(this.images[index].path));
         this.removeMarkdownImage(index);
         this.images.splice(index, 1);
     },
@@ -143,14 +136,12 @@ const imageUpload = () => ({
     createMarkdownImage(item) {
         let path, originalName;
         if (item instanceof Object) {
-            ({path, originalName} = item);
-            this.images.push({path, originalName});
+            ({ path, originalName } = item);
+            this.images.push({ path, originalName });
         } else if (typeof item === 'number') {
-            ({path, originalName} = this.images[item]);
+            ({ path, originalName } = this.images[item]);
         }
-        this.insertAtCorrectPosition(
-            `![${originalName}](${this.normalizePath(path)})`,
-        );
+        this.insertAtCorrectPosition(`![${originalName}](${this.normalizePath(path)})`);
         this.uploading = false;
     },
 
@@ -159,18 +150,15 @@ const imageUpload = () => ({
     },
 
     removeMarkdownImage(index) {
-        let {path, originalName} = this.images[index];
-        let regex = new RegExp(
-            `!\\[${this.escapeRegExp(originalName)}\\]\\(${this.normalizePath(path)}\\)\\n?`,
-            'g'
-        );
+        let { path, originalName } = this.images[index];
+        let regex = new RegExp(`!\\[${this.escapeRegExp(originalName)}\\]\\(${this.normalizePath(path)}\\)\\n?`, 'g');
         this.textarea.value = this.textarea.value.replace(regex, '');
         this.resizeTextarea();
     },
 
     normalizePath(path) {
         return path.replace(/\/storage\//, '');
-    }
-})
+    },
+});
 
-export { imageUpload }
+export { imageUpload };

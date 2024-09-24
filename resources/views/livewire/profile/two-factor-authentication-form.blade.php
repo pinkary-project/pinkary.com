@@ -1,6 +1,6 @@
 <section class="space-y-6">
     <header>
-        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
+        <h2 class="text-lg font-medium text-slate-600 dark:text-slate-400">
             {{ __('Two factor authentication') }}
         </h2>
 
@@ -10,7 +10,7 @@
     </header>
 
     <section>
-        <h3 class="text-lg font-medium dark:text-slate-300 text-slate-800">
+        <h3 class="text-lg font-medium text-slate-800 dark:text-slate-300">
             @if ($enabled)
                 @if ($showingConfirmation)
                     {{ __('Finish enabling two factor authentication.') }}
@@ -39,23 +39,30 @@
                         @endif
                     </p>
                 </div>
-                <div class="mt-4 p-2 inline-block bg-white">
+                <div class="mt-4 inline-block bg-white p-2">
                     {!! $user->twoFactorQrCodeSvg() !!}
                 </div>
 
                 <div class="mt-4 max-w-xl text-sm text-slate-500">
-                    <p class="font-semibold">
-                        {{ __('Setup Key') }}: {{ decrypt($user->two_factor_secret) }}
-                    </p>
+                    <p class="font-semibold">{{ __('Setup Key') }}: {{ decrypt($user->two_factor_secret) }}</p>
                 </div>
             @endif
+
             @if ($showingConfirmation)
                 <div class="mt-4">
                     <x-input-label for="code" value="{{ __('Code') }}" />
 
-                    <x-text-input id="code" type="text" name="code" class="block mt-1 w-1/2"
-                        inputmode="numeric" autofocus autocomplete="one-time-code" wire:model="code"
-                        wire:keydown.enter="confirmTwoFactorAuthentication" />
+                    <x-text-input
+                        id="code"
+                        type="text"
+                        name="code"
+                        class="mt-1 block w-1/2"
+                        inputmode="numeric"
+                        autofocus
+                        autocomplete="one-time-code"
+                        wire:model="code"
+                        wire:keydown.enter="confirmTwoFactorAuthentication"
+                    />
 
                     <x-input-error :messages="$errors->get('code')" class="mt-2" />
                 </div>
@@ -68,7 +75,7 @@
                     </p>
                 </div>
 
-                <div class="grid gap-1 max-w-xl mt-4 px-4 py-4 font-mono text-sm bg-gray-900 text-gray-100 rounded-lg">
+                <div class="mt-4 grid max-w-xl gap-1 rounded-lg bg-gray-900 px-4 py-4 font-mono text-sm text-gray-100">
                     @foreach (json_decode(decrypt($user->two_factor_recovery_codes), true) as $code)
                         <div>{{ $code }}</div>
                     @endforeach
@@ -77,9 +84,8 @@
         @endif
 
         <div class="mt-5">
-            @if (!$enabled)
-                <x-primary-button type="button" wire:loading.attr="disabled"
-                    wire:click="enableTwoFactorAuthentication">
+            @if (! $enabled)
+                <x-primary-button type="button" wire:loading.attr="disabled" wire:click="enableTwoFactorAuthentication">
                     {{ __('Enable') }}
                 </x-primary-button>
             @else
@@ -87,7 +93,7 @@
                     <x-secondary-button class="me-3" wire:click="regenerateRecoveryCodes">
                         {{ __('Regenerate Recovery Codes') }}
                     </x-secondary-button>
-                @elseif($showingConfirmation)
+                @elseif ($showingConfirmation)
                     <x-secondary-button class="me-3" wire:click="confirmTwoFactorAuthentication">
                         {{ __('Confirm') }}
                     </x-secondary-button>
@@ -97,8 +103,7 @@
                     </x-secondary-button>
                 @endif
 
-                <x-danger-button type="button" wire:loading.attr="disabled"
-                    wire:click="disableTwoFactorAuthentication">
+                <x-danger-button type="button" wire:loading.attr="disabled" wire:click="disableTwoFactorAuthentication">
                     @if ($showingConfirmation)
                         {{ __('Cancel') }}
                     @else

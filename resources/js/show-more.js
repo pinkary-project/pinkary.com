@@ -1,5 +1,4 @@
 const showMore = () => ({
-
     maxHeight: 600,
 
     initialHeight: 0,
@@ -22,7 +21,7 @@ const showMore = () => ({
 
         this.$refs.parentDiv.style.maxHeight = height + 'px';
 
-        this.open = ! this.open;
+        this.open = !this.open;
     },
 
     showMoreButtonText() {
@@ -32,6 +31,6 @@ const showMore = () => ({
 
         return 'Show less';
     },
-})
+});
 
-export { showMore }
+export { showMore };

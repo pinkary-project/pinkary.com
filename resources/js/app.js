@@ -1,17 +1,17 @@
-import './bootstrap'
+import './bootstrap';
 import autosize from 'autosize';
-import notifications from 'alpinejs-notify'
-import Sortable from 'sortablejs'
-import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm'
+import notifications from 'alpinejs-notify';
+import Sortable from 'sortablejs';
+import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 
-window.Alpine = Alpine
-window.Sortable = Sortable
+window.Alpine = Alpine;
+window.Sortable = Sortable;
 
-Alpine.plugin(notifications)
+Alpine.plugin(notifications);
 
 Alpine.magic('clipboard', () => {
-    return subject => navigator.clipboard.writeText(subject)
-})
+    return (subject) => navigator.clipboard.writeText(subject);
+});
 
 Alpine.directive('sortable', (el) => {
     el.sortable = Sortable.create(el, {
@@ -20,8 +20,8 @@ Alpine.directive('sortable', (el) => {
         dataIdAttr: 'x-sortable-item',
         animation: 300,
         ghostClass: 'opacity-30',
-    })
-})
+    });
+});
 
 Alpine.directive('autosize', (el) => {
     if (el) {
@@ -29,25 +29,25 @@ Alpine.directive('autosize', (el) => {
     }
 });
 
-import { shareProfile } from './share-profile.js'
-Alpine.data('shareProfile', shareProfile)
+import { shareProfile } from './share-profile.js';
+Alpine.data('shareProfile', shareProfile);
 
-import { copyUrl } from './copy-url.js'
-Alpine.data('copyUrl', copyUrl)
+import { copyUrl } from './copy-url.js';
+Alpine.data('copyUrl', copyUrl);
 
-import { showMore } from './show-more.js'
-Alpine.data('showMore', showMore)
+import { showMore } from './show-more.js';
+Alpine.data('showMore', showMore);
 
-import { clickHandler } from './click-handler.js'
-Alpine.data('clickHandler', clickHandler)
+import { clickHandler } from './click-handler.js';
+Alpine.data('clickHandler', clickHandler);
 
-import { copyCode } from './copy-code.js'
-Alpine.data('copyCode', copyCode)
+import { copyCode } from './copy-code.js';
+Alpine.data('copyCode', copyCode);
 
-import { imageUpload } from './image-upload.js'
-Alpine.data('imageUpload', imageUpload)
+import { imageUpload } from './image-upload.js';
+Alpine.data('imageUpload', imageUpload);
 
-import { autocomplete, usesAutocomplete } from "./autocomplete.js";
+import { autocomplete, usesAutocomplete } from './autocomplete.js';
 Alpine.data('dynamicAutocomplete', autocomplete);
 Alpine.data('usesDynamicAutocomplete', usesAutocomplete);
 
@@ -60,8 +60,8 @@ Alpine.data('likeButton', likeButton);
 
 import { bookmarkButton } from './bookmark-button.js';
 Alpine.data('bookmarkButton', bookmarkButton);
-import { followButton } from './follow-button.js'
-Alpine.data('followButton', followButton)
+import { followButton } from './follow-button.js';
+Alpine.data('followButton', followButton);
 
 import { viewCreate } from './view-cerate.js';
 Alpine.data('viewCreate', viewCreate);
@@ -69,4 +69,4 @@ Alpine.data('viewCreate', viewCreate);
 import { themeSwitch } from './theme-switch.js';
 Alpine.data('themeSwitch', themeSwitch);
 
-Livewire.start()
+Livewire.start();

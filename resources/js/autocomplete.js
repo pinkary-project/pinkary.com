@@ -13,7 +13,11 @@ export const autocomplete = (config) => ({
     },
 
     initListeners() {
-        this.listeners.push(Livewire.on('autocompleteBoundInputKeyup', (payload) => {this.handleInput(payload)}));
+        this.listeners.push(
+            Livewire.on('autocompleteBoundInputKeyup', (payload) => {
+                this.handleInput(payload);
+            }),
+        );
         this.listeners.push(Livewire.on('autocompleteBoundInputArrowUp', (event) => this.focusResultsUp()));
         this.listeners.push(Livewire.on('autocompleteBoundInputArrowDown', (event) => this.focusResultsDown()));
         this.listeners.push(Livewire.on('selectAutocomplete', (event) => this.select()));
@@ -58,28 +62,24 @@ export const autocomplete = (config) => ({
             const start = index === 0 ? index : previous.range[1] + 1;
             const end = start + word.length;
 
-            return acc.concat([{word, range: [start, end]}]);
+            return acc.concat([{ word, range: [start, end] }]);
         }, []);
 
         if (cursorPosition === undefined) {
             return undefined;
         }
 
-        return tokenizedQuery.find(
-            ({range}) => range[0] < cursorPosition && range[1] >= cursorPosition
-        );
+        return tokenizedQuery.find(({ range }) => range[0] < cursorPosition && range[1] >= cursorPosition);
     },
 
     determineTypesByExpression(word) {
-        return Object.keys(this.types).filter(
-            (type) => new RegExp(this.types[type].expression).test(word)
-        );
+        return Object.keys(this.types).filter((type) => new RegExp(this.types[type].expression).test(word));
     },
 
     select(replacement) {
         Livewire.dispatch('autocompleteSelected', {
-            newValue: this.formatReplacement(replacement ?? this.getReplacementFromSelectedResult())
-        })
+            newValue: this.formatReplacement(replacement ?? this.getReplacementFromSelectedResult()),
+        });
 
         this.activeToken = false;
 
@@ -93,12 +93,7 @@ export const autocomplete = (config) => ({
     formatReplacement(replacement) {
         const [index] = this.activeToken.range;
 
-        return this.replaceAt(
-            this.workingText,
-            replacement,
-            index,
-            this.activeToken.word.length
-        );
+        return this.replaceAt(this.workingText, replacement, index, this.activeToken.word.length);
     },
 
     replaceAt(str, replacement, index, length = 0) {
@@ -133,7 +128,7 @@ export const autocomplete = (config) => ({
             this.$refs.results.children[this.selectedIndex - 1]?.scrollIntoView({
                 block: 'nearest',
             });
-        })
+        });
     },
 
     focusResultsDown() {
@@ -146,7 +141,7 @@ export const autocomplete = (config) => ({
             this.$refs.results.children[this.selectedIndex + 1]?.scrollIntoView({
                 block: 'nearest',
             });
-        })
+        });
     },
 });
 
@@ -155,8 +150,8 @@ export const usesAutocomplete = () => ({
     listeners: [],
 
     init() {
-        Livewire.on('autocompletePanelShown', () => this.autocompletePanelIsShown = true);
-        Livewire.on('autocompletePanelClosed', () => this.autocompletePanelIsShown = false);
+        Livewire.on('autocompletePanelShown', () => (this.autocompletePanelIsShown = true));
+        Livewire.on('autocompletePanelClosed', () => (this.autocompletePanelIsShown = false));
         Livewire.on('autocompleteSelected', (event) => {
             this.$focus.focus(this.$el);
 
@@ -164,7 +159,7 @@ export const usesAutocomplete = () => ({
                 this.$el.value = event.newValue;
                 this.$dispatch('input', event.newValue);
             });
-        })
+        });
     },
 
     autocompleteInputBindings: {
@@ -172,42 +167,42 @@ export const usesAutocomplete = () => ({
             Livewire.dispatch('autocompleteBoundInputKeyup', {
                 content: this.$el.value,
                 event: event,
-            })
+            });
         },
         ['@keydown.arrow-up'](event) {
             if (this.autocompletePanelIsShown) {
                 event.preventDefault();
-                Livewire.dispatch('autocompleteBoundInputArrowUp')
+                Livewire.dispatch('autocompleteBoundInputArrowUp');
             }
         },
         ['@keydown.arrow-down'](event) {
             if (this.autocompletePanelIsShown) {
                 event.preventDefault();
-                Livewire.dispatch('autocompleteBoundInputArrowDown')
+                Livewire.dispatch('autocompleteBoundInputArrowDown');
             }
         },
         ['@keydown.enter'](event) {
             if (this.autocompletePanelIsShown) {
                 event.preventDefault();
-                Livewire.dispatch('selectAutocomplete')
+                Livewire.dispatch('selectAutocomplete');
             }
         },
         ['@keydown.tab'](event) {
             if (this.autocompletePanelIsShown) {
                 event.preventDefault();
-                Livewire.dispatch('selectAutocomplete')
+                Livewire.dispatch('selectAutocomplete');
             }
         },
         ['@keydown.escape'](event) {
             if (this.autocompletePanelIsShown) {
                 event.preventDefault();
-                Livewire.dispatch('closeAutocompletePanel')
+                Livewire.dispatch('closeAutocompletePanel');
             }
         },
         ['@click.away'](event) {
             if (this.autocompletePanelIsShown) {
                 event.preventDefault();
-                Livewire.dispatch('closeAutocompletePanel')
+                Livewire.dispatch('closeAutocompletePanel');
             }
         },
     },

@@ -1,5 +1,4 @@
 const themeSwitch = () => ({
-
     theme: 'system',
 
     init() {
@@ -11,16 +10,16 @@ const themeSwitch = () => ({
     },
 
     setTheme(theme) {
-        this.theme = theme
+        this.theme = theme;
 
         if (theme == 'dark' || theme == 'light') {
-            localStorage.setItem('theme', theme)
+            localStorage.setItem('theme', theme);
         } else {
             localStorage.removeItem('theme');
         }
 
         updateTheme();
     },
-})
+});
 
-export { themeSwitch }
+export { themeSwitch };

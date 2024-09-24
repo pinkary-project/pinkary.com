@@ -1,8 +1,6 @@
 const clickHandler = () => ({
-
-    handleNavigation(event)
-    {
-        if(window.getSelection().toString().length !== 0) {
+    handleNavigation(event) {
+        if (window.getSelection().toString().length !== 0) {
             return;
         }
 
@@ -16,15 +14,13 @@ const clickHandler = () => ({
             return hasDataNavigateIgnore(el.parentElement);
         };
 
-        if (! hasDataNavigateIgnore(event.target)) {
-            const parentLink = this.$refs.parentLink
+        if (!hasDataNavigateIgnore(event.target)) {
+            const parentLink = this.$refs.parentLink;
             if (parentLink) {
                 parentLink.click();
             }
-
         }
+    },
+});
 
-    }
-})
-
-export { clickHandler }
+export { clickHandler };

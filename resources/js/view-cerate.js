@@ -17,15 +17,15 @@ const viewCreate = () => ({
             const twoHours = 2 * 60 * 60 * 1000;
             return new Date().getTime() - post.dateTime < twoHours;
         });
-        let recentlyViewedPostIds = recentlyViewedPosts.map(post => post.postId);
-        let viewedPosts = this.posts.filter(postId => !recentlyViewedPostIds.includes(postId));
+        let recentlyViewedPostIds = recentlyViewedPosts.map((post) => post.postId);
+        let viewedPosts = this.posts.filter((postId) => !recentlyViewedPostIds.includes(postId));
         this.posts = [];
         if (viewedPosts.length > 0) {
             this.$wire.call('store', viewedPosts);
             viewedPosts = viewedPosts.map(function (postId) {
                 return {
                     postId: postId,
-                    dateTime: new Date().getTime()
+                    dateTime: new Date().getTime(),
                 };
             });
             let posts = [...recentlyViewedPosts, ...viewedPosts];
@@ -62,7 +62,7 @@ const viewCreate = () => ({
         window.addEventListener('popstate', () => {
             this.storeViewedPosts();
         });
-    }
+    },
 });
 
-export { viewCreate }
+export { viewCreate };

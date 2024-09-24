@@ -1,5 +1,4 @@
 const copyCode = () => ({
-
     init() {
         this.addCopyButtons();
         Livewire.hook('commit', (event) => {
@@ -19,7 +18,7 @@ const copyCode = () => ({
             wrapperId: 'flashMessageWrapper',
             templateId: 'flashMessageTemplate',
             autoClose: 3000,
-            autoRemove: 4000
+            autoRemove: 4000,
         });
     },
 
@@ -27,8 +26,8 @@ const copyCode = () => ({
         const codeElements = this.$el.querySelectorAll('code');
 
         const copyIcon = new DOMParser().parseFromString(
-            `<svg xmlns="http://www.w3.org/2000/svg" class="opacity-0 group-hover/code:opacity-80 size-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H10c-1.103 0-2 .897-2 2v4H4c-1.103 0-2 .897-2 2v10c0 1.103.897 2 2 2h10c1.103 0 2-.897 2-2v-4h4c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zM4 20V10h10l.002 10H4zm16-6h-4v-4c0-1.103-.897-2-2-2h-4V4h10v10z"></path><path d="M6 12h6v2H6zm0 4h6v2H6z"></path></svg>`
-            , 'image/svg+xml'
+            `<svg xmlns="http://www.w3.org/2000/svg" class="opacity-0 group-hover/code:opacity-80 size-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H10c-1.103 0-2 .897-2 2v4H4c-1.103 0-2 .897-2 2v10c0 1.103.897 2 2 2h10c1.103 0 2-.897 2-2v-4h4c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zM4 20V10h10l.002 10H4zm16-6h-4v-4c0-1.103-.897-2-2-2h-4V4h10v10z"></path><path d="M6 12h6v2H6zm0 4h6v2H6z"></path></svg>`,
+            'image/svg+xml',
         ).documentElement;
 
         const positionButton = (button, el) => {
@@ -38,10 +37,9 @@ const copyCode = () => ({
             button.style.position = 'absolute';
             button.style.right = `${m}px`;
             button.style.top = `${m}px`;
-        }
+        };
 
         codeElements.forEach((codeElement) => {
-
             if (codeElement.querySelector('button')) {
                 codeElement.querySelector('button').remove();
             }
@@ -68,22 +66,16 @@ const copyCode = () => ({
                     'duration-200',
                 );
                 button.title = 'Copy';
-                button.setAttribute(
-                    'data-navigate-ignore',
-                    'true'
-                );
+                button.setAttribute('data-navigate-ignore', 'true');
                 button.appendChild(copyIcon.cloneNode(true));
                 positionButton(button, codeElement);
-            }
+            };
 
             this.$nextTick(() => {
                 setupButton();
             });
 
-            window.addEventListener(
-                'resize', () =>
-                    positionButton(button, codeElement)
-            );
+            window.addEventListener('resize', () => positionButton(button, codeElement));
 
             button.addEventListener('click', () => {
                 this.copyToClipboard(codeElement.innerText.trim());
@@ -91,7 +83,7 @@ const copyCode = () => ({
 
             codeElement.appendChild(button);
         });
-    }
+    },
 });
 
-export {copyCode}
+export { copyCode };

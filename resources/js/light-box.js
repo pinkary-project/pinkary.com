@@ -12,7 +12,7 @@ const hasLightBoxImages = () => ({
                 });
             });
         });
-    }
+    },
 });
 
 const lightBox = () => ({
@@ -26,7 +26,7 @@ const lightBox = () => ({
             this.currentIndex = e.detail.currentIndex;
             this.images = e.detail.images;
             this.updateImageSrc();
-            this.$dispatch('open-modal', 'image-lightbox')
+            this.$dispatch('open-modal', 'image-lightbox');
         });
 
         window.addEventListener('modal-closed', (e) => {
@@ -44,12 +44,12 @@ const lightBox = () => ({
 
     nextImage() {
         this.currentIndex = (this.currentIndex + 1) % this.images.length;
-        this.updateImageSrc()
+        this.updateImageSrc();
     },
 
     prevImage() {
         this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-        this.updateImageSrc()
+        this.updateImageSrc();
     },
 
     updateImageSrc() {
@@ -112,7 +112,7 @@ const lightBox = () => ({
             xDown = null;
             yDown = null;
         });
-    }
+    },
 });
 
-export {hasLightBoxImages, lightBox}
+export { hasLightBoxImages, lightBox };

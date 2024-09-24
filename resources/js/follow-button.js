@@ -26,7 +26,7 @@ const followButton = (id, isFollowing, isFollower, isAuthenticated) => ({
     },
 
     setButtonText() {
-        this.buttonText = this.isFollowing ? 'Unfollow' : (this.isFollower ? 'Follow Back' : 'Follow');
+        this.buttonText = this.isFollowing ? 'Unfollow' : this.isFollower ? 'Follow Back' : 'Follow';
     },
 
     initEventListeners() {
@@ -42,9 +42,7 @@ const followButton = (id, isFollowing, isFollower, isAuthenticated) => ({
                 this.setButtonText();
             }
         });
-    }
+    },
 });
 
-export { followButton }
-
-
+export { followButton };

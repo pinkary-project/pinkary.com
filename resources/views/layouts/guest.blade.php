@@ -4,7 +4,7 @@
         @include('layouts.components.head')
     </head>
     <body
-        class="dark:bg-slate-950 bg-slate-100 bg-center bg-repeat font-sans dark:text-slate-50 text-slate-900 antialiased"
+        class="bg-slate-100 bg-center bg-repeat font-sans text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-50"
         style="background-image: url({{ asset('/img/dots.svg') }})"
     >
         <livewire:flash-messages.show />
@@ -18,11 +18,7 @@
                 </div>
 
                 <div>
-                    <a
-                        href="{{ route('home.feed') }}"
-                        wire:navigate
-                        class="mt-20 flex justify-center"
-                    >
+                    <a href="{{ route('home.feed') }}" wire:navigate class="mt-20 flex justify-center">
                         <x-pinkary-logo class="z-10 w-48" />
                     </a>
 
