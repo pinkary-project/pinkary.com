@@ -320,7 +320,7 @@ test('reject fake emails', function () {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
-        'email' => fake()->unique()->safeEmail(),
+        'email' => 'test@example.com',
         'password' => 'm@9v_.*.XCN',
         'password_confirmation' => 'm@9v_.*.XCN',
         'terms' => true,
