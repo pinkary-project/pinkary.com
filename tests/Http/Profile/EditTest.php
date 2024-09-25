@@ -472,7 +472,7 @@ test('reject profile information update with fake email', function () {
         ->patch('/profile', [
             'name' => 'Test User',
             'username' => 'testuser',
-            'email' => fake()->unique()->safeEmail(),
+            'email' => 'test@example.com',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
