@@ -158,6 +158,11 @@
             >
         @endif
 
+        <div class="flex flex-row items-center justify-center text-slate-500 pt-1.5 gap-0.5">
+            <x-heroicon-o-calendar-days class="size-5"/>
+            <p class="text-sm">Since {{ $user->created_at->format('M Y') }}</p>
+        </div>
+
         <livewire:followers.index :userId="$user->id" />
         <livewire:following.index :userId="$user->id" />
 
