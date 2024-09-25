@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Context;
 
 /**
  * @property string $id
@@ -70,8 +69,8 @@ final class Question extends Model implements Viewable
     public function getContentAttribute(?string $value): ?string
     {
         return $this->runParser(
-            value: $value,
             attribute: 'content',
+            value: $value,
         );
     }
 
@@ -81,8 +80,8 @@ final class Question extends Model implements Viewable
     public function getAnswerAttribute(?string $value): ?string
     {
         return $this->runParser(
-            value: $value,
             attribute: 'answer',
+            value: $value,
         );
     }
 
