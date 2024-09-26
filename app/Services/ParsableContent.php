@@ -43,7 +43,45 @@ final class ParsableContent
     /**
      * Parses the given content.
      */
-    public function parse(string $content): string
+    public static function parse(string $key, string $content): string
+    {
+        if (self::has($key)) {
+            return self::get($key);
+        }
+
+        return self::$cache[$key] = (new self())->parseContent($content);
+    }
+
+    /**
+     * Checks if the cache has the given key.
+     */
+    public static function has(string $key): bool
+    {
+        return isset(self::$cache[$key]);
+    }
+
+    /**
+     * Gets the cache for the given key.
+     */
+    public static function get(string $key): ?string
+    {
+        return self::$cache[$key] ?? null;
+    }
+
+    /**
+     * Gets the providers.
+     *
+     * @return array<int, class-string<ParsableContentProvider>>
+     */
+    public function getProviders(): array
+    {
+        return $this->providers;
+    }
+
+    /**
+     * Parses the content using the providers.
+     */
+    public function parseContent(string $content): string
     {
         return (string) collect($this->providers)
             ->reduce(function (string $parsed, string $provider): string {
