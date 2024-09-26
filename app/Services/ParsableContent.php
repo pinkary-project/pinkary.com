@@ -41,9 +41,23 @@ final class ParsableContent
     }
 
     /**
+     * Flushes the cache for the given content.
+     */
+    public static function flush(string $key, ?bool $all = null): void
+    {
+        if ($all === true || $key === 'all') {
+            self::$cache = [];
+
+            return;
+        }
+
+        unset(self::$cache[$key]);
+    }
+
+    /**
      * Parses the given content.
      */
-    public static function parse(string $key, string $content): string
+    public static function parse(string $key, string $content): ?string
     {
         if (self::has($key)) {
             return self::get($key);
