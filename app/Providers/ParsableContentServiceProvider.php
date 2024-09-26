@@ -20,7 +20,7 @@ final class ParsableContentServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->terminating(static function (): void {
-            ParsableContent::flush('all', true);
+            ParsableContent::flush(all: true);
         });
     }
 }

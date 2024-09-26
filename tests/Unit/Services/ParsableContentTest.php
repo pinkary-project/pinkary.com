@@ -60,7 +60,7 @@ it('can flush all the cache when the application is terminating', function () {
     expect($provider::has('key'))->toBeTrue()
         ->and($provider::has('key2'))->toBeTrue();
 
-    $provider::flush('all', true);
+    $provider::flush(all: true);
 
     expect($provider::has('key'))->toBeFalse()
         ->and($provider::has('key2'))->toBeFalse();

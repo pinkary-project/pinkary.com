@@ -43,9 +43,9 @@ final class ParsableContent
     /**
      * Flushes the cache for the given content.
      */
-    public static function flush(string $key, ?bool $all = null): void
+    public static function flush(?string $key = null, ?bool $all = null): void
     {
-        if ($all === true || $key === 'all') {
+        if ($key === null && $all === true) {
             self::$cache = [];
 
             return;
