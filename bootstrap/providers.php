@@ -8,4 +8,5 @@ return [
     App\Providers\FortifyServiceProvider::class,
     App\Providers\GitHubServiceProvider::class,
     App\Providers\PulseServiceProvider::class,
+    App\Providers\ParsableContentServiceProvider::class,
 ];
