@@ -226,31 +226,18 @@ final class Question extends Model implements Viewable
     /**
      * Run the parser for the given attribute and value.
      */
-    private function runParser(?string $value, string $attribute): ?string
+    private function runParser(string $attribute, ?string $value): ?string
     {
         $key = "question.{$this->id}.{$attribute}.parsed";
 
-        if (Context::hasHidden($key)) {
-            if ($this->isDirty($attribute)) {
-                return $this->cacheAndParse($value, $key);
-            }
-
-            $returned = Context::getHidden($key);
-
-            return is_string($returned) ? $returned : null;
+        if (ParsableContent::has($key) && $this->isDirty($attribute)) {
+            ParsableContent::flush($key);
         }
 
-        return $this->cacheAndParse($value, $key);
-    }
+        if ($value !== null && $value !== '' && $value !== '0') {
+            return ParsableContent::parse($key, $value);
+        }
 
-    /**
-     * Cache and parse the given value.
-     */
-    private function cacheAndParse(?string $value, string $key): ?string
-    {
-        $parsed = (new ParsableContent)->parse((string)$value);
-        Context::addHidden($key, $parsed);
-
-        return $value === null || $value === '' || $value === '0' ? null : $parsed;
+        return null;
     }
 }
