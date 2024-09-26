@@ -16,6 +16,13 @@ use App\Services\ParsableContentProviders\StripProviderParsable;
 final class ParsableContent
 {
     /**
+     * The cache of parsed content.
+     *
+     * @var array<string, string>
+     */
+    private static array $cache = [];
+
+    /**
      * Creates a new parsable content instance.
      *
      * @param  array<int, class-string<ParsableContentProvider>>  $providers
