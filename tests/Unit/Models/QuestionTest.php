@@ -6,6 +6,7 @@ use App\Models\Hashtag;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
+use App\Services\ParsableContent;
 
 test('to array', function () {
     $question = Question::factory()->create()->fresh();
@@ -116,7 +117,8 @@ test('caches the parsed answer', function () {
 
     $contextKey = "question.{$question->id}.answer.parsed";
 
-    expect(Context::getHidden($contextKey))->toBe($question->answer);
+    expect(ParsableContent::has($contextKey))->toBeTrue()
+        ->and(ParsableContent::parse($contextKey, $question->answer))->toBe($question->answer);
 });
 
 test('re-caches the parsed answer when the answer is updated', function () {
@@ -129,7 +131,8 @@ test('re-caches the parsed answer when the answer is updated', function () {
     $question->answer = 'Hi';
     $question->save();
 
-    expect(Context::getHidden($contextKey))->toBe($question->answer);
+    expect(ParsableContent::has($contextKey))->toBeTrue()
+        ->and(ParsableContent::get($contextKey))->toBe('Hi');
 });
 
 test('caches the parsed content', function () {
@@ -139,7 +142,8 @@ test('caches the parsed content', function () {
 
     $contextKey = "question.{$question->id}.content.parsed";
 
-    expect(Context::getHidden($contextKey))->toBe($question->content);
+    expect(ParsableContent::has($contextKey))->toBeTrue()
+        ->and(ParsableContent::parse($contextKey, $question->content))->toBe($question->content);
 });
 
 test('re-caches the parsed content when the content is updated', function () {
@@ -152,5 +156,6 @@ test('re-caches the parsed content when the content is updated', function () {
     $question->content = 'Hi';
     $question->save();
 
-    expect(Context::getHidden($contextKey))->toBe($question->content);
+    expect(ParsableContent::has($contextKey))->toBeTrue()
+        ->and(ParsableContent::get($contextKey))->toBe('Hi');
 });
