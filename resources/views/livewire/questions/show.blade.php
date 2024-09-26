@@ -1,10 +1,4 @@
 <article class="block" id="q-{{ $questionId }}" x-data="copyCode">
-    @if ($showParents)
-        @foreach($parentQuestions as $parentQuestion)
-            <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="false" :key="$parentQuestion->id" />
-            <x-post-divider />
-        @endforeach
-    @endif
     <div>
         <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
             @unless ($question->isSharedUpdate())
@@ -129,8 +123,7 @@
                             @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
                                 <x-dropdown-button
                                     data-navigate-ignore="true"
-                                    wire:click="ignore"
-                                    wire:confirm="Are you sure you want to delete this question?"
+                                    x-on:click="$dispatch('open-modal', 'question.delete.{{ $questionId }}.confirmation')"
                                     class="flex items-center gap-1.5"
                                 >
                                     <x-heroicon-o-trash class="h-4 w-4" />
@@ -360,6 +353,30 @@
                 </div>
             </x-modal>
         @endif
+
+        <x-modal
+            max-width="md"
+            name="question.delete.{{ $questionId }}.confirmation"
+        >
+            <div class="p-8">
+                <h2 class="text-lg font-medium dark:text-slate-50 text-slate-950">Delete Question</h2>
+                <div class="mt-4 text-slate-500 dark:text-slate-400">
+                    <p>Are you sure you want to delete this question?</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <x-secondary-button
+                        x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')"
+                    >
+                        Cancel
+                    </x-secondary-button>
+                    <x-primary-button
+                        wire:click="ignore"
+                    >
+                        Delete
+                    </x-primary-button>
+                </div>
+            </div>
+        </x-modal>
     @elseif (auth()->user()?->is($user))
         <livewire:questions.edit
             :questionId="$question->id"
@@ -369,30 +386,5 @@
 
     @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
-    @endif
-
-    @if($inThread && !$commenting && $question->descendants->isNotEmpty())
-        @php
-            $lastComment = $question->descendants->first();
-            $parentCommentOfLastComment = $lastComment->parent;
-        @endphp
-        @if($parentCommentOfLastComment && $question->id !== $parentCommentOfLastComment->id)
-            @if($parentCommentOfLastComment->parent_id === $question->id)
-               <x-post-divider />
-            @else
-                <x-post-divider :link="route('questions.show', ['username' => $question->to->username, 'question' => $question])" :text="'View more comments...'" />
-            @endif
-            <livewire:questions.show :questionId="$parentCommentOfLastComment->id" :in-thread="false" :key="$parentCommentOfLastComment->id" />
-        @endif
-        <x-post-divider />
-        <livewire:questions.show :questionId="$lastComment->id" :in-thread="false" :key="$lastComment->id" />
-    @elseif($inThread && $question->children->isNotEmpty())
-        <div class="pl-3">
-            @foreach($question->children as $comment)
-                @break($loop->depth > 5)
-
-                <livewire:questions.show :question-id="$comment->id" :$inThread :wire:key="$comment->id" />
-            @endforeach
-        </div>
     @endif
 </article>

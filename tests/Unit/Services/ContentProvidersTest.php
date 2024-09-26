@@ -25,6 +25,10 @@ test('links', function (string $content, string $parsed) {
     expect($provider->parse($content))->toBe($parsed);
 })->with([
     [
+        'content' => 'http://example.com/',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://example.com/">example.com</a>',
+    ],
+    [
         'content' => 'https://example.com/',
         'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/">example.com</a>',
     ],
@@ -187,6 +191,25 @@ test('links within <pre> and <code> blocks are ignored', function (string $conte
             </pre>
             <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://linkoutsidecodeblock.com">linkoutsidecodeblock.com</a>
             CODE,
+    ],
+]);
+
+test('only http or https urls are converted to links', function (string $content, string $parsed) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'example.com will not be a link but https://example.com will',
+        'parsed' => 'example.com will not be a link but <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a> will',
+    ],
+    [
+        'content' => 'www.example.com',
+        'parsed' => 'www.example.com',
+    ],
+    [
+        'content' => 'blade.php',
+        'parsed' => 'blade.php',
     ],
 ]);
 

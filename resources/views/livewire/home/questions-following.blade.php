@@ -8,11 +8,12 @@
     @else
         <section class="mb-12 min-h-screen space-y-10">
             @foreach ($followingQuestions as $question)
-                <livewire:questions.show
+                <x-thread
+                    :rootId="$question->showRoot ? $question->root_id : null"
+                    :grandParentId="$question->parent?->parent_id"
+                    :parentId="$question->showParent ? $question->parent_id : null"
                     :questionId="$question->id"
-                    :key="'question-' . $question->id"
-                    :inIndex="true"
-                    :pinnable="false"
+                    :username="$question->root?->to->username"
                 />
             @endforeach
 

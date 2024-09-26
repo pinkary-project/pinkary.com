@@ -151,7 +151,7 @@
     />
 
     @if ($answer)
-        <title>{{ $question->to->name }}: "{!! $answer !!}" / Pinkary</title>
+        <title>{{ $question->to->name }}: "{!! Str::limit($answer, 50, preserveWords: true) !!}" / Pinkary</title>
         <meta
             property="og:title"
             content='{{ $ogTitle }}'
@@ -206,6 +206,20 @@
         font-stretch: 75% 125%;
     }
 </style>
+
+<script>
+    function isDarkTheme() {
+        return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    }
+    function updateTheme() {
+        if (isDarkTheme()) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    }
+    updateTheme();
+</script>
 
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])

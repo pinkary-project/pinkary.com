@@ -23,12 +23,13 @@
         <section class="max-w-2xl">
             <ul class="flex flex-col gap-2">
                 @foreach ($users as $user)
-                    <li>
-                        <a
-                            href="{{ route('profile.show', ['username' => $user->username]) }}"
-                            class="group flex items-center gap-3 rounded-2xl border dark:border-slate-900 border-slate-200 dark:bg-slate-950 bg-slate-50 dark:bg-opacity-80 p-4 transition-colors dark:hover:bg-slate-900 hover:bg-slate-100"
-                            wire:navigate
-                        >
+                    <li
+                        data-parent=true
+                        x-data="clickHandler"
+                        x-on:click="handleNavigation($event)"
+                        wire:key="user-{{ $user->id }}"
+                    >
+                        <div class="group flex items-center gap-3 rounded-2xl border dark:border-slate-900 border-slate-200 dark:bg-slate-950 bg-slate-50 dark:bg-opacity-80 p-4 transition-colors dark:hover:bg-slate-900 hover:bg-slate-100">
                             <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90">
                                 <img
                                     class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-12 w-12"
@@ -36,9 +37,14 @@
                                     alt="{{ $user->username }}"
                                 />
                             </figure>
-                            <div class="flex flex-col overflow-hidden text-sm">
-                                <div class="flex items-center space-x-2">
-                                    <p class="truncate font-medium dark:text-white text-black">
+                            <div class="flex flex-col overflow-hidden text-sm text-left">
+                                <a
+                                    class="flex items-center space-x-2"
+                                    href="{{ route('profile.show', ['username' => $user->username]) }}"
+                                    wire:navigate
+                                    x-ref="parentLink"
+                                >
+                                    <p class="text-wrap truncate font-medium dark:text-white text-black">
                                         {{ $user->name }}
                                     </p>
 
@@ -53,12 +59,19 @@
                                             class="size-4"
                                         />
                                     @endif
-                                </div>
+                                </a>
                                 <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
                                     {{ '@'.$user->username }}
                                 </p>
                             </div>
-                        </a>
+                            <x-follow-button
+                                :id="$user->id"
+                                :isFollower="auth()->check() && $user->is_follower"
+                                :isFollowing="auth()->check() && $user->is_following"
+                                class="ml-auto"
+                                wire:key="follow-button-{{ $user->id }}"
+                            />
+                        </div>
                     </li>
                 @endforeach
             </ul>
