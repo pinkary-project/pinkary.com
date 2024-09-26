@@ -13,14 +13,14 @@ use App\Services\ParsableContentProviders\LinkProviderParsable;
 use App\Services\ParsableContentProviders\MentionProviderParsable;
 use App\Services\ParsableContentProviders\StripProviderParsable;
 
-final readonly class ParsableContent
+final class ParsableContent
 {
     /**
      * Creates a new parsable content instance.
      *
      * @param  array<int, class-string<ParsableContentProvider>>  $providers
      */
-    public function __construct(private array $providers = [
+    public function __construct(private readonly array $providers = [
         StripProviderParsable::class,
         CodeProviderParsable::class,
         ImageProviderParsable::class,
