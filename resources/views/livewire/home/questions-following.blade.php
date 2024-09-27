@@ -10,10 +10,10 @@
             @foreach ($followingQuestions as $question)
                 <x-thread
                     :rootId="$question->showRoot ? $question->root_id : null"
-                    :grandParentId="$question->grand_parent_id"
+                    :grandParentId="$question->parent?->parent_id"
                     :parentId="$question->showParent ? $question->parent_id : null"
                     :questionId="$question->id"
-                    :username="$question->username"
+                    :username="$question->root?->to->username"
                 />
             @endforeach
 

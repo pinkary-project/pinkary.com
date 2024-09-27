@@ -27,7 +27,7 @@ final readonly class QuestionsFollowingFeed
     {
         $followQueryClosure = function (Builder $query): void {
             $query->where('to_id', $this->user->id)
-                ->orWhereIn('to_id', $this->user->following()->select('users.id'));
+                ->orWhereIn('to_id', DB::table('followers')->select('user_id')->where('follower_id', $this->user->id));
         };
 
         return Question::query()
@@ -36,8 +36,7 @@ final readonly class QuestionsFollowingFeed
                 'root as showRoot' => $followQueryClosure,
                 'parent as showParent' => $followQueryClosure,
             ])
-            ->withAggregate('to as username', 'username')
-            ->withAggregate('parent as grand_parent_id', 'parent_id')
+            ->with('root:id,to_id', 'root.to:id,username', 'parent:id,parent_id')
             ->whereNotNull('answer')
             ->where('is_reported', false)
             ->where('is_ignored', false)
