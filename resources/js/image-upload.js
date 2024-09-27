@@ -2,6 +2,7 @@ const imageUpload = () => ({
     uploading: false,
     uploadLimit: null,
     maxFileSize: null,
+    maxContentLength: null,
     images: [],
     errors: [],
     textarea: null,
