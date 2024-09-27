@@ -14,7 +14,7 @@ use App\Services\ParsableContentProviders\StripProviderParsable;
 covers(ParsableContent::class);
 
 test('link', function () {
-    $content = 'Sure, here is the link: example.com. Let me know if you have any questions.';
+    $content = 'Sure, here is the link: https://example.com. Let me know if you have any questions.';
 
     $provider = new ParsableContent();
 
