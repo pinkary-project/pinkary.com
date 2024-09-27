@@ -139,6 +139,7 @@ const imageUpload = () => ({
         );
         this.removeMarkdownImage(index);
         this.images.splice(index, 1);
+        this.errors = [];
     },
 
     createMarkdownImage(item) {
