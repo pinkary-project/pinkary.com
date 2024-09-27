@@ -149,10 +149,21 @@ const imageUpload = () => ({
         } else if (typeof item === 'number') {
             ({path, originalName} = this.images[item]);
         }
-        this.insertAtCorrectPosition(
-            `![${originalName}](${this.normalizePath(path)})`,
-        );
+
+        const markdownSnippet = `![${originalName}](${this.normalizePath(path)})`;
+
+        if (this.isExceedingMaxContentLength(markdownSnippet)) {
+            this.addErrors(['Adding this image will exceed the maximum content length.']);
+            return;
+        }
+
+        this.insertAtCorrectPosition(markdownSnippet);
         this.uploading = false;
+    },
+
+    isExceedingMaxContentLength(markdownSnippet) {
+        const newLength = this.textarea.value.length + markdownSnippet.length;
+        return newLength > this.maxContentLength;
     },
 
     escapeRegExp(string) {
