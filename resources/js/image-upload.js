@@ -35,7 +35,7 @@ const imageUpload = () => ({
 
         Livewire.on('question.created', () => {
             this.images = [];
-            this.errors = [];
+            this.removeErrors();
         });
 
         Livewire.hook('morph.updated', ({el, component}) => {
@@ -82,9 +82,13 @@ const imageUpload = () => ({
         });
     },
 
+    removeErrors() {
+        this.errors = [];
+    },
+
     checkFileSize(files) {
         if (files.length) {
-            this.errors = [];
+            this.removeErrors();
             Array.from(files).forEach((file) => {
                 if ((file.size / 1024) > this.maxFileSize) {
                     this.addErrors([`The image may not be greater than ${this.maxFileSize} kilobytes.`]);
@@ -139,7 +143,7 @@ const imageUpload = () => ({
         );
         this.removeMarkdownImage(index);
         this.images.splice(index, 1);
-        this.errors = [];
+        this.removeErrors();
     },
 
     createMarkdownImage(item) {
@@ -156,6 +160,10 @@ const imageUpload = () => ({
         if (this.isExceedingMaxContentLength(markdownSnippet)) {
             this.addErrors(['Adding this image will exceed the maximum content length.']);
             return;
+        }
+
+        if (this.errors.length > 0) {
+            this.removeErrors();
         }
 
         this.insertAtCorrectPosition(markdownSnippet);
