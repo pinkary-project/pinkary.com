@@ -109,6 +109,30 @@ test('guest or random user cannot see qr download link', function () {
     $component->assertDontSee(route('qr-code.image'));
 });
 
+test('user can share to twitter link', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->assertSee(route('profile.show', ['username' => $user->username]));
+    $component->assertSee('Follow me on Pinkary');
+});
+
+test('guest or random user can share another user twitter link', function () {
+    $user = User::factory()->create();
+
+    $randomUser = User::factory()->create();
+
+    $component = Livewire::actingAs($randomUser)->test(Index::class, [
+        'userId' => $user->id,
+    ]);
+
+    $component->assertSee(route('profile.show', ['username' => $user->username]));
+    $component->assertSee("Follow {$user->name} on Pinkary");
+});
+
 test('when user click his own links the clicks counter is not incremented', function () {
     $user = User::factory()->create();
 

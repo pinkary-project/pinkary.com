@@ -2,6 +2,7 @@ const imageUpload = () => ({
     uploading: false,
     uploadLimit: null,
     maxFileSize: null,
+    maxContentLength: null,
     images: [],
     errors: [],
     textarea: null,
@@ -34,7 +35,7 @@ const imageUpload = () => ({
 
         Livewire.on('question.created', () => {
             this.images = [];
-            this.errors = [];
+            this.removeErrors();
         });
 
         Livewire.hook('morph.updated', ({el, component}) => {
@@ -81,9 +82,13 @@ const imageUpload = () => ({
         });
     },
 
+    removeErrors() {
+        this.errors = [];
+    },
+
     checkFileSize(files) {
         if (files.length) {
-            this.errors = [];
+            this.removeErrors();
             Array.from(files).forEach((file) => {
                 if ((file.size / 1024) > this.maxFileSize) {
                     this.addErrors([`The image may not be greater than ${this.maxFileSize} kilobytes.`]);
@@ -138,6 +143,7 @@ const imageUpload = () => ({
         );
         this.removeMarkdownImage(index);
         this.images.splice(index, 1);
+        this.removeErrors();
     },
 
     createMarkdownImage(item) {
@@ -148,10 +154,25 @@ const imageUpload = () => ({
         } else if (typeof item === 'number') {
             ({path, originalName} = this.images[item]);
         }
-        this.insertAtCorrectPosition(
-            `![${originalName}](${this.normalizePath(path)})`,
-        );
+
+        const markdownSnippet = `![${originalName}](${this.normalizePath(path)})`;
+
+        if (this.isExceedingMaxContentLength(markdownSnippet)) {
+            this.addErrors(['Adding this image will exceed the maximum content length.']);
+            return;
+        }
+
+        if (this.errors.length > 0) {
+            this.removeErrors();
+        }
+
+        this.insertAtCorrectPosition(markdownSnippet);
         this.uploading = false;
+    },
+
+    isExceedingMaxContentLength(markdownSnippet) {
+        const newLength = this.textarea.value.length + markdownSnippet.length;
+        return newLength > this.maxContentLength;
     },
 
     escapeRegExp(string) {

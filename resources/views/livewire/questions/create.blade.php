@@ -10,6 +10,7 @@
         x-init='() => {
             uploadLimit = {{ $this->uploadLimit }};
             maxFileSize = {{ $this->maxFileSize }};
+            maxContentLength = {{ $this->maxContentLength }};
         }'
     >
         <div
