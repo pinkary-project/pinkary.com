@@ -44,7 +44,7 @@
                         x-on:click="
                             twitter({
                                 url: '{{ route('profile.show', ['username' => $user->username]) }}',
-                                message: {{ auth()->user()?->is($user) ? 'Follow me on Pinkary' : "Follow {$user->name} on Pinkary" }},
+                                message: '{{ auth()->user()?->is($user) ? 'Follow me on Pinkary' : "Follow {$user->name} on Pinkary" }}',
                             })
                         "
                         type="button"
