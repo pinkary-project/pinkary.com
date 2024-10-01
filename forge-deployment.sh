@@ -38,4 +38,6 @@ fi
 
 $FORGE_PHP artisan pulse:restart
 
+curl https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/refs/heads/main/disposable_email_blocklist.conf > storage/app/disposable_email_blocklist.conf
+
 $FORGE_PHP artisan up
