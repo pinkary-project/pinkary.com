@@ -186,7 +186,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         $sorting = json_decode($value, true);
 
         return collect($sorting)
-            ->map(fn (string $linkId): int => (int) $linkId)
+            ->map(fn(string $linkId): int => (int) $linkId)
             ->values()
             ->all();
     }
@@ -306,6 +306,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'mail_preference_time' => UserMailPreference::class,
             'views' => 'integer',
             'is_uploaded_avatar' => 'boolean',
+            'prefers_questions' => 'boolean'
         ];
     }
 }
