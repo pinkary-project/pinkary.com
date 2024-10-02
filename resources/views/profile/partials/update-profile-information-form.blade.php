@@ -162,6 +162,23 @@
                 class="mt-2"
                 :messages="$errors->get('prefers_anonymous_questions')"
             />
+
+        </div>
+
+        <div>
+            <x-input-label
+                for="prefers_questions"
+                :value="__('People can ask me questions')"
+            />
+            <x-checkbox
+                name="prefers_questions"
+                class="mt-1 block"
+                :checked="old('prefers_questions', $user->prefers_questions) == 1"
+            />
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('prefers_questions')"
+            />
         </div>
 
         <div class="flex items-center gap-4">
