@@ -5,7 +5,6 @@
             <livewire:questions.create :toId="$user->id" />
             <livewire:questions.index
                 :userId="$user->id"
-                :pinnable="true"
             />
         </div>
     </div>
