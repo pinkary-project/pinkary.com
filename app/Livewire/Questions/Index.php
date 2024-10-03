@@ -26,32 +26,33 @@ final class Index extends Component
     public int $userId;
 
     /**
-     * Whether the pinned label should be displayed or not.
-     */
-    #[Locked]
-    public bool $pinnable = false;
-
-    /**
      * Render the component.
      */
     public function render(Request $request): View
     {
         $user = User::findOrFail($this->userId);
 
+        $pinnedQuestion = $user->questionsReceived()
+            ->where('is_ignored', false)
+            ->where('is_reported', false)
+            ->where('pinned', true)
+            ->first();
+
         $questions = $user
             ->questionsReceived()
+            ->where('pinned', false)
             ->where('is_ignored', false)
             ->where('is_reported', false)
             ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
                 $query->whereNotNull('answer');
             })
-            ->orderByDesc('pinned')
             ->orderByDesc('updated_at')
             ->simplePaginate($this->perPage);
 
         return view('livewire.questions.index', [
             'user' => $user,
             'questions' => $questions,
+            'pinnedQuestion' => $pinnedQuestion,
         ]);
     }
 
