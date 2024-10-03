@@ -16,27 +16,6 @@ final readonly class UnauthorizedEmailProviders implements ValidationRule
     public const string STORAGE_FILE_PATH = 'app/disposable_email_blocklist.conf';
 
     /**
-     * Unauthorized email providers.
-     *
-     * @var array<int, string>
-     *
-     * @see https://github.com/disposable-email-domains/disposable-email-domains/blob/master/disposable_email_blocklist.conf
-     */
-    private array $unauthorizedEmailProviders;
-
-    /**
-     * Create a new rule instance.
-     */
-    public function __construct()
-    {
-        $this->unauthorizedEmailProviders = explode("\n", trim(
-            File::exists($filePath = storage_path(self::STORAGE_FILE_PATH))
-                ? File::get($filePath)
-                : ''
-        ));
-    }
-
-    /**
      * Run the validation rule.
      *
      * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
@@ -48,7 +27,7 @@ final readonly class UnauthorizedEmailProviders implements ValidationRule
         if (mb_strpos($value, '@') !== false) {
             [$emailAccount, $emailProvider] = explode('@', $value);
 
-            if (in_array($emailProvider, $this->unauthorizedEmailProviders, true)) {
+            if (in_array($emailProvider, $this->getUnauthorizedEmailProviders(), true)) {
                 $fail('The :attribute belongs to an unauthorized email provider.');
 
                 return;
@@ -58,5 +37,19 @@ final readonly class UnauthorizedEmailProviders implements ValidationRule
 
             return;
         }
+    }
+
+    /**
+     * Gets the unauthorized email providers from the stored file.
+     *
+     * @return array<int, string>
+     */
+    private function getUnauthorizedEmailProviders(): array
+    {
+        return explode("\n", trim(
+            File::exists($filePath = storage_path(self::STORAGE_FILE_PATH))
+                ? File::get($filePath)
+                : ''
+        ));
     }
 }
