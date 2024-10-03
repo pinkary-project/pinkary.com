@@ -7,7 +7,6 @@
             @endif
             <livewire:questions.index
                 :userId="$user->id"
-                :pinnable="true"
             />
         </div>
     </div>
