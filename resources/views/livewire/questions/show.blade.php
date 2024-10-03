@@ -380,7 +380,7 @@
     @elseif (auth()->user()?->is($user))
         <livewire:questions.edit
             :questionId="$question->id"
-            :key="$question->id"
+            :key="'edit-'.$question->id"
         />
     @endif
 

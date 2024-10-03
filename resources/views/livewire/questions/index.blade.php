@@ -2,18 +2,19 @@
     @if ($pinnedQuestion)
         <livewire:questions.show
             :questionId="$pinnedQuestion->id"
-            :key="'question-' . $pinnedQuestion->id"
+            :key="'pinned-question-' . $pinnedQuestion->id"
             :inIndex="true"
             :pinnable="true"
         />
     @endif
 
     @foreach ($questions as $question)
-        <livewire:questions.show
+        <x-thread
+            :rootId="$question->showRoot ? $question->root_id : null"
+            :grandParentId="$question->parent?->parent_id"
+            :parentId="$question->showParent ? $question->parent_id : null"
             :questionId="$question->id"
-            :key="'question-' . $question->id"
-            :inIndex="true"
-            :pinnable="false"
+            :username="$user->username"
         />
     @endforeach
 
