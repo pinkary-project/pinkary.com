@@ -6,6 +6,8 @@ namespace App\Models;
 
 use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
+use App\Services\ParsableContentProviders\LinkProviderParsable;
+use App\Services\ParsableContentProviders\MentionProviderParsable;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -283,6 +285,14 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         }
 
         return $isCompanyVerified;
+    }
+
+    /**
+     * Get the user's bio attribute.
+     */
+    public function getParsedBioAttribute(): string
+    {
+        return (new LinkProviderParsable)->parse((new MentionProviderParsable)->parse((string) $this->bio));
     }
 
     /**
