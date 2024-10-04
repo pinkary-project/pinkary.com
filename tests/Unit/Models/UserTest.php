@@ -44,6 +44,14 @@ test('is verified', function () {
     expect($user->is_verified)->toBeTrue();
 });
 
+test('prefers questions', function () {
+    $user = User::factory()->create([
+        'prefers_questions' => true,
+    ]);
+
+    expect($user->prefers_questions)->toBeTrue();
+});
+
 test('is verified because in list of fixed sponsors', function () {
     $user = User::factory()->create([
         'is_verified' => false,
