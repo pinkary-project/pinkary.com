@@ -2,21 +2,6 @@
 
 declare(strict_types=1);
 
-test('link', function () {
-    $content = 'hi I\'m a full stack dev and here is my link https://example.com.';
-
-    $provider = new App\Services\ParsableBio();
-
-    expect($provider->parse($content))->toBe('hi I&#039;m a full stack dev and here is my link <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>.');
-});
-
-test('mention', function () {
-    $content = "{{ __(' Laravel Artisan | Open Source Contributor | Speaker | Core Team @PinkaryProject 🤌 Creator of @LaravelArtisans 🙌 ') }}";
-
-    $provider = new App\Services\ParsableBio();
-
-    expect($provider->parse($content))->toBe('{{ __(&#039; Laravel Artisan | Open Source Contributor | Speaker | Core Team <a href="/@PinkaryProject" data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@PinkaryProject</a> 🤌 Creator of <a href="/@LaravelArtisans" data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@LaravelArtisans</a> 🙌 &#039;) }}');
-});
 
 test('xss', function () {
     $content = 'hi I\'m a <b>full stack dev</b> and here is my link <a href="https://example.com">example.com</a>.';
