@@ -29,3 +29,11 @@ test('xss', function () {
 
     expect($provider->parse($content))->toBe('hi I&#039;m a &lt;a onload=&quot;alert(&#039;XSS&#039;)&quot;&gt;full stack dev&lt;/a&gt; and here is my link <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>');
 });
+
+test('empty', function () {
+    $content = '';
+
+    $provider = (new App\Services\ParsableBio);
+
+    expect($provider->parse($content))->toBe('');
+});

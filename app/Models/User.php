@@ -6,8 +6,7 @@ namespace App\Models;
 
 use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
-use App\Services\ParsableContentProviders\LinkProviderParsable;
-use App\Services\ParsableContentProviders\MentionProviderParsable;
+use App\Services\ParsableBio;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -22,6 +21,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
@@ -29,6 +29,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string|null $avatar
  * @property string $avatar_url
  * @property string|null $bio
+ * @property HtmlString $parsed_bio
  * @property Carbon $created_at
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -290,9 +291,9 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's bio attribute.
      */
-    public function getParsedBioAttribute(): string
+    public function getParsedBioAttribute(): HtmlString
     {
-        return (new LinkProviderParsable)->parse((new MentionProviderParsable)->parse((string) $this->bio));
+        return new HtmlString((new ParsableBio)->parse((string) $this->bio));
     }
 
     /**
