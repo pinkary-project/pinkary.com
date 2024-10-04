@@ -23,7 +23,7 @@ it('cleans up unused images', function () {
     $file2 = UploadedFile::fake()->image('image2.jpg');
     $file3 = UploadedFile::fake()->image('image3.jpg');
 
-    $path1 = Storage::disk('public')->putFile("images/{$day}", $file1);
+    $path1 = $file1->store("images/{$day}", 'public');
     $path2 = $file2->store("images/{$day}", 'public');
     $path3 = $file3->store("images/{$day}", 'public');
 

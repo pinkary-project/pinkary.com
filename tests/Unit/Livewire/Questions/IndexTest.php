@@ -223,7 +223,7 @@ it('renders the threads in the right order', function () {
     $this->travel(1)->seconds();
 
     // pinned question
-   $pinnedQuestion = Question::factory()->create([
+    $pinnedQuestion = Question::factory()->create([
         'pinned' => true,
         'to_id' => $user->id,
         'answer' => 'pinned question',
