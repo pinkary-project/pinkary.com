@@ -13,7 +13,7 @@ use App\Services\ParsableContentProviders\StripProviderParsable;
 final readonly class ParsableBio
 {
     /**
-     * Creates a new parsable content instance.
+     * Creates a new parsable bio instance.
      *
      * @param  array<int, class-string<ParsableContentProvider>>  $providers
      */
