@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Contracts\Services\ParsableContentProvider;
 use App\Services\ParsableContentProviders\HashtagProviderParsable;
-use App\Services\ParsableContentProviders\LinkProviderParsable;
 use App\Services\ParsableContentProviders\MentionProviderParsable;
 use App\Services\ParsableContentProviders\StripProviderParsable;
 
@@ -19,7 +18,6 @@ final readonly class ParsableBio
      */
     public function __construct(private array $providers = [
         StripProviderParsable::class,
-        LinkProviderParsable::class,
         MentionProviderParsable::class,
         HashtagProviderParsable::class,
     ]) {}
