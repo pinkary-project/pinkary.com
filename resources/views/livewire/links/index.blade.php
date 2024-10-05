@@ -148,7 +148,7 @@
         </a>
 
         @if ($user->bio)
-            <p class="text-sm">{{ $user->bio }}</p>
+            <p class="text-sm">{{ $user->parsed_bio }}</p>
         @elseif (auth()->user()?->is($user))
             <a
                 href="{{ route('profile.edit') }}"
