@@ -42,10 +42,8 @@ final readonly class UserController
     public function update(UserUpdateRequest $request): RedirectResponse
     {
         $user = type($request->user())->as(User::class);
-        $data = $request->validated();
-        $data['prefers_questions'] = $request->has('prefers_questions');
 
-        $user->fill($data);
+        $user->fill($request->validated());
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

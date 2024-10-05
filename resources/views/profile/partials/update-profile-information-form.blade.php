@@ -170,10 +170,12 @@
                 for="prefers_questions"
                 :value="__('People can ask me questions')"
             />
-            <x-checkbox
+            <x-select-input
                 name="prefers_questions"
-                class="mt-1 block"
-                :checked="old('prefers_questions', $user->prefers_questions) == 1"
+                class="mt-1 block w-full"
+                class="mt-1 block w-full"
+                :options="[true => __('People can ask me questions'), false => __('I do not want to receive questions')]"
+                :value="old('prefers_questions', $user->prefers_questions)"
             />
             <x-input-error
                 class="mt-2"
