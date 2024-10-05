@@ -1,7 +1,7 @@
 @php
-     use App\Enums\Feeds;
+    use App\Enums\Feeds;
 
-    $navClasses = 'fixed z-50 inset-0 h-16 flex md:justify-end md:px-4 ';
+    $navClasses = 'fixed z-50 inset-0 md:inset-auto md:right-0 h-16 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
     $defaultTab = auth()?->user()->default_tab ?? Feeds::Recent->value;
 @endphp

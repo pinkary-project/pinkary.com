@@ -32,6 +32,9 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
         if (this.isBookmarked) {
             this.$wire.unbookmark(id);
             this.$dispatch('question.unbookmarked', { id: id });
+            if (this.count === 0) {
+                this.animateUnBookmarkButton();
+            }
         } else {
             this.$wire.bookmark(id);
             this.$dispatch('question.bookmarked', { id: id });
@@ -60,14 +63,37 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
     },
 
     animateBookmarkButton() {
-        // fade it from top to bottom
+        // fade it from left to right and bounce
         this.$el.querySelector('svg').animate([
-            { transform: 'translateY(-100%)', opacity: 0 },
-            { transform: 'translateY(0)', opacity: 1 }
+            { transform: 'translateX(20%)', opacity: 0 },
+            { transform: 'translateX(-15%)', opacity: .8 },
+            { transform: 'translateX(0%)', opacity: 1 }
         ], {
             duration: 500,
             easing: 'ease-in-out',
             fill: 'forwards'
+        });
+
+        this.$el.querySelector('span').animate([
+            { transform: 'translateY(20%)', opacity: 0 },
+            { transform: 'translateY(-15%)', opacity: .8 },
+            { transform: 'translateY(0%)', opacity: 1 }
+        ], {
+            duration: 500,
+            easing: 'ease-in-out',
+        });
+    },
+
+    animateUnBookmarkButton() {
+        // fade it from right to left and bounce
+        // but only when count is 0.
+        this.$el.animate([
+            { transform: 'translateX(-50%)', opacity: 0 },
+            { transform: 'translateX(15%)', opacity: .8 },
+            { transform: 'translateX(0%)', opacity: 1 }
+        ], {
+            duration: 500,
+            easing: 'ease-in-out',
         });
     }
 });
