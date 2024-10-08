@@ -25,26 +25,42 @@ final readonly class QuestionsFollowingFeed
      */
     public function builder(): Builder
     {
-        $followQueryClosure = function (Builder $query): void {
-            $query->where('to_id', $this->user->id)
-                ->orWhereIn('to_id', DB::table('followers')->select('user_id')->where('follower_id', $this->user->id));
-        };
+        $tempTableName = 'questions_from_following_'.$this->user->id;
+
+        DB::statement("DROP TABLE IF EXISTS $tempTableName");
+        DB::statement("CREATE TEMPORARY TABLE $tempTableName AS ".$this->questionsFromFollowing()->toRawSql());
 
         return Question::query()
-            ->select('id', 'root_id', 'parent_id')
-            ->withExists([
-                'root as showRoot' => $followQueryClosure,
-                'parent as showParent' => $followQueryClosure,
-            ])
+            ->from($tempTableName)
+            ->select(
+                'id',
+                'root_id',
+                'parent_id',
+                DB::raw("EXISTS(SELECT 1 FROM $tempTableName as subTable WHERE subTable.id = $tempTableName.root_id) as showRoot"),
+                DB::raw("EXISTS(SELECT 1 FROM $tempTableName as subTable WHERE subTable.id = $tempTableName.parent_id) as showParent")
+            )
             ->with('root:id,to_id', 'root.to:id,username', 'parent:id,parent_id')
-            ->whereNotNull('answer')
-            ->where('is_reported', false)
-            ->where('is_ignored', false)
-            ->where($followQueryClosure)
             ->where(function (Builder $query): void {
                 $query->whereNull('parent_id')->orWhere('showParent', true)->orWhere('showRoot', true);
             })
             ->groupBy(DB::Raw('IFNULL(root_id, id)'))
             ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+    }
+
+    /**
+     * Get the query for questions from users the current user is following.
+     *
+     * @return Builder<Question>
+     */
+    private function questionsFromFollowing(): Builder
+    {
+        return Question::query()
+            ->where(function (Builder $query): void {
+                $query->where('to_id', $this->user->id)
+                    ->orWhereIn('to_id', DB::table('followers')->select('user_id')->where('follower_id', $this->user->id));
+            })
+            ->whereNotNull('answer')
+            ->where('is_reported', false)
+            ->where('is_ignored', false);
     }
 }
