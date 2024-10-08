@@ -268,8 +268,8 @@ test('code', function (string $content) {
             EOL,
     ],
     /*
-        The below example tests that the code block is still parsed correctly
-        even if there is a space after the language. Sonarlint flags up a 'useless space' error
+        The below example tests that the code block is still parsed correctly even if there
+        is a space after the language. Sonarlint flags up a 'useless space' error
         so we need to use a str_replace to add a space after the language programatically.
     */
     [
