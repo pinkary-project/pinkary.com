@@ -7,6 +7,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -41,6 +42,13 @@ final class UserResource extends Resource
                         'username' => $record->username,
                     ]))
                     ->openUrlInNewTab(),
+
+                Tables\Actions\Action::make('delete')
+                    ->requiresConfirmation()
+                    ->color(Color::Red)
+                    ->action(function (User $record): void {
+                        $record->purge();
+                    }),
             ]);
     }
 
