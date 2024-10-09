@@ -12,3 +12,14 @@ it('can be listed', function () {
     Livewire::test(UserResource\Pages\Index::class)
         ->assertCanSeeTableRecords($users);
 });
+
+it('can delete user', function () {
+    $user = User::factory()->create();
+    $anotherUser = User::factory()->create();
+
+    Livewire::test(UserResource\Pages\Index::class)
+        ->callTableAction('delete', $user);
+
+    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    $this->assertDatabaseHas('users', ['id' => $anotherUser->id]);
+});
