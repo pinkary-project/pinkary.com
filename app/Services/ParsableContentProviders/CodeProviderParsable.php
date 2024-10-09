@@ -16,12 +16,12 @@ final readonly class CodeProviderParsable implements ParsableContentProvider
     public function parse(string $content): string
     {
         return (string) preg_replace_callback(
-            '/```(?<language>[a-z]+)?\n(?<code>.*?)\n```/s',
+            '/```(?<language>[a-z]+)?\s*\n(?<code>.*?)\n```/s',
             function (array $matches): string {
                 $code = $matches['code'];
                 $language = empty($matches['language'])
                     ? 'plaintext'
-                    : $matches['language'];
+                    : trim($matches['language']);
 
                 $highlighter = new Highlighter();
 
