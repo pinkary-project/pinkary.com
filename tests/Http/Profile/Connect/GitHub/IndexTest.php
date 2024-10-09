@@ -17,4 +17,5 @@ test('redirect to github', function () {
 
     $response->assertStatus(302);
     $response->assertRedirectContains('https://github.com/login/oauth/authorize');
+    $response->assertRedirectContains('update');
 });

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\GitHubLoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -45,6 +46,15 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'store'])
         ->middleware('throttle:two-factor');
+});
+
+Route::prefix('/profile/connect/github')->group(function () {
+    Route::get('/login', [GitHubLoginController::class, 'index'])
+        ->name('profile.connect.github.login');
+
+    Route::get('/login/callback', [
+        GitHubLoginController::class, 'update',
+    ])->name('profile.connect.github.login.callback');
 });
 
 Route::middleware('auth')->group(function () {
