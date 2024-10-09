@@ -31,13 +31,14 @@ test('auth', function () {
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
+    $freeEmail = fake()->unique()->freeEmail();
 
     $response = $this
         ->actingAs($user)
         ->patch('/profile', [
             'name' => 'Test User',
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email' => $freeEmail,
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
         ]);
@@ -49,7 +50,7 @@ test('profile information can be updated', function () {
     $user->refresh();
 
     $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
+    $this->assertSame($freeEmail, $user->email);
     $this->assertSame('testuser', $user->username);
     $this->assertNull($user->email_verified_at);
     $this->assertFalse($user->prefers_anonymous_questions);
@@ -153,7 +154,7 @@ test('email verification job sent & status reset when the email address is chang
         ->patch('/profile', [
             'name' => $user->name,
             'username' => 'valid_username',
-            'email' => 'new@email.address',
+            'email' => fake()->unique()->freeEmail(),
             'prefers_anonymous_questions' => false,
         ])
         ->assertSessionHasNoErrors();
@@ -461,4 +462,20 @@ test('user can re-fetch avatar from GitHub', function () {
         ->and($user->avatar_updated_at)->not->toBeNull()
         ->and($user->is_uploaded_avatar)->toBeFalse()
         ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
+});
+
+test('reject profile information update with fake email', function () {
+    $user = User::factory()->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Test User',
+            'username' => 'testuser',
+            'email' => 'test@example.com',
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response->assertInvalid('email');
 });
