@@ -68,9 +68,10 @@ final class Question extends Model implements Viewable
      */
     public function getContentAttribute(?string $value): ?string
     {
-        $content = new ParsableContent();
-
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return $this->runParser(
+            attribute: 'content',
+            value: $value,
+        );
     }
 
     /**
@@ -78,9 +79,10 @@ final class Question extends Model implements Viewable
      */
     public function getAnswerAttribute(?string $value): ?string
     {
-        $content = new ParsableContent();
-
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return $this->runParser(
+            attribute: 'answer',
+            value: $value,
+        );
     }
 
     /**
@@ -219,5 +221,23 @@ final class Question extends Model implements Viewable
     public function hashtags(): BelongsToMany
     {
         return $this->belongsToMany(Hashtag::class);
+    }
+
+    /**
+     * Run the parser for the given attribute and value.
+     */
+    private function runParser(string $attribute, ?string $value): ?string
+    {
+        $key = "question.{$this->id}.{$attribute}.parsed";
+
+        if (ParsableContent::has($key) && $this->isDirty($attribute)) {
+            ParsableContent::flush($key);
+        }
+
+        if ($value !== null && $value !== '' && $value !== '0') {
+            return ParsableContent::parse($key, $value);
+        }
+
+        return null;
     }
 }
