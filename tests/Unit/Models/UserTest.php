@@ -198,3 +198,11 @@ test('purge questions, comments and decendants with user', function () {
     $this->assertNull($user->fresh());
     $this->assertDatabaseCount('questions', 0);
 });
+
+test('parse the bio', function () {
+    $user = User::factory()->create([
+        'bio' => 'Hello, https://example.com is my website.',
+    ]);
+
+    expect($user->parsed_bio->toHtml())->toBe((new App\Services\ParsableBio)->parse($user->bio));
+});
