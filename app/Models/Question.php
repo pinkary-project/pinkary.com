@@ -83,6 +83,20 @@ final class Question extends Model implements Viewable
         return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
     }
 
+    public function getAuthRepostedAttribute(): bool
+    {
+        return $this->reposts()->where('from_id', auth()->id())->exists();
+    }
+
+    /**
+     * @return HasMany<Question>
+     */
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(self::class, 'root_id')
+            ->where('is_repost', true);
+    }
+
     /**
      * The attributes that should be cast.
      *
