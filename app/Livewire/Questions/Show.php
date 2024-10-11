@@ -214,6 +214,10 @@ final class Show extends Component
             ->firstOrFail();
 
         $question->delete();
+
+        $message = 'Question un-reposted.';
+
+        $this->dispatch('notification.created', message: $message);
     }
 
     /**
