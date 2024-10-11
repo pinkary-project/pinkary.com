@@ -199,7 +199,7 @@ final class Show extends Component
          * @var Question $question
          */
         $question = Question::query()
-            ->where('root_id', $this->questionId)
+            ->where('parent_id', $this->questionId)
             ->where('from_id', auth()->id())
             ->where('is_repost', true)
             ->firstOrFail();
