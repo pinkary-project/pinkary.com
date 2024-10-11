@@ -83,9 +83,16 @@ final class Question extends Model implements Viewable
         return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
     }
 
-    public function getAuthRepostedAttribute(): bool
+    /**
+     * checks if the user has reposted the question.
+     */
+    public function hasUserReposted(?User $user): bool
     {
-        return $this->reposts()->where('from_id', auth()->id())->exists();
+        if ($user === null) {
+            return false;
+        }
+
+        return $this->reposts()->where('from_id', $user->id)->exists();
     }
 
     /**

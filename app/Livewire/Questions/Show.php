@@ -52,6 +52,9 @@ final class Show extends Component
     #[Url]
     public ?string $previousQuestionId = null;
 
+    /**
+     * Determine if the question is a repost.
+     */
     #[Locked]
     public bool $isRepost = false;
 

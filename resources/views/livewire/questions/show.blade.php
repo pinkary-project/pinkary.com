@@ -213,7 +213,7 @@
                     </a>
                     <span>•</span>
                     @php
-                        $repostExists = $question->auth_reposted;
+                        $repostExists = $question->hasUserReposted(auth()->check() ? auth()->user() : null);
                         $repostsCount = $question->reposts->count();
                     @endphp
 

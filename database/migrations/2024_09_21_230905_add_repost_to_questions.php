@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('questions', function (Blueprint $table) {
+        Schema::table('questions', function (Blueprint $table): void {
             $table->boolean('is_repost')->default(false);
         });
     }
