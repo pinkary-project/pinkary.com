@@ -41,7 +41,7 @@ final class Index extends Component
 
         $questions = $user
             ->questionsReceived()
-            ->select('id', 'root_id', 'parent_id')
+            ->select('id', 'root_id', 'parent_id', 'is_repost')
             ->withExists([
                 'root as showRoot' => function (Builder $query) use ($user): void {
                     $query->where('to_id', $user->id);
