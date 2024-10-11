@@ -93,8 +93,7 @@ final class Question extends Model implements Viewable
      */
     public function reposts(): HasMany
     {
-        return $this->hasMany(self::class, 'root_id')
-            ->where('is_repost', true);
+        return $this->hasMany(self::class, 'parent_id')->where('is_repost', true);
     }
 
     /**
@@ -114,6 +113,7 @@ final class Question extends Model implements Viewable
             'pinned' => 'bool',
             'is_ignored' => 'boolean',
             'views' => 'integer',
+            'is_repost' => 'boolean',
         ];
     }
 

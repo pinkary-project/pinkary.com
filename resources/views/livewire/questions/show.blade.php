@@ -153,6 +153,19 @@
                 </a>
             @endif
 
+            @if ($isRepost)
+                <a
+                    href="{{ route('profile.show', ['username' => $question->parent->to->username]) }}"
+                    class="group/profile flex items-center gap-3"
+                    data-navigate-ignore="true"
+                    wire:navigate
+                >
+                    <p class="truncate text-xs text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 mt-2">
+                        Reposted from {{ '@'.$question->parent->to->username }}
+                    </p>
+                </a>
+            @endif
+
             <div x-data="showMore">
                 <div
                     class="mt-3 break-words dark:text-slate-200 text-slate-800 overflow-hidden answer"

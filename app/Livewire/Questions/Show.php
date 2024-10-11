@@ -52,6 +52,9 @@ final class Show extends Component
     #[Url]
     public ?string $previousQuestionId = null;
 
+    #[Locked]
+    public bool $isRepost = false;
+
     /**
      * Refresh the component.
      */
@@ -174,7 +177,7 @@ final class Show extends Component
         $questionClone->is_repost = true;
         $questionClone->from_id = $user->id;
         $questionClone->to_id = $user->id;
-        $questionClone->root_id = $question->id;
+        $questionClone->root_id = null;
         $questionClone->parent_id = $question->id;
 
         $questionClone->save();
