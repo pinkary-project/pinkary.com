@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Str; @endphp
+
 <div class="flex items center gap-3 text-sm text-slate-500">
     <figure
         class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-50 transition-opacity group-hover:opacity-90">
@@ -7,7 +9,13 @@
             class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
         />
     </figure>
-    <p>{{ $question->from->name }} commented on
-        your {{ $question->parent->parent_id !== null ? 'comment' : ($question->parent->isSharedUpdate() ? 'Update' : 'Answer') }}
-        :
+    <div class="flex flex-col space-y-1">
+        <p>{{ $question->from->name }} Reposted your question:</p>
+        <p>
+            <span class="text-slate-500 dark:text-slate-200 text-sm">
+                {{ Str::words($question->answer, 10) }}
+            </span>
+        </p>
+    </div>
 </div>
+

@@ -182,6 +182,8 @@ final class Show extends Component
 
         $questionClone->save();
 
+        $this->dispatch('question.created');
+
         $message = 'Question reposted.';
 
         $this->dispatch('notification.created', message: $message);

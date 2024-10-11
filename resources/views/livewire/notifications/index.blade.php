@@ -1,3 +1,5 @@
+@php use App\Models\Question; @endphp
+
 <div class="mb-20 flex flex-col gap-2">
     @if ($notifications->isNotEmpty())
         <div class="flex items-center justify-end mb-2">
@@ -12,7 +14,7 @@
 
     @foreach ($notifications as $notification)
         @php
-            $question = \App\Models\Question::find($notification->data['question_id']);
+            $question = Question::query()->find($notification->data['question_id']);
             $isMention = $notification->type === 'App\Notifications\UserMentioned';
 
             if ($question === null) {
@@ -26,7 +28,8 @@
             href="{{ route('notifications.show', ['notification' => $notification->id]) }}"
             wire:navigate
         >
-            <div class="group overflow-hidden rounded-2xl border dark:border-slate-900 border-slate-200 dark:bg-slate-950 bg-slate-50 bg-opacity-80 p-4 transition-colors dark:hover:bg-slate-900 hover:bg-slate-100 hover:cursor-pointer">
+            <div
+                class="group overflow-hidden rounded-2xl border dark:border-slate-900 border-slate-200 dark:bg-slate-950 bg-slate-50 bg-opacity-80 p-4 transition-colors dark:hover:bg-slate-900 hover:bg-slate-100 hover:cursor-pointer">
                 <div
                     class="cursor-help text-right text-xs text-slate-400"
                     title="{{ $notification->created_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
@@ -37,7 +40,11 @@
 
                 @if (! $isMention)
                     @if ($question->parent_id !== null)
-                        @include('livewire.notifications.partials.commented', ['question' => $question])
+                        @if ($question->is_repost)
+                            @include('livewire.notifications.partials.reposted', ['question' => $question])
+                        @else
+                            @include('livewire.notifications.partials.commented', ['question' => $question])
+                        @endif
                     @elseif ($question->from->is(auth()->user()) && $question->answer !== null)
                         @include('livewire.notifications.partials.answered', ['question' => $question])
                     @else
