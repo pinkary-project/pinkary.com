@@ -214,7 +214,8 @@ final class Question extends Model implements Viewable
     {
         return $this->hasMany(self::class, 'parent_id')
             ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->where('is_reported', false)
+            ->where('is_repost', false);
     }
 
     /**
