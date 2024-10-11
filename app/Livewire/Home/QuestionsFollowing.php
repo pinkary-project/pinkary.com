@@ -19,6 +19,7 @@ final class QuestionsFollowing extends Component
      */
     public function render(): View
     {
+        // test
         $user = type(auth()->user())->as(User::class);
 
         $questions = (new QuestionsFollowingFeed($user))->builder()->simplePaginate($this->perPage);
