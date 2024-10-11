@@ -181,6 +181,10 @@ final class Show extends Component
         $questionClone->parent_id = $question->id;
 
         $questionClone->save();
+
+        $message = 'Question reposted.';
+
+        $this->dispatch('notification.created', message: $message);
     }
 
     /**

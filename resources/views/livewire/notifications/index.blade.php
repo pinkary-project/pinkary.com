@@ -32,60 +32,27 @@
                     title="{{ $notification->created_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                     datetime="{{ $notification->created_at->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                 >
-                    {{
-                        $notification->created_at->timezone(session()->get('timezone', 'UTC'))
-                            ->diffForHumans()
-                    }}
+                    {{ $notification->created_at->timezone(session()->get('timezone', 'UTC'))->diffForHumans() }}
                 </div>
+
                 @if (! $isMention)
                     @if ($question->parent_id !== null)
-                        <div class="flex items center gap-3 text-sm text-slate-500">
-                            <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-50 transition-opacity group-hover:opacity-90">
-                                <img
-                                    src="{{ $question->from->avatar_url }}"
-                                    alt="{{ $question->from->username }}"
-                                    class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
-                                />
-                            </figure>
-                            <p>{{ $question->from->name }} commented on your {{ $question->parent->parent_id !== null ? 'comment' : ($question->parent->isSharedUpdate() ? 'Update' : 'Answer') }}:
-                        </div>
+                        @include('livewire.notifications.partials.commented', ['question' => $question])
                     @elseif ($question->from->is(auth()->user()) && $question->answer !== null)
-                        <div class="flex items-center gap-3 text-sm text-slate-500">
-                            <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-50 transition-opacity group-hover:opacity-90">
-                                <img
-                                    src="{{ $question->to->avatar_url }}"
-                                    alt="{{ $question->to->username }}"
-                                    class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
-                                />
-                            </figure>
-                            <p>{{ $question->to->name }} answered your {{ $question->anonymously ? 'anonymous' : '' }} question:</p>
-                        </div>
+                        @include('livewire.notifications.partials.answered', ['question' => $question])
                     @else
                         @if ($question->anonymously)
-                            <div class="flex items-center gap-3 text-sm text-slate-500">
-                                <div class="border-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-dashed border-slate-400">
-                                    <span>?</span>
-                                </div>
-                                <p>Someone asked you anonymously:</p>
-                            </div>
+                            @include('livewire.notifications.partials.question-anon')
                         @else
-                            <div class="flex items-center gap-3 text-sm text-slate-500">
-                                <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-50 transition-opacity group-hover:opacity-90">
-                                    <img
-                                        src="{{ $question->from->avatar_url }}"
-                                        alt="{{ $question->from->username }}"
-                                        class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
-                                    />
-                                </figure>
-                                <p><span class="dark:text-white text-black">{{ $question->from->name }}</span> asked you:</p>
-                            </div>
+                            @include('livewire.notifications.partials.question', ['question' => $question])
                         @endif
                     @endif
                 @elseif ($question->parent !== null)
-                    <p class="text-sm text-slate-500">You have been mentioned in a comment by {{ '@' . $question->to->username }}</p>
+                    @include('livewire.notifications.partials.mentioned-comment', ['question' => $question])
                 @else
-                    <p class="text-sm text-slate-500">You have been mentioned in a {{ $question->isSharedUpdate() ? 'update by @'.$question->to->username : 'question:'}}</p>
+                    @include('livewire.notifications.partials.mentioned-question', ['question' => $question])
                 @endif
+
                 @if(!$question->isSharedUpdate())
                     <p class="mt-2 dark:text-slate-200 text-slate-800">
                         {!! $question->content !!}
