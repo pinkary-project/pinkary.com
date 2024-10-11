@@ -137,7 +137,7 @@
                 @endif
             </div>
 
-            @if((! $inThread || $commenting) && $question->parent)
+            @if((! $inThread || $commenting) && $question->parent && !$isRepost)
                 <a href="{{
                         route('questions.show', [
                             'username' => $question->parent->to->username,
