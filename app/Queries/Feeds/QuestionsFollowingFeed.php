@@ -47,9 +47,7 @@ final readonly class QuestionsFollowingFeed
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->where($followQueryClosure)
-            ->where(function (Builder $query): void {
-                $query->whereNull('parent_id')->orWhere('showParent', true)->orWhere('showRoot', true);
-            })
+            ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
             ->groupBy(DB::Raw('IFNULL(root_id, id)'))
             ->orderByDesc(DB::raw('MAX(`updated_at`)'));
     }
