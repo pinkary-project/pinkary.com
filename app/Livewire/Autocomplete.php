@@ -19,6 +19,11 @@ use Livewire\Component;
 final class Autocomplete extends Component
 {
     /**
+     * The component id used for scoping events.
+     */
+    public string $componentId = '';
+
+    /**
      * An array of matched type aliases (like ["mentions", ...]).
      *
      * @var array<int, string>

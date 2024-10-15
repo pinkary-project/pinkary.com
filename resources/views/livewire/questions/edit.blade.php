@@ -1,4 +1,4 @@
-<div class="border-l dark:border-slate-900 border-slate-200">
+<div>
     <form wire:submit="update">
         <div class="mt-4 flex items-center justify-between">
             <div class="w-full">
@@ -9,7 +9,7 @@
                         >Answer</label
                     >
 
-                    <textarea
+                    <x-textarea
                         id="{{ 'answer_question_'.$question->id }}"
                         wire:model="answer"
                         x-autosize
@@ -17,7 +17,8 @@
                         placeholder="Write your answer..."
                         maxlength="1000"
                         rows="3"
-                    ></textarea>
+                        autocomplete
+                    ></x-textarea>
 
                     <p class="text-right text-xs text-slate-400"><span x-text="$wire.answer.length"></span> / 1000</p>
 
