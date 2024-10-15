@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Livewire\Home\TrendingQuestions;
+use App\Livewire\Home\TrendingHashtags;
 use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
@@ -147,4 +148,21 @@ test('renders trending questions order by trending score', function () {
         'trending question 2',
     ]);
     $component->assertDontSee('trending question 8');
+});
+
+test('render recent most used hashtag', function () {
+    $user = User::factory()->create();
+
+    $questionContent = 'Is this a #trending question?';
+
+    Question::factory()->create([
+        'content' => $questionContent,
+        'answer' => 'No',
+        'from_id' => $user->id,
+    ]);
+
+    $component = Livewire::test(TrendingHashtags::class);
+
+    $component
+        ->assertSee('trending');
 });
