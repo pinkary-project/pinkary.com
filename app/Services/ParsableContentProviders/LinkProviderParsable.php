@@ -16,7 +16,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     {
         return (string) preg_replace_callback(
             '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!src=")((https?:\/\/)?((localhost)|((?:\d{1,3}\.){3}\d{1,3})|[\w\-._@:%\+~#=]{1,256}(\.[a-zA-Z]{2,})+)(:\d+)?(\/[\w\-._@:%\+~#=\/]*)?(\?[\w\-._@:%\+~#=\/&]*)?)(?<!\.)((?![^<]*>|[^<>]*<\/))/is',
-            function (array $matches): string {
+            static function (array $matches): string {
                 if ($matches[1] !== '') {
                     return $matches[1];
                 }
