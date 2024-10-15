@@ -8,6 +8,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -33,6 +34,9 @@ final class CitadelPanelProvider extends PanelProvider
             ->path('citadel')
             ->homeUrl(fn (): string => route('home.feed'))
             ->spa()
+            ->pages([
+                Dashboard::class,
+            ])
             ->favicon(asset('/img/ico.svg'))
             ->brandLogo(asset('/img/logo-text.svg'))
             ->brandLogoHeight('1.85rem')
