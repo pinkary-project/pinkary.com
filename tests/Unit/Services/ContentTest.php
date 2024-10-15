@@ -10,6 +10,48 @@ test('link', function () {
     expect($provider->parse($content))->toBe('Sure, here is the link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>. Let me know if you have any questions.');
 });
 
+test('only links with images or html oEmbeds are parsed', function () {
+    $content = 'Sure, here is the link: https://laravel.com. Let me know if you have any questions.';
+
+    $provider = new App\Services\ParsableContent();
+
+    expect($provider->parse($content))->toBe(
+        'Sure, here is the link: <div
+        id="link-preview-card"
+        class="mx-auto mt-2 min-w-full group/preview" data-navigate-ignore="true">
+        <a href="https://laravel.com" target="_blank" rel="noopener noreferrer">
+            <div
+                title="Click to visit: laravel.com"
+                class="relative w-full
+                bg-slate-100/90
+                border
+                border-slate-300
+                dark:border-0
+                rounded-lg
+                dark:group-hover/preview:border-0
+                overflow-hidden">
+                <img
+                    src="https://laravel.com/img/og-image.jpg"
+                    alt="Laravel - The PHP Framework For Web Artisans"
+                    class="object-cover object-center h-[228px] w-[513px]"
+                />
+                <div
+                    class="absolute right-0 bottom-0 left-0 w-full rounded-b-lg border-0 bg-pink-100 bg-opacity-75 p-2 backdrop-blur-sm backdrop-filter dark:bg-opacity-45 dark:bg-pink-800">
+                    <h3 class="text-sm font-semibold truncate text-slate-500/90 dark:text-white/90
+                    ">
+                        Laravel - The PHP Framework For Web Artisans</h3>
+                </div>
+            </div>
+        </a>
+        <div class="flex items-center justify-between pt-4">
+            <a href="https://laravel.com" target="_blank" rel="noopener noreferrer"
+               class="text-xs text-slate-500 group-hover/preview:text-pink-600">From: laravel.com</a>
+        </div>
+    </div>
+. Let me know if you have any questions.'
+    );
+});
+
 test('mention', function () {
     $content = '@nunomaduro, let me know if you have any questions. Thanks @xiCO2k.';
 
