@@ -21,3 +21,4 @@ package-lock.json
 /database/backups/*.sql
 debugbar
 .DS_Store
+/coverage-report
