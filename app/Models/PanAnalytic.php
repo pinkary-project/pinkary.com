@@ -17,4 +17,11 @@ final class PanAnalytic extends Model
 {
     /** @use HasFactory<\Database\Factories\PanAnalyticFactory> */
     use HasFactory;
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 }

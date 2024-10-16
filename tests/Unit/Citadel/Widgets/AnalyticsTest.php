@@ -3,17 +3,21 @@
 declare(strict_types=1);
 
 use App\Filament\Widgets\Analytics;
+use App\Models\PanAnalytic;
 use Livewire\Livewire;
-use Pan\Contracts\AnalyticsRepository;
-use Pan\Enums\EventType;
 
 test('displays the analytics', function () {
+    PanAnalytic::factory(3)->create();
 
-    $analyticsRepository = app(AnalyticsRepository::class);
+    Livewire::test(Analytics::class)
+        ->assertSee('Analytics')
+        ->assertCountTableRecords(3);
+});
 
-    $analyticsRepository->increment('following_tab', EventType::IMPRESSION);
-    $analyticsRepository->increment('recent_tab', EventType::CLICK);
-    $analyticsRepository->increment('trading_tab', EventType::HOVER);
+test('displays if impressions is zero', function () {
+    PanAnalytic::factory()->create(['hovers' => 0]);
+    PanAnalytic::factory()->create(['clicks' => 0]);
+    PanAnalytic::factory()->create(['impressions' => 0]);
 
     Livewire::test(Analytics::class)
         ->assertSee('Analytics')
