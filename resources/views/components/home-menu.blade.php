@@ -9,7 +9,7 @@
     >
         <x-heroicon-o-home
             class="h-6 w-6 xsm:mr-2" />
-        <span class="hidden xsm:inline">{{ __('Feed') }}</span>
+        <span class="hidden xsm:inline">{{ __('Recent') }}</span>
     </a>
 
     <a
