@@ -33,7 +33,7 @@ test('displays the percentage', function () {
         ->assertSee('25 (25.0%)');
 });
 
-test('sorts by impressions', function () {
+test('sorts by impressions by default', function () {
     PanAnalytic::factory()->create(['impressions' => 100]);
     PanAnalytic::factory()->create(['impressions' => 200]);
     PanAnalytic::factory()->create(['impressions' => 300]);
@@ -41,4 +41,28 @@ test('sorts by impressions', function () {
     Livewire::test(Analytics::class)
         ->assertSee('Analytics')
         ->assertCanSeeTableRecords(PanAnalytic::orderBy('impressions', 'desc')->get(), inOrder: true);
+});
+
+test('searches by name', function () {
+    $analytics = PanAnalytic::factory(3)->create();
+
+    $name = $analytics->first()->name;
+
+    Livewire::test(Analytics::class)
+        ->assertSee('Analytics')
+        ->searchTable($name)
+        ->assertCountTableRecords(1)
+        ->assertCanSeeTableRecords($analytics->where('name', $name))
+        ->assertCanNotSeeTableRecords($analytics->where('name', '!=', $name));
+});
+
+test('sorts by name', function () {
+    $analytics = PanAnalytic::factory(3)->create();
+
+    Livewire::test(Analytics::class)
+        ->assertSee('Analytics')
+        ->sortTable('name')
+        ->assertCanSeeTableRecords($analytics->sortBy('name'), inOrder: true)
+        ->sortTable('name', 'desc')
+        ->assertCanSeeTableRecords($analytics->sortByDesc('name'), inOrder: true);
 });

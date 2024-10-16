@@ -28,9 +28,12 @@ final class Analytics extends BaseWidget
             )
             ->columns([
                 Tables\Columns\Layout\Stack::make([
-                    Tables\Columns\TextColumn::make('name'),
+                    Tables\Columns\TextColumn::make('name')
+                        ->searchable()
+                        ->sortable(),
                     Tables\Columns\TextColumn::make('impressions')
                         ->grow(false)
+                        ->sortable()
                         ->tooltip('Impressions')
                         ->icon('heroicon-o-eye'),
                     Tables\Columns\TextColumn::make('hovers')
