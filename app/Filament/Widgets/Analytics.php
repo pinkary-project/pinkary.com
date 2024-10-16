@@ -33,7 +33,8 @@ final class Analytics extends BaseWidget
                     ->suffix(fn (PanAnalytic $record): string => $this->getPercentage($record->hovers, $record->impressions)),
                 Tables\Columns\TextColumn::make('clicks')
                     ->suffix(fn (PanAnalytic $record): string => $this->getPercentage($record->clicks, $record->impressions)),
-            ]);
+            ])
+            ->defaultSort('impressions', 'desc');
     }
 
     /**

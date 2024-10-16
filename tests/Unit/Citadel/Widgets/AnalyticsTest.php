@@ -32,3 +32,13 @@ test('displays the percentage', function () {
         ->assertSee('50 (50.0%)')
         ->assertSee('25 (25.0%)');
 });
+
+test('sorts by impressions', function () {
+    PanAnalytic::factory()->create(['impressions' => 100]);
+    PanAnalytic::factory()->create(['impressions' => 200]);
+    PanAnalytic::factory()->create(['impressions' => 300]);
+
+    Livewire::test(Analytics::class)
+        ->assertSee('Analytics')
+        ->assertCanSeeTableRecords(PanAnalytic::orderBy('impressions', 'desc')->get(), inOrder: true);
+});
