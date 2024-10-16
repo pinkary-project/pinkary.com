@@ -23,3 +23,12 @@ test('displays if impressions is zero', function () {
         ->assertSee('Analytics')
         ->assertCountTableRecords(3);
 });
+
+test('displays the percentage', function () {
+    PanAnalytic::factory()->create(['impressions' => 100, 'hovers' => 50, 'clicks' => 25]);
+
+    Livewire::test(Analytics::class)
+        ->assertSee('Analytics')
+        ->assertSee('50 (50.0%)')
+        ->assertSee('25 (25.0%)');
+});
