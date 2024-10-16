@@ -47,8 +47,8 @@ final class UserUpdateRequest extends FormRequest
             ],
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
             'bio' => ['nullable', 'string', 'max:255'],
+            'prefers_questions' => ['required', 'boolean'],
             'prefers_anonymous_questions' => ['required', 'boolean'],
-            'prefers_questions' => ['boolean'],
         ];
     }
 }
