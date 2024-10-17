@@ -12,6 +12,7 @@
                     :inIndex="true"
                     :pinnable="false"
                     :trending="true"
+                    :isRepost="$question->is_repost"
                 />
             @endforeach
 
