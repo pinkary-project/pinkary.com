@@ -1,4 +1,4 @@
-<section class="mt-4 space-y-10">
+<section class="mt-4 space-y-10 mb-12">
     @if ($pinnedQuestion)
         <livewire:questions.show
             :questionId="$pinnedQuestion->id"
