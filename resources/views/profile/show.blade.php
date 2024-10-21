@@ -4,6 +4,8 @@
             <livewire:links.index :userId="$user->id" />
             @if($user->prefers_questions || auth()->id() === $user->id)
                 <livewire:questions.create :toId="$user->id" />
+            @else
+                <p>{{__("The user doesn't accept questions.")}}</p>
             @endif
             <livewire:questions.index
                 :userId="$user->id"

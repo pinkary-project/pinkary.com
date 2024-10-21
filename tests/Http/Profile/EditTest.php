@@ -39,6 +39,7 @@ test('profile information can be updated', function () {
             'username' => 'testuser',
             'email' => 'test@example.com',
             'mail_preference_time' => 'daily',
+            'prefers_questions' => false,
             'prefers_anonymous_questions' => false,
         ]);
 
@@ -52,6 +53,7 @@ test('profile information can be updated', function () {
     $this->assertSame('test@example.com', $user->email);
     $this->assertSame('testuser', $user->username);
     $this->assertNull($user->email_verified_at);
+    $this->assertFalse($user->prefers_questions);
     $this->assertFalse($user->prefers_anonymous_questions);
 });
 
@@ -65,6 +67,8 @@ test('email provider must be authorized', function () {
             'username' => 'tomloprod',
             'email' => 'tomloprod@0-mail.com',
             'mail_preference_time' => 'daily',
+            'mail_preference_time' => 'daily',
+            'prefers_questions' => false,
             'prefers_anonymous_questions' => false,
         ]);
 
@@ -87,6 +91,7 @@ test('username can be updated to uppercase', function () {
             'username' => 'TESTUSER',
             'email' => $user->email,
             'mail_preference_time' => 'daily',
+            'prefers_questions' => false,
             'prefers_anonymous_questions' => false,
         ]);
 
@@ -135,6 +140,7 @@ test('email verification status is unchanged when the email address is unchanged
             'username' => 'testuser',
             'email' => $user->email,
             'mail_preference_time' => 'daily',
+            'prefers_questions' => false,
             'prefers_anonymous_questions' => false,
         ]);
 
@@ -154,6 +160,7 @@ test('email verification job sent & status reset when the email address is chang
             'name' => $user->name,
             'username' => 'valid_username',
             'email' => 'new@email.address',
+            'prefers_questions' => false,
             'prefers_anonymous_questions' => false,
         ])
         ->assertSessionHasNoErrors();
@@ -172,6 +179,7 @@ test('only updates avatar if email changes & avatar not been uploaded', function
             'name' => $user->name,
             'username' => 'valid_username',
             'email' => $user->email,
+            'prefers_questions' => false,
             'prefers_anonymous_questions' => false,
         ])
         ->assertSessionHasNoErrors();
@@ -336,6 +344,7 @@ test('prefers_anonymous_questions can be updated', function () {
             'username' => 'testuser',
             'email' => $user->email,
             'mail_preference_time' => 'daily',
+            'prefers_questions' => false,
             'prefers_anonymous_questions' => false,
         ]);
 
