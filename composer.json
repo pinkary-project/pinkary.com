@@ -15,7 +15,7 @@
         "livewire/livewire": "^3.5.6",
         "matomo/device-detector": "^6.4.1",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
-        "panphp/pan": "dev-main",
+        "panphp/pan": "^0.1.5",
         "pinkary-project/type-guard": "^0.1.0",
         "scrivo/highlight.php": "^9.18.1.10",
         "simplesoftwareio/simple-qrcode": "^4.2",
