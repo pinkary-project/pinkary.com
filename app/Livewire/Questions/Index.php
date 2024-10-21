@@ -57,9 +57,7 @@ final class Index extends Component
             ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
                 $query->whereNotNull('answer');
             })
-            ->where(function (Builder|HasMany $query): void {
-                $query->whereNull('parent_id')->orWhere('showParent', true)->orWhere('showRoot', true);
-            })
+            ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
             ->groupBy(DB::Raw('IFNULL(root_id, id)'))
             ->orderByDesc(DB::raw('MAX(`updated_at`)'))
             ->simplePaginate($this->perPage);
