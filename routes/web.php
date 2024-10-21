@@ -31,6 +31,8 @@ Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/support', 'support')->name('support');
 Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
 
+Route::view('/verified', 'verified')->name('verified');
+
 Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
 Route::get('/changelog', [ChangelogController::class, 'show'])->name('changelog');
