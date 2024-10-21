@@ -4,10 +4,11 @@
     'parentId' => null,
     'questionId' => null,
     'username' => null,
+    'isRepost' => false,
 ])
 
 <div wire:key="thread-inner-{{ $questionId.'-'.$rootId.'-'.$parentId }}">
-    @if ($rootId !== null)
+    @if ($rootId !== null && $isRepost === false)
         <livewire:questions.show
             :questionId="$rootId"
             :in-thread="true"
@@ -25,7 +26,7 @@
         @endif
     @endif
 
-    @if ($parentId !== null && $rootId !== $parentId)
+    @if ($parentId !== null && $rootId !== $parentId && $isRepost === false)
         <livewire:questions.show
             :questionId="$parentId"
             :in-thread="$rootId !== null"
@@ -41,5 +42,6 @@
         :questionId="$questionId"
         :in-thread="$rootId !== null || $parentId !== null"
         :key="'question-'.$questionId"
+        :isRepost="$isRepost"
     />
 </div>
