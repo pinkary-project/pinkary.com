@@ -1,5 +1,6 @@
 <div class="mb-8 flex justify-between space-x-2">
     <a
+        data-pan="home-tabs-feed"
         href="{{ route('home.recent') }}"
         class="{{ request()->routeIs('home.recent') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
         title="{{ __('Recent') }}"
@@ -8,10 +9,11 @@
     >
         <x-heroicon-o-home
             class="h-6 w-6 xsm:mr-2" />
-        <span class="hidden xsm:inline">{{ __('Recent') }}</span>
+        <span class="hidden xsm:inline">{{ __('Feed') }}</span>
     </a>
 
     <a
+        data-pan="home-tabs-following"
         href="{{ route('home.following') }}"
         class="{{ request()->routeIs('home.following') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
         title="{{ __('Following') }}"
@@ -24,6 +26,7 @@
     </a>
 
     <a
+        data-pan="home-tabs-trending"
         href="{{ route('home.trending') }}"
         class="{{ request()->routeIs('home.trending') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
         title="{{ __('Trending') }}"
@@ -38,6 +41,7 @@
     </a>
 
     <a
+        data-pan="home-tabs-search"
         href="{{ route('home.users') }}"
         class="{{ request()->routeIs('home.users') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
         title="{{ __('Search') }}"

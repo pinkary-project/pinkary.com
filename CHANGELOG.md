@@ -1,3 +1,10 @@
+## Version 1.43.1
+> 11 October, 2024
+
+- Improves speed on following.
+- Adds threads on profile page.
+- Internal improvements and bug fixes.
+
 ## Version 1.43.0
 > 30 September, 2024
 
