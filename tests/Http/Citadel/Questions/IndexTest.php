@@ -10,6 +10,7 @@ it('can render page', function () {
     $this->actingAs(User::factory()->create([
         'email' => 'enunomaduro@gmail.com',
     ]));
+
     $this->get(QuestionResource::getUrl('index'))->assertSuccessful();
 });
 
