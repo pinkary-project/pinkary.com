@@ -28,7 +28,7 @@ final class Link extends Model
     /**
      * Get the user that owns the link.
      *
-     * @return BelongsTo<User, Link>
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
