@@ -174,7 +174,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return BelongsTo<Question, Question>
+     * @return BelongsTo<Question, $this>
      */
     public function root(): BelongsTo
     {
@@ -184,7 +184,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return BelongsTo<Question, Question>
+     * @return BelongsTo<Question, $this>
      */
     public function parent(): BelongsTo
     {
@@ -194,7 +194,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return HasMany<Question>
+     * @return HasMany<Question, $this>
      */
     public function children(): HasMany
     {
@@ -204,7 +204,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return HasMany<Question>
+     * @return HasMany<Question, $this>
      */
     public function descendants(): HasMany
     {
@@ -214,7 +214,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return BelongsToMany<Hashtag>
+     * @return BelongsToMany<Hashtag, $this>
      */
     public function hashtags(): BelongsToMany
     {
