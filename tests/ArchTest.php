@@ -48,6 +48,7 @@ arch('avoid mutation')
         'App\Providers',
         'App\View',
         App\Services\Autocomplete::class,
+        App\Services\ParsableContent::class,
     ]);
 
 arch('avoid inheritance')
