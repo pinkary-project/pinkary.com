@@ -7,6 +7,7 @@ namespace App\Queries\Feeds;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 
 final readonly class QuestionsFollowingFeed
@@ -27,7 +28,12 @@ final readonly class QuestionsFollowingFeed
     {
         $followQueryClosure = function (Builder $query): void {
             $query->where('to_id', $this->user->id)
-                ->orWhereIn('to_id', DB::table('followers')->select('user_id')->where('follower_id', $this->user->id));
+                ->orWhereExists(function (Builder|QueryBuilder $query): void {
+                    $query->select(DB::raw(1))
+                        ->from('followers')
+                        ->whereColumn('user_id', 'to_id')
+                        ->where('follower_id', $this->user->id);
+                });
         };
 
         return Question::query()
@@ -41,9 +47,7 @@ final readonly class QuestionsFollowingFeed
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->where($followQueryClosure)
-            ->where(function (Builder $query): void {
-                $query->whereNull('parent_id')->orWhere('showParent', true)->orWhere('showRoot', true);
-            })
+            ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
             ->groupBy(DB::Raw('IFNULL(root_id, id)'))
             ->orderByDesc(DB::raw('MAX(`updated_at`)'));
     }
