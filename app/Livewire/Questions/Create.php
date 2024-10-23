@@ -134,7 +134,6 @@ final class Create extends Component
     {
         if (auth()->check()) {
             $user = type($request->user())->as(User::class);
-
             $this->anonymously = $user->prefers_anonymous_questions;
         }
     }
@@ -206,6 +205,13 @@ final class Create extends Component
 
         $user = type($request->user())->as(User::class);
 
+        $toUser = User::findOrFail($this->toId);
+
+        if (!$toUser->prefers_questions) {
+            $this->addError('content', __('This user does not accept questions.'));
+            return;
+        }
+
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');
 
@@ -221,7 +227,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+            'content' => ['required', 'string', 'min: 3', 'max:' . $this->maxContentLength, new NoBlankCharacters],
         ]);
 
         if ($this->isSharingUpdate) {
@@ -356,7 +362,7 @@ final class Create extends Component
         $images = session()->get('images', []);
 
         $remainingImages = collect($images)
-            ->reject(fn (string $imagePath): bool => $imagePath === $path);
+            ->reject(fn(string $imagePath): bool => $imagePath === $path);
 
         session()->put('images', $remainingImages->toArray());
     }
@@ -370,8 +376,8 @@ final class Create extends Component
         $images = session()->get('images', []);
 
         collect($images)
-            ->reject(fn (string $path): bool => str_contains($this->content, $path))
-            ->each(fn (string $path): ?bool => $this->deleteImage($path));
+            ->reject(fn(string $path): bool => str_contains($this->content, $path))
+            ->each(fn(string $path): ?bool => $this->deleteImage($path));
 
         session()->forget('images');
     }

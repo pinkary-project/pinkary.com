@@ -147,8 +147,26 @@
 
         <div>
             <x-input-label
+                for="prefers_questions"
+                :value="__('Would you like to receive questions?')"
+            />
+            <x-select-input
+                name="prefers_questions"
+                class="mt-1 block w-full"
+                class="mt-1 block w-full"
+                :options="[true => __('People can ask me questions'), false => __('I do not want to receive questions')]"
+                :value="old('prefers_questions', $user->prefers_questions)"
+            />
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('prefers_questions')"
+            />
+        </div>
+
+        <div>
+            <x-input-label
                 for="prefers_anonymous_questions"
-                :value="__('How would you like to do questions by default?')"
+                :value="__('How would you like to do questions by default? Will only work when you accept questions.')"
             />
             <x-select-input
                 id="prefers_anonymous_questions"
@@ -162,6 +180,7 @@
                 class="mt-2"
                 :messages="$errors->get('prefers_anonymous_questions')"
             />
+
         </div>
 
         <div class="flex items-center gap-4">
