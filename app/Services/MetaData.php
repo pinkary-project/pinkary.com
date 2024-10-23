@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use DOMDocument;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -47,20 +48,23 @@ final readonly class MetaData
      */
     public function getData(): Collection
     {
-        $response = Http::get($this->url);
-
-        if ($response->ok()) {
-            // TODO: add unit test for this service
-            return $this->parse($response->body());
+        try {
+            $response = Http::get($this->url);
+            if ($response->ok()) {
+                // TODO: add unit test for this service
+                $data = $this->parse($response->body())->filter(fn ($value) => $value !== '');
+            }
+        } catch (Exception) {
+            $data = collect();
         }
 
-        return collect();
+        return $data ?? collect();
     }
 
     /**
      * Fetch Twitter oEmbed data for a given tweet URL.
      *
-     * @return Collection<string, string>
+     * @return Collection<string, mixed>
      */
     private function fetchTwitterOEmbed(string $tweetUrl): Collection
     {
@@ -69,10 +73,10 @@ final readonly class MetaData
         $response = Http::get($oEmbedUrl);
 
         if ($response->ok()) {
-            return collect($response->json());
+            $data = $response->json();
         }
 
-        return collect();
+        return collect($data ?? []);
     }
 
     /**
