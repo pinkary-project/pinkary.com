@@ -1,4 +1,9 @@
 <x-guest-layout>
+    <x-input-error
+        :messages="$errors->github->get('github_username')"
+        class="mb-5"
+    />
+
     <form
         method="POST"
         action="{{ route('login') }}"
@@ -90,6 +95,17 @@
             </x-primary-button>
         </div>
     </form>
+
+    <div class="mt-4 text-center">
+        <a
+            href="{{ route('profile.connect.github.login') }}"
+        >
+            <span class="inline-flex items-center gap-x-2 text-sm dark:text-slate-200 text-slate-800 underline hover:no-underline">
+                <x-icons.github class="inline-block h-6 w-6 mr-100" />
+                {{ __('Log in using GitHub') }}
+            </span>
+        </a>
+    </div>
 
     <x-section-border />
 

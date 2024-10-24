@@ -6,6 +6,17 @@
         ></script>
     @endsection
 
+    <x-input-error
+        :messages="$errors->github->get('github_username')"
+        class="mb-5"
+    />
+
+    @if ($githubUsername)
+        <div class="mb-5">
+            {{ __('To complete your registration using GitHub, please fill in these additional fields:') }}
+        </div>
+    @endif
+
     <form
         method="POST"
         action="{{ route('register') }}"
@@ -61,11 +72,12 @@
             />
             <x-text-input
                 id="email"
-                class="mt-1 block w-full"
+                class="mt-1 block w-full {{ $githubEmail !== null ? 'text-slate-500' : '' }}"
                 type="email"
                 name="email"
-                :value="old('email')"
+                :value="old('email', $githubEmail)"
                 required
+                :readonly="$githubEmail !== null"
                 autocomplete="email"
             />
             <x-input-error
@@ -159,6 +171,15 @@
             <x-input-error
                 :messages="'The reCAPTCHA is required.'"
                 class="mt-2"
+            />
+        @endif
+
+        @if ($githubUsername)
+            <x-text-input
+                id="github_username"
+                name="github_username"
+                type="hidden"
+                :value="$githubUsername"
             />
         @endif
 
