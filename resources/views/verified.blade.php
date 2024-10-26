@@ -127,21 +127,18 @@
             <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">Frequently Asked Questions</h2>
 
             <!-- 1 -->
-            <div x-data="accordion(1)" class="relative transition-all duration-700 border rounded-xl hover:shadow-2xl dark:bg-slate-900 bg-slate-50 mt-5">
-                <div @click="handleClick()" class="w-full p-4 text-left cursor-pointer">
+            <div x-data="{ expanded: false }" :class="expanded ? 'shadow-2xl' : 'shadow-sm hover:shadow-md'" class="relative transition-all border border-transparent rounded-xl dark:bg-slate-900 bg-slate-50 mt-5 select-none">
+                <div @click="expanded = !expanded" :aria-expanded="expanded" class="w-full p-4 text-left cursor-pointer">
                     <div class="flex items-center justify-between">
                         <span class="tracking-wide">What does verification mean on Pinkary?</span>
-                        <span :class="handleRotate()" class="transition-transform duration-500 transform fill-current ">
-                <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                </svg>
-                </span>
+                        <span :class="expanded ? '-rotate-180' : ''" class="transition-transform transform fill-current">
+                            <svg class="size-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </span>
                     </div>
                 </div>
 
-                <div x-ref="tab" :style="handleToggle()"
-                     class="relative overflow-hidden transition-all duration-700 max-h-0">
-                    <div class="px-6 pb-4 text-gray-600">
+                <div x-cloak x-show="expanded" x-collapse class="relative overflow-hidden transition-all">
+                    <div class="px-4 pb-4 text-gray-600 dark:text-gray-400">
                         Verification on Pinkary gives you a badge next to your name, symbolizing your support for the platform’s development. It helps recognize your contribution as an engaged and supportive member of the community.
                     </div>
                 </div>
@@ -149,21 +146,18 @@
             <!-- End 1 -->
 
             <!-- 2 -->
-            <div x-data="accordion(2)" class="relative transition-all duration-700 border rounded-xl hover:shadow-2xl dark:bg-slate-900 bg-slate-50 mt-5">
-                <div @click="handleClick()" class="w-full p-4 text-left cursor-pointer">
+            <div x-data="{ expanded: false }" :class="expanded ? 'shadow-2xl' : 'shadow-sm hover:shadow-md'" class="relative transition-all border border-transparent rounded-xl dark:bg-slate-900 bg-slate-50 mt-5 select-none">
+                <div @click="expanded = !expanded" :aria-expanded="expanded" class="w-full p-4 text-left cursor-pointer">
                     <div class="flex items-center justify-between">
                         <span class="tracking-wide">How do I become verified on Pinkary?</span>
-                        <span :class="handleRotate()" class="transition-transform duration-500 transform fill-current ">
-                <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                </svg>
-                </span>
+                        <span :class="expanded ? '-rotate-180' : ''" class="transition-transform transform fill-current">
+                            <svg class="size-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </span>
                     </div>
                 </div>
 
-                <div x-ref="tab" :style="handleToggle()"
-                     class="relative overflow-hidden transition-all duration-700 max-h-0">
-                    <div class="px-6 pb-4 text-gray-600">
+                <div x-cloak x-show="expanded" x-collapse class="relative overflow-hidden transition-all">
+                    <div class="px-4 pb-4 text-gray-600 dark:text-gray-400">
                         To get verified, connect your GitHub account to Pinkary, and sponsor the creator with at least $9/month via GitHub Sponsors. Once sponsored, the verification badge will appear automatically on your profile.
                     </div>
                 </div>
@@ -171,58 +165,23 @@
             <!-- End 2 -->
 
             <!-- 3 -->
-            <div x-data="accordion(3)" class="relative transition-all duration-700 border rounded-xl hover:shadow-2xl dark:bg-slate-900 bg-slate-50 mt-5">
-                <div @click="handleClick()" class="w-full p-4 text-left cursor-pointer">
+            <div x-data="{ expanded: false }" :class="expanded ? 'shadow-2xl' : 'shadow-sm hover:shadow-md'" class="relative transition-all border border-transparent rounded-xl dark:bg-slate-900 bg-slate-50 mt-5 select-none">
+                <div @click="expanded = !expanded" :aria-expanded="expanded" class="w-full p-4 text-left cursor-pointer">
                     <div class="flex items-center justify-between">
                         <span class="tracking-wide">Why should I get verified?</span>
-                        <span :class="handleRotate()" class="transition-transform duration-500 transform fill-current ">
-                <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                </svg>
-                </span>
+                        <span :class="expanded ? '-rotate-180' : ''" class="transition-transform transform fill-current">
+                            <svg class="size-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </span>
                     </div>
                 </div>
 
-                <div x-ref="tab" :style="handleToggle()"
-                     class="relative overflow-hidden transition-all duration-700 max-h-0">
-                    <div class="px-6 pb-4 text-gray-600">
-                        By getting verified, you support the ongoing development of Pinkary, help improve the platform, and promote open-source contributions. The verification badge also highlights your commitment to the community.
+                <div x-cloak x-show="expanded" x-collapse class="relative overflow-hidden transition-all">
+                    <div class="px-4 pb-4 text-gray-600 dark:text-gray-400">
+                        By getting verified, you support the ongoing development of Pinkary, help improve the platform, and promote open-source contributions. The verification badge also highlights your commitment to the community
                     </div>
                 </div>
             </div>
             <!-- End 3 -->
         </section>
-
-
     </main>
-
-    <script>
-        // Faq
-        document.addEventListener("alpine:init", () => {
-            Alpine.store("accordion", {
-                tab: 0
-            });
-
-            Alpine.data("accordion", (idx) => ({
-                init() {
-                    this.idx = idx;
-                },
-                idx: -1,
-                handleClick() {
-                    this.$store.accordion.tab =
-                        this.$store.accordion.tab === this.idx ? 0 : this.idx;
-                },
-                handleRotate() {
-                    return this.$store.accordion.tab === this.idx ? "-rotate-180" : "";
-                },
-                handleToggle() {
-                    return this.$store.accordion.tab === this.idx
-                        ? `max-height: ${this.$refs.tab.scrollHeight}px`
-                        : "";
-                }
-            }));
-        });
-        //  end faq
-
-    </script>
 </x-about-layout>
