@@ -1,10 +1,20 @@
-<section class="mt-4 space-y-10">
-    @foreach ($questions as $question)
+<section class="mt-4 space-y-10 mb-12">
+    @if ($pinnedQuestion)
         <livewire:questions.show
-            :questionId="$question->id"
-            :key="'question-' . $question->id"
+            :questionId="$pinnedQuestion->id"
+            :key="'pinned-question-' . $pinnedQuestion->id"
             :inIndex="true"
-            :pinnable="$pinnable"
+            :pinnable="true"
+        />
+    @endif
+
+    @foreach ($questions as $question)
+        <x-thread
+            :rootId="$question->showRoot ? $question->root_id : null"
+            :grandParentId="$question->parent?->parent_id"
+            :parentId="$question->showParent ? $question->parent_id : null"
+            :questionId="$question->id"
+            :username="$user->username"
         />
     @endforeach
 

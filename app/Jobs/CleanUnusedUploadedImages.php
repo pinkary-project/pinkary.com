@@ -114,7 +114,7 @@ final class CleanUnusedUploadedImages implements ShouldQueue
 
         while ($start->lte($end)) {
             $dates[] = $start->format('Y-m-d');
-            $start = $start->addDay();
+            $start = $start->addDay()->startOfDay();
         }
 
         return $dates;

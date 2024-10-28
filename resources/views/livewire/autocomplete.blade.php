@@ -1,5 +1,5 @@
 <div
-    x-data="dynamicAutocomplete({ types: @js($this->autocompleteTypes) })"
+    x-data="dynamicAutocomplete({ types: @js($this->autocompleteTypes), componentId: '{{ $componentId }}' })"
     x-cloak
     x-show="showAutocompleteOptions"
 >

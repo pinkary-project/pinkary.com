@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Livewire\Questions\Create;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -520,6 +521,62 @@ test('optimizeImage method resizes and saves the image', function () {
 
     expect($image->width())->toBeLessThanOrEqual(1000)
         ->and($image->height())->toBeLessThanOrEqual(1000);
+});
+
+test('optimizeImage method resizes and saves image with multiple frames', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+
+    $gif = new Imagick();
+
+    $gif->setFormat('gif');
+
+    for ($i = 0; $i < 3; $i++) {
+        $frame = new Imagick();
+
+        $frame->newImage(1200, 1200, new ImagickPixel(match ($i) {
+            0 => 'red',
+            1 => 'green',
+            2 => 'blue',
+        }));
+
+        $frame->setImageFormat('gif');
+
+        $gif->addImage($frame);
+    }
+
+    $testImage = UploadedFile::fake()->createWithContent('test.gif', $gif->getImagesBlob());
+
+    $path = $testImage->store('images', 'public');
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->call('optimizeImage', $path);
+
+    Storage::disk('public')->assertExists($path);
+
+    $optimizedImagePath = Storage::disk('public')->path($path);
+
+    $originalImageSize = filesize($testImage->getPathname());
+    $optimizedImageSize = filesize($optimizedImagePath);
+
+    expect($optimizedImageSize)->toBeLessThan($originalImageSize);
+
+    $optimizedImage = new Imagick($optimizedImagePath);
+
+    expect($optimizedImage->getImageWidth())->toBeLessThanOrEqual(1000)
+        ->and($optimizedImage->getImageHeight())->toBeLessThanOrEqual(1000)
+        ->and($optimizedImage->getNumberImages())->toBe(3);
+
+    $frames = $optimizedImage->coalesceImages();
+
+    foreach ($frames as $frame) {
+        expect($frame->getImageWidth())->toBeLessThanOrEqual(1000)
+            ->and($frame->getImageHeight())->toBeLessThanOrEqual(1000);
+    }
 });
 
 test('maxFileSize and maxImages', function () {

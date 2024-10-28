@@ -1,8 +1,8 @@
 <x-app-layout>
     <div class="mx-auto my-16 max-w-7xl px-6 lg:px-8">
         <a
-            href="{{ route('about') }}"
-            class="-mt-10 mb-12 flex items-center dark:text-slate-400 text-slate-600 hover:underline"
+            href="{{ url()->previous() === request()->url() ? '/' : url()->previous() }}"
+            class="-mt-10 mb-12 flex items-center dark:text-slate-400 text-slate-600 hover:underline z-50 relative"
             wire:navigate
         >
             <x-icons.chevron-left class="size-4" />

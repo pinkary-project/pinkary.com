@@ -1,3 +1,21 @@
+## Version 1.43.1
+> 11 October, 2024
+
+- Improves speed on following.
+- Adds threads on profile page.
+- Internal improvements and bug fixes.
+
+## Version 1.43.0
+> 30 September, 2024
+
+- Fixes pagination colors in light mode.
+- Fixes contrast in link settings.
+- Fixes image markdown counting for the max number of chars.
+- More speed improvements on feeds
+- Allow to follow on list of users.
+- Adds `?ref=pinkary` to all pinkary links.
+- Internal improvements and bug fixes.
+
 ## Version 1.42.0
 > 18 September, 2024
 

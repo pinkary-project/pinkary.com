@@ -123,8 +123,7 @@
                             @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
                                 <x-dropdown-button
                                     data-navigate-ignore="true"
-                                    wire:click="ignore"
-                                    wire:confirm="Are you sure you want to delete this question?"
+                                    x-on:click="$dispatch('open-modal', 'question.delete.{{ $questionId }}.confirmation')"
                                     class="flex items-center gap-1.5"
                                 >
                                     <x-heroicon-o-trash class="h-4 w-4" />
@@ -354,10 +353,34 @@
                 </div>
             </x-modal>
         @endif
+
+        <x-modal
+            max-width="md"
+            name="question.delete.{{ $questionId }}.confirmation"
+        >
+            <div class="p-8">
+                <h2 class="text-lg font-medium dark:text-slate-50 text-slate-950">Delete Question</h2>
+                <div class="mt-4 text-slate-500 dark:text-slate-400">
+                    <p>Are you sure you want to delete this question?</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <x-secondary-button
+                        x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')"
+                    >
+                        Cancel
+                    </x-secondary-button>
+                    <x-primary-button
+                        wire:click="ignore"
+                    >
+                        Delete
+                    </x-primary-button>
+                </div>
+            </div>
+        </x-modal>
     @elseif (auth()->user()?->is($user))
         <livewire:questions.edit
             :questionId="$question->id"
-            :key="$question->id"
+            :key="'edit-'.$question->id"
         />
     @endif
 

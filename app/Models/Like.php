@@ -27,7 +27,7 @@ final class Like extends Model
     /**
      * The question that the like belongs to.
      *
-     * @return BelongsTo<Question, Like>
+     * @return BelongsTo<Question, $this>
      */
     public function question(): BelongsTo
     {
@@ -37,7 +37,7 @@ final class Like extends Model
     /**
      * The user that the like belongs to.
      *
-     * @return BelongsTo<User, Like>
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {

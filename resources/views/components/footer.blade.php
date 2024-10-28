@@ -34,6 +34,13 @@
             </div>
             <div class="pb-6">
                 <a
+                    href="{{ route('verified') }}"
+                    class="text-sm leading-6 dark:text-slate-400 text-slate-500 dark:hover:text-slate-200 hover:text-slate-950"
+                >Verified</a
+                >
+            </div>
+            <div class="pb-6">
+                <a
                     href="{{ route('brand.resources') }}"
                     class="text-sm leading-6 dark:text-slate-400 text-slate-500 dark:hover:text-slate-200 hover:text-slate-950"
                     >Brand</a
