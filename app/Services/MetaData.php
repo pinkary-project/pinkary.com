@@ -58,8 +58,7 @@ final readonly class MetaData
             $response = Http::get($this->url);
 
             if ($response->ok()) {
-                // TODO: add unit test for this service
-                $data = $this->parse($response->body())->filter(fn ($value) => $value !== '');
+                $data = $this->parse($response->body())->filter(fn ($value): bool => $value !== '');
             }
         } catch (Exception) {
             // Do nothing,
@@ -83,7 +82,7 @@ final readonly class MetaData
             );
 
             if ($response->ok()) {
-                $data = collect((array) $response->json())->filter(fn ($value) => $value !== '');
+                $data = collect((array) $response->json())->filter(fn ($value): bool => $value !== '');
             }
         } catch (Exception) {
             // Do nothing,
@@ -122,9 +121,9 @@ final readonly class MetaData
 
                 // og, twitter cards & other meta tags
                 collect(['name', 'property'])
-                    ->map(fn ($name) => $meta->getAttribute($name))
-                    ->filter(fn ($attribute) => in_array(explode(':', $attribute)[0], $interested_in))
-                    ->each(function ($attribute) use ($data, $meta) {
+                    ->map(fn ($name): string => $meta->getAttribute($name))
+                    ->filter(fn ($attribute): bool => in_array(explode(':', (string) $attribute)[0], $interested_in))
+                    ->each(function ($attribute) use ($data, $meta): void {
                         $key = explode(':', $attribute)[1];
                         if (! $data->has($key)) {
                             $data->put($key, $meta->getAttribute('content'));

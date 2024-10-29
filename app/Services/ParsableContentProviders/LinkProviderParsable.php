@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\ParsableContentProviders;
 
 use App\Contracts\Services\ParsableContentProvider;
-use Illuminate\Support\Str;
 use App\Services\MetaData;
+use Illuminate\Support\Str;
 
 final readonly class LinkProviderParsable implements ParsableContentProvider
 {
@@ -42,10 +42,14 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                     $metadata = MetaData::fetch($url);
 
                     if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
-                        return trim(view('components.link-preview-card', [
-                            'data' => $metadata,
-                            'url' => $url,
-                        ])->render());
+                        $trimmed = trim(
+                            view('components.link-preview-card', [
+                                'data' => $metadata,
+                                'url' => $url,
+                            ])->render()
+                        );
+
+                        return (string) preg_replace('/<!--(.|\s)*?-->/', '', $trimmed);
                     }
                 }
 
