@@ -15,6 +15,8 @@ final readonly class MetaData
 {
     /**
      * The Open Graph data.
+     *
+     * @var Collection<string, string>
      */
     private Collection $data;
 
@@ -23,12 +25,14 @@ final readonly class MetaData
      */
     public function __construct(private string $url)
     {
-        $this->data = Cache::remember(
+        /** @var Collection<string, string> $cachedData */
+        $cachedData = Cache::remember(
             Str::of($url)->slug()->prepend('preview_')->value(),
             now()->addYear(),
-            // NOTE: check why this data is not being cached, we are just caching a Collection in the DB & I can't see the data in the DB
-            fn () => $this->getData()
+            fn (): Collection => $this->getData()
         );
+
+        $this->data = $cachedData;
     }
 
     /**
@@ -48,35 +52,44 @@ final readonly class MetaData
      */
     public function getData(): Collection
     {
+        $data = collect();
+
         try {
             $response = Http::get($this->url);
+
             if ($response->ok()) {
                 // TODO: add unit test for this service
                 $data = $this->parse($response->body())->filter(fn ($value) => $value !== '');
             }
         } catch (Exception) {
-            $data = collect();
+            // Do nothing,
         }
 
-        return $data ?? collect();
+        return $data;
     }
 
     /**
      * Fetch Twitter oEmbed data for a given tweet URL.
      *
-     * @return Collection<string, mixed>
+     * @return Collection<string, string>
      */
-    private function fetchTwitterOEmbed(string $tweetUrl): Collection
+    private function fetchOEmbed(string $service): Collection
     {
-        $oEmbedUrl = 'https://publish.twitter.com/oembed?url='.urlencode($tweetUrl);
+        $data = collect();
 
-        $response = Http::get($oEmbedUrl);
+        try {
+            $response = Http::get(
+                $service.'?url='.urlencode($this->url).'&maxwidth=446&maxheight=251&theme=dark&hide_thread=true&omit_script=true'
+            );
 
-        if ($response->ok()) {
-            $data = $response->json();
+            if ($response->ok()) {
+                $data = collect((array) $response->json())->filter(fn ($value) => $value !== '');
+            }
+        } catch (Exception) {
+            // Do nothing,
         }
 
-        return collect($data ?? []);
+        return $data;
     }
 
     /**
@@ -107,7 +120,7 @@ final readonly class MetaData
                     $data->put('keywords', $meta->getAttribute('content'));
                 }
 
-                // og & twitter meta tags
+                // og, twitter cards & other meta tags
                 collect(['name', 'property'])
                     ->map(fn ($name) => $meta->getAttribute($name))
                     ->filter(fn ($attribute) => in_array(explode(':', $attribute)[0], $interested_in))
@@ -120,11 +133,21 @@ final readonly class MetaData
             }
         }
 
-        // if the title is x.com, fetch twitter oEmbed & add to data
+        // fetch oEmbed data for X / Twitter
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
-            $x = $this->fetchTwitterOEmbed($this->url);
+            $x = $this->fetchOEmbed(service: 'https://publish.twitter.com/oembed');
             if ($x->isNotEmpty()) {
                 foreach ($x as $key => $value) {
+                    $data->put($key, $value);
+                }
+            }
+        }
+
+        // fetch oEmbed data for YouTube
+        if ($data->has('site_name') && $data->get('site_name') === 'YouTube') {
+            $youtube = $this->fetchOEmbed(service: 'https://www.youtube.com/oembed');
+            if ($youtube->isNotEmpty()) {
+                foreach ($youtube as $key => $value) {
                     $data->put($key, $value);
                 }
             }
