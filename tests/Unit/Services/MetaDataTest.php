@@ -3,55 +3,56 @@
 declare(strict_types=1);
 
 use App\Services\MetaData;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 mutates(MetaData::class);
 
-it('fetches and caches meta data for a given URL', function () {
-    $url = 'https://example.com';
+it('returns the cached meta data if it exists', function () {
+    $url = 'https://laravel.com';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
-    $mockResponse = <<<'HTML'
-    <html>
-        <head>
-            <meta name="title" content="Example Title">
-            <meta name="description" content="Example Description">
-            <meta name="og:title" content="Example Title">
-            <meta name="og:description" content="Example Description">
-        </head>
-    </html>
-    HTML;
-
-    // Mock the HTTP response
-    Http::fake([
-        $url => Http::response($mockResponse),
+    $cachedData = collect([
+        'title' => 'Laravel - The PHP Framework For Web Artisans',
+        'description' => 'Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.',
+        'type' => 'website',
+        'url' => 'https://laravel.com/',
+        'image' => 'https://laravel.com/img/og-image.jpg',
+        'card' => 'summary_large_image',
     ]);
 
-    // Ensure the cache is empty
-    Cache::shouldReceive('remember')
-        ->once()
-        ->with($cacheKey, Carbon::now()->addYear(), Mockery::type('callable'))
-        ->andReturnUsing(static function ($key, $ttl, $callback) {
-            return $callback();
-        });
-
-    // Fetch the meta data
     $data = MetaData::fetch($url);
 
-    // Assert the data is as expected
-    expect($data->toArray())->toBe([
-        'title' => 'Example Title',
-        'description' => 'Example Description',
-    ]);
+    expect(Cache::get($cacheKey))->toBe($data)
+        ->and($data->toArray())->toBe($cachedData->toArray());
+});
+
+it('gets the youtube oembed data', function () {
+    $url = 'https://youtu.be/emMYyeBfYlM';
+    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+    $data = MetaData::fetch($url);
+
+    expect(Cache::get($cacheKey))->toBe($data)
+        ->and($data->get('title'))->toBe('Migrating Brent’s PHPUnit Test Suite to Pest')
+        ->and($data->get('type'))->toBe('video')
+        ->and($data->has('html'))->toBeTrue();
+});
+
+it('get the twitter oembed data', function () {
+    $url = 'https://x.com/enunomaduro/status/1845794776886493291';
+    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+    $data = MetaData::fetch($url);
+
+    expect(Cache::get($cacheKey))->toBe($data)
+        ->and($data->get('type'))->toBe('rich')
+        ->and($data->has('html'))->toBeTrue();
 });
 
 it('returns an empty collection if the HTTP request fails', function () {
-    $url = 'https://example.com';
+    $url = 'https://aurlthatdoesnotexist.com';
 
     Http::fake([
-        $url => Http::response(null, 404),
+        $url => Http::response('', 404),
     ]);
 
     $data = MetaData::fetch($url);
