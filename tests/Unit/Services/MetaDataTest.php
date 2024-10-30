@@ -18,7 +18,6 @@ it('returns the cached meta data if it exists', function () {
         'type' => 'website',
         'url' => 'https://laravel.com/',
         'image' => 'https://laravel.com/img/og-image.jpg',
-        'card' => 'summary_large_image',
     ]);
 
     $service = new MetaData($url);
@@ -52,7 +51,7 @@ it('gets the twitter oembed data', function () {
 });
 
 it('gets the vimdeo oembed data', function () {
-    $url = 'https://vimeo.com/123';
+    $url = 'https://vimeo.com/76979871';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
     $service = new MetaData($url);
     $data = $service->fetch();

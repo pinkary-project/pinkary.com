@@ -117,7 +117,7 @@ final readonly class MetaData
 
                 collect(['name', 'property'])
                     ->map(fn ($name): string => $meta->getAttribute($name))
-                    ->filter(fn ($attribute): bool => in_array(explode(':', (string) $attribute)[0], $interested_in))
+                    ->filter(fn ($attribute): bool => in_array(explode(':', $attribute)[0], $interested_in))
                     ->each(function ($attribute) use ($data, $allowed, $meta): void {
                         $key = explode(':', $attribute)[1];
                         if (! $data->has($key) && in_array($key, $allowed, true)) {
