@@ -39,7 +39,8 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                 $url = $isMail ? 'mailto:'.$humanUrl : $url;
 
                 if (! $isMail && $url) {
-                    $metadata = MetaData::fetch($url);
+                    $service = new MetaData($url);
+                    $metadata = $service->fetch();
 
                     if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
                         $trimmed = trim(

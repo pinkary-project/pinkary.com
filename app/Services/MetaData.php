@@ -14,35 +14,28 @@ use Illuminate\Support\Str;
 final readonly class MetaData
 {
     /**
-     * The Open Graph data.
-     *
-     * @var Collection<string, string>
-     */
-    private Collection $data;
-
-    /**
      * Fetch the Open Graph data for a given URL.
      */
     public function __construct(private string $url)
     {
+        //
+    }
+
+    /**
+     * Fetch the parsed meta-data for the URL
+     *
+     * @return Collection<string, string>
+     */
+    public function fetch(): Collection
+    {
         /** @var Collection<string, string> $cachedData */
         $cachedData = Cache::remember(
-            Str::of($url)->slug()->prepend('preview_')->value(),
+            Str::of($this->url)->slug()->prepend('preview_')->value(),
             now()->addYear(),
             fn (): Collection => $this->getData()
         );
 
-        $this->data = $cachedData;
-    }
-
-    /**
-     * Fetch the parsed meta-data for a given URL.
-     *
-     * @return Collection<string, string>
-     */
-    public static function fetch(string $url): Collection
-    {
-        return (new self($url))->data;
+        return $cachedData;
     }
 
     /**
@@ -68,7 +61,7 @@ final readonly class MetaData
     }
 
     /**
-     * Fetch Twitter oEmbed data for a given tweet URL.
+     * Fetch the oEmbed data for a given URL.
      *
      * @return Collection<string, string>
      */
@@ -139,7 +132,21 @@ final readonly class MetaData
             }
         }
 
-        // fetch oEmbed data for YouTube
+        if ($data->has('site_name') && $data->get('site_name') === 'Vimeo') {
+            $vimeo = $this->fetchOEmbed(
+                service: 'https://vimeo.com/api/oembed.json',
+                options: [
+                    'maxwidth' => '446',
+                    'maxheight' => '251',
+                ]
+            );
+            if ($vimeo->isNotEmpty()) {
+                foreach ($vimeo as $key => $value) {
+                    $data->put($key, $value);
+                }
+            }
+        }
+
         if ($data->has('site_name') && $data->get('site_name') === 'YouTube') {
             $youtube = $this->fetchOEmbed(service: 'https://www.youtube.com/oembed');
             if ($youtube->isNotEmpty()) {

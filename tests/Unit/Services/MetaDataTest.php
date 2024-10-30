@@ -21,7 +21,8 @@ it('returns the cached meta data if it exists', function () {
         'card' => 'summary_large_image',
     ]);
 
-    $data = MetaData::fetch($url);
+    $service = new MetaData($url);
+    $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
         ->and($data->toArray())->toBe($cachedData->toArray());
@@ -30,7 +31,8 @@ it('returns the cached meta data if it exists', function () {
 it('gets the youtube oembed data', function () {
     $url = 'https://youtu.be/emMYyeBfYlM';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
-    $data = MetaData::fetch($url);
+    $service = new MetaData($url);
+    $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
         ->and($data->get('title'))->toBe('Migrating Brent’s PHPUnit Test Suite to Pest')
@@ -38,13 +40,25 @@ it('gets the youtube oembed data', function () {
         ->and($data->has('html'))->toBeTrue();
 });
 
-it('get the twitter oembed data', function () {
+it('gets the twitter oembed data', function () {
     $url = 'https://x.com/enunomaduro/status/1845794776886493291';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
-    $data = MetaData::fetch($url);
+    $service = new MetaData($url);
+    $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
         ->and($data->get('type'))->toBe('rich')
+        ->and($data->has('html'))->toBeTrue();
+});
+
+it('gets the vimdeo oembed data', function () {
+    $url = 'https://vimeo.com/123';
+    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect(Cache::get($cacheKey))->toBe($data)
+        ->and($data->get('type'))->toBe('video')
         ->and($data->has('html'))->toBeTrue();
 });
 
@@ -55,7 +69,8 @@ it('returns an empty collection if the HTTP request fails', function () {
         $url => Http::response('', 404),
     ]);
 
-    $data = MetaData::fetch($url);
+    $service = new MetaData($url);
+    $data = $service->fetch();
 
     expect($data->isEmpty())->toBeTrue();
 });
