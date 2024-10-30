@@ -107,7 +107,6 @@ final readonly class MetaData
 
         if ($metas->count() > 0) {
             foreach ($metas as $meta) {
-                // basic meta tags
                 if (mb_strtolower($meta->getAttribute('name')) === 'title') {
                     $data->put('title', $meta->getAttribute('content'));
                 }
@@ -119,7 +118,6 @@ final readonly class MetaData
                     $data->put('keywords', $meta->getAttribute('content'));
                 }
 
-                // og, twitter cards & other meta tags
                 collect(['name', 'property'])
                     ->map(fn ($name): string => $meta->getAttribute($name))
                     ->filter(fn ($attribute): bool => in_array(explode(':', (string) $attribute)[0], $interested_in))
@@ -132,7 +130,6 @@ final readonly class MetaData
             }
         }
 
-        // fetch oEmbed data for X / Twitter
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
             $x = $this->fetchOEmbed(service: 'https://publish.twitter.com/oembed');
             if ($x->isNotEmpty()) {

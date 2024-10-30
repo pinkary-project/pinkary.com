@@ -319,11 +319,9 @@
                                 <x-heroicon-o-link class="size-4" />
                             </button>
                             @php
-                                // we need to handle sharing the content when we have a link-preview-card
                                 $sharableQuestion = str_replace("'", "\'", $question->isSharedUpdate() ? $question->answer : $question->content);
                                 $link = null;
 
-                                // we will extract the preview card markup from the content.
                                 if (preg_match('/<div\s+id="link-preview-card"[^>]*>(.*)<\/div>(?!.*<\/div>)/si', $sharableQuestion, $matches)) {
                                     $linkPreviewCard = $matches[0];
 
@@ -332,7 +330,6 @@
                                     }
                                 }
 
-                                // return the sanitized sharable content
                                 $sharable = $link ? str_replace($linkPreviewCard, $link, $sharableQuestion) : $sharableQuestion;
                             @endphp
                             <button
