@@ -10,7 +10,7 @@
             {!! $data->get('html') !!}
         </div>
     @else
-        <div class="w-full overflow-hidden">
+        <div class="w-full overflow-hidden rounded-lg border border-slate-300 dark:border-0">
             {!! $data->get('html') !!}
         </div>
     @endif
@@ -24,7 +24,7 @@
                     <img
                         src="{{ $data->get('image') }}"
                         alt="{{ $data->get('title') ?? $url }}"
-                        class="object-cover object-center h-[228px] w-[513px]"
+                        class="object-cover object-center w-full h-56"
                     />
                 <div
                     class="absolute right-0 bottom-0 left-0 w-full rounded-b-lg border-0 bg-pink-100 bg-opacity-75 p-2 backdrop-blur-sm backdrop-filter dark:bg-opacity-45 dark:bg-pink-800">
