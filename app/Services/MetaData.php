@@ -64,15 +64,16 @@ final readonly class MetaData
     /**
      * Fetch the oEmbed data for a given URL.
      *
+     * @param  array<string, string>  $options
      * @return Collection<string, string>
      */
-    private function fetchOEmbed(string $service): Collection
+    private function fetchOEmbed(string $service, array $options): Collection
     {
         $data = collect();
 
         try {
             $response = Http::get(
-                $service.'?url='.urlencode($this->url).'&maxwidth=446&maxheight=251&theme=dark&hide_thread=true&omit_script=true'
+                url: $service.'?url='.urlencode($this->url).'&'.http_build_query($options)
             );
 
             if ($response->ok()) {
@@ -97,6 +98,7 @@ final readonly class MetaData
         @$doc->loadHTML($content);
 
         $interested_in = ['og', 'twitter'];
+        $allowed = ['title', 'description', 'keywords', 'image', 'site_name', 'url', 'type'];
         $data = collect();
         $metas = $doc->getElementsByTagName('meta');
 
@@ -116,9 +118,9 @@ final readonly class MetaData
                 collect(['name', 'property'])
                     ->map(fn ($name): string => $meta->getAttribute($name))
                     ->filter(fn ($attribute): bool => in_array(explode(':', (string) $attribute)[0], $interested_in))
-                    ->each(function ($attribute) use ($data, $meta): void {
+                    ->each(function ($attribute) use ($data, $allowed, $meta): void {
                         $key = explode(':', $attribute)[1];
-                        if (! $data->has($key)) {
+                        if (! $data->has($key) && in_array($key, $allowed, true)) {
                             $data->put($key, $meta->getAttribute('content'));
                         }
                     });
@@ -126,7 +128,15 @@ final readonly class MetaData
         }
 
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
-            $x = $this->fetchOEmbed(service: 'https://publish.twitter.com/oembed');
+            $x = $this->fetchOEmbed(
+                service: 'https://publish.twitter.com/oembed',
+                options: [
+                    'dnt' => 'true',
+                    'omit_script' => 'true',
+                    'hide_thread' => 'true',
+                    'maxwidth' => '446',
+                    'maxheight' => '251',
+                ]);
             if ($x->isNotEmpty()) {
                 foreach ($x as $key => $value) {
                     $data->put($key, $value);
@@ -150,7 +160,12 @@ final readonly class MetaData
         }
 
         if ($data->has('site_name') && $data->get('site_name') === 'YouTube') {
-            $youtube = $this->fetchOEmbed(service: 'https://www.youtube.com/oembed');
+            $youtube = $this->fetchOEmbed(
+                service: 'https://www.youtube.com/oembed',
+                options: [
+                    'maxwidth' => '446',
+                    'maxheight' => '251',
+                ]);
             if ($youtube->isNotEmpty()) {
                 foreach ($youtube as $key => $value) {
                     $data->put($key, $value);
