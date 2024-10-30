@@ -14,14 +14,6 @@
             {!! $data->get('html') !!}
         </div>
     @endif
-@elseif ($data->has('player'))
-    <iframe
-        class="w-full
-        h-[250px]"
-        src="{{ $data->get('player') }}"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-    ></iframe>
 @elseif($data->has('image'))
     @php($shortUrl = parse_url($url)['host'])
     <a href="{{ $url }}" target="_blank" rel="noopener noreferrer">
