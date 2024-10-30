@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use DOMDocument;
-use Exception;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -43,7 +43,7 @@ final readonly class MetaData
      *
      * @return Collection<string, string>
      */
-    public function getData(): Collection
+    private function getData(): Collection
     {
         $data = collect();
 
@@ -51,10 +51,11 @@ final readonly class MetaData
             $response = Http::get($this->url);
 
             if ($response->ok()) {
-                $data = $this->parse($response->body())->filter(fn ($value): bool => $value !== '');
+                $data = $this->parse($response->body())
+                    ->filter(fn ($value): bool => $value !== '');
             }
-        } catch (Exception) {
-            // Do nothing,
+        } catch (ConnectionException) {
+            // Catch but not capture the exception
         }
 
         return $data;
@@ -75,10 +76,11 @@ final readonly class MetaData
             );
 
             if ($response->ok()) {
-                $data = collect((array) $response->json())->filter(fn ($value): bool => $value !== '');
+                $data = collect((array) $response->json())
+                    ->filter(fn ($value): bool => $value !== '');
             }
-        } catch (Exception) {
-            // Do nothing,
+        } catch (ConnectionException) {
+            // Catch but not capture the exception
         }
 
         return $data;
