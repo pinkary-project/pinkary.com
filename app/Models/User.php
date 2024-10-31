@@ -100,7 +100,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's bookmarks.
      *
-     * @return HasMany<Bookmark, $this>
+     * @return HasMany<Bookmark, covariant $this>
      */
     public function bookmarks(): HasMany
     {
@@ -110,7 +110,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's links.
      *
-     * @return HasMany<Link, $this>
+     * @return HasMany<Link, covariant $this>
      */
     public function links(): HasMany
     {
@@ -120,7 +120,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's questions sent.
      *
-     * @return HasMany<Question, $this>
+     * @return HasMany<Question, covariant $this>
      */
     public function questionsSent(): HasMany
     {
@@ -130,7 +130,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's questions received.
      *
-     * @return HasMany<Question, $this>
+     * @return HasMany<Question, covariant $this>
      */
     public function questionsReceived(): HasMany
     {
@@ -138,7 +138,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
-     * @return HasOne<Question, $this>
+     * @return HasOne<Question, covariant $this>
      */
     public function pinnedQuestion(): HasOne
     {
@@ -149,7 +149,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's followers.
      *
-     * @return BelongsToMany<User, $this>
+     * @return BelongsToMany<User, covariant $this>
      */
     public function followers(): BelongsToMany
     {
@@ -159,7 +159,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's following.
      *
-     * @return BelongsToMany<User, $this>
+     * @return BelongsToMany<User, covariant $this>
      */
     public function following(): BelongsToMany
     {
