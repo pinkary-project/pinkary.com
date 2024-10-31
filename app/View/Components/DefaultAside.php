@@ -16,6 +16,7 @@ final class DefaultAside extends Component
      */
     public function render(): View
     {
+        // not the final one
         return view('components.default-aside', [
             'usersToFollow' => User::inRandomOrder()
                 ->whereDoesntHave('followers', fn ($query) => $query->where('follower_id', auth()->id()))
