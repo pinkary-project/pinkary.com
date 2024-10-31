@@ -201,7 +201,7 @@ test('purge questions, comments and decendants with user', function () {
 
 test('parse the bio', function () {
     $user = User::factory()->create([
-        'bio' => 'Hello, https://example.com is my website.',
+        'bio' => 'Hello, we are @laravel and #php enthusiasts!',
     ]);
 
     expect($user->parsed_bio->toHtml())->toBe((new App\Services\ParsableBio)->parse($user->bio));

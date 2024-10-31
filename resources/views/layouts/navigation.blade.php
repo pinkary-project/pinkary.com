@@ -1,10 +1,80 @@
-@php
-    $navClasses = 'fixed z-50 inset-0 md:inset-auto md:right-0 h-16 flex md:justify-end md:px-4 ';
-    $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
-@endphp
-
 <nav>
-    <div class="{{ $navClasses }} backdrop-blur-sm md:backdrop-blur-none">
+    <div class="flex flex-col h-full">
+        <div class="flex items-center justify-between p-4 border-b dark:border-slate-800 border-slate-200">
+            <a href="{{ route('home.feed') }}" class="flex items-center space-x-2">
+                <span class="text-xl font-bold dark:text-white text-black"><x-pinkary-logo class="h-12"/></span>
+            </a>
+        </div>
+        <div class="flex flex-col p-4 space-y-4">
+            @auth
+                <a href="{{ route('home.feed') }}" class="flex items-center space-x-2 {{ request()->routeIs('home.*') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }}">
+                    <x-heroicon-o-home class="h-6 w-6"/>
+                    <span>Home</span>
+                </a>
+                <a href="https://github.com/pinkary-project/pinkary.com" target="_blank" class="flex items-center space-x-2 dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900">
+                    <x-heroicon-o-code-bracket class="h-6 w-6"/>
+                    <span>Source code</span>
+                </a>
+                <a href="{{ route('about') }}" class="flex items-center space-x-2 dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900">
+                    <x-heroicon-o-information-circle class="h-6 w-6"/>
+                    <span>About</span>
+                </a>
+                <a href="{{ route('profile.show', ['username' => auth()->user()->username]) }}" class="flex items-center space-x-2 {{ request()->fullUrlIs(route('profile.show', ['username' => auth()->user()->username])) ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }}">
+                    <x-heroicon-o-user class="h-6 w-6"/>
+                    <span>Profile</span>
+                </a>
+                <a href="{{ route('bookmarks.index') }}" class="flex items-center space-x-2 {{ request()->routeIs('bookmarks.*') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }}">
+                    <x-heroicon-o-bookmark class="h-6 w-6"/>
+                    <span>Bookmarks</span>
+                </a>
+                <a href="{{ route('notifications.index') }}" class="flex items-center space-x-2 {{ request()->routeIs('notifications.index') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }}">
+                    <x-heroicon-o-bell class="h-6 w-6"/>
+                    <span>Notifications</span>
+                    <livewire:navigation.notifications-count.show/>
+                </a>
+                <a href="{{ route('profile.edit') }}" class="flex items-center space-x-2 dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900">
+                    <x-heroicon-o-cog class="h-6 w-6"/>
+                    <span>Settings</span>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="flex items-center space-x-2 dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900">
+                    @csrf
+                    {{-- <x-heroicon-o-logout class="h-6 w-6"/> --}}
+                    <button type="submit">{{ __('Log Out') }}</button>
+                </form>
+            @else
+                <a href="{{ route('home.feed') }}" class="flex items-center space-x-2 {{ request()->routeIs('home.feed') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }}">
+                    <x-heroicon-o-rss class="h-6 w-6"/>
+                    <span>Feed</span>
+                </a>
+                <a href="{{ route('about') }}" class="flex items-center space-x-2 dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900">
+                    <x-heroicon-o-information-circle class="h-6 w-6"/>
+                    <span>About</span>
+                </a>
+                <a href="{{ route('login') }}" class="flex items-center space-x-2 {{ request()->routeIs('login') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }}">
+                    {{-- <x-heroicon-o-login class="h-6 w-6"/> --}}
+                    <span>Log in</span>
+                </a>
+                <a href="{{ route('register') }}" class="flex items-center space-x-2 {{ request()->routeIs('register') ? 'dark:text-slate-100 text-slate-900' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-900' }}">
+                    {{-- <x-heroicon-o-user-add class="h-6 w-6"/> --}}
+                    <span>Register</span>
+                </a>
+            @endauth
+            <div x-data="themeSwitch()" class="flex flex-col items-start justify-between dark:hover:bg-transparent hover:bg-transparent">
+                <div class="flex flex-row justify-between gap-2">
+                    <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'light' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('light')">
+                        <x-heroicon-o-sun class="w-4 h-4"/>
+                    </div>
+                    <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'dark' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('dark')">
+                        <x-heroicon-o-moon class="w-4 h-4"/>
+                    </div>
+                    <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'system' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('system')">
+                        <x-heroicon-o-computer-desktop class="w-4 h-4"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- <div class="{{ $navClasses }} backdrop-blur-sm md:backdrop-blur-none">
         <div class="flex h-16 justify-between">
             <div
                 class="flex items-center space-x-2.5"
@@ -157,5 +227,5 @@
                 </x-dropdown>
             </div>
         </div>
-    </div>
+    </div> --}}
 </nav>

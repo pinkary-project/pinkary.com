@@ -10,9 +10,13 @@
         @persist('flash-messages')
             <livewire:flash-messages.show />
         @endpersist
-        <div class="flex min-h-screen flex-col">
-            <div class="mx-auto ml-3 mr-3 flex-grow">
-                @include('layouts.navigation')
+        <div class="flex min-h-screen">
+            <header class="hidden sm:block w-1/5 border-r dark:border-slate-800 border-slate-300 min-h-screen">
+                <div class="sticky top-0">
+                    @include('layouts.navigation')
+                </div>
+            </header>
+            <div class="flex-grow">
                 @if (isset($title))
                     <div class="mb-6 mt-20 flex flex-col items-center sm:mb-12">
                         <div class="w-full max-w-md px-2 sm:px-0">
@@ -24,14 +28,22 @@
                 @endif
                 <main class="mt-16">
                     {{ $slot }}
+                    @persist('footer')
+                        <x-back-to-top :offset="300" />
+                        <x-footer />
+                        <x-image-lightbox />
+                    @endpersist
                 </main>
-                <x-image-lightbox />
             </div>
-
-            @persist('footer')
-                <x-back-to-top :offset="300" />
-                <x-footer />
-            @endpersist
+            <aside class="hidden sm:block w-1/3 border-l dark:border-slate-800 border-slate-300">
+                <div class="sticky top-0">
+                    @isset($aside)
+                        {{ $aside }}
+                    @else
+                        <x-default-aside />
+                    @endisset
+                </div>
+            </aside>
         </div>
         @livewireScriptConfig
 

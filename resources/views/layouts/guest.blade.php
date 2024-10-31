@@ -9,30 +9,30 @@
     >
         <livewire:flash-messages.show />
 
-        <div class="flex min-h-screen flex-col">
-            <main class="flex-grow">
-                <div class="fixed right-0 z-50">
+        <div class="flex min-h-screen">
+            <header class="hidden sm:block w-1/5 border-r dark:border-slate-800 border-slate-300 min-h-screen">
+                <div class="sticky top-0">
                     @if (! request()->routeIs('about'))
                         @include('layouts.navigation')
                     @endif
                 </div>
-
-                <div>
+            </header>
+            <div class="flex-grow">
+                <main>
                     <a
                         href="{{ route('home.feed') }}"
                         wire:navigate
-                        class="mt-20 flex justify-center"
+                        class="mt-12 flex justify-center"
                     >
                         <x-pinkary-logo class="z-10 w-48" />
                     </a>
 
-                    <div class="mx-auto w-full max-w-md px-4 py-10 sm:px-0">
+                    <div class="mx-auto w-full max-w-md px-4 py-5 sm:px-0">
                         {{ $slot }}
                     </div>
-                </div>
-            </main>
-
-            <x-footer />
+                </main>
+                <x-footer />
+            </div>
         </div>
         @livewireScriptConfig
     </body>
