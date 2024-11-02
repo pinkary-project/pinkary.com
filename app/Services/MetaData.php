@@ -52,7 +52,7 @@ final readonly class MetaData
 
             if ($response->ok()) {
                 $data = $this->parse($response->body())
-                    ->filter(fn ($value): bool => $value !== '');
+                    ->filter(fn (string $value): bool => $value !== '');
             }
         } catch (ConnectionException) {
             // Catch but not capture the exception
@@ -77,8 +77,10 @@ final readonly class MetaData
             );
 
             if ($response->ok()) {
-                $data = collect((array) $response->json())
-                    ->filter(fn ($value): bool => $value !== '');
+                /** @var Collection<string, string|null> $data */
+                $data = $response->collect();
+                $data = $data
+                    ->filter(fn (?string $value): bool => (string) $value !== '');
             }
         } catch (ConnectionException) {
             // Catch but not capture the exception
@@ -116,9 +118,9 @@ final readonly class MetaData
                 }
 
                 collect(['name', 'property'])
-                    ->map(fn ($name): string => $meta->getAttribute($name))
-                    ->filter(fn ($attribute): bool => in_array(explode(':', $attribute)[0], $interested_in))
-                    ->each(function ($attribute) use ($data, $allowed, $meta): void {
+                    ->map(fn (string $name): string => $meta->getAttribute($name))
+                    ->filter(fn (string $attribute): bool => in_array(explode(':', $attribute)[0], $interested_in))
+                    ->each(function (string $attribute) use ($data, $allowed, $meta): void {
                         $key = explode(':', $attribute)[1];
                         if (! $data->has($key) && in_array($key, $allowed, true)) {
                             $data->put($key, $meta->getAttribute('content'));
