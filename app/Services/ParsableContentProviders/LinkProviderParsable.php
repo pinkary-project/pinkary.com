@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\ParsableContentProviders;
 
 use App\Contracts\Services\ParsableContentProvider;
+use App\Services\MetaData;
 use Illuminate\Support\Str;
 
 final readonly class LinkProviderParsable implements ParsableContentProvider
@@ -36,6 +37,22 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                 $url = $isHttp ? $matches[0] : 'https://'.$matches[0];
 
                 $url = $isMail ? 'mailto:'.$humanUrl : $url;
+
+                if (! $isMail && $url) {
+                    $service = new MetaData($url);
+                    $metadata = $service->fetch();
+
+                    if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
+                        $trimmed = trim(
+                            view('components.link-preview-card', [
+                                'data' => $metadata,
+                                'url' => $url,
+                            ])->render()
+                        );
+
+                        return (string) preg_replace('/<!--(.|\s)*?-->/', '', $trimmed);
+                    }
+                }
 
                 return '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
             },

@@ -207,6 +207,8 @@
     }
 </style>
 
+<script id="twitter-widget" async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 <script>
     function isDarkTheme() {
         return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)

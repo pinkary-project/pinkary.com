@@ -318,6 +318,20 @@
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
+                            @php
+                                $sharableQuestion = str_replace("'", "\'", $question->isSharedUpdate() ? $question->answer : $question->content);
+                                $link = null;
+
+                                if (preg_match('/<div\s+id="link-preview-card"[^>]*>(.*)<\/div>(?!.*<\/div>)/si', $sharableQuestion, $matches)) {
+                                    $linkPreviewCard = $matches[0];
+
+                                    if (preg_match('/data-url="([^"]*)"/', $linkPreviewCard, $urlMatches)) {
+                                        $link = " {$urlMatches[1]} ";
+                                    }
+                                }
+
+                                $sharable = $link ? str_replace($linkPreviewCard, $link, $sharableQuestion) : $sharableQuestion;
+                            @endphp
                             <button
                                 data-navigate-ignore="true"
                                 x-cloak
@@ -325,7 +339,7 @@
                                 x-on:click="
                                     twitter({
                                         url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
-                                        question: '{{ str_replace("'", "\'", $question->isSharedUpdate() ? $question->answer : $question->content) }}',
+                                        question: '{{ $sharable }}',
                                         message: '{{ $question->isSharedUpdate() ? 'See it on Pinkary' : 'See response on Pinkary' }}',
                                     })
                                 "
@@ -377,6 +391,7 @@
                 </div>
             </div>
         </x-modal>
+
     @elseif (auth()->user()?->is($user))
         <livewire:questions.edit
             :questionId="$question->id"
