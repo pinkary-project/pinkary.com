@@ -28,7 +28,7 @@ final class Link extends Model
     /**
      * Get the user that owns the link.
      *
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<User, covariant $this>
      */
     public function user(): BelongsTo
     {

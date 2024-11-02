@@ -106,7 +106,7 @@ final class Question extends Model implements Viewable
     /**
      * Get the user that the question was sent from.
      *
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<User, covariant $this>
      */
     public function from(): BelongsTo
     {
@@ -116,7 +116,7 @@ final class Question extends Model implements Viewable
     /**
      * Get the user that the question was sent to.
      *
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<User, covariant $this>
      */
     public function to(): BelongsTo
     {
@@ -126,7 +126,7 @@ final class Question extends Model implements Viewable
     /**
      * Get the bookmarks for the question.
      *
-     * @return HasMany<Bookmark, $this>
+     * @return HasMany<Bookmark, covariant $this>
      */
     public function bookmarks(): HasMany
     {
@@ -136,7 +136,7 @@ final class Question extends Model implements Viewable
     /**
      * Get the likes for the question.
      *
-     * @return HasMany<Like, $this>
+     * @return HasMany<Like, covariant $this>
      */
     public function likes(): HasMany
     {
@@ -174,7 +174,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return BelongsTo<Question, $this>
+     * @return BelongsTo<Question, covariant $this>
      */
     public function root(): BelongsTo
     {
@@ -184,7 +184,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return BelongsTo<Question, $this>
+     * @return BelongsTo<Question, covariant $this>
      */
     public function parent(): BelongsTo
     {
@@ -194,7 +194,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return HasMany<Question, $this>
+     * @return HasMany<Question, covariant $this>
      */
     public function children(): HasMany
     {
@@ -204,7 +204,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return HasMany<Question, $this>
+     * @return HasMany<Question, covariant $this>
      */
     public function descendants(): HasMany
     {
@@ -214,7 +214,7 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * @return BelongsToMany<Hashtag, $this>
+     * @return BelongsToMany<Hashtag, covariant $this>
      */
     public function hashtags(): BelongsToMany
     {
