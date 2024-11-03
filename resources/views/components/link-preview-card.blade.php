@@ -4,16 +4,9 @@
     class="mx-auto mt-2 min-w-full group/preview" data-navigate-ignore="true"
 >
 @if ($data->has('html'))
-    @if ($data->get('site_name') === 'X (formerly Twitter)')
-        @php($tweetId = explode('/', $url))
-        <div data-tweet-id="{{ end($tweetId) }}" class="w-full overflow-hidden">
-            {!! $data->get('html') !!}
-        </div>
-    @else
-        <div class="w-full overflow-hidden rounded-lg border border-slate-300 dark:border-0">
-            {!! $data->get('html') !!}
-        </div>
-    @endif
+    <div class="w-full overflow-hidden rounded-lg border border-slate-300 dark:border-0">
+        {!! $data->get('html') !!}
+    </div>
 @elseif($data->has('image'))
     @php($shortUrl = parse_url($url)['host'])
     <a href="{{ $url }}" target="_blank" rel="noopener noreferrer">

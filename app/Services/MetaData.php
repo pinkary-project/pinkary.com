@@ -130,23 +130,6 @@ final readonly class MetaData
             }
         }
 
-        if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
-            $x = $this->fetchOEmbed(
-                service: 'https://publish.twitter.com/oembed',
-                options: [
-                    'dnt' => 'true',
-                    'omit_script' => 'true',
-                    'hide_thread' => 'true',
-                    'maxwidth' => '446',
-                    'maxheight' => '251',
-                ]);
-            if ($x->isNotEmpty()) {
-                foreach ($x as $key => $value) {
-                    $data->put($key, $value);
-                }
-            }
-        }
-
         if ($data->has('site_name') && $data->get('site_name') === 'Vimeo') {
             $vimeo = $this->fetchOEmbed(
                 service: 'https://vimeo.com/api/oembed.json',
