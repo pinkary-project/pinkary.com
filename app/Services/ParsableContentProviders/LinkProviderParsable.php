@@ -38,6 +38,8 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
 
                 $url = $isMail ? 'mailto:'.$humanUrl : $url;
 
+                $linkHtml = '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
+
                 if (! $isMail && $url) {
                     $service = new MetaData($url);
                     $metadata = $service->fetch();
@@ -50,11 +52,11 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                             ])->render()
                         );
 
-                        return (string) preg_replace('/<!--(.|\s)*?-->/', '', $trimmed);
+                        return $linkHtml.' '.preg_replace('/<!--(.|\s)*?-->/', '', $trimmed);
                     }
                 }
 
-                return '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
+                return $linkHtml;
             },
             str_replace('&amp;', '&', $content)
         );
