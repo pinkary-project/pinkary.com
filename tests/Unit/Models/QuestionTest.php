@@ -31,8 +31,9 @@ test('to array', function () {
 });
 
 test('content', function () {
-    Http::sequence()
-        ->whenEmpty(Http::response('', 404));
+    Http::fake([
+        '*' => Http::response('', 404),
+    ]);
 
     $question = Question::factory()->create([
         'content' => 'Hello https://example.com, how are you? https://example.com',
