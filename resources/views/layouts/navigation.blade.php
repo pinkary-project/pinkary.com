@@ -10,8 +10,7 @@
                     "hidden lg:block" => !$mobile
                 ])><x-pinkary-logo class="h-12"/></span>
                 <span @class([
-                    "text-xl font-bold dark:text-white text-black",
-                    "lg:hidden" => !$mobile
+                    "text-xl font-bold dark:text-white text-black hidden md:block lg:hidden",
                 ])> <img src="{{ asset('img/ico.png') }}" alt="logo" class="h-12"/></span>
             </a>
         </div>
