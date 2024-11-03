@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
 
+beforeEach(function () {
+    Http::sequence()
+        ->whenEmpty(Http::response('', 404));
+});
+
 test('brs', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\BrProviderParsable();
 

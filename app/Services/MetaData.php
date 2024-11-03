@@ -113,6 +113,7 @@ final readonly class MetaData
                 if (mb_strtolower($meta->getAttribute('name')) === 'description') {
                     $data->put('description', $meta->getAttribute('content'));
                 }
+
                 if (mb_strtolower($meta->getAttribute('name')) === 'keywords') {
                     $data->put('keywords', $meta->getAttribute('content'));
                 }
@@ -168,6 +169,7 @@ final readonly class MetaData
                     'maxwidth' => '446',
                     'maxheight' => '251',
                 ]);
+
             if ($youtube->isNotEmpty()) {
                 foreach ($youtube as $key => $value) {
                     $data->put($key, $value);
