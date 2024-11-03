@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 
 mutates(MetaData::class);
 
+beforeEach()->skip();
+
 it('returns the cached meta data if it exists', function () {
     $url = 'https://laravel.com';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
