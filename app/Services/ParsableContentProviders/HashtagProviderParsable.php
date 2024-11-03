@@ -15,7 +15,7 @@ final readonly class HashtagProviderParsable implements ParsableContentProvider
     public function parse(string $content): string
     {
         return (string) preg_replace_callback(
-            '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!&)#([a-z0-9]+)/is',
+            '/(<(a|code|pre|div)\s+[^>]*>.*?<\/\2>)|(?<!&)#([a-z0-9]+)/is',
             function (array $matches): string {
                 if ($matches[1] !== '') {
                     return $matches[1];
