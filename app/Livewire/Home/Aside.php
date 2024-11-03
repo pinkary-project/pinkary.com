@@ -2,22 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\View\Components;
+namespace App\Livewire\Home;
 
 use App\Models\User;
-use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\View\Component;
+use Illuminate\View\View;
+use Livewire\Attributes\Lazy;
+use Livewire\Component;
 
-final class DefaultAside extends Component
+#[Lazy]
+final class Aside extends Component
 {
     /**
-     * Get the view / contents that represent the component.
+     * Get the placeholder for the component.
+     */
+    public function placeholder(): View
+    {
+        return view('livewire.home.aside-placeholder');
+    }
+
+    /**
+     * Render the component.
      */
     public function render(): View
     {
-        // not the final one
-        return view('components.default-aside', [
+        // not the final
+        return view('livewire.home.aside', [
             'usersToFollow' => User::inRandomOrder()
                 ->whereDoesntHave('followers', fn ($query) => $query->where('follower_id', auth()->id()))
                 ->withExists([
