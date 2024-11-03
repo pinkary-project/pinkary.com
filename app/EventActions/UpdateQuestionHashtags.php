@@ -6,6 +6,7 @@ namespace App\EventActions;
 
 use App\Models\Hashtag;
 use App\Models\Question;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -26,8 +27,11 @@ final readonly class UpdateQuestionHashtags
     public function handle(): array
     {
         $parsedHashtags = $this->parsedHashtagNames();
-
+        
         $existingHashtags = Hashtag::query()->whereIn('name', $parsedHashtags->all())->get();
+
+        // Update udated at that particular hashtag used so it should be updated time
+        Hashtag::query()->whereIn('name', $parsedHashtags->all())->update(['updated_at' => Carbon::now()]);
 
         $newHashtags = $parsedHashtags->diff($existingHashtags->pluck('name'))
             ->map(fn (string $name): Hashtag => Hashtag::query()->create(['name' => $name]));
