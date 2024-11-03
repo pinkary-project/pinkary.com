@@ -1,4 +1,4 @@
-<div
+<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://pinkary.com/@nunomaduro">pinkary.com/@nunomaduro</a> <div
     id="link-preview-card"
     data-url="https://pinkary.com/<a href="/@nunomaduro" data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" wire-navigate>@nunomaduro</a>"
     class="mx-auto mt-2 min-w-full group/preview" data-navigate-ignore="true"
@@ -25,4 +25,5 @@
             <a href="https://pinkary.com/@nunomaduro" target="_blank" rel="noopener noreferrer"
                class="text-xs text-slate-500 group-hover/preview:text-pink-600">From: pinkary.com</a>
         </div>
+
 </div>

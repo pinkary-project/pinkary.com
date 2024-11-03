@@ -1,4 +1,4 @@
-Sure, here is the link: <div
+Sure, here is the link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://laravel.com">laravel.com</a> <div
     id="link-preview-card"
     data-url="https://laravel.com"
     class="mx-auto mt-2 min-w-full group/preview" data-navigate-ignore="true"
@@ -25,4 +25,5 @@ Sure, here is the link: <div
             <a href="https://laravel.com" target="_blank" rel="noopener noreferrer"
                class="text-xs text-slate-500 group-hover/preview:text-pink-600">From: laravel.com</a>
         </div>
+
 </div>. Let me know if you have any questions.
