@@ -68,10 +68,23 @@
                     <span @class(['hidden lg:block' => !$mobile])>Register</span>
                 </a>
             @endauth
+            <div x-data="themeSwitch()" class="flex flex-col items-start justify-between dark:hover:bg-transparent hover:bg-transparent md:hidden lg:block">
+                <div class="flex flex-row justify-between gap-2">
+                    <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'light' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('light')">
+                        <x-heroicon-o-sun class="w-4 h-4"/>
+                    </div>
+                    <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'dark' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('dark')">
+                        <x-heroicon-o-moon class="w-4 h-4"/>
+                    </div>
+                    <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'system' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('system')">
+                        <x-heroicon-o-computer-desktop class="w-4 h-4"/>
+                    </div>
+                </div>
+            </div>
             <x-dropdown align="right" width="48" :content-classes="'space-y-1 dark:bg-slate-900 bg-slate-100 dark:border-none border border-slate-100 py-1 text-slate-500'">
                 <x-slot name="trigger">
-                    <button class="inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 dark:text-slate-500 text-slate-400 transition duration-150 ease-in-out dark:hover:text-slate-100 hover:text-slate-900 focus:outline-none">
-                        <x-icons.bars class="size-6"/>
+                    <button class="inline-flex items-center rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-3 py-2 text-sm font-medium leading-4 dark:text-slate-500 text-slate-400 transition duration-150 ease-in-out dark:hover:text-slate-100 hover:text-slate-900 focus:outline-none hidden md:block lg:hidden">
+                        <x-heroicon-o-swatch class="size-6"/>
                     </button>
                 </x-slot>
 
