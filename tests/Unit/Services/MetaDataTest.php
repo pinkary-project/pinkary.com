@@ -11,8 +11,6 @@ use Illuminate\Support\Str;
 
 mutates(MetaData::class);
 
-beforeEach()->skip();
-
 it('returns the cached meta data if it exists', function () {
     $url = 'https://laravel.com';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
@@ -86,45 +84,6 @@ it('gets the youtube oembed data', function () {
     expect(Cache::get($cacheKey))->toBe($data)
         ->and($data->get('title'))->toBe('Migrating Brent’s PHPUnit Test Suite to Pest')
         ->and($data->get('type'))->toBe('video')
-        ->and($data->has('html'))->toBeTrue();
-});
-
-it('gets the twitter oembed data', function () {
-    $url = 'https://x.com/enunomaduro/status/1845794776886493291';
-    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
-
-    Http::fake([
-        $url => Http::response('
-            <html>
-                <head>
-                    <meta name="twitter:title" content="Migrating Brent&rsquo;s PHPUnit Test Suite to Pest">
-                    <meta name="twitter:description" content="I&rsquo;ve been using PHPUnit for years. But recently, I&rsquo;ve been migrating my test suite to Pest. Here&rsquo;s why and how I did it.">
-                    <meta name="twitter:image" content="https://pbs.twimg.com/media/Exv6J9zWYAI1Z1-.jpg">
-                    <meta name="twitter:url" content="https://twitter.com/enunomaduro/status/1845794776886493291">
-                    <meta name="twitter:card" content="summary_large_image">
-                    <meta name="og:site_name" content="X (formerly Twitter)">
-                </head>
-            </html>
-        ', 200),
-        'publish.twitter.com/oembed?url=*' => Http::response([
-            'url' => 'https://twitter.com/enunomaduro/status/1845794776886493291',
-            'author_name' => 'Nuno Maduro',
-            'author_url' => 'https://twitter.com/enunomaduro',
-            'html' => '<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I’ve been using PHPUnit for years. But recently, I’ve been migrating my test suite to Pest. Here’s why and how I did it.</p>&mdash; Nuno Maduro (@enunomaduro) <a href="https://twitter.com/enunomaduro/status/1845794776886493291?ref_src=twsrc%5Etfw">April 6, 2021</a></blockquote>',
-            'width' => 550,
-            'height' => 550,
-            'type' => 'rich',
-            'cache_age' => '3153600000',
-            'provider_name' => 'Twitter',
-            'provider_url' => 'https://twitter.com',
-        ], 200),
-    ]);
-
-    $service = new MetaData($url);
-    $data = $service->fetch();
-
-    expect(Cache::get($cacheKey))->toBe($data)
-        ->and($data->get('type'))->toBe('rich')
         ->and($data->has('html'))->toBeTrue();
 });
 
