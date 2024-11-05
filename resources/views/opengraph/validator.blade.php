@@ -6,7 +6,7 @@
         <input type="text" id="url-field" placeholder="Enter URL" class="w-full p-2 border rounded" />
     </div>
 
-    <div id="preview-section" class="mb-6">
+    <div id="preview-section" class="mb-6 flex flex-col items-start">
         <h2 class="text-xl font-semibold mb-2">Preview</h2>
         <div id="preview-card">
             <!-- Preview will be injected here -->
