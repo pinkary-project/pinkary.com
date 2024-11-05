@@ -6,6 +6,7 @@ use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OpenGraphController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\UserAvatarController;
@@ -13,7 +14,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserGitHubUsernameController;
 use App\Http\Controllers\UserIsVerifiedController;
 use App\Http\Controllers\UserTimezoneController;
-use App\Http\Controllers\OpenGraphController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 

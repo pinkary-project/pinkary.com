@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Http;
 
 it('validates url and returns open graph data', function () {
@@ -23,14 +24,14 @@ it('validates url and returns open graph data', function () {
     ]);
 
     $response->assertStatus(200)
-             ->assertJson([
-                 'metadata' => [
-                     'title' => 'Example Title',
-                     'type' => 'website',
-                     'url' => 'https://example.com',
-                     'image' => 'https://example.com/image.jpg',
-                 ],
-             ]);
+        ->assertJson([
+            'metadata' => [
+                'title' => 'Example Title',
+                'type' => 'website',
+                'url' => 'https://example.com',
+                'image' => 'https://example.com/image.jpg',
+            ],
+        ]);
 });
 
 it('handles invalid url input', function () {
@@ -40,5 +41,5 @@ it('handles invalid url input', function () {
     ]);
 
     $response->assertStatus(422)
-             ->assertJsonValidationErrors(['input']);
+        ->assertJsonValidationErrors(['input']);
 });
