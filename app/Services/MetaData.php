@@ -49,6 +49,23 @@ final readonly class MetaData
     }
 
     /**
+     * Ensure the correct size for an oEmbed iframe.
+     */
+    public function ensureCorrectSize(string $value): string
+    {
+        $doc = new DOMDocument();
+        @$doc->loadHTML($value);
+        $iframe = $doc->getElementsByTagName('iframe')->item(0);
+        if ($iframe) {
+            $iframe->setAttribute('width', (string) self::CARD_WIDTH);
+            $iframe->setAttribute('height', (string) self::CARD_HEIGHT);
+
+            return (string) $doc->saveHTML($iframe);
+        }
+
+        return $value;
+    }
+    /**
      * Get the meta-data for a given URL.
      *
      * @return Collection<string, string>
@@ -101,7 +118,7 @@ final readonly class MetaData
      *
      * @return Collection<string, string>
      */
-    private function parse(string $content): Collection
+    private function parseContent(string $content): Collection
     {
         $doc = new DOMDocument();
         @$doc->loadHTML($content);
@@ -148,7 +165,9 @@ final readonly class MetaData
             );
             if ($vimeo->isNotEmpty()) {
                 foreach ($vimeo as $key => $value) {
-                    $data->put($key, $value);
+                    $key === 'html'
+                        ? $data->put($key, $this->ensureCorrectSize((string) $value))
+                        : $data->put($key, $value);
                 }
             }
         }
@@ -163,7 +182,9 @@ final readonly class MetaData
 
             if ($youtube->isNotEmpty()) {
                 foreach ($youtube as $key => $value) {
-                    $data->put($key, $value);
+                    $key === 'html'
+                        ? $data->put($key, $this->ensureCorrectSize((string) $value))
+                        : $data->put($key, $value);
                 }
             }
         }
