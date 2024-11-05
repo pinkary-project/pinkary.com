@@ -187,11 +187,10 @@ final readonly class MetaData
 
         $data = $this->parseContent($html);
 
+        $isSuitable = true;
+
         if ($data->has('image')) {
             $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
-            if (! $isSuitable) {
-                $data->forget('image');
-            }
         }
 
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
@@ -201,11 +200,12 @@ final readonly class MetaData
                 $data = $this->parseContent($response->body());
                 if ($data->has('image')) {
                     $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
-                    if (! $isSuitable) {
-                        $data->forget('image');
-                    }
                 }
             }
+        }
+
+        if (! $isSuitable) {
+            $data->forget('image');
         }
 
         if ($data->has('site_name') && $data->get('site_name') === 'Vimeo') {
