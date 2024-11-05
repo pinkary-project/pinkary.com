@@ -65,6 +65,23 @@ final readonly class MetaData
 
         return $value;
     }
+
+    /**
+     * Check the image exists and is of suitable size.
+     */
+    public function checkExistsAndSize(string $image): bool
+    {
+        if (! (Http::head($image)->ok())) {
+            return false;
+        }
+
+        $dimensions = @getimagesize($image);
+        $min_width = self::CARD_WIDTH / 0.66;
+        $min_height = self::CARD_HEIGHT / 0.66;
+
+        return ! ($dimensions && ($dimensions[0] < $min_width || $dimensions[1] < $min_height));
+    }
+
     /**
      * Get the meta-data for a given URL.
      *
@@ -155,6 +172,28 @@ final readonly class MetaData
         }
 
         return $data->filter(fn (?string $value): bool => (string) $value !== '');
+
+    }
+
+    /**
+     * Parse the response body for MetaData.
+     *
+     * @return Collection<string, string>
+     *
+     * @throws ConnectionException
+     */
+    private function parse(string $html): Collection
+    {
+
+        $data = $this->parseContent($html);
+
+        if ($data->has('image')) {
+            $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
+            if (! $isSuitable) {
+                $data->forget('image');
+            }
+        }
+
         if ($data->has('site_name') && $data->get('site_name') === 'Vimeo') {
             $vimeo = $this->fetchOEmbed(
                 service: 'https://vimeo.com/api/oembed.json',
