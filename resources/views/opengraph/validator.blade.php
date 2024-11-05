@@ -3,18 +3,7 @@
     <h1 class="text-2xl font-semibold mb-4">OpenGraph Card Validator and Preview</h1>
     
     <div class="mb-6">
-        <div class="flex space-x-4 mb-4">
-            <button id="url-tab" class="px-4 py-2 bg-pink-600 text-white rounded">URL Input</button>
-            <button id="html-tab" class="px-4 py-2 bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded">Raw HTML Input</button>
-        </div>
-
-        <div id="url-input" class="block">
-            <input type="text" id="url-field" placeholder="Enter URL" class="w-full p-2 border rounded" />
-        </div>
-
-        <div id="html-input" class="hidden">
-            <textarea id="html-field" rows="6" placeholder="Enter raw HTML" class="w-full p-2 border rounded"></textarea>
-        </div>
+        <input type="text" id="url-field" placeholder="Enter URL" class="w-full p-2 border rounded" />
     </div>
 
     <div id="preview-section" class="mb-6">
@@ -29,31 +18,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const urlTab = document.getElementById('url-tab');
-    const htmlTab = document.getElementById('html-tab');
-    const urlInput = document.getElementById('url-input');
-    const htmlInput = document.getElementById('html-input');
     const urlField = document.getElementById('url-field');
-    const htmlField = document.getElementById('html-field');
     const previewCard = document.getElementById('preview-card');
     const errorMessages = document.getElementById('error-messages');
-
-    // Tab switching
-    urlTab.addEventListener('click', () => {
-        urlTab.classList.add('bg-pink-600', 'text-white');
-        htmlTab.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-slate-800', 'dark:text-gray-300');
-        urlInput.classList.add('block');
-        urlInput.classList.remove('hidden');
-        htmlInput.classList.add('hidden');
-    });
-
-    htmlTab.addEventListener('click', () => {
-        htmlTab.classList.add('bg-pink-600', 'text-white');
-        urlTab.classList.remove('bg-pink-600', 'text-white');
-        htmlInput.classList.add('block');
-        htmlInput.classList.remove('hidden');
-        urlInput.classList.add('hidden');
-    });
 
     // Debounce function to limit API calls
     function debounce(func, delay) {
@@ -68,8 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch and render preview
     const fetchPreview = debounce(async () => {
-        const type = urlInput.classList.contains('block') ? 'url' : 'html';
-        const input = type === 'url' ? urlField.value.trim() : htmlField.value.trim();
+        const input = urlField.value.trim();
 
         if (!input) {
             previewCard.innerHTML = '';
@@ -84,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
-                body: JSON.stringify({ type, input }),
+                body: JSON.stringify({ type: 'url', input }),
             });
 
             const data = await response.json();
@@ -104,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 
     urlField.addEventListener('input', fetchPreview);
-    htmlField.addEventListener('input', fetchPreview);
 
     // Render the preview using existing Pinkary card component
     function renderPreview(metadata) {
