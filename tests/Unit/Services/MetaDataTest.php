@@ -5,13 +5,12 @@ declare(strict_types=1);
 use App\Services\MetaData;
 use GuzzleHttp\Promise\RejectedPromise;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 mutates(MetaData::class);
-
-beforeEach()->skip();
 
 it('returns the cached meta data if it exists', function () {
     $url = 'https://laravel.com';
@@ -89,7 +88,7 @@ it('gets the youtube oembed data', function () {
         ->and($data->has('html'))->toBeTrue();
 });
 
-it('gets the twitter oembed data', function () {
+it('shows preview card if the tweet has an image or video', function () {
     $url = 'https://x.com/enunomaduro/status/1845794776886493291';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
 
@@ -97,35 +96,21 @@ it('gets the twitter oembed data', function () {
         $url => Http::response('
             <html>
                 <head>
-                    <meta name="twitter:title" content="Migrating Brent&rsquo;s PHPUnit Test Suite to Pest">
-                    <meta name="twitter:description" content="I&rsquo;ve been using PHPUnit for years. But recently, I&rsquo;ve been migrating my test suite to Pest. Here&rsquo;s why and how I did it.">
-                    <meta name="twitter:image" content="https://pbs.twimg.com/media/Exv6J9zWYAI1Z1-.jpg">
-                    <meta name="twitter:url" content="https://twitter.com/enunomaduro/status/1845794776886493291">
-                    <meta name="twitter:card" content="summary_large_image">
-                    <meta name="og:site_name" content="X (formerly Twitter)">
+                    <meta property="og:site_name" content="X (formerly Twitter)">
+                    <meta property="og:url" content="https://x.com/enunomaduro/status/1853213385233502522">
+                    <meta property="og:image" content="https://pbs.twimg.com/ext_tw_video_thumb/1845793244287836166/pu/img/sjrrSlxl64LNIwdY.jpg:large">
                 </head>
             </html>
         ', 200),
-        'publish.twitter.com/oembed?url=*' => Http::response([
-            'url' => 'https://twitter.com/enunomaduro/status/1845794776886493291',
-            'author_name' => 'Nuno Maduro',
-            'author_url' => 'https://twitter.com/enunomaduro',
-            'html' => '<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I’ve been using PHPUnit for years. But recently, I’ve been migrating my test suite to Pest. Here’s why and how I did it.</p>&mdash; Nuno Maduro (@enunomaduro) <a href="https://twitter.com/enunomaduro/status/1845794776886493291?ref_src=twsrc%5Etfw">April 6, 2021</a></blockquote>',
-            'width' => 550,
-            'height' => 550,
-            'type' => 'rich',
-            'cache_age' => '3153600000',
-            'provider_name' => 'Twitter',
-            'provider_url' => 'https://twitter.com',
-        ], 200),
     ]);
 
     $service = new MetaData($url);
     $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
-        ->and($data->get('type'))->toBe('rich')
-        ->and($data->has('html'))->toBeTrue();
+        ->and($data->get('site_name'))->toBe('X (formerly Twitter)')
+        ->and($data->get('url'))->toBe('https://x.com/enunomaduro/status/1853213385233502522')
+        ->and($data->get('image'))->toBe('https://pbs.twimg.com/ext_tw_video_thumb/1845793244287836166/pu/img/sjrrSlxl64LNIwdY.jpg:large');
 });
 
 it('gets the vimdeo oembed data', function () {
@@ -215,4 +200,64 @@ it('returns an empty collection if a ConnectionException is thrown', function ()
     $data = $service->fetch();
 
     expect($data->has('html'))->toBeFalse();
+});
+
+it('removes the image from meta data if the image is too small', function () {
+    $url = 'https://laravel.com';
+    $imagePath = UploadedFile::fake()->image('image.jpg', 100, 100)->store('images');
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta name="title" content="Laravel - The PHP Framework For Web Artisans">
+                    <meta name="description" content="Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.">
+                    <meta name="keywords" content="artisan, laravel, php, web, framework, taylor otwell">
+                    <meta property="og:type" content="website">
+                    <meta property="og:url" content="https://laravel.com/">
+                    <meta property="og:image" content="'.$imagePath.'">
+                </head>
+            </html>
+        '),
+    ]);
+
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect($data->has('image'))->toBeFalse();
+});
+
+it('removes the image from meta data if the image file does not exist', function () {
+    $url = 'https://laravel.com';
+    $imagePath = 'images/image.jpg';
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta name="title" content="Laravel - The PHP Framework For Web Artisans">
+                    <meta name="description" content="Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.">
+                    <meta name="keywords" content="artisan, laravel, php, web, framework, taylor otwell">
+                    <meta property="og:type" content="website">
+                    <meta property="og:url" content="https://laravel.com/">
+                    <meta property="og:image" content="'.$imagePath.'">
+                </head>
+            </html>
+        '),
+    ]);
+
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect($data->has('image'))->toBeFalse();
+});
+
+it('has constants for the preview card dimensions', function () {
+    expect(MetaData::CARD_WIDTH)->toBe(446)
+        ->and(MetaData::CARD_HEIGHT)->toBe(251);
+});
+
+it('dimensions are 16:9', function () {
+    expect(round(MetaData::CARD_WIDTH / MetaData::CARD_HEIGHT, 2))
+        ->toBe(round(16 / 9, 2));
 });

@@ -16,12 +16,12 @@ final readonly class MetaData
     /**
      * The width of the preview card.
      */
-    private const int CARD_WIDTH = 446;
+    public const int CARD_WIDTH = 446;
 
     /**
      * The height of the preview card.
      */
-    private const int CARD_HEIGHT = 251;
+    public const int CARD_HEIGHT = 251;
 
     /**
      * Fetch the Open Graph data for a given URL.
