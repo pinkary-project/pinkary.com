@@ -33,16 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add URL validation function
-    function isValidUrl(string) {
-        try {
-            new URL(string);
-            return true;
-        } catch (_) {
-            return false;
-        }
-    }
-
     // Fetch and render preview
     const fetchPreview = debounce(async () => {
         const input = urlField.value.trim();
@@ -50,13 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!input) {
             previewCard.innerHTML = '';
             errorMessages.innerHTML = '';
-            return;
-        }
-
-        // Add URL validation check
-        if (!isValidUrl(input)) {
-            errorMessages.innerHTML = 'Please enter a valid URL (e.g., https://example.com)';
-            previewCard.innerHTML = '';
             return;
         }
 
