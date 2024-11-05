@@ -14,6 +14,16 @@ use Illuminate\Support\Str;
 final readonly class MetaData
 {
     /**
+     * The width of the preview card.
+     */
+    private const int CARD_WIDTH = 446;
+
+    /**
+     * The height of the preview card.
+     */
+    private const int CARD_HEIGHT = 251;
+
+    /**
      * Fetch the Open Graph data for a given URL.
      */
     public function __construct(private string $url)
@@ -132,8 +142,8 @@ final readonly class MetaData
             $vimeo = $this->fetchOEmbed(
                 service: 'https://vimeo.com/api/oembed.json',
                 options: [
-                    'maxwidth' => '446',
-                    'maxheight' => '251',
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
                 ]
             );
             if ($vimeo->isNotEmpty()) {
@@ -147,8 +157,8 @@ final readonly class MetaData
             $youtube = $this->fetchOEmbed(
                 service: 'https://www.youtube.com/oembed',
                 options: [
-                    'maxwidth' => '446',
-                    'maxheight' => '251',
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
                 ]);
 
             if ($youtube->isNotEmpty()) {
