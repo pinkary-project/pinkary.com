@@ -1,6 +1,6 @@
 <x-app-layout>
 <div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-2xl font-semibold mb-4">OpenGraph Card Validator and Preview</h1>
+    <h1 class="text-2xl font-semibold mb-4">OpenGraph Card Preview</h1>
     
     <div class="mb-6">
         <input type="text" id="url-field" placeholder="Enter URL" class="w-full p-2 border rounded" />
