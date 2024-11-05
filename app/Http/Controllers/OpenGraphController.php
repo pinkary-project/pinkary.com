@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 
-class OpenGraphController extends Controller
+final readonly class OpenGraphController
 {
     /**
      * Display the OpenGraph Validator and Preview page.
