@@ -194,6 +194,20 @@ final readonly class MetaData
             }
         }
 
+        if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
+            $response = Http::withHeader('User-Agent', 'Twitterbot')->get($this->url);
+
+            if ($response->ok()) {
+                $data = $this->parseContent($response->body());
+                if ($data->has('image')) {
+                    $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
+                    if (! $isSuitable) {
+                        $data->forget('image');
+                    }
+                }
+            }
+        }
+
         if ($data->has('site_name') && $data->get('site_name') === 'Vimeo') {
             $vimeo = $this->fetchOEmbed(
                 service: 'https://vimeo.com/api/oembed.json',
