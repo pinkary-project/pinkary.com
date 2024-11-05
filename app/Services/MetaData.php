@@ -51,8 +51,7 @@ final readonly class MetaData
             $response = Http::get($this->url);
 
             if ($response->ok()) {
-                $data = $this->parse($response->body())
-                    ->filter(fn (string $value): bool => $value !== '');
+                $data = $this->parse($response->body());
             }
         } catch (ConnectionException) {
             // Catch but not capture the exception
@@ -64,7 +63,7 @@ final readonly class MetaData
     /**
      * Fetch the oEmbed data for a given URL.
      *
-     * @param  array<string, string>  $options
+     * @param  array<string, string|int>  $options
      * @return Collection<string, string>
      */
     private function fetchOEmbed(string $service, array $options): Collection
@@ -79,8 +78,6 @@ final readonly class MetaData
             if ($response->ok()) {
                 /** @var Collection<string, string|null> $data */
                 $data = $response->collect();
-                $data = $data
-                    ->filter(fn (?string $value): bool => (string) $value !== '');
             }
         } catch (ConnectionException) {
             // Catch but not capture the exception
@@ -130,6 +127,7 @@ final readonly class MetaData
             }
         }
 
+        return $data->filter(fn (?string $value): bool => (string) $value !== '');
         if ($data->has('site_name') && $data->get('site_name') === 'Vimeo') {
             $vimeo = $this->fetchOEmbed(
                 service: 'https://vimeo.com/api/oembed.json',
