@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserGitHubUsernameController;
 use App\Http\Controllers\UserIsVerifiedController;
 use App\Http\Controllers\UserTimezoneController;
+use App\Http\Controllers\OpenGraphController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
@@ -88,5 +89,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/telegram', function () {
     return redirect('https://t.me/+Yv9CUTC1q29lNzg8');
 })->name('telegram');
+
+Route::get('/opengraph-validator', [OpenGraphController::class, 'index'])->name('opengraph.validator');
+Route::post('/opengraph-validate', [OpenGraphController::class, 'validate'])->name('opengraph.validate');
 
 require __DIR__.'/auth.php';
