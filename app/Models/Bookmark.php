@@ -43,17 +43,4 @@ final class Bookmark extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    public function casts(): array
-    {
-        return [
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
-    }
 }
