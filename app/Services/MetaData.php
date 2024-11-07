@@ -14,6 +14,16 @@ use Illuminate\Support\Str;
 final readonly class MetaData
 {
     /**
+     * The width of the preview card.
+     */
+    public const int CARD_WIDTH = 446;
+
+    /**
+     * The height of the preview card.
+     */
+    public const int CARD_HEIGHT = 251;
+
+    /**
      * Fetch the Open Graph data for a given URL.
      */
     public function __construct(private string $url)
@@ -39,6 +49,40 @@ final readonly class MetaData
     }
 
     /**
+     * Ensure the correct size for an oEmbed iframe.
+     */
+    public function ensureCorrectSize(string $value): string
+    {
+        $doc = new DOMDocument();
+        @$doc->loadHTML($value);
+        $iframe = $doc->getElementsByTagName('iframe')->item(0);
+        if ($iframe) {
+            $iframe->setAttribute('width', (string) self::CARD_WIDTH);
+            $iframe->setAttribute('height', (string) self::CARD_HEIGHT);
+
+            return (string) $doc->saveHTML($iframe);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Check the image exists and is of suitable size.
+     */
+    public function checkExistsAndSize(string $image): bool
+    {
+        if (! (Http::head($image)->ok())) {
+            return false;
+        }
+
+        $dimensions = @getimagesize($image);
+        $min_width = self::CARD_WIDTH / 0.66;
+        $min_height = self::CARD_HEIGHT / 0.66;
+
+        return ! ($dimensions && ($dimensions[0] < $min_width || $dimensions[1] < $min_height));
+    }
+
+    /**
      * Get the meta-data for a given URL.
      *
      * @return Collection<string, string>
@@ -51,8 +95,7 @@ final readonly class MetaData
             $response = Http::get($this->url);
 
             if ($response->ok()) {
-                $data = $this->parse($response->body())
-                    ->filter(fn (string $value): bool => $value !== '');
+                $data = $this->parse($response->body());
             }
         } catch (ConnectionException) {
             // Catch but not capture the exception
@@ -64,7 +107,7 @@ final readonly class MetaData
     /**
      * Fetch the oEmbed data for a given URL.
      *
-     * @param  array<string, string>  $options
+     * @param  array<string, string|int>  $options
      * @return Collection<string, string>
      */
     private function fetchOEmbed(string $service, array $options): Collection
@@ -79,8 +122,6 @@ final readonly class MetaData
             if ($response->ok()) {
                 /** @var Collection<string, string|null> $data */
                 $data = $response->collect();
-                $data = $data
-                    ->filter(fn (?string $value): bool => (string) $value !== '');
             }
         } catch (ConnectionException) {
             // Catch but not capture the exception
@@ -94,7 +135,7 @@ final readonly class MetaData
      *
      * @return Collection<string, string>
      */
-    private function parse(string $content): Collection
+    private function parseContent(string $content): Collection
     {
         $doc = new DOMDocument();
         @$doc->loadHTML($content);
@@ -130,17 +171,56 @@ final readonly class MetaData
             }
         }
 
+        return $data->filter(fn (?string $value): bool => (string) $value !== '');
+
+    }
+
+    /**
+     * Parse the response body for MetaData.
+     *
+     * @return Collection<string, string>
+     *
+     * @throws ConnectionException
+     */
+    private function parse(string $html): Collection
+    {
+
+        $data = $this->parseContent($html);
+
+        $isSuitable = true;
+
+        if ($data->has('image')) {
+            $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
+        }
+
+        if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
+            $response = Http::withHeader('User-Agent', 'Twitterbot')->get($this->url);
+
+            if ($response->ok()) {
+                $data = $this->parseContent($response->body());
+                if ($data->has('image')) {
+                    $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
+                }
+            }
+        }
+
+        if (! $isSuitable) {
+            $data->forget('image');
+        }
+
         if ($data->has('site_name') && $data->get('site_name') === 'Vimeo') {
             $vimeo = $this->fetchOEmbed(
                 service: 'https://vimeo.com/api/oembed.json',
                 options: [
-                    'maxwidth' => '446',
-                    'maxheight' => '251',
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
                 ]
             );
             if ($vimeo->isNotEmpty()) {
                 foreach ($vimeo as $key => $value) {
-                    $data->put($key, $value);
+                    $key === 'html'
+                        ? $data->put($key, $this->ensureCorrectSize((string) $value))
+                        : $data->put($key, $value);
                 }
             }
         }
@@ -149,13 +229,15 @@ final readonly class MetaData
             $youtube = $this->fetchOEmbed(
                 service: 'https://www.youtube.com/oembed',
                 options: [
-                    'maxwidth' => '446',
-                    'maxheight' => '251',
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
                 ]);
 
             if ($youtube->isNotEmpty()) {
                 foreach ($youtube as $key => $value) {
-                    $data->put($key, $value);
+                    $key === 'html'
+                        ? $data->put($key, $this->ensureCorrectSize((string) $value))
+                        : $data->put($key, $value);
                 }
             }
         }
