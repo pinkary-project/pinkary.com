@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Services\MetaData;
 use GuzzleHttp\Promise\RejectedPromise;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -85,6 +86,31 @@ it('gets the youtube oembed data', function () {
         ->and($data->get('title'))->toBe('Migrating Brent’s PHPUnit Test Suite to Pest')
         ->and($data->get('type'))->toBe('video')
         ->and($data->has('html'))->toBeTrue();
+});
+
+it('shows preview card if the tweet has an image or video', function () {
+    $url = 'https://x.com/enunomaduro/status/1845794776886493291';
+    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta property="og:site_name" content="X (formerly Twitter)">
+                    <meta property="og:url" content="https://x.com/enunomaduro/status/1853213385233502522">
+                    <meta property="og:image" content="https://pbs.twimg.com/ext_tw_video_thumb/1845793244287836166/pu/img/sjrrSlxl64LNIwdY.jpg:large">
+                </head>
+            </html>
+        ', 200),
+    ]);
+
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect(Cache::get($cacheKey))->toBe($data)
+        ->and($data->get('site_name'))->toBe('X (formerly Twitter)')
+        ->and($data->get('url'))->toBe('https://x.com/enunomaduro/status/1853213385233502522')
+        ->and($data->get('image'))->toBe('https://pbs.twimg.com/ext_tw_video_thumb/1845793244287836166/pu/img/sjrrSlxl64LNIwdY.jpg:large');
 });
 
 it('gets the vimdeo oembed data', function () {
@@ -174,4 +200,64 @@ it('returns an empty collection if a ConnectionException is thrown', function ()
     $data = $service->fetch();
 
     expect($data->has('html'))->toBeFalse();
+});
+
+it('removes the image from meta data if the image is too small', function () {
+    $url = 'https://laravel.com';
+    $imagePath = UploadedFile::fake()->image('image.jpg', 100, 100)->store('images');
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta name="title" content="Laravel - The PHP Framework For Web Artisans">
+                    <meta name="description" content="Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.">
+                    <meta name="keywords" content="artisan, laravel, php, web, framework, taylor otwell">
+                    <meta property="og:type" content="website">
+                    <meta property="og:url" content="https://laravel.com/">
+                    <meta property="og:image" content="'.$imagePath.'">
+                </head>
+            </html>
+        '),
+    ]);
+
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect($data->has('image'))->toBeFalse();
+});
+
+it('removes the image from meta data if the image file does not exist', function () {
+    $url = 'https://laravel.com';
+    $imagePath = 'images/image.jpg';
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta name="title" content="Laravel - The PHP Framework For Web Artisans">
+                    <meta name="description" content="Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.">
+                    <meta name="keywords" content="artisan, laravel, php, web, framework, taylor otwell">
+                    <meta property="og:type" content="website">
+                    <meta property="og:url" content="https://laravel.com/">
+                    <meta property="og:image" content="'.$imagePath.'">
+                </head>
+            </html>
+        '),
+    ]);
+
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect($data->has('image'))->toBeFalse();
+});
+
+it('has constants for the preview card dimensions', function () {
+    expect(MetaData::CARD_WIDTH)->toBe(446)
+        ->and(MetaData::CARD_HEIGHT)->toBe(251);
+});
+
+it('dimensions are 16:9', function () {
+    expect(round(MetaData::CARD_WIDTH / MetaData::CARD_HEIGHT, 2))
+        ->toBe(round(16 / 9, 2));
 });
