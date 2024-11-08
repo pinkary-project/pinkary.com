@@ -29,7 +29,7 @@ final readonly class UpdateQuestionHashtags
 
         $existingHashtags = Hashtag::query()->whereIn('name', $parsedHashtags->all())->get();
 
-        $newHashtags = $parsedHashtags->diff($existingHashtags->pluck('name')) // @phpstan-ignore-line
+        $newHashtags = $parsedHashtags->diff($existingHashtags->pluck('name'))
             ->map(fn (string $name): Hashtag => Hashtag::query()->create(['name' => $name]));
 
         return $this->question->hashtags()->sync($existingHashtags->merge($newHashtags));
