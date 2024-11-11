@@ -9,6 +9,9 @@ use Illuminate\View\Component;
 
 final class FeedLayout extends Component
 {
+    /**
+     * Render the feed layout component.
+     */
     public function render(): View
     {
         return view('layouts.feed');
