@@ -1,7 +1,4 @@
-<div
-    class="mb-12 pt-4"
-    id="questions-create"
->
+<div id="questions-create">
     <form
         wire:submit="store"
         wire:keydown.cmd.enter="store"
@@ -12,80 +9,92 @@
             maxFileSize = {{ $this->maxFileSize }};
             maxContentLength = {{ $this->maxContentLength }};
         }'
+        class="border-b border-white/5 p-6 xl:p-8"
     >
-        <div
-            class="relative group/menu">
-                <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }">
-                    <x-textarea
-                        x-model="content"
-                        placeholder="{{ $this->placeholder }}"
-                        maxlength="{{ $this->maxContentLength }}"
-                        rows="3"
-                        required
-                        x-autosize
-                        x-ref="content"
-                        autocomplete
-                    />
-                </div>
-            <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
-            <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
-
-            <div x-show="images.length > 0" class="relative mt-2 flex h-20 flex-wrap gap-2">
-                <template x-for="(image, index) in images" :key="index">
-                    <div class="relative h-20 w-20">
-                        <img :src="image.path" :alt="image.originalName"
-                             x-on:click="createMarkdownImage(index)"
-                             title="Reinsert the image"
-                             class="h-full w-full rounded-lg object-cover cursor-pointer"/>
-                        <button @click="removeImage($event, index)"
-                                class="absolute top-0.5 right-0.5 p-1 rounded-md dark:bg-slate-800 bg-slate-200 bg-opacity-75 dark:text-slate-400 text-slate-600 hover:text-pink-500">
-                            <x-icons.close class="size-4"/>
-                        </button>
+        <div>
+            <div class="flex space-x-4">
+                @auth
+                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->username }}"
+                         class="rounded-full size-10">
+                @endauth
+                <label for="post" class="sr-only">{{ __('Post') }}</label>
+                <div class="flex flex-1 flex-col">
+                    <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }">
+                        <x-textarea
+                            x-model="content"
+                            placeholder="{{ $this->placeholder }}"
+                            maxlength="{{ $this->maxContentLength }}"
+                            rows="3"
+                            required
+                            x-autosize
+                            x-ref="content"
+                            autocomplete
+                            class="block"
+                        />
                     </div>
-                </template>
-            </div>
 
-            <p class="text-right text-xs dark:text-slate-400 text-slate-600"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+                    <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*"/>
+                    <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*"
+                           wire:model="images"/>
 
-            <ul>
-                <template x-for="(error, index) in errors" :key="index">
-                    <li class="py-2 text-sm text-red-600 w-full"><span x-text="error"></span></li>
-                </template>
-            </ul>
+                    <div x-show="images.length > 0" class="relative mt-2 flex h-20 flex-wrap gap-2">
+                        <template x-for="(image, index) in images" :key="index">
+                            <div class="relative h-20 w-20">
+                                <img :src="image.path"
+                                     :alt="image.originalName"
+                                     x-on:click="createMarkdownImage(index)"
+                                     title="Reinsert the image"
+                                     class="h-full w-full cursor-pointer rounded-lg object-cover"/>
+                                <button @click="removeImage($event, index)"
+                                        class="absolute rounded-md bg-slate-200 bg-opacity-75 p-1 text-slate-600 top-0.5 right-0.5 hover:text-pink-500 dark:bg-slate-800 dark:text-slate-400">
+                                    <x-icons.close class="size-4"/>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
 
-        </div>
-        <div class="mt-4 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <x-primary-button
-                    class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
-                    type="submit"
-                >
-                    {{ __('Send') }}
-                </x-primary-button>
-                <button
-                    title="Upload an image"
-                    x-ref="imageButton"
-                    :disabled="uploading || images.length >= uploadLimit"
-                    class="p-1.5 rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-800 bg-slate-50 text-sm dark:text-slate-400 text-slate-600 hover:text-pink-500 dark:hover:bg-slate-700 hover:bg-slate-100"
-                    :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
-                >
-                    <x-heroicon-o-photo class="h-5 w-5"/>
-                </button>
-            </div>
-            @if (! $this->parentId && ! $this->isSharingUpdate)
-                <div class="flex items-center">
-                    <x-checkbox
-                        wire:model="anonymously"
-                        id="anonymously"
-                    />
+                    <div class="mt-4 flex justify-between">
+                        <div class="flex space-x-2">
+                            <button
+                                type="submit"
+                                class="inline-flex items-center rounded-lg bg-pink-600 px-12 py-2 text-sm font-semibold text-white shadow-sm hover:bg-pink-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600">
+                                {{ __('Post') }}
+                            </button>
 
-                    <label
-                        for="anonymously"
-                        class="ml-2 dark:text-slate-400 text-slate-600"
-                        >Anonymously</label
-                    >
+                            <button
+                                title="Upload an image"
+                                x-ref="imageButton"
+                                :disabled="uploading || images.length >= uploadLimit"
+                                class="flex items-center justify-center rounded-lg text-gray-400 size-10 hover:bg-gray-800"
+                                :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
+                            >
+                                <x-icons.camera class="size-6"/>
+                            </button>
+
+                        </div>
+
+                        <div class="flex flex-col justify-center space-y-2">
+                            <p class="text-right text-xs text-slate-600 dark:text-slate-400"><span
+                                    x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+
+                            @if (! $this->parentId && ! $this->isSharingUpdate)
+                                <div class="flex items-center">
+                                    <x-checkbox
+                                        wire:model="anonymously"
+                                        id="anonymously"
+                                    />
+
+                                    <label
+                                        for="anonymously"
+                                        class="ml-2 text-xs text-slate-600 dark:text-slate-400"
+                                    >{{ __('Anonymously') }}</label>
+                                </div>
+                            @endif
+                        </div>
+
+                    </div>
                 </div>
-            @endif
+            </div>
         </div>
     </form>
 </div>
