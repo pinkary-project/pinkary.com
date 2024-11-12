@@ -25,6 +25,9 @@ export default {
             maxWidth: {
                'md': '30rem',
             },
+            colors: {
+                'section-black': '#0f1723',
+            },
         },
     },
 

@@ -7,23 +7,34 @@ const toggle = () => ({
 
         const mediaQuery = window.matchMedia('(min-width: 1280px)');
 
-        if (mediaQuery.matches) {
-            this.sidebar.classList.remove('hidden');
-        }
+        this.checkMatch(mediaQuery);
 
         mediaQuery.addEventListener('change', (e) => {
-            if (e.matches) {
-                this.sidebar.classList.remove('hidden');
-            } else {
-                this.sidebar.classList.add('hidden');
-            }
+            this.checkMatch(e);
         });
+    },
+
+    checkMatch(event) {
+        if (event.matches) {
+            this.sidebar.classList.remove('hidden');
+            this.sidebar.classList.add('flex');
+            this.sidebar.classList.add('bg-black/10');
+            this.sidebar.classList.remove('bg-section-black');
+        } else {
+            this.sidebar.classList.add('hidden');
+            this.sidebar.classList.remove('flex');
+            this.sidebar.classList.remove('bg-black/10');
+            this.sidebar.classList.add('bg-section-black');
+        }
     },
 
     toggleSidebar(e) {
         if (e.target !== this.sidebar) {
             this.tempDisabled = true;
             this.sidebar.classList.toggle('hidden');
+            this.sidebar.classList.contains('hidden')
+                ? this.sidebar.classList.remove('flex')
+                : this.sidebar.classList.add('flex');
             setTimeout(() => {
                 this.tempDisabled = false;
             }, 100);
