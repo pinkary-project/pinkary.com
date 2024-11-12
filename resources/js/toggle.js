@@ -1,6 +1,7 @@
 const toggle = () => ({
     sidebar: null,
     tempDisabled: false,
+    isLargeScreen: false,
 
     init() {
         this.sidebar = this.$refs.sidebar;
@@ -16,11 +17,13 @@ const toggle = () => ({
 
     checkMatch(event) {
         if (event.matches) {
+            this.isLargeScreen = true;
             this.sidebar.classList.remove('hidden');
             this.sidebar.classList.add('flex');
             this.sidebar.classList.add('bg-black/10');
             this.sidebar.classList.remove('bg-section-black');
         } else {
+            this.isLargeScreen = false;
             this.sidebar.classList.add('hidden');
             this.sidebar.classList.remove('flex');
             this.sidebar.classList.remove('bg-black/10');
@@ -42,7 +45,7 @@ const toggle = () => ({
     },
 
     closeSidebar(e) {
-        if (!this.sidebar.classList.contains('hidden') && !this.tempDisabled) {
+        if (!this.sidebar.classList.contains('hidden') && !this.tempDisabled && !this.isLargeScreen) {
             if (e.target !== this.sidebar) {
                 console.log('close sidebar');
                 this.sidebar.classList.add('hidden');
