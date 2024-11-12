@@ -12,7 +12,9 @@
                     <ul role="list" class="-mx-2 space-y-1">
                         <x-sidebar-link
                             active="{{ request()->routeIs('home.*') }}"
-                            href="{{ route('home.feed') }}">
+                            href="{{ route('home.feed') }}"
+                            title="{{ __('Home') }}"
+                        >
                             <svg
                                 class="h-6 w-6 shrink-0"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -26,12 +28,13 @@
                                 <path d="M15 16C14.2005 16.6224 13.1502 17 12 17C10.8498 17 9.79952 16.6224 9 16"
                                       stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
                             </svg>
-                            Home
+                            {{ __('Home') }}
                         </x-sidebar-link>
                         @auth
                             <x-sidebar-link
                                 active="{{ request()->routeIs('profile.*') }}"
-                                href="{{ route('profile.show', auth()->user()) }}"
+                                href="{{ route('profile.show', auth()->user()->username) }}"
+                                title="{{ __('Profile') }}"
                             >
                                 <svg class="h-6 w-6 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                      fill="none">
@@ -46,56 +49,53 @@
                                         d="M2.854 16C2.30501 14.7664 2 13.401 2 11.9646C2 6.46129 6.47715 2 12 2C17.5228 2 22 6.46129 22 11.9646C22 13.401 21.695 14.7664 21.146 16"
                                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
                                 </svg>
-                                Profile
+                                {{ __('Profile') }}
                             </x-sidebar-link>
                             <x-sidebar-link
                                 active="{{ request()->routeIs('notifications.*') }}"
                                 href="{{ route('notifications.index') }}"
-                                class="w-full"
+                                title="{{ __('Notifications') }}"
                             >
                                 <div class="flex items-center justify-between w-full">
                                     <div class="flex items-center gap-x-3">
                                         <x-icons.notifications class="shrink-0 size-6"/>
-                                        Notifications
+                                        {{ __('Notifications') }}
                                     </div>
-                                    <div class="rounded-md bg-pink-500">
-                                        @if (auth()->user()->unreadNotifications->count())
-                                            <span class="flex items-center justify-center text-pink-300 size-5">
-                                            {{ auth()->user()->unreadNotifications->count() }}
-                                        </span>
-                                        @endif
-                                    </div>
+                                    <livewire:navigation.notifications-count.show/>
                                 </div>
                             </x-sidebar-link>
                             <x-sidebar-link
                                 active="{{ request()->routeIs('bookmarks.*') }}"
                                 href="{{ route('bookmarks.index') }}"
+                                title="{{ __('Bookmarks') }}"
                             >
-                                <x-icons.bookmarks class="shrink-0 size-6"/>
-                                Bookmarks
+                                <x-heroicon-o-bookmark class="shrink-0 size-6"/>
+                                {{ __('Bookmarks') }}
                             </x-sidebar-link>
                             <x-sidebar-link
                                 active="{{ request()->routeIs('profile.edit.*') }}"
                                 href="{{ route('profile.edit') }}"
                             >
                                 <x-icons.settings class="shrink-0 size-6"/>
-                                Settings
+                                {{ __('Settings') }}
                             </x-sidebar-link>
                         @endauth
                         @guest
                             <x-sidebar-link
                                 active="{{ request()->routeIs('login') }}"
                                 href="{{ route('login') }}"
+                                title="{{ __('Login') }}"
                             >
                                 <x-icons.login class="shrink-0 size-6"/>
-                                Login
+                                {{ __('Login') }}
                             </x-sidebar-link>
                             <x-sidebar-link
                                 active="{{ request()->routeIs('register') }}"
                                 href="{{ route('register') }}"
+                                title="{{ __('Register') }}"
                             >
                                 <x-icons.register class="shrink-0 size-6"/>
-                                Register
+                                {{ __('Register') }}
                             </x-sidebar-link>
                         @endguest
                     </ul>
