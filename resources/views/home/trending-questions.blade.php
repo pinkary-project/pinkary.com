@@ -1,9 +1,12 @@
 <x-app-layout>
-    <div class="flex flex-col items-center justify-center">
-        <div class="w-full max-w-md overflow-hidden rounded-lg px-2 dark:shadow-md sm:px-0">
-            <x-home-menu></x-home-menu>
+    <header class="flex items-center justify-between border-b border-white/5 p-6 xl:px-8">
+        <h1 class="font-medium text-white text-base/7">Feed</h1>
+        <x-home-menu />
+    </header>
 
-            <livewire:home.trending-questions :focus-input="true" />
-        </div>
-    </div>
+    @auth
+        <livewire:questions.create :toId="auth()->id()"/>
+    @endauth
+
+    <livewire:home.trending-questions :focus-input="true" />
 </x-app-layout>

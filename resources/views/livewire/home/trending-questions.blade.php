@@ -1,18 +1,20 @@
-<div class="mb-12 w-full text-slate-200">
+<div class="w-full text-gray-200">
     @if ($trendingQuestions->isEmpty())
-        <section class="rounded-lg">
-            <p class="my-8 text-center text-lg text-slate-500">There is no trending questions right now.</p>
+        <section class="p-6 xl:px-8">
+            <p class="text-center">There is no trending questions right now.</p>
         </section>
     @else
-        <section class="mb-12 min-h-screen space-y-10">
+        <ul role="list" class="divide-y divide-white/5">
             @foreach ($trendingQuestions as $question)
-                <livewire:questions.show
-                    :questionId="$question->id"
-                    :key="'question-' . $question->id"
-                    :inIndex="true"
-                    :pinnable="false"
-                    :trending="true"
-                />
+                <li class="cursor-pointer hover:bg-gray-800/20">
+                    <livewire:questions.show
+                        :questionId="$question->id"
+                        :key="'question-' . $question->id"
+                        :inIndex="true"
+                        :pinnable="false"
+                        :trending="true"
+                    />
+                </li>
             @endforeach
 
             <x-load-more-button
@@ -20,6 +22,6 @@
                 :paginator="$trendingQuestions"
                 message="There are no more questions to load, or you have scrolled too far."
             />
-        </section>
+        </ul>
     @endif
 </div>
