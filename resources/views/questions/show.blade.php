@@ -16,7 +16,7 @@
                     }
                  }"
                 x-on:click.prevent="back()"
-                class="flex dark:text-slate-400 pl-6 pt-6 xl:pl-8 xl:pt-8 text-slate-500 hover:underline cursor-pointer"
+                class="flex dark:text-slate-400 pl-6 py-3 xl:pl-8 xl:py-4 text-slate-500 hover:underline cursor-pointer"
             >
                 <x-icons.chevron-left class="h-6 w-6" />
                 <span>Back</span>

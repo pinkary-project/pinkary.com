@@ -106,18 +106,34 @@
                             <span class="text-xs text-gray-500">One link. All your socials.</span>
 
                             <ul class="mt-3 flex flex-wrap gap-x-4 text-xs">
-                                <li class="flex"><a class="text-gray-500 transition hover:text-gray-200" href="/about">About</a>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="{{ route('about') }}">{{ __('About') }}</a>
                                 </li>
-                                <li class="flex"><a class="text-gray-500 transition hover:text-gray-200"
-                                                    href="/advertise">Advertise</a></li>
-                                <li class="flex"><a class="text-gray-500 transition hover:text-gray-200"
-                                                    href="/legal/terms-and-conditions">Terms</a></li>
-                                <li class="flex"><a class="text-gray-500 transition hover:text-gray-200"
-                                                    href="/legal/privacy-policy">Privacy</a></li>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="/advertise">{{ __('Advertise') }}</a>
+                                </li>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="{{ route('terms') }}">{{ __('Terms') }}</a>
+                                </li>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="{{ route('privacy') }}">{{ __('Privacy') }}</a>
+                                </li>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="{{ route('support') }}">{{ __('Support') }}</a>
+                                </li>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="{{ route('verified') }}">{{ __('Verified') }}</a>
+                                </li>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="{{ route('brand.resources') }}">{{ __('Brand') }}</a>
+                                </li>
+                                <li class="flex">
+                                    <a class="text-gray-500 transition hover:text-gray-200 py-2" href="{{ route('changelog') }}">{{ __('Changelog') }}</a>
+                                </li>
                             </ul>
 
                             <div class="mt-4 flex gap-3">
-                                <a href="" target="_blank" rel="noreferrer noopener">
+                                <a href="https://x.com/pinkaryproject" target="_blank" rel="noreferrer noopener">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                          class="text-gray-500 transition size-5 hover:text-gray-200" fill="none">
                                         <path
@@ -130,7 +146,7 @@
                                     </svg>
                                 </a>
 
-                                <a href="" target="_blank" rel="noreferrer noopener">
+                                <a href="https://github.com/pinkary-project/pinkary.com/" target="_blank" rel="noreferrer noopener">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                          class="text-gray-500 transition size-5 hover:text-gray-200" fill="none">
                                         <path
