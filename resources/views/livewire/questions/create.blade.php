@@ -9,12 +9,12 @@
             maxFileSize = {{ $this->maxFileSize }};
             maxContentLength = {{ $this->maxContentLength }};
         }'
-        class="border-b border-white/5 p-6 xl:p-8"
+        class="p-6 xl:p-8"
     >
         <div>
             <div class="flex space-x-4">
                 @auth
-                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->username }}"
+                    <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->username }}"
                          class="rounded-full size-10">
                 @endauth
                 <label for="post" class="sr-only">{{ __('Post') }}</label>

@@ -5,7 +5,9 @@
     </header>
 
     @auth
-        <livewire:questions.create :toId="auth()->id()"/>
+        <div class="border-b border-white/5">
+            <livewire:questions.create :toId="auth()->id()"/>
+        </div>
     @endauth
 
     <livewire:home.feed />

@@ -6,13 +6,19 @@
     'username' => null,
 ])
 
-<div wire:key="thread-inner-{{ $questionId.'-'.$rootId.'-'.$parentId }}">
+<ul
+    wire:key="thread-inner-{{ $questionId.'-'.$rootId.'-'.$parentId }}"
+    role="list"
+    class="divide-y divide-white/5"
+>
     @if ($rootId !== null)
-        <livewire:questions.show
-            :questionId="$rootId"
-            :in-thread="true"
-            :key="'question-'.$rootId"
-        />
+        <li class="cursor-pointer hover:bg-gray-800/20">
+            <livewire:questions.show
+                :questionId="$rootId"
+                :in-thread="true"
+                :key="'question-'.$rootId"
+            />
+        </li>
 
         @if($grandParentId !== null && ($parentId === null || $grandParentId !== $rootId))
             <x-post-divider
@@ -21,25 +27,29 @@
                 wire:key="divider-{{ $parentId }}"
             />
         @else
-            <x-post-divider wire:key="divider-{{ $parentId }}" />
+            <x-post-divider wire:key="divider-{{ $parentId }}"/>
         @endif
     @endif
 
     @if ($parentId !== null && $rootId !== $parentId)
-        <livewire:questions.show
-            :questionId="$parentId"
-            :in-thread="$rootId !== null"
-            :key="'question-'.$parentId"
-        />
+        <li class="cursor-pointer hover:bg-gray-800/20">
+            <livewire:questions.show
+                :questionId="$parentId"
+                :in-thread="$rootId !== null"
+                :key="'question-'.$parentId"
+            />
+        </li>
 
         <x-post-divider
             wire:key="divider-{{ $questionId }}"
         />
     @endif
 
-    <livewire:questions.show
-        :questionId="$questionId"
-        :in-thread="$rootId !== null || $parentId !== null"
-        :key="'question-'.$questionId"
-    />
-</div>
+    <li class="cursor-pointer hover:bg-gray-800/20">
+        <livewire:questions.show
+            :questionId="$questionId"
+            :in-thread="$rootId !== null || $parentId !== null"
+            :key="'question-'.$questionId"
+        />
+    </li>
+</ul>

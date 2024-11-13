@@ -382,6 +382,16 @@
     @endif
 
     @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
-        <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()"/>
+        <div class="border-t border-white/5">
+            @auth
+                <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()"/>
+            @else
+                <div class="p-6 xl:p-8">
+                    <p class="text-center text-slate dark:text-slate-400">
+                        You must be logged in to comment on this question.
+                    </p>
+                </div>
+            @endauth
+        </div>
     @endif
 </article>
