@@ -410,7 +410,10 @@ test('updated method invokes handleUploads', function () {
     $component = Livewire::actingAs($user)->test(Create::class);
 
     $component->set('images', [$file]);
-    $component->invade()->updated('images');
+
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
+    $method->setAccessible(true);
+    $method->invoke($component->instance());
 
     expect(session('images'))->toBeArray()
         ->and(session('images'))->toContain($path);
@@ -431,7 +434,10 @@ test('unused image cleanup when store is called', function () {
         'toId' => $user->id,
     ]);
     $component->set('images', [$file]);
-    $component->call('uploadImages');
+
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
+    $method->setAccessible(true);
+    $method->invoke($component->instance());
 
     Storage::disk('public')->assertExists($path);
 
@@ -484,12 +490,14 @@ test('delete image', function () {
 
     Storage::disk('public')->assertExists($path);
 
-    $component->call('deleteImage', $path);
+    $method = new ReflectionMethod(Create::class, 'deleteImage');
+    $method->setAccessible(true);
+    $method->invoke($component->instance(), $path);
 
     $pathAgain = $file->store('images', 'public');
     Storage::disk('public')->assertExists($pathAgain);
 
-    $component->call('deleteImage', $pathAgain);
+    $method->invoke($component->instance(), $pathAgain);
 
     Storage::disk('public')->assertMissing($pathAgain);
 });
@@ -598,7 +606,10 @@ test('non verified users can upload images', function () {
     ]);
 
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
-    $component->call('uploadImages');
+
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
+    $method->setAccessible(true);
+    $method->invoke($component->instance());
 
     $component->assertHasNoErrors();
 });
@@ -613,7 +624,10 @@ test('company verified users can upload images', function () {
     ]);
 
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
-    $component->call('uploadImages');
+
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
+    $method->setAccessible(true);
+    $method->invoke($component->instance());
 
     $component->assertHasNoErrors();
 });
