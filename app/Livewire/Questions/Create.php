@@ -264,35 +264,6 @@ final class Create extends Component
     }
 
     /**
-     * Handle the image uploads.
-     */
-    public function uploadImages(): void
-    {
-        collect($this->images)->each(function (UploadedFile $image): void {
-            $today = now()->format('Y-m-d');
-
-            /** @var string $path */
-            $path = $image->store("images/{$today}", 'public');
-            $this->optimizeImage($path);
-
-            if ($path) {
-                session()->push('images', $path);
-
-                $this->dispatch(
-                    'image.uploaded',
-                    path: Storage::url($path),
-                    originalName: $image->getClientOriginalName()
-                );
-            } else { // @codeCoverageIgnoreStart
-                $this->addError('images', 'The image could not be uploaded.');
-                $this->dispatch('notification.created', message: 'The image could not be uploaded.');
-            } // @codeCoverageIgnoreEnd
-        });
-
-        $this->reset('images');
-    }
-
-    /**
      * Optimize the images.
      */
     public function optimizeImage(string $path): void
@@ -323,15 +294,6 @@ final class Create extends Component
     }
 
     /**
-     * Handle the image deletes.
-     */
-    public function deleteImage(string $path): void
-    {
-        Storage::disk('public')->delete($path);
-        $this->cleanSession($path);
-    }
-
-    /**
      * Render the component.
      */
     public function render(): View
@@ -345,6 +307,44 @@ final class Create extends Component
         return view('livewire.questions.create', [
             'user' => $user,
         ]);
+    }
+
+    /**
+     * Handle the image deletes.
+     */
+    private function deleteImage(string $path): void
+    {
+        Storage::disk('public')->delete($path);
+        $this->cleanSession($path);
+    }
+
+    /**
+     * Handle the image uploads.
+     */
+    private function uploadImages(): void
+    {
+        collect($this->images)->each(function (UploadedFile $image): void {
+            $today = now()->format('Y-m-d');
+
+            /** @var string $path */
+            $path = $image->store("images/{$today}", 'public');
+            $this->optimizeImage($path);
+
+            if ($path) {
+                session()->push('images', $path);
+
+                $this->dispatch(
+                    'image.uploaded',
+                    path: Storage::url($path),
+                    originalName: $image->getClientOriginalName()
+                );
+            } else { // @codeCoverageIgnoreStart
+                $this->addError('images', 'The image could not be uploaded.');
+                $this->dispatch('notification.created', message: 'The image could not be uploaded.');
+            } // @codeCoverageIgnoreEnd
+        });
+
+        $this->reset('images');
     }
 
     /**
