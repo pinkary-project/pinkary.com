@@ -266,7 +266,7 @@ final class Create extends Component
     /**
      * Optimize the images.
      */
-    public function optimizeImage(string $path): void
+    private function optimizeImage(string $path): void
     {
         $imagePath = Storage::disk('public')->path($path);
         $imagick = new Imagick($imagePath);
