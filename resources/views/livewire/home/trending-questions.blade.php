@@ -1,8 +1,10 @@
-<div class="w-full text-gray-200">
+<div>
     @if ($trendingQuestions->isEmpty())
-        <section class="p-6 xl:px-8">
-            <p class="text-center">There is no trending questions right now.</p>
-        </section>
+        <div class="p-6 xl:px-8">
+            <p class="text-center dark:text-slate-200 text-slate-600">
+                There is no trending questions right now.
+            </p>
+        </div>
     @else
         <ul role="list" class="divide-y divide-white/5">
             @foreach ($trendingQuestions as $question)

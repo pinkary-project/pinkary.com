@@ -1,8 +1,8 @@
 <div>
     @if ($followingQuestions->isEmpty())
         <div class="p-6 xl:px-8">
-            <p class="text-center text-lg text-slate-500">
-                We haven't found any questions that may interest you based on the activity you've done on Pinkary.
+            <p class="text-center dark:text-slate-200 text-slate-600">
+                No questions match your activity on Pinkary.
             </p>
         </div>
     @else

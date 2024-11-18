@@ -20,7 +20,11 @@
             </div>
         </li>
     @empty
-        <div class="text-center dark:text-slate-400 text-slate-600">There are no questions to show.</div>
+        <div class="p-6 xl:px-8">
+            <p class="text-center dark:text-slate-200 text-slate-600">
+                There are no questions to show.
+            </p>
+        </div>
     @endforelse
 
     <x-load-more-button
