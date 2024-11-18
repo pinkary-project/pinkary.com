@@ -411,8 +411,7 @@ test('updated method invokes handleUploads', function () {
 
     $component->set('images', [$file]);
 
-    $reflection = new ReflectionClass(Create::class);
-    $method = $reflection->getMethod('uploadImages');
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
     $method->setAccessible(true);
     $method->invoke($component->instance());
 
@@ -436,8 +435,7 @@ test('unused image cleanup when store is called', function () {
     ]);
     $component->set('images', [$file]);
 
-    $reflection = new ReflectionClass(Create::class);
-    $method = $reflection->getMethod('uploadImages');
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
     $method->setAccessible(true);
     $method->invoke($component->instance());
 
@@ -492,8 +490,7 @@ test('delete image', function () {
 
     Storage::disk('public')->assertExists($path);
 
-    $reflection = new ReflectionClass(Create::class);
-    $method = $reflection->getMethod('deleteImage');
+    $method = new ReflectionMethod(Create::class, 'deleteImage');
     $method->setAccessible(true);
     $method->invoke($component->instance(), $path);
 
@@ -610,8 +607,7 @@ test('non verified users can upload images', function () {
 
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
-    $reflection = new ReflectionClass(Create::class);
-    $method = $reflection->getMethod('uploadImages');
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
     $method->setAccessible(true);
     $method->invoke($component->instance());
 
@@ -629,8 +625,7 @@ test('company verified users can upload images', function () {
 
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
-    $reflection = new ReflectionClass(Create::class);
-    $method = $reflection->getMethod('uploadImages');
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
     $method->setAccessible(true);
     $method->invoke($component->instance());
 
