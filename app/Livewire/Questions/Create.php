@@ -314,6 +314,10 @@ final class Create extends Component
      */
     private function deleteImage(string $path): void
     {
+        if (! str_starts_with($path, 'images/')) {
+            return;
+        }
+
         Storage::disk('public')->delete($path);
         $this->cleanSession($path);
     }
