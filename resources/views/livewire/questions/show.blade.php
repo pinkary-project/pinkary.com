@@ -1,16 +1,12 @@
 <article class="block" id="q-{{ $questionId }}" x-data="copyCode">
     @unless ($question->isSharedUpdate())
-        <div class="border-b border-slate-200 px-6 pt-6 dark:border-white/5 xl:px-8 xl:pt-8">
+        <div class="border-b border-slate-200 p-6 dark:border-white/5 xl:px-8 xl:pt-8">
             <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
                 @unless ($question->isSharedUpdate())
                     @if ($question->anonymously)
-                        <div class="flex items-center gap-3 pr-4 text-sm text-slate-500">
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-600 border-1 dark:border-slate-400">
-                                <span>?</span>
-                            </div>
-
-                            <p class="font-medium">Anonymously</p>
+                        <div class="flex items-center gap-3 pr-4 text-sm text-slate-500 font-medium">
+                            <div class="flex size-10 items-center justify-center rounded-full border border-dashed border-slate-600 border-1 dark:border-slate-400">?</div>
+                            <span>Anonymously</span>
                         </div>
                     @else
                         <x-avatar-with-name :user="$question->from"/>
@@ -25,7 +21,7 @@
             </div>
 
             @unless ($question->isSharedUpdate())
-                <p class="mt-3 px-4 text-slate-800 dark:text-slate-200">
+                <p class="mt-3 text-slate-800 dark:text-slate-200">
                     {!! $question->content !!}
                 </p>
             @endunless
@@ -50,7 +46,7 @@
                             <button
                                 data-navigate-ignore="true"
                                 class="inline-flex items-center rounded-md border border-transparent py-1 text-sm text-slate-600 transition duration-150 ease-in-out hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:text-slate-50">
-                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6"/>
+                                <x-heroicon-o-ellipsis-horizontal class="size-6"/>
                             </button>
                         </x-slot>
 
@@ -242,6 +238,7 @@
                         }}
                     </time>
 
+                    <!--
                     <x-dropdown align="left"
                                 width=""
                                 dropdown-classes="top-[-3.4rem] shadow-none"
@@ -331,6 +328,7 @@
                             </button>
                         </x-slot>
                     </x-dropdown>
+                    -->
                 </div>
             </div>
         </div>

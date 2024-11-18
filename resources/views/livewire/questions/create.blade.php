@@ -53,7 +53,7 @@
                         </template>
                     </div>
 
-                    <div class="mt-4 flex justify-between">
+                    <div class="mt-4 flex items-start justify-between">
                         <div class="flex space-x-2">
                             <button
                                 type="submit"
