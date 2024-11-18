@@ -513,7 +513,9 @@ test('optimizeImage method resizes and saves the image', function () {
         'toId' => $user->id,
     ]);
 
-    $component->call('optimizeImage', $path);
+    $method = new ReflectionMethod(Create::class, 'optimizeImage');
+    $method->setAccessible(true);
+    $method->invoke($component->instance(), $path);
 
     Storage::disk('public')->assertExists($path);
 
@@ -562,7 +564,9 @@ test('optimizeImage method resizes and saves image with multiple frames', functi
         'toId' => $user->id,
     ]);
 
-    $component->call('optimizeImage', $path);
+    $method = new ReflectionMethod(Create::class, 'optimizeImage');
+    $method->setAccessible(true);
+    $method->invoke($component->instance(), $path);
 
     Storage::disk('public')->assertExists($path);
 
