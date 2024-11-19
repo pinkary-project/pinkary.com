@@ -264,6 +264,22 @@ final class Create extends Component
     }
 
     /**
+     * Render the component.
+     */
+    public function render(): View
+    {
+        $user = new User;
+
+        if (filled($this->toId)) {
+            $user = $user->findOrFail($this->toId);
+        }
+
+        return view('livewire.questions.create', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
      * Optimize the images.
      */
     private function optimizeImage(string $path): void
@@ -291,22 +307,6 @@ final class Create extends Component
 
         $imagick->clear();
         $imagick->destroy();
-    }
-
-    /**
-     * Render the component.
-     */
-    public function render(): View
-    {
-        $user = new User;
-
-        if (filled($this->toId)) {
-            $user = $user->findOrFail($this->toId);
-        }
-
-        return view('livewire.questions.create', [
-            'user' => $user,
-        ]);
     }
 
     /**
