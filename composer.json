@@ -4,12 +4,12 @@
     "require": {
         "php": "^8.3",
         "ext-imagick": "^3.7.0",
-        "filament/filament": "^3.2.123",
+        "filament/filament": "^3.2.124",
         "intervention/image": "^3.9.1",
         "laravel/fortify": "^1.21.1",
-        "laravel/framework": "^11.31.0",
-        "laravel/pennant": "^1.12.0",
-        "laravel/pulse": "^1.2.5",
+        "laravel/framework": "^11.32.0",
+        "laravel/pennant": "^1.13.0",
+        "laravel/pulse": "^1.2.6",
         "laravel/socialite": "^5.16.0",
         "laravel/tinker": "^2.10.0",
         "livewire/livewire": "^3.5.12",
@@ -22,16 +22,16 @@
         "spatie/laravel-mailcoach-mailer": "^1.4.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.14.6",
+        "barryvdh/laravel-debugbar": "^3.14.7",
         "fakerphp/faker": "^1.24.0",
         "larastan/larastan": "^2.9.11",
         "laravel/pint": "^1.18.1",
-        "laravel/sail": "^1.37.1",
+        "laravel/sail": "^1.38.0",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.5",
         "pestphp/pest": "^3.5.1",
         "pestphp/pest-plugin-laravel": "^3.0.0",
-        "pestphp/pest-plugin-type-coverage": "^3.1.0",
+        "pestphp/pest-plugin-type-coverage": "^3.2.0",
         "rector/rector": "^1.2.10"
     },
     "autoload": {
