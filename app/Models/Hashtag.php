@@ -24,19 +24,6 @@ final class Hashtag extends Model
     use HasFactory;
 
     /**
-     * The attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    public function casts(): array
-    {
-        return [
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
-    }
-
-    /**
      * @return BelongsToMany<Question, covariant $this>
      */
     public function questions(): BelongsToMany
