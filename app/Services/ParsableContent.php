@@ -13,14 +13,21 @@ use App\Services\ParsableContentProviders\LinkProviderParsable;
 use App\Services\ParsableContentProviders\MentionProviderParsable;
 use App\Services\ParsableContentProviders\StripProviderParsable;
 
-final readonly class ParsableContent
+final class ParsableContent
 {
+    /**
+     * The cache of parsed content.
+     *
+     * @var array<string, string>
+     */
+    private static array $cache = [];
+
     /**
      * Creates a new parsable content instance.
      *
      * @param  array<int, class-string<ParsableContentProvider>>  $providers
      */
-    public function __construct(private array $providers = [
+    public function __construct(private readonly array $providers = [
         StripProviderParsable::class,
         CodeProviderParsable::class,
         ImageProviderParsable::class,
@@ -34,9 +41,61 @@ final readonly class ParsableContent
     }
 
     /**
+     * Flushes the cache for the given content.
+     */
+    public static function flush(?string $key = null, ?bool $all = null): void
+    {
+        if ($key === null && $all === true) {
+            self::$cache = [];
+
+            return;
+        }
+
+        unset(self::$cache[$key]);
+    }
+
+    /**
      * Parses the given content.
      */
-    public function parse(string $content): string
+    public static function parse(string $key, string $content): ?string
+    {
+        if (self::has($key)) {
+            return self::get($key);
+        }
+
+        return self::$cache[$key] = (new self())->parseContent($content);
+    }
+
+    /**
+     * Checks if the cache has the given key.
+     */
+    public static function has(string $key): bool
+    {
+        return isset(self::$cache[$key]);
+    }
+
+    /**
+     * Gets the cache for the given key.
+     */
+    public static function get(string $key): ?string
+    {
+        return self::$cache[$key] ?? null;
+    }
+
+    /**
+     * Gets the providers.
+     *
+     * @return array<int, class-string<ParsableContentProvider>>
+     */
+    public function getProviders(): array
+    {
+        return $this->providers;
+    }
+
+    /**
+     * Parses the content using the providers.
+     */
+    public function parseContent(string $content): string
     {
         return (string) collect($this->providers)
             ->reduce(function (string $parsed, string $provider): string {
