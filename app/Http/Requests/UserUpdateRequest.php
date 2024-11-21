@@ -29,15 +29,25 @@ final class UserUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', new NoBlankCharacters],
             'username' => [
-                'required', 'string', 'min:4', 'max:50', Rule::unique(User::class)->ignore($user->id),
+                'required',
+                'string',
+                'min:4',
+                'max:50',
+                Rule::unique(User::class)->ignore($user->id),
                 new Username($user),
             ],
             'email' => [
-                'required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id),
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                Rule::unique(User::class)->ignore($user->id),
                 new UnauthorizedEmailProviders(),
             ],
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
             'bio' => ['nullable', 'string', 'max:255'],
+            'prefers_questions' => ['required', 'boolean'],
             'prefers_anonymous_questions' => ['required', 'boolean'],
         ];
     }

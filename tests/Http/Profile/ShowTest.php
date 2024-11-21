@@ -38,3 +38,13 @@ it('does increment views', function () {
     $response->assertSee($this->user->name);
     Queue::assertPushed(IncrementViews::class);
 });
+
+it('will not show question field if the user does not accept questions', function () {
+    $username = $this->user->username;
+    $this->user->prefers_questions = 0;
+    $this->user->save();
+
+    $response = $this->get(route('profile.show', ['username' => $username]));
+
+    $response->assertSee("The user doesn't accept questions.");
+});
