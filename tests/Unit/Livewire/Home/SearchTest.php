@@ -234,16 +234,16 @@ test('users has is_follower and is_following attributes only when authenticated'
         ])
         ->create();
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user)->not->toHaveKey('is_follower');
         expect($user)->not->toHaveKey('is_following');
     });
 
     $component->set('query', 'un');
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user)->not->toHaveKey('is_follower');
         expect($user)->not->toHaveKey('is_following');
     });
@@ -252,14 +252,14 @@ test('users has is_follower and is_following attributes only when authenticated'
 
     $component->set('query', '');
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user->is_follower)->toBeBool();
         expect($user->is_following)->toBeBool();
     });
 
     $component->set('query', 'un');
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user->is_follower)->toBeBool();
         expect($user->is_following)->toBeBool();
     });
@@ -298,9 +298,8 @@ test('returns up to 4 questions in welcome search with enough matching users', f
         'answer' => 'Nuno Maduro',
     ]);
 
-    $component = Livewire::test(Search::class);
+    $component = Livewire::test(Search::class, ['welcomeSearch' => true]);
 
-    $component->set('welcomeSearch', true);
     $component->set('query', 'Nuno');
 
     $component->assertViewHas('results', function (Collection $results) {
@@ -324,9 +323,8 @@ test('returns more questions in welcome search with less than 6 matching users',
         'answer' => 'Nuno Maduro',
     ]);
 
-    $component = Livewire::test(Search::class);
+    $component = Livewire::test(Search::class, ['welcomeSearch' => true]);
 
-    $component->set('welcomeSearch', true);
     $component->set('query', 'Nuno');
 
     $component->assertViewHas('results', function (Collection $results) {
