@@ -44,4 +44,9 @@ return [
         'redirect' => env('GITHUB_REDIRECT_URI'),
         'token' => env('GITHUB_PERSONAL_ACCESS_TOKEN'),
     ],
+
+    'turnstile' => [
+        'key' => env('TURNSTILE_SITE_KEY'),
+        'secret' => env('TURNSTILE_SECRET_KEY'),
+    ],
 ];

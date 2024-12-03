@@ -1,0 +1,7 @@
+{
+  "success": false,
+  "error-codes": [
+    "timeout-or-duplicate"
+  ],
+  "messages": []
+}
