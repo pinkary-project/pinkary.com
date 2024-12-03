@@ -114,7 +114,7 @@
 
         <div class="mt-4">
 
-            @if (App::environment('production'))
+            @if (App::environment(['production', 'testing']))
                 <div class="flex justify-center mt-4">
                     <x-turnstile data-theme="auto"/>
                 </div>

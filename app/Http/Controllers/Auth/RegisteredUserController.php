@@ -33,7 +33,7 @@ final readonly class RegisteredUserController
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, Turnstile $turnstile): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -41,7 +41,7 @@ final readonly class RegisteredUserController
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, new UnauthorizedEmailProviders()],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
-            'cf-turnstile-response' => app()->environment('production') ? ['required', app(Turnstile::class)] : [],
+            'cf-turnstile-response' => app()->environment(['production', 'testing']) ? ['required', $turnstile] : [],
         ]);
 
         $user = User::create([

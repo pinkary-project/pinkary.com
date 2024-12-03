@@ -5,6 +5,30 @@ declare(strict_types=1);
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
+beforeEach(function () {
+    $this->basePayload = [
+        'name' => 'Test User',
+        'username' => 'testuser',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'terms' => true,
+        'cf-turnstile-response' => 'valid-captcha-code',
+    ];
+});
+function mockTurnstileResponse(bool $status): void
+{
+    $fixtureFile = $status
+        ? base_path('tests/Fixtures/Turnstile/success.json')
+        : base_path('tests/Fixtures/Turnstile/error.json');
+
+    $jsonFixture = File::json($fixtureFile);
+
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response($jsonFixture),
+    ]);
+}
+
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
@@ -13,27 +37,23 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
-    Http::fake([
-        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
-            'success' => true,
-        ]),
-    ]);
+    mockTurnstileResponse(true);
 
-    $response = $this->from('/register')->post('/register', [
-        'name' => 'Test User',
-        'username' => 'testuser',
-        'email' => 'test@example.com',
-        'password' => 'm@9v_.*.XCN',
-        'password_confirmation' => 'm@9v_.*.XCN',
-        'terms' => true,
-        'cf-turnstile-response' => 'valid',
-    ]);
+    $response = $this->from('/register')->post('/register', $this->basePayload);
 
     $this->assertAuthenticated();
 
     $response->assertRedirect(route('profile.show', [
         'username' => User::first()->username,
     ], absolute: false));
+});
+
+test('can not register with an invalid turnstile response', function () {
+
+    mockTurnstileResponse(false);
+    $response = $this->from('/register')->post('/register', $this->basePayload);
+
+    $response->assertSessionHasErrors('cf-turnstile-response');
 });
 
 test('required fields', function (string $field) {
@@ -277,33 +297,31 @@ test('unique constraint validation is case insensitive', function (string $exist
 ]);
 
 test("user's name can contain blank characters", function (string $given, string $expected) {
+    mockTurnstileResponse(true);
     $response = $this->from('/register')->post('/register', [
-        'name' => $given,
-        'username' => 'testuser',
-        'email' => 'test@laravel.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-        'terms' => true,
+        ...$this->basePayload, 'name' => $given
     ]);
 
-    $user = User::where('email', 'test@laravel.com')->first();
+    // Assert that the user was created
+    $response->assertRedirect(); // or specific route if expected
+    $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
 
+    // Retrieve the user
+    $user = User::where('email', 'test@example.com')->first();
+    $this->assertNotNull($user, 'User should have been created.');
+
+    // Assert the name matches expectations
     expect($user->name)->toBe($expected);
 })->with([
     ["Test\u{200E}User", "Test\u{200E}User"],
-    ["Test User \u{200E}", 'Test User'],
+    ["Test User \u{200E}", 'Test User'], // Adjust if trimming occurs
     ["Test \u{200E}\u{200E} User", "Test \u{200E}\u{200E} User"],
 ]);
 
+
 test('anonymously preference is set to true by default', function () {
-    $this->from('/register')->post('/register', [
-        'name' => 'Test User',
-        'username' => 'testuser1',
-        'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-        'terms' => true,
-    ]);
+    mockTurnstileResponse(true);
+    $this->from('/register')->post('/register', $this->basePayload);
 
     expect(User::first()->prefers_anonymous_questions)->toBeTrue();
 });
