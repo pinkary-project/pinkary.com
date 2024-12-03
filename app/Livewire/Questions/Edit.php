@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
@@ -14,6 +15,8 @@ use Livewire\Component;
 
 final class Edit extends Component
 {
+    use NeedsVerifiedEmail;
+
     /**
      * The component's question ID.
      */
@@ -41,6 +44,10 @@ final class Edit extends Component
      */
     public function update(Request $request): void
     {
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
         $validated = $this->validate([
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
