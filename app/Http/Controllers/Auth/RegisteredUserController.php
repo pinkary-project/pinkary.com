@@ -44,7 +44,6 @@ final readonly class RegisteredUserController
             'cf-turnstile-response' => app()->environment('production') ? ['required', app(Turnstile::class)] : [],
         ]);
 
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,

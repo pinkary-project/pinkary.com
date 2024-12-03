@@ -14,7 +14,7 @@ test('registration screen can be rendered', function () {
 
 test('new users can register', function () {
     Http::fake([
-        'https://www.google.com/recaptcha/api/siteverify' => Http::response([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
             'success' => true,
         ]),
     ]);
@@ -26,7 +26,7 @@ test('new users can register', function () {
         'password' => 'm@9v_.*.XCN',
         'password_confirmation' => 'm@9v_.*.XCN',
         'terms' => true,
-        'g-recaptcha-response' => 'valid',
+        'cf-turnstile-response' => 'valid',
     ]);
 
     $this->assertAuthenticated();
