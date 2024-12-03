@@ -314,7 +314,7 @@ test("user's name can contain blank characters", function (string $given, string
     expect($user->name)->toBe($expected);
 })->with([
     ["Test\u{200E}User", "Test\u{200E}User"],
-    ["Test User \u{200E}", 'Test User'], // Adjust if trimming occurs
+    ["Test User \u{200E}", 'Test User'],
     ["Test \u{200E}\u{200E} User", "Test \u{200E}\u{200E} User"],
 ]);
 
