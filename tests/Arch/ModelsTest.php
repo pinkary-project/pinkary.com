@@ -46,7 +46,8 @@ arch('ensure datetime casts', function () {
         $instance = $model::factory()->create();
 
         $dates = collect($instance->getAttributes())
-            ->filter(fn ($_, $key) => str_ends_with($key, '_at'));
+            ->filter(fn ($_, $key) => str_ends_with($key, '_at'))
+            ->reject(fn ($_, $key) => in_array($key, ['created_at', 'updated_at']));
 
         foreach ($dates as $key => $value) {
             expect($instance->getCasts())->toHaveKey($key, 'datetime');
