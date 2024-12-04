@@ -1,6 +1,6 @@
-<div>
-    <section class="mb-12 min-h-screen space-y-10">
-        @forelse ($questions as $question)
+<ul role="list" class="divide-y divide-white/5">
+    @forelse ($questions as $question)
+        <li class="cursor-pointer hover:bg-gray-800/20">
             <div wire:key="thread-{{ $question->id }}">
                 @if($hashtag !== null && $hashtag !== '')
                     <livewire:questions.show
@@ -18,14 +18,18 @@
                     />
                 @endif
             </div>
-        @empty
-            <div class="text-center dark:text-slate-400 text-slate-600">There are no questions to show.</div>
-        @endforelse
+        </li>
+    @empty
+        <div class="p-6 xl:px-8">
+            <p class="text-center dark:text-slate-200 text-slate-600">
+                There are no questions to show.
+            </p>
+        </div>
+    @endforelse
 
-        <x-load-more-button
-            :perPage="$perPage"
-            :paginator="$questions"
-            message="There are no more questions to load, or you have scrolled too far."
-        />
-    </section>
-</div>
+    <x-load-more-button
+        :perPage="$perPage"
+        :paginator="$questions"
+        message="There are no more questions to load, or you have scrolled too far."
+    />
+</ul>

@@ -2,20 +2,21 @@
 
 <a
     href="{{ route('profile.show', ['username' => $user->username]) }}"
-    class="group flex items-center gap-3 px-4"
+    class="group/profile flex items-center gap-3"
+    data-navigate-ignore="true"
     wire:navigate
 >
-    <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-200 transition-opacity group-hover:opacity-90">
+    <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} size-10 flex-shrink-0 dark:bg-gray-800 bg-slate-100 transition-opacity group-hover/profile:opacity-90">
         <img
             src="{{ $user->avatar_url }}"
             alt="{{ $user->username }}"
-            class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+            class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} size-10"
         />
     </figure>
 
     <div class="overflow-hidden text-sm">
-        <div class="flex">
-            <p class="truncate font-medium dark:text-slate-50 text-slate-950">
+        <div class="items flex">
+            <p class="truncate font-medium dark:text-gray-50 text-slate-950">
                 {{ $user->name }}
             </p>
 
@@ -32,7 +33,7 @@
             @endif
         </div>
 
-        <p class="truncate text-slate-500 transition-colors dark:group-hover:text-slate-400 group-hover:text-slate-600">
+        <p class="truncate text-slate-500 transition-colors dark:group-hover/profile:text-slate-400 group-hover/profile:text-slate-600">
             {{ '@'.$user->username }}
         </p>
     </div>
