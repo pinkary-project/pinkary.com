@@ -223,6 +223,7 @@
         --emoji-size: 1.5rem;
         --border-color: #e5e7ebdf;
         --indicator-color: #9ca3afd9;
+        --button-hover-background: #e2e8f0;
         width: 400px;
         height: 500px;
     }
