@@ -742,3 +742,31 @@ test('max size & ratio validation', function () {
         'images.0' => 'The image aspect ratio must be less than 2/5.',
     ]);
 });
+
+it('does not delete or clean session when path does not start with "images/"', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+
+    // Create a valid file in the 'images/' directory
+    $file = UploadedFile::fake()->image('photo1.jpg');
+    $path = $file->store('images', 'public');
+
+    // Act as the user and initialize the component
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    // Assert the file exists initially
+    Storage::disk('public')->assertExists($path);
+
+    // Try deleting with an invalid path
+    $method = new ReflectionMethod(Create::class, 'deleteImage');
+    $method->setAccessible(true);
+
+    //pass invalid path
+    $method->invoke($component->instance(), 'invalid/path/to/photo.jpg');
+
+    // Assert the file still exists because the path was invalid
+    Storage::disk('public')->assertExists($path);
+
+});
