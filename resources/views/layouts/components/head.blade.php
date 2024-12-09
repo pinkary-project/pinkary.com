@@ -234,7 +234,7 @@
         --input-border-color: #334155;
         --outline-color: none;
         --outline-size: 1px;
-        --border-color: none;
+        --border-color: #33415540;
         --input-font-color: rgb(242, 240, 240);
         --indicator-color: #334155;
         --button-hover-background: #9ca3af;
