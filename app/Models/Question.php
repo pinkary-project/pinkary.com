@@ -97,7 +97,7 @@ final class Question extends Model implements Viewable
             'answer_updated_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
-            'pinned' => 'bool',
+            'pinned' => 'boolean',
             'is_ignored' => 'boolean',
             'views' => 'integer',
         ];
