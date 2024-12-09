@@ -36,6 +36,32 @@ test('new users can register', function () {
     ], absolute: false));
 });
 
+test('it throws ValidationException if app is production', function () {
+    app()->detectEnvironment(fn () => 'production');
+
+    Http::fake([
+        'https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true]),
+    ]);
+
+    $this->get('/register'); // Fetch CSRF token
+
+    $response = $this->from('/register')->post('/register', [
+        '_token' => csrf_token(),
+        'name' => 'Test User',
+        'username' => 'testuser',
+        'email' => 'test@example.com',
+        'password' => 'm@9v_.*.XCN',
+        'password_confirmation' => 'm@9v_.*.XCN',
+        'terms' => true,
+        'g-recaptcha-response' => 'valid',
+    ]);
+
+    $response->assertStatus(302); // Or expected redirect status
+    $response->assertSessionHasErrors(['email' => 'We have temporarily disabled registration due to spam. We will try to enable it as soon as possible.']);
+
+    $this->assertDatabaseCount('users', 0);
+});
+
 test('required fields', function (string $field) {
     $payload = [
         'name' => 'Test User',

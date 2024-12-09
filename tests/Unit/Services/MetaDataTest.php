@@ -261,3 +261,27 @@ it('dimensions are 16:9', function () {
     expect(round(MetaData::CARD_WIDTH / MetaData::CARD_HEIGHT, 2))
         ->toBe(round(16 / 9, 2));
 });
+
+//More tests for coverage
+it('returns false when Http::head fails in checkExistsAndSize', function () {
+    // Fake HTTP HEAD request returning a non-200 response
+    Http::fake([
+        'https://example.com/image.jpg' => Http::response('', 404), // Simulating a "not found"
+    ]);
+
+    $metaData = new MetaData('https://example.com');
+    $result = $metaData->checkExistsAndSize('https://example.com/image.jpg');
+
+    // Assert that the method returns false when the HTTP HEAD fails
+    expect($result)->toBeFalse();
+});
+
+it('returns original HTML when no iframe exists in ensureCorrectSize', function () {
+    $html = '<div>Test content</div>'; // HTML without iframe
+    $metaData = new MetaData('https://example.com');
+
+    $result = $metaData->ensureCorrectSize($html);
+
+    // Assert that the original HTML is returned as-is
+    expect($result)->toBe($html);
+});

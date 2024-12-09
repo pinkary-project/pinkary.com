@@ -205,6 +205,42 @@
         font-weight: 200 900;
         font-stretch: 75% 125%;
     }
+     /* Emoji picker custom styling */
+    /* Default light mode styles */
+    emoji-picker {
+        --background: #f8fafc;
+        /* Light mode background */
+        --border-radius: 12px;
+        --input-border-color: rgb(229 229 229);
+        --input-padding: 0.45rem;
+        --outline-color: none;
+        --input-font-color: rgb(22, 22, 22);
+        --outline-size: 1px;
+        --num-columns: 8;
+        z-index: 51;
+        /* Higher than navigation */
+        --emoji-padding: 0.7rem;
+        --emoji-size: 1.5rem;
+        --border-color: #e5e7ebdf;
+        --indicator-color: #9ca3afd9;
+        --button-hover-background: #e2e8f0;
+        width: 400px;
+        height: 500px;
+    }
+
+    /* Ensure dark mode takes precedence */
+    .dark emoji-picker {
+        --background: #0f172a;
+        /* bg-slate-800 */
+        --input-border-color: #334155;
+        --outline-color: none;
+        --outline-size: 1px;
+        --border-color: #33415540;
+        --input-font-color: rgb(242, 240, 240);
+        --indicator-color: #334155;
+        --button-hover-background: #9ca3af;
+    }
+
 </style>
 
 <script>
@@ -220,7 +256,6 @@
     }
     updateTheme();
 </script>
-
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
