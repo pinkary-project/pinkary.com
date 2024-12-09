@@ -70,3 +70,6 @@ import { themeSwitch } from './theme-switch.js';
 Alpine.data('themeSwitch', themeSwitch);
 
 Livewire.start()
+
+//Emoji picker config
+import 'emoji-picker-element';
