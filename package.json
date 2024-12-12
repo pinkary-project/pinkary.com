@@ -9,8 +9,8 @@
         "@tailwindcss/forms": "^0.5.9",
         "@tailwindcss/typography": "^0.5.15",
         "alpinejs-notify": "^1.0.4",
-        "autosize": "^6.0.1",
         "autoprefixer": "^10.4.20",
+        "autosize": "^6.0.1",
         "axios": "^1.7.7",
         "highlight.js": "^11.10.0",
         "laravel-vite-plugin": "^1.0",
@@ -18,5 +18,8 @@
         "sortablejs": "^1.15.3",
         "tailwindcss": "^3.4.14",
         "vite": "^5.4.10"
+    },
+    "dependencies": {
+        "emoji-picker-element": "^1.26.0"
     }
 }
