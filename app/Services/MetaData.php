@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use DOMDocument;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -98,6 +99,8 @@ final readonly class MetaData
                 $data = $this->parse($response->body());
             }
         } catch (ConnectionException) {
+            // Catch but not capture the exception
+        } catch (RequestException) {
             // Catch but not capture the exception
         }
 
