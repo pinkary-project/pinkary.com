@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 final readonly class RegisteredUserController
 {
@@ -42,6 +43,12 @@ final readonly class RegisteredUserController
             'terms' => ['required', 'accepted'],
             'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
         ]);
+
+        if (app()->environment('production')) {
+            throw ValidationException::withMessages([
+                'email' => 'We have temporarily disabled registration due to spam. We will try to enable it as soon as possible.',
+            ]);
+        }
 
         $user = User::create([
             'name' => $request->name,
