@@ -33,8 +33,6 @@ final class PerformDatabaseBackupCommand extends Command
     {
         $filename = 'backup-' . now()->timestamp . '.sql';
 
-        // File::copy(database_path('database.sqlite'), database_path('backups/' . $filename));
-
         $result = Process::run([
             "sqlite3",
             database_path("database.sqlite"),
