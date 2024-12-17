@@ -30,6 +30,9 @@ final class Create extends Component
 {
     use WithFileUploads;
 
+    /**
+     * The disk to store the images.
+     */
     private const string IMAGE_DISK = 'public';
 
     /**
