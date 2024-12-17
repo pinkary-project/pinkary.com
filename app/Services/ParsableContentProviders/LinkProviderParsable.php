@@ -15,50 +15,121 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
      */
     public function parse(string $content): string
     {
-        return (string) preg_replace_callback(
-            '/(<(a|code|pre)\s+[^>]*>.*?<\/\2>)|(?<!src=")((https?:\/\/)?((localhost)|((?:\d{1,3}\.){3}\d{1,3})|[\w\-._@:%\+~#=]{1,256}(\.[a-zA-Z]{2,})+)(:\d+)?(\/[\w\-._@:%\+~#=\/]*)?(\?[\w\-._@:%\+~#=\/&]*)?)(?<!\.)((?![^<]*>|[^<>]*<\/))/is',
-            function (array $matches): string {
-                if ($matches[1] !== '') {
-                    return $matches[1];
-                }
+        $tokens = $this->tokenize($content);
 
-                $humanUrl = Str::of($matches[0])
-                    ->replaceMatches('/^https?:\/\//', '')
-                    ->rtrim('/')
-                    ->toString();
+        if ($tokens === false) {
+            return $content;
+        }
 
-                $isMail = (bool) preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $humanUrl);
-                $isHttp = Str::startsWith($matches[0], ['http://', 'https://']);
+        $processedTokens = array_map(
+            fn (string $token): string => $this->processToken($token),
+            $tokens);
 
-                if ((! $isMail) && (! $isHttp)) {
-                    return $matches[0];
-                }
+        return implode('', $processedTokens);
+    }
 
-                $url = $isHttp ? $matches[0] : 'https://'.$matches[0];
+    /**
+     * Split the content into tokens based on spaces and newlines.
+     *
+     * @return list<string>|false
+     */
+    private function tokenize(string $content): array|false
+    {
+        return preg_split('/(\s|<br>)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
+    }
 
-                $url = $isMail ? 'mailto:'.$humanUrl : $url;
+    /**
+     * Process a single token and convert valid URLs into HTML links.
+     */
+    private function processToken(string $token): string
+    {
+        $allowableAttachedCharacters = '{([<!,.?;:>)]}';
 
-                $linkHtml = '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="'.$url.'">'.$humanUrl.'</a>';
+        $trimmedToken = trim($token, $allowableAttachedCharacters);
 
-                if (! $isMail && $url) {
-                    $service = new MetaData($url);
-                    $metadata = $service->fetch();
+        if ($trimmedToken === '' || $trimmedToken === '0') {
+            return $token;
+        }
 
-                    if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
-                        $trimmed = trim(
-                            view('components.link-preview-card', [
-                                'data' => $metadata,
-                                'url' => $url,
-                            ])->render()
-                        );
+        if (filter_var($trimmedToken, FILTER_VALIDATE_EMAIL)) {
+            $trimmedToken = "mailto:{$trimmedToken}";
+        } elseif (! $this->isValidUrl($trimmedToken)) {
+            return $token;
+        }
 
-                        return $linkHtml.' '.preg_replace('/<!--(.|\s)*?-->/', '', $trimmed);
-                    }
-                }
+        $humanUrl = Str::of($trimmedToken)
+            ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
+            ->rtrim('/')
+            ->toString();
 
-                return $linkHtml;
-            },
-            str_replace('&amp;', '&', $content)
+        $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
+
+        $service = new MetaData($trimmedToken);
+        $metadata = $service->fetch();
+        if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
+            $trimmedPreviewCard = trim(
+                view('components.link-preview-card', [
+                    'data' => $metadata,
+                    'url' => $trimmedToken,
+                ])->render()
+            );
+
+            $linkHtml .= $trimmedPreviewCard;
+        }
+
+        $leading = $this->getCharacters($token, $allowableAttachedCharacters, 'leading');
+        $trailing = $this->getCharacters($token, $allowableAttachedCharacters, 'trailing');
+
+        return $leading.$linkHtml.$trailing;
+    }
+
+    /**
+     * Extract leading or trailing punctuation/characters from a token.
+     */
+    private function getCharacters(string $token, string $allowableCharacters, string $direction): string
+    {
+        $pattern = match ($direction) {
+            'leading' => '/^(['.preg_quote($allowableCharacters, '/').']+)/',
+            'trailing' => '/(['.preg_quote($allowableCharacters, '/').']+)$/',
+            default => '',
+        };
+
+        if (preg_match($pattern, $token, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
+    }
+
+    /**
+     * Validate if a token is a valid URL.
+     */
+    private function isValidUrl(string $token): bool
+    {
+        $urlComponents = parse_url($token);
+        if ($urlComponents === false || ! filter_var($token, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        $scheme = $urlComponents['scheme'] ?? null;
+        $host = $urlComponents['host'] ?? null;
+        if (! in_array($scheme, ['http', 'https'], true) || ! filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+            return false;
+        }
+
+        foreach (['path', 'query', 'fragment'] as $part) {
+            if (isset($urlComponents[$part]) && preg_match('/[\s<>{}[\]]/', $urlComponents[$part])) {
+                return false;
+            }
+        }
+
+        if (isset($urlComponents['port']) && (preg_match('/^\d{1,5}$/', (string) $urlComponents['port']) === 0 || preg_match('/^\d{1,5}$/', (string) $urlComponents['port']) === false)) {
+            return false;
+        }
+
+        return (bool) preg_match(
+            '/((https?:\/\/)?((localhost)|((?:\d{1,3}\.){3}\d{1,3})|[\w\-._@:%+~#=]{1,256}(\.[a-zA-Z]{2,})+)(:\d+)?(\/[\w\-._@:%+~#=\/]*)?(\?[\w\-._@:%+~#=\/&]*)?)/i',
+            $token
         );
     }
 }

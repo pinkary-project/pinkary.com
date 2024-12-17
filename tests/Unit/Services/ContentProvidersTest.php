@@ -200,6 +200,29 @@ test('links within <pre> and <code> blocks are ignored', function (string $conte
     ],
 ]);
 
+test('malformed links are correctly handled by content parser', function (string $content) {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+    expect($provider->parse($content))->toMatchSnapshot();
+})->with([
+    'http://example..com',
+    'htt://example.com',
+    'protocol://example.com',
+    'http//example.com',
+    'http://exa_mple.com',
+    'http://example',
+    'http://.example.com',
+    'http://example=com',
+    'www.example.com',
+    'http:/example.com',
+    'http:///example.com',
+    'http://example.com?this<>=that',
+    'http://example.com?this=that#this<>=that',
+    'http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+    'http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]:8080',
+    'http://example.com:abcd',
+    'http://example.com/👍',
+]);
+
 test('only http or https urls are converted to links', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
