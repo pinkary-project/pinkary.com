@@ -31,6 +31,11 @@ final class Create extends Component
     use WithFileUploads;
 
     /**
+     * The disk to store the images.
+     */
+    private const string IMAGE_DISK = 'public';
+
+    /**
      * Max number of images allowed.
      */
     #[Locked]
@@ -280,11 +285,47 @@ final class Create extends Component
     }
 
     /**
+     * Validate and delete the image if it meets criteria.
+     */
+    public function deleteImageAfterValidation(string $path): void
+    {
+        if (! $this->validateImagePath($path)) {
+            return;
+        }
+
+        $this->deleteImage($path);
+    }
+
+    /**
+     * Validate if the image path is eligible for deletion.
+     */
+    private function validateImagePath(string $path): bool
+    {
+        $images = $this->getSessionImages();
+
+        return in_array($path, $images, true) && $this->isValidImageFile($path);
+    }
+
+    /**
+     * Check if the path exists and is a valid image file.
+     */
+    private function isValidImageFile(string $path): bool
+    {
+        if (! Storage::disk(self::IMAGE_DISK)->exists($path)) {
+            return false;
+        }
+
+        $imageContent = Storage::disk(self::IMAGE_DISK)->get($path) ?: '';
+
+        return @getimagesizefromstring($imageContent) !== false;
+    }
+
+    /**
      * Optimize the images.
      */
     private function optimizeImage(string $path): void
     {
-        $imagePath = Storage::disk('public')->path($path);
+        $imagePath = Storage::disk(self::IMAGE_DISK)->path($path);
         $imagick = new Imagick($imagePath);
 
         if ($imagick->getNumberImages() > 1) {
@@ -318,7 +359,7 @@ final class Create extends Component
             return;
         }
 
-        Storage::disk('public')->delete($path);
+        Storage::disk(self::IMAGE_DISK)->delete($path);
         $this->cleanSession($path);
     }
 
@@ -331,7 +372,7 @@ final class Create extends Component
             $today = now()->format('Y-m-d');
 
             /** @var string $path */
-            $path = $image->store("images/{$today}", 'public');
+            $path = $image->store("images/{$today}", self::IMAGE_DISK);
             $this->optimizeImage($path);
 
             if ($path) {
@@ -356,10 +397,7 @@ final class Create extends Component
      */
     private function cleanSession(string $path): void
     {
-        /** @var array<int, string> $images */
-        $images = session()->get('images', []);
-
-        $remainingImages = collect($images)
+        $remainingImages = collect($this->getSessionImages())
             ->reject(fn (string $imagePath): bool => $imagePath === $path);
 
         session()->put('images', $remainingImages->toArray());
@@ -370,13 +408,23 @@ final class Create extends Component
      */
     private function deleteUnusedImages(): void
     {
-        /** @var array<int, string> $images */
-        $images = session()->get('images', []);
-
-        collect($images)
+        collect($this->getSessionImages())
             ->reject(fn (string $path): bool => str_contains($this->content, $path))
             ->each(fn (string $path): ?bool => $this->deleteImage($path));
 
         session()->forget('images');
+    }
+
+    /**
+     * Get the session images.
+     *
+     * @return array<int, string>
+     */
+    private function getSessionImages(): array
+    {
+        /** @var array<int, string> $images */
+        $images = session()->get('images', []);
+
+        return $images;
     }
 }
