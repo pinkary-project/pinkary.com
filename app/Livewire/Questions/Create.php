@@ -30,6 +30,8 @@ final class Create extends Component
 {
     use WithFileUploads;
 
+    private const string IMAGE_DISK = 'public';
+
     /**
      * Max number of images allowed.
      */
@@ -284,7 +286,7 @@ final class Create extends Component
      */
     private function optimizeImage(string $path): void
     {
-        $imagePath = Storage::disk('public')->path($path);
+        $imagePath = Storage::disk(self::IMAGE_DISK)->path($path);
         $imagick = new Imagick($imagePath);
 
         if ($imagick->getNumberImages() > 1) {
@@ -318,7 +320,7 @@ final class Create extends Component
             return;
         }
 
-        Storage::disk('public')->delete($path);
+        Storage::disk(self::IMAGE_DISK)->delete($path);
         $this->cleanSession($path);
     }
 
@@ -331,7 +333,7 @@ final class Create extends Component
             $today = now()->format('Y-m-d');
 
             /** @var string $path */
-            $path = $image->store("images/{$today}", 'public');
+            $path = $image->store("images/{$today}", self::IMAGE_DISK);
             $this->optimizeImage($path);
 
             if ($path) {
