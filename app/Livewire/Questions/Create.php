@@ -282,6 +282,42 @@ final class Create extends Component
     }
 
     /**
+     * Validate and delete the image if it meets criteria.
+     */
+    public function deleteImageAfterValidation(string $path): void
+    {
+        if (! $this->validateImagePath($path)) {
+            return;
+        }
+
+        $this->deleteImage($path);
+    }
+
+    /**
+     * Validate if the image path is eligible for deletion.
+     */
+    private function validateImagePath(string $path): bool
+    {
+        $images = $this->getSessionImages();
+
+        return in_array($path, $images, true) && $this->isValidImageFile($path);
+    }
+
+    /**
+     * Check if the path exists and is a valid image file.
+     */
+    private function isValidImageFile(string $path): bool
+    {
+        if (! Storage::disk(self::IMAGE_DISK)->exists($path)) {
+            return false;
+        }
+
+        $imageContent = Storage::disk(self::IMAGE_DISK)->get($path) ?: '';
+
+        return @getimagesizefromstring($imageContent) !== false;
+    }
+
+    /**
      * Optimize the images.
      */
     private function optimizeImage(string $path): void
