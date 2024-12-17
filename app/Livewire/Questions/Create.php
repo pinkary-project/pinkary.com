@@ -358,10 +358,7 @@ final class Create extends Component
      */
     private function cleanSession(string $path): void
     {
-        /** @var array<int, string> $images */
-        $images = session()->get('images', []);
-
-        $remainingImages = collect($images)
+        $remainingImages = collect($this->getSessionImages())
             ->reject(fn (string $imagePath): bool => $imagePath === $path);
 
         session()->put('images', $remainingImages->toArray());
@@ -372,13 +369,23 @@ final class Create extends Component
      */
     private function deleteUnusedImages(): void
     {
-        /** @var array<int, string> $images */
-        $images = session()->get('images', []);
-
-        collect($images)
+        collect($this->getSessionImages())
             ->reject(fn (string $path): bool => str_contains($this->content, $path))
             ->each(fn (string $path): ?bool => $this->deleteImage($path));
 
         session()->forget('images');
+    }
+
+    /**
+     * Get the session images.
+     *
+     * @return array<int, string>
+     */
+    private function getSessionImages(): array
+    {
+        /** @var array<int, string> $images */
+        $images = session()->get('images', []);
+
+        return $images;
     }
 }
