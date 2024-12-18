@@ -7,11 +7,11 @@ use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRecto
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/app',
-        __DIR__.'/bootstrap/app.php',
-        __DIR__.'/config',
-        __DIR__.'/database',
-        __DIR__.'/public',
+        __DIR__ . '/app',
+        __DIR__ . '/bootstrap/app.php',
+        __DIR__ . '/config',
+        __DIR__ . '/database',
+        __DIR__ . '/public',
     ])
     ->withSkip([
         AddOverrideAttributeToOverriddenMethodsRector::class,
