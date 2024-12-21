@@ -11,7 +11,20 @@ test('perform database backup', function () {
     Process::fake();
 
     File::shouldReceive('glob')
-        ->once();
+        ->once()
+        ->with(database_path('backups/*.sql'))
+        ->andReturn([
+            database_path('backups/backup-1.sql'),
+            database_path('backups/backup-2.sql'),
+            database_path('backups/backup-3.sql'),
+            database_path('backups/backup-4.sql'),
+            database_path('backups/backup-5.sql'),
+        ]);
+
+    File::shouldReceive('delete')
+        ->times(1)
+        ->with(database_path('backups/backup-1.sql'))
+        ->andReturnTrue();
 
     $this->artisan(PerformDatabaseBackupCommand::class)
         ->assertExitCode(0);
