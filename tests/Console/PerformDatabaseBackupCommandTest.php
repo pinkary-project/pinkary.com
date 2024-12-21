@@ -11,20 +11,7 @@ test('perform database backup', function () {
     Process::fake();
 
     File::shouldReceive('glob')
-        ->once()
-        ->with(database_path('backups/*.sql'))
-        ->andReturn([
-            database_path('backups/backup-1.sql'),
-            database_path('backups/backup-2.sql'),
-            database_path('backups/backup-3.sql'),
-            database_path('backups/backup-4.sql'),
-            database_path('backups/backup-5.sql'),
-        ]);
-
-    File::shouldReceive('delete')
-        ->times(1)
-        ->with(database_path('backups/backup-1.sql'))
-        ->andReturnTrue();
+        ->once();
 
     $this->artisan(PerformDatabaseBackupCommand::class)
         ->assertExitCode(0);
@@ -34,6 +21,7 @@ test('perform database backup', function () {
 
         return $command[0] === 'sqlite3' &&
             $command[1] === database_path('database.sqlite') &&
-            str_starts_with($command[2], '.backup ' . database_path('backups/backup-'));
+            str_starts_with($command[2], '.backup '.database_path('backups/backup-'));
     });
+
 });

@@ -31,24 +31,25 @@ final class PerformDatabaseBackupCommand extends Command
      */
     public function handle(): void
     {
-        $filename = 'backup-' . now()->timestamp . '.sql';
+        $filename = 'backup-'.now()->timestamp.'.sql';
 
         $result = Process::run([
-            "sqlite3",
-            database_path("database.sqlite"),
-            sprintf(".backup %s", database_path('backups/' . $filename))
+            'sqlite3',
+            database_path('database.sqlite'),
+            sprintf('.backup %s', database_path('backups/'.$filename)),
         ]);
 
         if (! $result->successful()) {
-            $this->error("Database backup failed: " . $result->errorOutput());
-            error("Database backup failed: " . $result->errorOutput());
+            $this->error('Database backup failed: '.$result->errorOutput());
+            error('Database backup failed: '.$result->errorOutput());
+
             return;
         }
 
         $glob = File::glob(database_path('backups/*.sql'));
 
         collect($glob)->sort()->reverse()->slice(4)->each(
-            fn(string $backup): bool => File::delete($backup),
+            fn (string $backup): bool => File::delete($backup),
         );
     }
 }
