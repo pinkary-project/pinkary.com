@@ -138,7 +138,7 @@ const imageUpload = () => ({
 
     removeImage(event, index) {
         event.preventDefault();
-        this.$wire.deleteImage(
+        this.$wire.deleteImageAfterValidation(
             this.normalizePath(this.images[index].path)
         );
         this.removeMarkdownImage(index);
