@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 use App\Services\MetaData;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\RejectedPromise;
+use GuzzleHttp\Psr7\Exception\MalformedUriException;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -261,3 +264,21 @@ it('dimensions are 16:9', function () {
     expect(round(MetaData::CARD_WIDTH / MetaData::CARD_HEIGHT, 2))
         ->toBe(round(16 / 9, 2));
 });
+
+it('handles all exceptions', function (Exception $exception) {
+    $url = 'https://laravel.com';
+
+    Http::fake([
+        $url => fn ($request) => new RejectedPromise($exception),
+    ]);
+
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect($data->isEmpty())->toBeTrue();
+})->with([
+    new ConnectionException('Connection error'),
+    new MalformedUriException('Malformed URI'),
+    new HttpClientException('Not Found'),
+    new TransferException('Transfer error'),
+]);
