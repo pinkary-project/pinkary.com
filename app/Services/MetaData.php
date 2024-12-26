@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use DOMDocument;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\Exception\MalformedUriException;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -97,12 +99,13 @@ final readonly class MetaData
             $response = Http::get($this->url);
 
             if ($response->ok()) {
-                $data = $this->parse($response->body());
+                $data = $this->parse(
+                    $response->body()
+                );
             }
-        } catch (ConnectionException) {
-            // Catch but not capture the exception
-        } catch (RequestException) {
-            // Catch but not capture the exception
+        } catch (HttpClientException|MalformedUriException|TransferException) {
+            // Catch but not capture all base exceptions for:
+            // Laravel Http Client, Guzzle, and PSR-7
         }
 
         return $data;

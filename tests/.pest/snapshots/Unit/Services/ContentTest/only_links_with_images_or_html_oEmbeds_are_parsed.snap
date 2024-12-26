@@ -1,9 +1,9 @@
-Sure, here is the link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://laravel.com">laravel.com</a> <div
+Sure, here is the link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://laravel.com">laravel.com</a><div
     id="link-preview-card"
     data-url="https://laravel.com"
     class="mx-auto mt-2 min-w-full group/preview" data-navigate-ignore="true"
 >
-        <a href="https://laravel.com" target="_blank" rel="noopener noreferrer">
+<!--[if BLOCK]><![endif]-->        <a href="https://laravel.com" target="_blank" rel="noopener noreferrer">
         <div
             title="Click to visit: laravel.com"
             class="relative w-full bg-slate-100/90 border border-slate-300
@@ -25,4 +25,5 @@ Sure, here is the link: <a data-navigate-ignore="true" class="text-blue-500 hove
             <a href="https://laravel.com" target="_blank" rel="noopener noreferrer"
                class="text-xs text-slate-500 group-hover/preview:text-pink-600">From: laravel.com</a>
         </div>
+<!--[if ENDBLOCK]><![endif]-->
 </div>. Let me know if you have any questions.
