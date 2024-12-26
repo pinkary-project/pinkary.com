@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
-use App\Rules\Recaptcha;
 use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
 use Illuminate\Auth\Events\Registered;
@@ -17,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 final readonly class RegisteredUserController
 {
@@ -33,7 +33,7 @@ final readonly class RegisteredUserController
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, Turnstile $turnstile): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -41,14 +41,8 @@ final readonly class RegisteredUserController
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, new UnauthorizedEmailProviders()],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
-            'g-recaptcha-response' => app()->environment('production') ? ['required', new Recaptcha($request->ip())] : [],
+            'cf-turnstile-response' => app()->environment(['production', 'testing']) ? ['required', $turnstile] : [],
         ]);
-
-        if (app()->environment('production')) {
-            throw ValidationException::withMessages([
-                'email' => 'We have temporarily disabled registration due to spam. We will try to enable it as soon as possible.',
-            ]);
-        }
 
         $user = User::create([
             'name' => $request->name,

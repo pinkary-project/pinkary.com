@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "error-codes": [],
+  "challenge_ts": "2023-09-11T14:40:06.952Z",
+  "hostname": "turnstile-test.test",
+  "action": "",
+  "cdata": "",
+  "metadata": {
+    "interactive": true
+  }
+}
