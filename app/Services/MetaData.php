@@ -57,6 +57,7 @@ final readonly class MetaData
         $doc = new DOMDocument();
         @$doc->loadHTML($value);
         $iframe = $doc->getElementsByTagName('iframe')->item(0);
+
         if ($iframe) {
             $iframe->setAttribute('width', (string) self::CARD_WIDTH);
             $iframe->setAttribute('height', (string) self::CARD_HEIGHT);
