@@ -299,7 +299,7 @@ test('unique constraint validation is case insensitive', function (string $exist
 test("user's name can contain blank characters", function (string $given, string $expected) {
     mockTurnstileResponse(true);
     $response = $this->from('/register')->post('/register', [
-        ...$this->basePayload, 'name' => $given
+        ...$this->basePayload, 'name' => $given,
     ]);
 
     // Assert that the user was created
@@ -317,7 +317,6 @@ test("user's name can contain blank characters", function (string $given, string
     ["Test User \u{200E}", 'Test User'],
     ["Test \u{200E}\u{200E} User", "Test \u{200E}\u{200E} User"],
 ]);
-
 
 test('anonymously preference is set to true by default', function () {
     mockTurnstileResponse(true);
