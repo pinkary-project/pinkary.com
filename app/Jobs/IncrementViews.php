@@ -103,7 +103,7 @@ final class IncrementViews implements ShouldQueue
     /**
      * Get the recently viewed models.
      *
-     * @return Collection<array-key, Question>|Collection<array-key, User>
+     * @return Collection<array-key, Question>
      */
     private function getRecentlyViewed(string $key): Collection
     {
