@@ -6,6 +6,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
+
+use function Laravel\Prompts\error;
 
 final class PerformDatabaseBackupCommand extends Command
 {
@@ -30,7 +33,18 @@ final class PerformDatabaseBackupCommand extends Command
     {
         $filename = 'backup-'.now()->timestamp.'.sql';
 
-        File::copy(database_path('database.sqlite'), database_path('backups/'.$filename));
+        $result = Process::run([
+            'sqlite3',
+            database_path('database.sqlite'),
+            sprintf('.backup %s', database_path('backups/'.$filename)),
+        ]);
+
+        if (! $result->successful()) {
+            $this->error('Database backup failed: '.$result->errorOutput());
+            error('Database backup failed: '.$result->errorOutput());
+
+            return;
+        }
 
         $glob = File::glob(database_path('backups/*.sql'));
 
