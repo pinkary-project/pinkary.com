@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
 use App\Models\User;
 use App\Rules\MaxUploads;
@@ -28,6 +29,7 @@ use Livewire\WithFileUploads;
  */
 final class Create extends Component
 {
+    use NeedsVerifiedEmail;
     use WithFileUploads;
 
     /**
@@ -81,6 +83,10 @@ final class Create extends Component
      */
     public function updated(mixed $property): void
     {
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
         if ($property === 'images') {
             $this->runImageValidation();
             $this->uploadImages();
@@ -92,6 +98,10 @@ final class Create extends Component
      */
     public function runImageValidation(): void
     {
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
         $this->validate(
             rules: [
                 'images' => [
@@ -206,6 +216,10 @@ final class Create extends Component
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
 

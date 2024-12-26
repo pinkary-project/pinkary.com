@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +17,8 @@ use Livewire\Component;
 
 final class Show extends Component
 {
+    use NeedsVerifiedEmail;
+
     /**
      * The component's question ID.
      */
@@ -96,6 +99,10 @@ final class Show extends Component
             return;
         }
 
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
         if ($this->inIndex) {
             $this->dispatch('notification.created', message: 'Question ignored.');
 
@@ -125,6 +132,10 @@ final class Show extends Component
             return;
         }
 
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
         $question = Question::findOrFail($this->questionId);
 
         $bookmark = $question->bookmarks()->firstOrCreate([
@@ -148,6 +159,10 @@ final class Show extends Component
             return;
         }
 
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
         $question = Question::findOrFail($this->questionId);
 
         $question->likes()->firstOrCreate([
@@ -163,6 +178,10 @@ final class Show extends Component
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
 
@@ -189,6 +208,10 @@ final class Show extends Component
             return;
         }
 
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
         $question = Question::findOrFail($this->questionId);
 
         $this->authorize('update', $question);
@@ -207,6 +230,10 @@ final class Show extends Component
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
 
@@ -232,6 +259,10 @@ final class Show extends Component
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
 
