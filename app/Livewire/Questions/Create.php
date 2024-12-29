@@ -164,7 +164,7 @@ final class Create extends Component
     }
 
     /**
-     * Choose appropriate placeholder copy.
+     * Choose the appropriate placeholder copy.
      */
     #[Computed]
     public function placeholder(): string
