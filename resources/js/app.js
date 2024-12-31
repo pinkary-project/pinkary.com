@@ -69,4 +69,7 @@ Alpine.data('viewCreate', viewCreate);
 import { themeSwitch } from './theme-switch.js';
 Alpine.data('themeSwitch', themeSwitch);
 
+import { toggle } from './toggle.js';
+Alpine.data('toggle', toggle);
+
 Livewire.start()

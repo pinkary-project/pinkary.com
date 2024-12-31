@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     <div class="mx-auto my-16 max-w-7xl px-6 lg:px-8">
         <a
             href="{{ url()->previous() === request()->url() ? '/' : url()->previous() }}"
@@ -117,4 +117,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>

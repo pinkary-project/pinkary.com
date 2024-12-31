@@ -24,7 +24,7 @@ final readonly class HashtagProviderParsable implements ParsableContentProvider
                 $sanitizedHashtag = Str::limit($matches[3], 200, '');
 
                 return sprintf(
-                    '<a class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" href="%s">#%s</a>',
+                    '<a class="hover:underline cursor-pointer text-pink-500" href="%s">#%s</a>',
                     "/hashtag/{$sanitizedHashtag}",
                     $sanitizedHashtag
                 );
