@@ -33,6 +33,7 @@ final readonly class UserGitHubUsernameController
         $user = type($request->user())->as(User::class);
 
         try {
+            /** @var array<string, string> $validated */
             $validated = Validator::validate([
                 'github_username' => $githubUser->getNickname(),
             ], [
@@ -62,8 +63,9 @@ final readonly class UserGitHubUsernameController
 
         if (! $user->is_uploaded_avatar) {
             UpdateUserAvatar::dispatch(
-                user: $user,
-                service: 'github',
+                $user,
+                null,
+                'github',
             );
         }
 

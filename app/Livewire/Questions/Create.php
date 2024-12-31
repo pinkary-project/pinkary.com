@@ -120,6 +120,7 @@ final class Create extends Component
                         /** @var UploadedFile $value */
                         $dimensions = $value->dimensions();
                         if (is_array($dimensions)) {
+                            /** @var array<int, int> $dimensions */
                             [$width, $height] = $dimensions;
                             $aspectRatio = $width / $height;
                             $maxAspectRatio = 2 / 5;

@@ -19,6 +19,7 @@ final readonly class UpdatePasswordController
     {
         $user = type($request->user())->as(User::class);
 
+        /** @var array<string, string> $validated */
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
             'password' => ['required', Password::defaults(), 'confirmed'],

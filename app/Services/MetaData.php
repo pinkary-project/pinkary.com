@@ -89,7 +89,7 @@ final readonly class MetaData
     /**
      * Get the meta-data for a given URL.
      *
-     * @return Collection<string, string>
+     * @return Collection<string, non-empty-string>
      */
     private function getData(): Collection
     {
@@ -108,14 +108,14 @@ final readonly class MetaData
             // Laravel Http Client, Guzzle, and PSR-7
         }
 
-        return $data;
+        return $data->filter(fn (mixed $value): bool => is_string($value) && $value !== '');
     }
 
     /**
      * Fetch the oEmbed data for a given URL.
      *
      * @param  array<string, string|int>  $options
-     * @return Collection<string, string>
+     * @return Collection<string, non-empty-string>
      */
     private function fetchOEmbed(string $service, array $options): Collection
     {
@@ -127,20 +127,19 @@ final readonly class MetaData
             );
 
             if ($response->ok()) {
-                /** @var Collection<string, string|null> $data */
                 $data = $response->collect();
             }
         } catch (ConnectionException) {
             // Catch but not capture the exception
         }
 
-        return $data;
+        return $data->filter(fn (mixed $value): bool => is_string($value) && $value !== '');
     }
 
     /**
      * Parse the response body for MetaData.
      *
-     * @return Collection<string, string>
+     * @return Collection<string, non-empty-string>
      */
     private function parseContent(string $content): Collection
     {
@@ -149,7 +148,8 @@ final readonly class MetaData
 
         $interested_in = ['og', 'twitter'];
         $allowed = ['title', 'description', 'keywords', 'image', 'site_name', 'url', 'type'];
-        $data = collect();
+        /** @var Collection<string, string> $data */
+        $data = new Collection();
         $metas = $doc->getElementsByTagName('meta');
 
         if ($metas->count() > 0) {
@@ -178,14 +178,13 @@ final readonly class MetaData
             }
         }
 
-        return $data->filter(fn (?string $value): bool => (string) $value !== '');
-
+        return $data->filter(fn (string $value): bool => $value !== '');
     }
 
     /**
      * Parse the response body for MetaData.
      *
-     * @return Collection<string, string>
+     * @return Collection<string, non-empty-string>
      *
      * @throws ConnectionException
      */
@@ -225,9 +224,13 @@ final readonly class MetaData
             );
             if ($vimeo->isNotEmpty()) {
                 foreach ($vimeo as $key => $value) {
-                    $key === 'html'
-                        ? $data->put($key, $this->ensureCorrectSize((string) $value))
-                        : $data->put($key, $value);
+                    $value = $key === 'html'
+                        ? $this->ensureCorrectSize((string) $value)
+                        : $value;
+
+                    if ($value !== '') {
+                        $data->put($key, $value);
+                    }
                 }
             }
         }
@@ -242,9 +245,13 @@ final readonly class MetaData
 
             if ($youtube->isNotEmpty()) {
                 foreach ($youtube as $key => $value) {
-                    $key === 'html'
-                        ? $data->put($key, $this->ensureCorrectSize((string) $value))
-                        : $data->put($key, $value);
+                    $value = $key === 'html'
+                        ? $this->ensureCorrectSize((string) $value)
+                        : $value;
+
+                    if ($value !== '') {
+                        $data->put($key, $value);
+                    }
                 }
             }
         }

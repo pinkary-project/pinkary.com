@@ -34,8 +34,11 @@ final class PerformDatabaseBackupCommand extends Command
 
         $glob = File::glob(database_path('backups/*.sql'));
 
-        collect($glob)->sort()->reverse()->slice(4)->each(
-            fn (string $backup): bool => File::delete($backup),
-        );
+        collect($glob)->sort()->reverse()->slice(4)->filter(
+            fn (mixed $backup): bool => is_string($backup),
+        )
+            ->each(
+                fn (string $backup): bool => File::delete($backup),
+            );
     }
 }

@@ -26,6 +26,7 @@ final class QuestionOverview extends BaseWidget
             ->selectRaw('COUNT(*) AS total, SUM(is_reported) AS reported, SUM(is_ignored) AS ignored')
             ->first();
 
+        /** @var array<string, int> $counts */
         $counts = $counts !== null ? $counts->attributesToArray() : ['total' => 0, 'reported' => 0, 'ignored' => 0];
 
         return [

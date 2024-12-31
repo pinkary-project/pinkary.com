@@ -48,6 +48,7 @@ final class Edit extends Component
             return;
         }
 
+        /** @var array<string, string> $validated */
         $validated = $this->validate([
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);

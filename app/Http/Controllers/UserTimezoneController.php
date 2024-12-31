@@ -14,6 +14,7 @@ final readonly class UserTimezoneController
      */
     public function update(Request $request): void
     {
+        /** @var array<string, string> $validated */
         $validated = $request->validate([
             'timezone' => ['required', 'string', 'max:255', new ValidTimezone],
         ]);

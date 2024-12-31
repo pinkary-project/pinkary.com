@@ -47,6 +47,7 @@ final class Create extends Component
             $this->url = "https://{$this->url}";
         }
 
+        /** @var array<string, string> $validated */
         $validated = $this->validate([
             'description' => 'required|max:100',
             'url' => ['required', 'max:100', 'url', 'starts_with:https'],

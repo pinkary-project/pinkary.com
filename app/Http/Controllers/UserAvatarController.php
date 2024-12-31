@@ -36,7 +36,8 @@ final readonly class UserAvatarController
 
         UpdateUserAvatar::dispatchSync(
             $user,
-            service: $user->github_username ? 'github' : 'gravatar',
+            null,
+            $user->github_username ? 'github' : 'gravatar',
         );
 
         return to_route('profile.edit')
