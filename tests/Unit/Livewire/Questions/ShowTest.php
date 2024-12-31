@@ -116,6 +116,22 @@ test('ignore auth', function () {
     $component->assertRedirect(route('login'));
 });
 
+test('ignore unverified user', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('ignore');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($question->fresh()->is_ignored)->toBeFalse();
+});
+
 test('bookmark', function () {
     $question = Question::factory()->create();
 
@@ -143,6 +159,22 @@ test('bookmark auth', function () {
     $component->call('bookmark');
 
     $component->assertRedirect(route('login'));
+});
+
+test('bookmark unverified user', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('bookmark');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($question->bookmarks()->count())->toBe(0);
 });
 
 test('unbookmark', function () {
@@ -177,6 +209,22 @@ test('unbookmark auth', function () {
     $component->assertRedirect(route('login'));
 });
 
+test('unbookmark unverified user', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('unbookmark');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($question->bookmarks()->count())->toBe(0);
+});
+
 test('like', function () {
     $question = Question::factory()->create();
 
@@ -203,6 +251,22 @@ test('like auth', function () {
     $component->call('like');
 
     $component->assertRedirect(route('login'));
+});
+
+test('like unverified user', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('like');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($question->likes()->count())->toBe(0);
 });
 
 test('unlike', function () {
@@ -235,6 +299,22 @@ test('unlike auth', function () {
     $component->assertRedirect(route('login'));
 });
 
+test('unlike unverified user', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('unlike');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($question->likes()->count())->toBe(0);
+});
+
 test('pin', function () {
     $user = User::factory()->create();
 
@@ -265,6 +345,22 @@ test('pin auth', function () {
     $component->call('pin');
 
     $component->assertRedirect(route('login'));
+});
+
+test('pin unverified user', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('pin');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($question->refresh()->pinned)->toBe(false);
 });
 
 test('pin no answer', function () {
@@ -320,6 +416,24 @@ test('unpin auth', function () {
     $component->call('unpin');
 
     $component->assertRedirect(route('login'));
+});
+
+test('unpin unverified user', function () {
+    $question = Question::factory()->create([
+        'pinned' => true,
+    ]);
+
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('unpin');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($question->refresh()->pinned)->toBe(true);
 });
 
 test('unpin visitor', function () {

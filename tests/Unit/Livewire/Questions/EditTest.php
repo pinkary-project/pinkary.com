@@ -53,6 +53,24 @@ test('update auth', function () {
     $component->assertStatus(403);
 });
 
+test('update unverified user', function () {
+    $component = Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ]);
+
+    $this->question->to->update([
+        'email_verified_at' => null,
+    ]);
+
+    $component->set('answer', 'Hello World');
+
+    $component->call('update');
+
+    $component->assertRedirect(route('verification.notice'));
+
+    expect($this->question->fresh()->answer)->toBeNull();
+});
+
 test('report', function () {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,

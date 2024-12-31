@@ -742,3 +742,29 @@ test('max size & ratio validation', function () {
         'images.0' => 'The image aspect ratio must be less than 2/5.',
     ]);
 });
+
+test('only verified users can upload images', function () {
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
+    $component->call('runImageValidation');
+
+    $component->assertRedirect(route('verification.notice'));
+});
+
+test('only verified users can create questions', function () {
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Hello World');
+    $component->call('store');
+
+    $component->assertRedirect(route('verification.notice'));
+});
