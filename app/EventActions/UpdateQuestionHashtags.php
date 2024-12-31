@@ -21,7 +21,7 @@ final readonly class UpdateQuestionHashtags
     }
 
     /**
-     * @return array{attached: array<int, int>, detached: array<int, int>, updated: array<int, int>}
+     * @return array{attached: array<array-key, mixed>, detached: array<array-key, mixed>, updated: array<array-key, mixed>}
      */
     public function handle(): array
     {

@@ -20,7 +20,7 @@ final class PanAnalyticFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'impressions' => fn (array $attributes): int => $attributes['hovers'] + $attributes['clicks'],
+            'impressions' => fn (array $attributes): int => type($attributes['hovers'])->asInt() + type($attributes['clicks'])->asInt(),
             'hovers' => $this->faker->randomNumber(),
             'clicks' => $this->faker->randomNumber(),
         ];
