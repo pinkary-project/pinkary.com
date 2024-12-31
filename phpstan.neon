@@ -3,8 +3,6 @@ includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    checkMissingIterableValueType: true
-
     level: max
 
     paths:
