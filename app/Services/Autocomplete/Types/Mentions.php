@@ -36,7 +36,8 @@ final readonly class Mentions extends Type
      */
     public function search(?string $query): Collection
     {
-        return Collection::make(
+        /** @var Collection<int, Result> $collection */
+        $collection = Collection::make(
             User::query()
                 ->when(auth()->id(), fn (Builder $constraint, string|int $id) => $constraint->whereKeyNot($id))
                 ->whereNotNull('email_verified_at')
@@ -68,5 +69,7 @@ final readonly class Mentions extends Type
                     ],
                 ))
         );
+
+        return $collection;
     }
 }
