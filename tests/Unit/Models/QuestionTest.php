@@ -112,3 +112,49 @@ test('does not increment views without answer', function () {
 
     expect($question->fresh()->views)->toBe(0);
 });
+
+test('get sharable answer attribute', function () {
+    $question = Question::factory()->create([
+        'answer' => <<<'text'
+        Hello
+        ```php
+        echo "Hello, World!";
+        ```
+        Answer text
+        https://pinkary.com
+        text,
+    ]);
+
+    expect($question->sharable_answer)->toBe('Hello  [👀 see the code on Pinkary 👀]  Answer text pinkary.com');
+});
+
+test('get sharable content attribute', function () {
+    $question = Question::factory()->create([
+        'content' => <<<'text'
+        Hello
+        ```php
+            echo "Hello, World!";
+        ```
+        Content text
+        https://pinkary.com
+        text,
+    ]);
+
+    expect($question->sharable_content)->toBe('Hello  [👀 see the code on Pinkary 👀]  Content text pinkary.com');
+});
+
+test('get sharable text', function () {
+    $question = new Question();
+
+    expect($question->getSharableText(null))->toBeNull();
+
+    expect($question->getSharableText('Hello'))->toBe('Hello');
+
+    expect($question->getSharableText('Hello <div id="link-preview-card">Preview</div>'))->toBe('Hello ');
+
+    expect($question->getSharableText('Hello <pre><code>Code</code></pre>'))->toBe('Hello  [👀 see the code on Pinkary 👀] ');
+
+    expect($question->getSharableText('Hello<br>World'))->toBe('Hello World');
+
+    expect($question->getSharableText('hello<div id="link-preview-card">Preview</div>'))->toBe('hello');
+});

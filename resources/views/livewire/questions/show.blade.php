@@ -13,6 +13,14 @@
                 @else
                     <x-avatar-with-name :user="$question->from" />
                 @endif
+                <a
+                    class="text-xs text-pink-500 flex items-end gap-1.5"
+                    href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
+                    target="_blank"
+                    data-navigate-ignore="true"
+                >
+                    <x-heroicon-o-language class="h-4 w-4"/>
+                </a>
             @endunless
             @if ($question->pinned && $pinnable)
                 <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
@@ -228,6 +236,18 @@
                             </span>
                         @endif
                     </p>
+
+                    <span>•</span>
+
+                    <a
+                        class="flex items-center transition-colors group-hover:text-pink-500 dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
+                        title="Translate"
+                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
+                        data-navigate-ignore="true"
+                        target="_blank"
+                    >
+                        <x-heroicon-o-language class="h-4 w-4"/>
+                    </a>
                 </div>
 
                 <div class="flex items-center text-slate-500 ">
@@ -318,20 +338,6 @@
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
-                            @php
-                                $sharableQuestion = str_replace("'", "\'", $question->isSharedUpdate() ? $question->answer : $question->content);
-                                $link = null;
-
-                                if (preg_match('/<div\s+id="link-preview-card"[^>]*>(.*)<\/div>(?!.*<\/div>)/si', $sharableQuestion, $matches)) {
-                                    $linkPreviewCard = $matches[0];
-
-                                    if (preg_match('/data-url="([^"]*)"/', $linkPreviewCard, $urlMatches)) {
-                                        $link = " {$urlMatches[1]} ";
-                                    }
-                                }
-
-                                $sharable = $link ? str_replace($linkPreviewCard, $link, $sharableQuestion) : $sharableQuestion;
-                            @endphp
                             <button
                                 data-navigate-ignore="true"
                                 x-cloak
@@ -339,7 +345,7 @@
                                 x-on:click="
                                     twitter({
                                         url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
-                                        question: '{{ $sharable }}',
+                                        question: '{{ $question->isSharedUpdate() ? $question->sharable_answer : $question->sharable_content }}',
                                         message: '{{ $question->isSharedUpdate() ? 'See it on Pinkary' : 'See response on Pinkary' }}',
                                     })
                                 "

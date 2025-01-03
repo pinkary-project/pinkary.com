@@ -85,6 +85,44 @@ final class Question extends Model implements Viewable
 
     /**
      * The attributes that should be cast.
+     */
+    public function getSharableAnswerAttribute(): ?string
+    {
+        return $this->getSharableText($this->answer);
+    }
+
+    /**
+     * The attributes that should be cast.
+     */
+    public function getSharableContentAttribute(): ?string
+    {
+        return $this->getSharableText($this->content);
+    }
+
+    /**
+     * Get the sharable text for the given content.
+     */
+    public function getSharableText(?string $text): ?string
+    {
+        if ($text === null) {
+            return null;
+        }
+
+        $text = preg_replace('/<div\s+id="link-preview-card"[^>]*>(.*)<\/div>(?!.*<\/div>)/si', '', $text);
+
+        $text = preg_replace(
+            '/<pre><code.*?>.*?<\/code><\/pre>/si',
+            ' [👀 see the code on Pinkary 👀] ',
+            (string) $text
+        );
+
+        $text = str_replace('<br>', ' ', (string) $text);
+
+        return strip_tags($text);
+    }
+
+    /**
+     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
