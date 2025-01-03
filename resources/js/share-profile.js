@@ -16,7 +16,7 @@ const shareProfile = () => ({
         let text = options.question ? options.question + '%0A%0A' : ''
 
         text = text
-            .replace(/<pre><code.*?>.*?<\/code><\/pre>/gs, "%0A%0A[👀 see the code on Pinkary 👀]%0A%0A")
+            .replace(' [👀 see the code on Pinkary 👀] ', "%0A%0A[👀 see the code on Pinkary 👀]%0A%0A")
             .replace(/<\/?[^>]+(>|$)/g, "")
             .replace(/`/g, '')
             .replace(/&amp;/g, '&')
