@@ -108,7 +108,6 @@ final readonly class MetaData
             }
         }
 
-
         $data = collect();
 
         try {
