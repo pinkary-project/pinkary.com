@@ -93,6 +93,22 @@ final readonly class MetaData
      */
     private function getData(): Collection
     {
+        // If it’s a YouTube link, go straight to oEmbed
+        // return early to bypass bot detection issues.
+        if (Str::contains($this->url, ['youtube.com', 'youtu.be'])) {
+            $oembed = $this->fetchOEmbed(
+                service: 'https://www.youtube.com/oembed',
+                options: [
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
+                ]
+            );
+            if ($oembed->isNotEmpty()) {
+                return $oembed;
+            }
+        }
+
+
         $data = collect();
 
         try {
