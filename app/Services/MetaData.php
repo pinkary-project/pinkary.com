@@ -235,27 +235,6 @@ final readonly class MetaData
             }
         }
 
-        if ($data->has('site_name') && $data->get('site_name') === 'YouTube') {
-            $youtube = $this->fetchOEmbed(
-                service: 'https://www.youtube.com/oembed',
-                options: [
-                    'maxwidth' => self::CARD_WIDTH,
-                    'maxheight' => self::CARD_HEIGHT,
-                ]);
-
-            if ($youtube->isNotEmpty()) {
-                foreach ($youtube as $key => $value) {
-                    $value = $key === 'html'
-                        ? $this->ensureCorrectSize((string) $value)
-                        : $value;
-
-                    if ($value !== '') {
-                        $data->put($key, $value);
-                    }
-                }
-            }
-        }
-
         return $data->unique();
     }
 }
