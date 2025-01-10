@@ -9,10 +9,12 @@ use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Exception\MalformedUriException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 
 final readonly class MetaData
 {
@@ -86,6 +88,7 @@ final readonly class MetaData
         return ! ($dimensions && ($dimensions[0] < $min_width || $dimensions[1] < $min_height));
     }
 
+
     /**
      * Get the meta-data for a given URL.
      *
@@ -95,7 +98,11 @@ final readonly class MetaData
     {
         // If it’s a YouTube link, go straight to oEmbed
         // return early to bypass bot detection issues.
-        if (Str::contains($this->url, ['youtube.com', 'youtu.be'])) {
+        if (in_array(
+            needle: Uri::of($this->url)->host(),
+            haystack: ['youtube.com', 'www.youtube.com', 'youtu.be', 'www.youtu.be'],
+            strict: true
+        )) {
             $oembed = $this->fetchOEmbed(
                 service: 'https://www.youtube.com/oembed',
                 options: [
