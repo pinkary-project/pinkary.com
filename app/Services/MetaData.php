@@ -9,7 +9,6 @@ use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Exception\MalformedUriException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -87,7 +86,6 @@ final readonly class MetaData
 
         return ! ($dimensions && ($dimensions[0] < $min_width || $dimensions[1] < $min_height));
     }
-
 
     /**
      * Get the meta-data for a given URL.
