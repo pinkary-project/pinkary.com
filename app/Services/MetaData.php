@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 
 final readonly class MetaData
 {
@@ -93,6 +94,25 @@ final readonly class MetaData
      */
     private function getData(): Collection
     {
+        // If it’s a YouTube link, go straight to oEmbed
+        // return early to bypass bot detection issues.
+        if (in_array(
+            needle: Uri::of($this->url)->host(),
+            haystack: ['youtube.com', 'www.youtube.com', 'youtu.be', 'www.youtu.be'],
+            strict: true
+        )) {
+            $oembed = $this->fetchOEmbed(
+                service: 'https://www.youtube.com/oembed',
+                options: [
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
+                ]
+            );
+            if ($oembed->isNotEmpty()) {
+                return $oembed;
+            }
+        }
+
         $data = collect();
 
         try {
@@ -224,27 +244,6 @@ final readonly class MetaData
             );
             if ($vimeo->isNotEmpty()) {
                 foreach ($vimeo as $key => $value) {
-                    $value = $key === 'html'
-                        ? $this->ensureCorrectSize((string) $value)
-                        : $value;
-
-                    if ($value !== '') {
-                        $data->put($key, $value);
-                    }
-                }
-            }
-        }
-
-        if ($data->has('site_name') && $data->get('site_name') === 'YouTube') {
-            $youtube = $this->fetchOEmbed(
-                service: 'https://www.youtube.com/oembed',
-                options: [
-                    'maxwidth' => self::CARD_WIDTH,
-                    'maxheight' => self::CARD_HEIGHT,
-                ]);
-
-            if ($youtube->isNotEmpty()) {
-                foreach ($youtube as $key => $value) {
                     $value = $key === 'html'
                         ? $this->ensureCorrectSize((string) $value)
                         : $value;
