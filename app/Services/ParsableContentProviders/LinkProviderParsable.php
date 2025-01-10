@@ -11,6 +11,11 @@ use Illuminate\Support\Str;
 final readonly class LinkProviderParsable implements ParsableContentProvider
 {
     /**
+     * The characters that can be attached to a URL.
+     */
+    private const string ALLOWABLE_ATTACHED_CHARACTERS = '{([<!,.?;:>)]}';
+
+    /**
      * {@inheritDoc}
      */
     public function parse(string $content): string
@@ -21,9 +26,21 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             return $content;
         }
 
+        $linkIndices = [];
+        foreach ($tokens as $index => $token) {
+            $trimmed = trim($token, self::ALLOWABLE_ATTACHED_CHARACTERS);
+            if ($this->isValidUrl($trimmed)) {
+                $linkIndices[] = $index;
+            }
+        }
+
+        $lastLinkIndex = $linkIndices === [] ? null : end($linkIndices);
+
         $processedTokens = array_map(
-            fn (string $token): string => $this->processToken($token),
-            $tokens);
+            fn (string $token, int $index): string => $this->processToken($token, $index === $lastLinkIndex),
+            $tokens,
+            array_keys($tokens)
+        );
 
         return implode('', $processedTokens);
     }
@@ -41,11 +58,9 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     /**
      * Process a single token and convert valid URLs into HTML links.
      */
-    private function processToken(string $token): string
+    private function processToken(string $token, bool $showPreview = false): string
     {
-        $allowableAttachedCharacters = '{([<!,.?;:>)]}';
-
-        $trimmedToken = trim($token, $allowableAttachedCharacters);
+        $trimmedToken = trim($token, self::ALLOWABLE_ATTACHED_CHARACTERS);
 
         if ($trimmedToken === '' || $trimmedToken === '0') {
             return $token;
@@ -64,21 +79,23 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
 
         $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
 
-        $service = new MetaData($trimmedToken);
-        $metadata = $service->fetch();
-        if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
-            $trimmedPreviewCard = trim(
-                view('components.link-preview-card', [
-                    'data' => $metadata,
-                    'url' => $trimmedToken,
-                ])->render()
-            );
+        if ($showPreview) {
+            $service = new MetaData($trimmedToken);
+            $metadata = $service->fetch();
+            if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
+                $trimmedPreviewCard = trim(
+                    view('components.link-preview-card', [
+                        'data' => $metadata,
+                        'url' => $trimmedToken,
+                    ])->render()
+                );
 
-            $linkHtml .= $trimmedPreviewCard;
+                $linkHtml .= $trimmedPreviewCard;
+            }
         }
 
-        $leading = $this->getCharacters($token, $allowableAttachedCharacters, 'leading');
-        $trailing = $this->getCharacters($token, $allowableAttachedCharacters, 'trailing');
+        $leading = $this->getCharacters($token, 'leading');
+        $trailing = $this->getCharacters($token, 'trailing');
 
         return $leading.$linkHtml.$trailing;
     }
@@ -86,11 +103,12 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     /**
      * Extract leading or trailing punctuation/characters from a token.
      */
-    private function getCharacters(string $token, string $allowableCharacters, string $direction): string
+    private function getCharacters(string $token, string $direction): string
     {
+        $allowableCharacters = preg_quote(self::ALLOWABLE_ATTACHED_CHARACTERS, '/');
         $pattern = match ($direction) {
-            'leading' => '/^(['.preg_quote($allowableCharacters, '/').']+)/',
-            'trailing' => '/(['.preg_quote($allowableCharacters, '/').']+)$/',
+            'leading' => "/^([{$allowableCharacters}]+)/",
+            'trailing' => "/([{$allowableCharacters}]+)$/",
             default => '',
         };
 
