@@ -6,7 +6,9 @@ namespace App\Services\ParsableContentProviders;
 
 use App\Contracts\Services\ParsableContentProvider;
 use App\Services\MetaData;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Throwable;
 
 final readonly class LinkProviderParsable implements ParsableContentProvider
 {
@@ -16,7 +18,15 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     private const string ALLOWABLE_ATTACHED_CHARACTERS = '{([<!,.?;:>)]}';
 
     /**
+     * Regex to check for the presence of images in the content
+     * (Checks both Markdown and parsed images)
+     */
+    private const string IMAGE_REGEX = '/!\[[^]]*]\([^)]*\)|<img[^>]+src\s*=\s*["\'][^"\'\s]+["\'][^>]*>/i';
+
+    /**
      * {@inheritDoc}
+     *
+     * @throws Throwable
      */
     public function parse(string $content): string
     {
@@ -26,23 +36,79 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             return $content;
         }
 
-        $linkIndices = [];
-        foreach ($tokens as $index => $token) {
-            $trimmed = trim($token, self::ALLOWABLE_ATTACHED_CHARACTERS);
-            if ($this->isValidUrl($trimmed)) {
-                $linkIndices[] = $index;
-            }
+        if ($this->imagesExist($content)) {
+            $shouldShowPreview = false;
+            $previewMetadata = null;
+            $previewIndex = null;
+        } else {
+            $shouldShowPreview = true;
+            [$previewIndex, $previewMetadata] = $this->findFirstValidPreview($tokens);
         }
 
-        $lastLinkIndex = $linkIndices === [] ? null : end($linkIndices);
-
         $processedTokens = array_map(
-            fn (string $token, int $index): string => $this->processToken($token, $index === $lastLinkIndex),
+            fn (string $token, int $index): string => $this
+                ->parseToken(
+                    token: $token,
+                    showPreview: ($index === $previewIndex && $shouldShowPreview),
+                    metadata: $previewMetadata
+                ),
             $tokens,
             array_keys($tokens)
         );
 
         return implode('', $processedTokens);
+    }
+
+    /**
+     * Check to see if any images exist in the content
+     */
+    private function imagesExist(string $content): bool
+    {
+        return (bool) preg_match(self::IMAGE_REGEX, $content);
+    }
+
+    /**
+     * Trim the token
+     */
+    private function trimToken(string $token): string
+    {
+        return mb_trim($token, self::ALLOWABLE_ATTACHED_CHARACTERS);
+    }
+
+    /**
+     * Find the first valid preview starting from the end of the content
+     *
+     * @param  list<string>  $tokens
+     * @return array{(int|string|null), Collection<string, string>|null}
+     */
+    private function findFirstValidPreview(array $tokens): array
+    {
+        // Collect all valid URLs with their indices
+        $linkIndices = [];
+        foreach ($tokens as $index => $token) {
+            if ($this->isValidUrl($this->trimToken($token))) {
+                $linkIndices[] = $index;
+            }
+        }
+
+        // If no links found, return early
+        if ($linkIndices === []) {
+            return [null, null];
+        }
+
+        // Start from the end and work backwards until we find a valid preview to show
+        foreach (array_reverse($linkIndices) as $index) {
+            $service = new MetaData(
+                url: $this->trimToken($tokens[$index])
+            );
+            $metadata = $service->fetch();
+
+            if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
+                return [$index, $metadata];
+            }
+        }
+
+        return [null, null];
     }
 
     /**
@@ -57,10 +123,17 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
 
     /**
      * Process a single token and convert valid URLs into HTML links.
+     *
+     * @param  ?Collection<string, string>  $metadata
+     *
+     * @throws Throwable
      */
-    private function processToken(string $token, bool $showPreview = false): string
-    {
-        $trimmedToken = trim($token, self::ALLOWABLE_ATTACHED_CHARACTERS);
+    private function parseToken(
+        string $token,
+        bool $showPreview = false,
+        ?Collection $metadata = null
+    ): string {
+        $trimmedToken = $this->trimToken($token);
 
         if ($trimmedToken === '' || $trimmedToken === '0') {
             return $token;
@@ -79,19 +152,15 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
 
         $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
 
-        if ($showPreview) {
-            $service = new MetaData($trimmedToken);
-            $metadata = $service->fetch();
-            if ($metadata->isNotEmpty() && ($metadata->has('image') || $metadata->has('html'))) {
-                $trimmedPreviewCard = trim(
-                    view('components.link-preview-card', [
-                        'data' => $metadata,
-                        'url' => $trimmedToken,
-                    ])->render()
-                );
+        if ($showPreview && $metadata?->isNotEmpty()) {
+            $trimmedPreviewCard = mb_trim(
+                view('components.link-preview-card', [
+                    'data' => $metadata,
+                    'url' => $trimmedToken,
+                ])->render()
+            );
 
-                $linkHtml .= $trimmedPreviewCard;
-            }
+            $linkHtml .= $trimmedPreviewCard;
         }
 
         $leading = $this->getCharacters($token, 'leading');
