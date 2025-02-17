@@ -152,6 +152,48 @@ test('links with localhost or ip addresses', function (string $content, string $
     ],
 ]);
 
+test('does not attach preview when image markdown exists even if metadata is valid', function () {
+    $content = <<<'CONTENT'
+        Check out this link: https://example.com <br>
+        ![preview.jpg](http://example.com/preview.jpg) <br>
+        <img src="http://example.com/preview.jpg" alt="Example"> <br>
+      CONTENT;
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+    $parsed = $provider->parse($content);
+
+    expect($parsed)->not->toContain('<div id="link-preview-card"')
+        ->and($parsed)->toContain('<a data-navigate-ignore="true"');
+});
+
+test('attaches preview only to the last valid preview link among multiple links', function () {
+    app()->forgetInstance(get_class(Http::getFacadeRoot()));
+    Http::clearResolvedInstances();
+
+    Http::fake([
+        'https://example1.com/' => Http::response('<html><head></head><body></body></html>'),
+        'https://laravel.com/' => Http::response(<<<'HTML'
+            <html>
+            <head>
+                <meta property="og:title" content="Laravel - The PHP Framework For Web Artisans">
+                <meta property="og:image" content="https://laravel.com/img/og-image.jpg">
+            </head>
+            <body></body>
+            </html>
+        HTML),
+        'https://example3.com/' => Http::response('<html><head></head><body></body></html>'),
+    ]);
+
+    $content = 'Links: https://example1.com, https://laravel.com, https://example3.com,';
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+    $parsed = $provider->parse($content);
+
+    expect($parsed)
+        ->toContain('id="link-preview-card"')
+        ->and($parsed)->toContain('data-url="https://laravel.com"')
+        ->and($parsed)->not->toContain('data-url="https://example1.com"')
+        ->and($parsed)->not->toContain('data-url="https://example3.com"');
+});
+
 test('links with query params', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
