@@ -1,15 +1,10 @@
 <div class="mb-8 flex justify-between space-x-2">
     @foreach($menuItems as $menuItemKey => $menuItem)
-        <a
-            data-pan="home-tabs-{{ $menuItemKey }}"
-            href="{{ route($menuItem['route']) }}"
-            class="{{ request()->routeIs($menuItem['route']) ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
-            title="{{ $menuItem['label'] }}"
-            wire:navigate
-            wire:transition
-        >
-            <x-dynamic-component :component="$menuItem['icon']" class="h-6 w-6 xsm:mr-2" />
-            <span class="hidden xsm:inline">{{ $menuItem['label'] }}</span>
-        </a>
+        <x-home-menu-link
+            :route="$menuItem['route']"
+            :label="$menuItem['label']"
+            :icon="$menuItem['icon'] ?? null"
+            :key="$menuItemKey"
+        />
     @endforeach
 </div>
