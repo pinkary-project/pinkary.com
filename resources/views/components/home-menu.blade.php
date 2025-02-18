@@ -1,27 +1,3 @@
-@php
-    $menuItems = [
-        'feed' => [
-            'label' => __('Feed'),
-            'route' => 'home.feed',
-            'icon' => 'heroicon-o-home',
-        ],
-        'following' => [
-            'label' => __('Following'),
-            'route' => 'home.following',
-            'icon' => 'heroicon-o-heart',
-        ],
-        'trending' => [
-            'label' => __('Trending'),
-            'route' => 'home.trending',
-            'icon' => 'heroicon-m-fire',
-        ],
-        'search' => [
-            'label' => __('Search'),
-            'route' => 'home.users',
-            'icon' => 'heroicon-o-magnifying-glass',
-        ],
-    ];
-@endphp
 <div class="mb-8 flex justify-between space-x-2">
     @foreach($menuItems as $menuItemKey => $menuItem)
         <a
