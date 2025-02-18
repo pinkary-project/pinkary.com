@@ -1,15 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class HomeMenu extends Component
+final class HomeMenu extends Component
 {
+    /**
+     * An array of menu items.
+     *
+     * @var array<string, array{label: string, route: string, icon: string}>
+     */
     public array $menuItems;
 
+    /**
+     * Create a new component instance.
+     */
     public function __construct()
     {
         $this->menuItems = [
