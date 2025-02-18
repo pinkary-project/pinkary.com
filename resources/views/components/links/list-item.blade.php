@@ -16,6 +16,11 @@
     onclick="e.preventDefault(); window.open('{{ $linkWithRef }}', '_blank')"
 >
     <div class="flex h-full items-center justify-center">
+
+        <span class="[&>svg]:h-5 [&>svg]:w-5 mr-2">
+            @include('components.icons.socials.' . App\Enums\Social::getSocialFromUrl($link->url)->value)
+        </span>
+
         <p class="truncate">
             {{ $link->description }}
         </p>
