@@ -21,7 +21,7 @@ final readonly class CodeProviderParsable implements ParsableContentProvider
                 $code = $matches['code'];
                 $language = empty($matches['language'])
                     ? 'plaintext'
-                    : mb_trim($matches['language']);
+                    : trim($matches['language']);
 
                 $highlighter = new Highlighter();
 
