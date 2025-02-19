@@ -16,10 +16,10 @@ return [
     */
 
     'github_usernames' => collect(explode(',', type(env('SPONSORS_GITHUB_USERNAMES', ''))->asString()))->map(
-        fn (string $username): string => trim($username)
+        fn (string $username): string => mb_trim($username)
     )->filter()->values()->all(),
 
     'github_company_usernames' => collect(explode(',', type(env('SPONSORS_GITHUB_COMPANY_USERNAMES', ''))->asString()))->map(
-        fn (string $username): string => trim($username)
+        fn (string $username): string => mb_trim($username)
     )->filter()->values()->all(),
 ];
