@@ -18,7 +18,13 @@ return new class extends Migration
         Schema::create('likes', function (Blueprint $table): void {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Question::class)->constrained()->cascadeOnDelete();
+
+            if (config('database.default') === 'sqlite') {
+                $table->foreignIdFor(Question::class)->constrained()->cascadeOnDelete();
+            } else {
+                $table->unsignedBigInteger('question_id');
+                $table->foreign('question_id')->references('id')->on('questions')->cascadeOnDelete();
+            }
 
             $table->unique(['user_id', 'question_id']);
 
