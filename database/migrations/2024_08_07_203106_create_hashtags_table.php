@@ -19,8 +19,12 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
-
-            $table->rawIndex('name collate nocase', 'name_collate_nocase');
+            if(config('database.default') === 'sqlite'){
+                $table->rawIndex('name collate nocase', 'name_collate_nocase');
+            }else{
+                // mysql
+                $table->index('name');
+            }
         });
 
         Schema::create('hashtag_question', function (Blueprint $table): void {
