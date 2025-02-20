@@ -15,6 +15,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('likes');
+
         Schema::create('likes', function (Blueprint $table): void {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
