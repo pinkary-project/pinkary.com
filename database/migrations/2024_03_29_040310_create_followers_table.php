@@ -14,6 +14,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('followers');
+
         Schema::create('followers', function (Blueprint $table): void {
             $table->id();
             $table->foreignIdFor(User::class, 'user_id')->constrained('users');
