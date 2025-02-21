@@ -24,6 +24,28 @@ final readonly class RecentQuestionsFeed
      */
     public function builder(): Builder
     {
+        if (config('database.default') === 'sqlite') {
+            return Question::query()
+                ->select('id')
+                ->whereNotNull('answer')
+                ->where('is_ignored', false)
+                ->where('is_reported', false)
+                ->when($this->hashtag, function (Builder $query): void {
+                    $query->whereHas('hashtags', function (Builder $query): void {
+                        $query
+                        // using 'like' for this query (with no wildcards) will
+                        // result in a case-insensitive lookup from sqlite,
+                        // which is what we want.
+                            ->where('name', 'like', $this->hashtag);
+                    })->orderByDesc('updated_at');
+                }, function (Builder $query): void {
+                    $query->addSelect('root_id', 'parent_id')
+                        ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
+                        ->groupBy(DB::Raw('IFNULL(root_id, id)'))
+                        ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+                });
+        }
+
         return Question::query()
             ->select('questions.id', 'questions.root_id', 'questions.parent_id')
             ->whereNotNull('answer')
