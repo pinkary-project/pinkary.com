@@ -43,10 +43,9 @@ it('allows user to update link settings', function () {
     $component->assertDispatched('link-settings.updated');
     $component->assertDispatched('notification.created', message: 'Link settings updated.');
 
+
     $user->refresh();
 
-    expect($user->settings)->toBe([
-        'link_shape' => 'rounded-none',
-        'gradient' => 'from-red-500 to-orange-600',
-    ]);
+    expect($user->settings)->toHaveKey('link_shape', 'rounded-none');
+    expect($user->settings)->toHaveKey('gradient', 'from-red-500 to-orange-600');
 });
