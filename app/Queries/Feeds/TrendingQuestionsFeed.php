@@ -41,6 +41,9 @@ final readonly class TrendingQuestionsFeed
         $timeBias = self::TIME_BIAS;
         $maxDaysSincePosted = self::MAX_DAYS_SINCE_POSTED;
 
+        $currentTimestamp = $this->getTimestampFunction();
+        $answerTimestamp = $this->getTimestampWithColumnFunction('answer_created_at');
+
         return Question::query()
             ->select('id')
             ->from(
@@ -48,12 +51,33 @@ final readonly class TrendingQuestionsFeed
                     ->withCount('likes', 'children')
                     ->orderByRaw(<<<SQL
                         (((likes_count * {$likesBias} + 1.0) * (children_count * {$commentsBias} + 1.0))
-                        / (strftime('%s') - strftime('%s', answer_created_at) + {$timeBias} + 1.0)) desc
+                        / ({$currentTimestamp} - {$answerTimestamp} + {$timeBias} + 1.0)) desc
                     SQL)
                     ->where('is_reported', false)
                     ->where('is_ignored', false)
                     ->where('answer_created_at', '>=', now()->subDays($maxDaysSincePosted)),
                 'trending_questions'
             );
+    }
+
+    private function getDatabaseDriver(): string
+    {
+        return config('database.default');
+    }
+
+    private function getTimestampFunction(): string
+    {
+        return match ($this->getDatabaseDriver()) {
+            'sqlite' => "strftime('%s')",
+            default => 'UNIX_TIMESTAMP()',
+        };
+    }
+
+    private function getTimestampWithColumnFunction(string $column): string
+    {
+        return match ($this->getDatabaseDriver()) {
+            'sqlite' => "strftime('%s', {$column})",
+            default => "UNIX_TIMESTAMP({$column})",
+        };
     }
 }
