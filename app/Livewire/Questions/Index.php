@@ -41,18 +41,21 @@ final class Index extends Component
 
         $questions = $user
             ->questionsReceived()
-            ->select('questions.*')
-            ->join(DB::raw('(
-                SELECT IFNULL(root_id, id) as thread_id, MAX(id) as latest_id
-                FROM questions
-                WHERE to_id = ' . $user->id . '
-                AND pinned = 0
-                AND is_reported = 0
-                AND is_ignored = 0
-                GROUP BY IFNULL(root_id, id)
-            ) as threads'), function($join) {
-                $join->on('questions.id', '=', 'threads.latest_id');
-            })
+            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
+            ->joinSub(
+                Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
+                    ->selectRaw('MAX(updated_at) as last_update')
+                    ->whereNotNull('answer')
+                    ->where('is_ignored', false)
+                    ->where('is_reported', false)
+                    ->where('to_id', $user->id)
+                    ->groupBy(DB::raw('IFNULL(root_id, id)')),
+                'grouped_questions',
+                function ($join) {
+                    $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped_questions.group_id')
+                        ->whereRaw('questions.updated_at = grouped_questions.last_update');
+                }
+            )
             ->withExists([
                 'root as showRoot' => function (Builder $query) use ($user): void {
                     $query->where('to_id', $user->id);
@@ -66,7 +69,7 @@ final class Index extends Component
                 $query->whereNotNull('answer');
             })
             ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-            ->orderByDesc('updated_at')
+            ->orderByDesc('grouped_questions.last_update')
             ->simplePaginate($this->perPage);
 
         return view('livewire.questions.index', [
