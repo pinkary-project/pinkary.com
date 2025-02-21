@@ -147,12 +147,22 @@ test('load more', function () {
 test('pinned question is displayed at the top', function () {
     $user = User::factory()->create();
 
+    $question = Question::factory()->create(['to_id' => $user->id, 'answer_created_at' => now()]);
+
+    $this->travel(1)->seconds();
+
     $pinnedQuestion = Question::factory()->create([
         'pinned' => true,
         'to_id' => $user->id,
     ]);
 
-    $otherQuestions = Question::factory()->count(5)->create(['to_id' => $user->id, 'answer_created_at' => now()]);
+    $this->travel(1)->seconds();
+
+    $otherQuestion = Question::factory()->create(['to_id' => $user->id, 'answer_created_at' => now()]);
+
+    $this->travel(1)->seconds();
+
+    $anotherQuestion = Question::factory()->create(['to_id' => $user->id, 'answer_created_at' => now()]);
 
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
@@ -160,7 +170,9 @@ test('pinned question is displayed at the top', function () {
 
     $component->assertSeeInOrder([
         $pinnedQuestion->content,
-        ...$otherQuestions->reverse()->map->content->toArray(),
+        $anotherQuestion->content,
+        $otherQuestion->content,
+        $question->content,
     ]);
 });
 
