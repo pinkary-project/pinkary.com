@@ -60,11 +60,17 @@ final readonly class TrendingQuestionsFeed
             );
     }
 
+    /**
+     * Get the database driver.
+     */
     private function getDatabaseDriver(): string
     {
         return config('database.default');
     }
 
+    /**
+     * Get the timestamp function for the database driver.
+     */
     private function getTimestampFunction(): string
     {
         return match ($this->getDatabaseDriver()) {
@@ -73,6 +79,9 @@ final readonly class TrendingQuestionsFeed
         };
     }
 
+    /**
+     * Get the timestamp function for the database driver with a column.
+     */
     private function getTimestampWithColumnFunction(string $column): string
     {
         return match ($this->getDatabaseDriver()) {
