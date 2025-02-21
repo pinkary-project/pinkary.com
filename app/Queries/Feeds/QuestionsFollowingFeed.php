@@ -36,19 +36,22 @@ final readonly class QuestionsFollowingFeed
                 });
         };
 
-        $subQuery = Question::query()
-            ->select('questions.*', 'grouped.latest_update')
-            ->from('questions')
-            ->join(DB::raw('(
-                SELECT IFNULL(root_id, id) as group_id, MAX(updated_at) as latest_update
-                FROM questions
-                GROUP BY IFNULL(root_id, id)
-            ) as grouped'), function($join) {
-                $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped.group_id');
-            });
-
-        return $subQuery
-            ->select('id', 'root_id', 'parent_id', 'updated_at')
+        return Question::query()
+            ->joinSub(
+                Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
+                    ->selectRaw('MAX(updated_at) as last_update')
+                    ->whereNotNull('answer')
+                    ->where('is_ignored', false)
+                    ->where($followQueryClosure)
+                    ->where('is_reported', false)
+                    ->groupBy(DB::raw('IFNULL(root_id, id)')),
+                'grouped_questions',
+                function ($join) {
+                    $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped_questions.group_id')
+                        ->whereRaw('questions.updated_at = grouped_questions.last_update');
+                }
+            )
+            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
             ->withExists([
                 'root as showRoot' => $followQueryClosure,
                 'parent as showParent' => $followQueryClosure,
@@ -59,6 +62,6 @@ final readonly class QuestionsFollowingFeed
             ->where('is_ignored', false)
             ->where($followQueryClosure)
             ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-            ->orderByDesc('updated_at');
+            ->orderByDesc('grouped_questions.last_update');
     }
 }
