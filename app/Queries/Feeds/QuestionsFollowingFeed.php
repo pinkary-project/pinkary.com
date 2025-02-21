@@ -36,6 +36,23 @@ final readonly class QuestionsFollowingFeed
                 });
         };
 
+        if (config('database.default') === 'sqlite') {
+            return Question::query()
+                ->select('id', 'root_id', 'parent_id')
+                ->withExists([
+                    'root as showRoot' => $followQueryClosure,
+                    'parent as showParent' => $followQueryClosure,
+                ])
+                ->with('root:id,to_id', 'root.to:id,username', 'parent:id,parent_id')
+                ->whereNotNull('answer')
+                ->where('is_reported', false)
+                ->where('is_ignored', false)
+                ->where($followQueryClosure)
+                ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
+                ->groupBy(DB::Raw('IFNULL(root_id, id)'))
+                ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+        }
+
         return Question::query()
             ->joinSub(
                 Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
