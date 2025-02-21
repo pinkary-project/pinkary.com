@@ -25,23 +25,30 @@ final readonly class RecentQuestionsFeed
     public function builder(): Builder
     {
         return Question::query()
-            ->select('id')
+            ->select('questions.*')
             ->whereNotNull('answer')
             ->where('is_ignored', false)
             ->where('is_reported', false)
             ->when($this->hashtag, function (Builder $query): void {
                 $query->whereHas('hashtags', function (Builder $query): void {
-                    $query
-                    // using 'like' for this query (with no wildcards) will
-                    // result in a case-insensitive lookup from sqlite,
-                    // which is what we want.
-                        ->where('name', 'like', $this->hashtag);
+                    $query->where('name', 'like', $this->hashtag);
                 })->orderByDesc('updated_at');
             }, function (Builder $query): void {
-                $query->addSelect('root_id', 'parent_id')
-                    ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
-                    ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-                    ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+                $query->joinSub(
+                    Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
+                        ->selectRaw('MAX(updated_at) as last_update')
+                        ->whereNotNull('answer')
+                        ->where('is_ignored', false)
+                        ->where('is_reported', false)
+                        ->groupBy(DB::raw('IFNULL(root_id, id)')),
+                    'grouped_questions',
+                    function ($join) {
+                        $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped_questions.group_id')
+                            ->whereRaw('questions.updated_at = grouped_questions.last_update');
+                    }
+                )
+                ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
+                ->orderByDesc('grouped_questions.last_update');
             });
     }
 }
