@@ -23,7 +23,7 @@ return new class extends Migration
                 $table->rawIndex('name collate nocase', 'name_collate_nocase');
             }else{
                 // mysql
-                $table->index('name');
+                $table->index('name', 'name_case_insensitive', 'BTREE'); // not working
             }
         });
 
