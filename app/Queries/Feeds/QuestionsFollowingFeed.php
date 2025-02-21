@@ -36,8 +36,19 @@ final readonly class QuestionsFollowingFeed
                 });
         };
 
-        return Question::query()
-            ->select('id', 'root_id', 'parent_id')
+        $subQuery = Question::query()
+            ->select('questions.*', 'grouped.latest_update')
+            ->from('questions')
+            ->join(DB::raw('(
+                SELECT IFNULL(root_id, id) as group_id, MAX(updated_at) as latest_update
+                FROM questions
+                GROUP BY IFNULL(root_id, id)
+            ) as grouped'), function($join) {
+                $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped.group_id');
+            });
+
+        return $subQuery
+            ->select('id', 'root_id', 'parent_id', 'updated_at')
             ->withExists([
                 'root as showRoot' => $followQueryClosure,
                 'parent as showParent' => $followQueryClosure,
@@ -48,7 +59,6 @@ final readonly class QuestionsFollowingFeed
             ->where('is_ignored', false)
             ->where($followQueryClosure)
             ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-            ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-            ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+            ->orderByDesc('updated_at');
     }
 }
