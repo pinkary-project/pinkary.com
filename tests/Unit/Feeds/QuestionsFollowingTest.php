@@ -20,6 +20,8 @@ it('render questions with right conditions', function () {
 
     $followerUser->following()->attach($userTo->id);
 
+    $this->travel(1)->seconds();
+
     $question2 = Question::factory()->create([
         'to_id' => $userTo->id,
         'answer' => 'Answer 2',
