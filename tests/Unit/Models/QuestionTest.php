@@ -11,7 +11,7 @@ use App\Models\User;
 test('to array', function () {
     $question = Question::factory()->create()->fresh();
 
-    expect(array_keys($question->toArray()))->toBe([
+    expect(array_keys($question->toArray()))->toContain(
         'id',
         'from_id',
         'to_id',
@@ -29,7 +29,7 @@ test('to array', function () {
         'parent_id',
         'root_id',
         'poll_expires_at',
-    ]);
+    )->toHaveCount(17);
 });
 
 test('content', function () {
