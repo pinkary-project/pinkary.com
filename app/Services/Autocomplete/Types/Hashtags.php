@@ -6,7 +6,9 @@ namespace App\Services\Autocomplete\Types;
 
 use App\Models\Hashtag;
 use App\Services\Autocomplete\Result;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 final readonly class Hashtags extends Type
 {
@@ -37,7 +39,14 @@ final readonly class Hashtags extends Type
     {
         return Hashtag::query()
             ->withCount('questions')
-            ->where('name', 'like', "$query%")
+            ->when(
+                config('database.default') === 'sqlite',
+                function (Builder $q) use ($query): void {
+                    $q->where('name', 'like', "$query%");
+                }, function (Builder $q) use ($query): void {
+                    $q->where(DB::raw('LOWER(name)'), 'like', mb_strtolower("$query%"));
+                }
+            )
             ->orderByDesc('questions_count')
             ->limit(50)
             ->get()

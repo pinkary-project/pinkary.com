@@ -17,13 +17,17 @@ return new class extends Migration
     {
         Schema::create('hashtags', function (Blueprint $table): void {
             $table->id();
-            $table->string('name')->unique();
+
+            if (config('database.default') === 'sqlite') {
+                $table->string('name')->unique();
+            } else {
+                $table->string('name')->unique()->collation('utf8mb4_bin');
+            }
+
             $table->timestamps();
-            if(config('database.default') === 'sqlite'){
+
+            if (config('database.default') === 'sqlite') {
                 $table->rawIndex('name collate nocase', 'name_collate_nocase');
-            }else{
-                // mysql
-                $table->index('name', 'name_case_insensitive', 'BTREE'); // not working
             }
         });
 
