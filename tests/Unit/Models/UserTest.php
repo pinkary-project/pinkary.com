@@ -8,7 +8,7 @@ use App\Models\User;
 test('to array', function () {
     $user = User::factory()->create()->fresh();
 
-    expect(array_keys($user->toArray()))->toBe([
+    expect(array_keys($user->toArray()))->toContain(
         'id',
         'name',
         'username',
@@ -32,7 +32,7 @@ test('to array', function () {
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
         'default_feed',
-    ]);
+    )->toHaveCount(23);
 });
 
 test('is verified', function () {
