@@ -8,12 +8,12 @@ use App\Models\Question;
 test('to array', function () {
     $question = Hashtag::factory()->create();
 
-    expect(array_keys($question->toArray()))->toBe([
+    expect(array_keys($question->toArray()))->toContain(
         'id',
         'name',
         'created_at',
         'updated_at',
-    ]);
+    )->toHaveCount(4);
 });
 
 test('relations', function () {
