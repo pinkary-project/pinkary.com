@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Rules\UnauthorizedEmailProviders;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
@@ -89,6 +90,8 @@ test('email must be valid', function () {
 });
 
 test('email provider must be authorized', function () {
+    File::put(storage_path(UnauthorizedEmailProviders::STORAGE_FILE_PATH), '0-mail.com');
+
     $response = $this->from('/register')->post('/register', [
         'name' => 'Tomás López',
         'username' => 'tomloprod',
@@ -99,6 +102,8 @@ test('email provider must be authorized', function () {
 
     $response->assertRedirect('/register')
         ->assertSessionHasErrors(['email' => 'The email belongs to an unauthorized email provider.']);
+
+    File::delete(storage_path(UnauthorizedEmailProviders::STORAGE_FILE_PATH));
 });
 
 test('password must be confirmed', function () {
