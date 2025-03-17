@@ -215,7 +215,7 @@
                     <button
                         x-data="likeButton('{{ $question->id }}', @js(auth()->check()))"
                         x-cloak
-                        data-is-liked="{{ $likeExists }}"
+                        data-is-liked="@js($likeExists)"
                         data-likes-count="{{ $likesCount }}"
                         data-navigate-ignore="true"
                         x-on:click="toggleLike"
@@ -273,7 +273,9 @@
 
                     <button
                         data-navigate-ignore="true"
-                        x-data="bookmarkButton('{{ $question->id }}', @js($question->is_bookmarked), {{ $question->bookmarks_count }}, @js(auth()->check()))"
+                        x-data="bookmarkButton('{{ $question->id }}', @js(auth()->check()))"
+                        data-is-bookmarked="@js($question->is_bookmarked)"
+                        data-bookmarks-count="{{ $question->bookmarks_count }}"
                         x-cloak
                         x-on:click="toggleBookmark"
                         :title="bookmarkButtonTitle"

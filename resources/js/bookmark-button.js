@@ -1,16 +1,17 @@
 import { abbreviate } from "./abbreviate";
 
-const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
+const bookmarkButton = (id, isAuthenticated) => ({
     id,
-    isBookmarked,
-    count,
     isAuthenticated,
+    isBookmarked: false,
+    count: 0,
     bookmarkButtonTitle: '',
     bookmarkButtonText: '',
 
     init() {
-        this.setTitle();
-        this.setText();
+        this.isBookmarked = this.$el.dataset.isBookmarked === 'true';
+        this.count = parseInt(this.$el.dataset.bookmarksCount);
+        this.setAll();
         this.initEventListeners();
     },
 
@@ -47,8 +48,7 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
             if (event.detail.id == this.id) {
                 this.isBookmarked = true;
                 this.count++;
-                this.setTitle();
-                this.setText();
+                this.setAll();
             }
         });
 
@@ -56,10 +56,16 @@ const bookmarkButton = (id, isBookmarked, count, isAuthenticated) => ({
             if (event.detail.id == this.id) {
                 this.isBookmarked = false;
                 this.count--;
-                this.setTitle();
-                this.setText();
+                this.setAll();
             }
         });
+    },
+
+    setAll() {
+        this.$el.dataset.isBookmarked = this.isBookmarked;
+        this.$el.dataset.bookmarksCount = this.count;
+        this.setTitle();
+        this.setText();
     },
 
     animateBookmarkButton() {
