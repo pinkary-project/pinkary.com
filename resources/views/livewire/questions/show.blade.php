@@ -213,8 +213,10 @@
                     @endphp
 
                     <button
-                        x-data="likeButton('{{ $question->id }}', @js($likeExists), {{ $likesCount }}, @js(auth()->check()))"
+                        x-data="likeButton('{{ $question->id }}', @js(auth()->check()))"
                         x-cloak
+                        data-is-liked="{{ $likeExists }}"
+                        data-likes-count="{{ $likesCount }}"
                         data-navigate-ignore="true"
                         x-on:click="toggleLike"
                         :title="likeButtonTitle"
