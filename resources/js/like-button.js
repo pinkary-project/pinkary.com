@@ -1,17 +1,18 @@
 import { abbreviate } from "./abbreviate";
 import { particlesEffect } from "./particles-effect";
 
-const likeButton = (id, isLiked, count, isAuthenticated) => ({
+const likeButton = (id, isAuthenticated) => ({
     id,
-    isLiked,
-    count,
     isAuthenticated,
+    isLiked: false,
+    count: 0,
     likeButtonTitle: '',
     likeButtonText: '',
 
     init() {
-        this.setTitle();
-        this.setText();
+        this.isLiked = this.$el.dataset.isLiked === 'true';
+        this.count = parseInt(this.$el.dataset.likesCount);
+        this.setAll();
         this.initEventListeners();
     },
 
@@ -24,8 +25,6 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
     },
 
     toggleLike(e) {
-
-
         if (!this.isAuthenticated) {
             window.Livewire.navigate('/login');
             return;
@@ -46,8 +45,7 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
             if (event.detail.id == this.id) {
                 this.isLiked = true;
                 this.count++;
-                this.setTitle();
-                this.setText();
+                this.setAll();
             }
         });
 
@@ -55,10 +53,16 @@ const likeButton = (id, isLiked, count, isAuthenticated) => ({
             if (event.detail.id == this.id) {
                 this.isLiked = false;
                 this.count--;
-                this.setTitle();
-                this.setText();
+                this.setAll();
             }
         });
+    },
+
+    setAll() {
+        this.$el.dataset.isLiked = this.isLiked;
+        this.$el.dataset.likesCount = this.count;
+        this.setTitle();
+        this.setText();
     }
 });
 
