@@ -135,6 +135,8 @@ it('renders the threads in the right order', function () {
         'to_id' => $authUser->id,
     ]);
 
+    $this->travel(1)->seconds();
+
     // 3rd nested child question for non following user question from non following user should be missing in the feed
     Question::factory()->sharedUpdate()->create([
         'answer' => '3rd nested child question for '.str($answerForNonFollowingUser)->snake(),
