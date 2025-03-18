@@ -37,7 +37,7 @@ final class Hashtag extends Model
     }
 
     /**
-     * @return BelongsToMany<Question, covariant $this>
+     * @return BelongsToMany<Question, $this>
      */
     public function questions(): BelongsToMany
     {
