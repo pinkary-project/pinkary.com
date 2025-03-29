@@ -37,7 +37,10 @@
 
         <script>
             window.onload = function () {
-                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+                let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+                if(timezone === 'Asia/Calcutta'){
+                    timezone = 'Asia/Kolkata'
+                }
                 if (timezone !== '{{ session()->get('timezone', 'UTC') }}') {
                     axios.post('{{ route('profile.timezone.update') }}', { timezone })
                 }
