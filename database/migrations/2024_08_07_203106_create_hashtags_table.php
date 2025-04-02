@@ -17,18 +17,9 @@ return new class extends Migration
     {
         Schema::create('hashtags', function (Blueprint $table): void {
             $table->id();
-
-            if (config('database.default') === 'sqlite') {
-                $table->string('name')->unique();
-            } else {
-                $table->string('name')->unique()->collation('utf8mb4_bin');
-            }
+            $table->string('name')->unique()->collation('utf8mb4_0900_bin');
 
             $table->timestamps();
-
-            if (config('database.default') === 'sqlite') {
-                $table->rawIndex('name collate nocase', 'name_collate_nocase');
-            }
         });
 
         Schema::create('hashtag_question', function (Blueprint $table): void {

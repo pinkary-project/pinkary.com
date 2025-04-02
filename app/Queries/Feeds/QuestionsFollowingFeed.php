@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 final readonly class QuestionsFollowingFeed
@@ -36,23 +37,6 @@ final readonly class QuestionsFollowingFeed
                 });
         };
 
-        if (config('database.default') === 'sqlite') {
-            return Question::query()
-                ->select('id', 'root_id', 'parent_id')
-                ->withExists([
-                    'root as showRoot' => $followQueryClosure,
-                    'parent as showParent' => $followQueryClosure,
-                ])
-                ->with('root:id,to_id', 'root.to:id,username', 'parent:id,parent_id')
-                ->whereNotNull('answer')
-                ->where('is_reported', false)
-                ->where('is_ignored', false)
-                ->where($followQueryClosure)
-                ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-                ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-                ->orderByDesc(DB::raw('MAX(`updated_at`)'));
-        }
-
         return Question::query()
             ->joinSub(
                 Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
@@ -63,7 +47,7 @@ final readonly class QuestionsFollowingFeed
                     ->where('is_reported', false)
                     ->groupBy(DB::raw('IFNULL(root_id, id)')),
                 'grouped_questions',
-                function ($join) {
+                function (JoinClause $join): void {
                     $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped_questions.group_id')
                         ->whereRaw('questions.updated_at = grouped_questions.last_update');
                 }
