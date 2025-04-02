@@ -15,7 +15,7 @@ return new class extends Migration
         User::each(function (User $user): void {
             User::withoutEvents(function () use ($user): void {
                 User::withoutTimestamps(function () use ($user): void {
-                    if ($user->avatar && str_starts_with($user->avatar, 'storage/')) {
+                    if ($user->avatar && str_starts_with((string) $user->avatar, 'storage/')) {
                         $user->update([
                             'avatar' => str_replace('storage/', '', $user->avatar),
                         ]);

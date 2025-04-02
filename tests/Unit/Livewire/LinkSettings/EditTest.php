@@ -43,7 +43,6 @@ it('allows user to update link settings', function () {
     $component->assertDispatched('link-settings.updated');
     $component->assertDispatched('notification.created', message: 'Link settings updated.');
 
-
     $user->refresh();
 
     expect($user->settings)->toHaveKey('link_shape', 'rounded-none');
