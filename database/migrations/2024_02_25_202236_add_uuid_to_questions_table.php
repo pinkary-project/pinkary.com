@@ -14,11 +14,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (config('database.default') !== 'sqlite') {
-            Schema::table('likes', function (Blueprint $table) {
-                $table->dropForeign(['question_id']);
-            });
-        }
+        Schema::table('likes', function (Blueprint $table): void {
+            $table->dropForeign(['question_id']);
+        });
 
         Schema::dropIfExists('questions');
 
@@ -36,11 +34,9 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        if (config('database.default') !== 'sqlite') {
-            Schema::table('likes', function (Blueprint $table) {
-                $table->uuid('question_id')->change();
-                $table->foreign('question_id')->references('id')->on('questions')->cascadeOnDelete();
-            });
-        }
+        Schema::table('likes', function (Blueprint $table): void {
+            $table->uuid('question_id')->change();
+            $table->foreign('question_id')->references('id')->on('questions')->cascadeOnDelete();
+        });
     }
 };
