@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 final readonly class QuestionsFollowingFeed
@@ -37,7 +38,21 @@ final readonly class QuestionsFollowingFeed
         };
 
         return Question::query()
-            ->select('id', 'root_id', 'parent_id')
+            ->joinSub(
+                Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
+                    ->selectRaw('MAX(updated_at) as last_update')
+                    ->whereNotNull('answer')
+                    ->where('is_ignored', false)
+                    ->where($followQueryClosure)
+                    ->where('is_reported', false)
+                    ->groupBy(DB::raw('IFNULL(root_id, id)')),
+                'grouped_questions',
+                function (JoinClause $join): void {
+                    $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped_questions.group_id')
+                        ->whereRaw('questions.updated_at = grouped_questions.last_update');
+                }
+            )
+            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
             ->withExists([
                 'root as showRoot' => $followQueryClosure,
                 'parent as showParent' => $followQueryClosure,
@@ -48,7 +63,6 @@ final readonly class QuestionsFollowingFeed
             ->where('is_ignored', false)
             ->where($followQueryClosure)
             ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-            ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-            ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+            ->orderByDesc('grouped_questions.last_update');
     }
 }
