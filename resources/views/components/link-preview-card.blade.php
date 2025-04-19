@@ -8,7 +8,7 @@
         {!! $data->get('html') !!}
     </div>
 @elseif($data->has('image'))
-    @php($shortUrl = parse_url($url)['host'])
+    @php($shortUrl = (parse_url($url)['host'] ?? $url))
     <a href="{{ $url }}" target="_blank" rel="noopener noreferrer">
         <div
             title="Click to visit: {{ $shortUrl }}"
