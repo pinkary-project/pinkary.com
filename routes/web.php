@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\SwitchProfileController;
 use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserGitHubUsernameController;
@@ -15,6 +17,7 @@ use App\Http\Controllers\UserIsVerifiedController;
 use App\Http\Controllers\UserTimezoneController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController as FortifyAuthenticatedSessionController;
 
 Route::view('/about', 'about')->name('about');
 
@@ -65,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/qr-code', QrCodeController::class)->name('qr-code.image');
 
     Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
+    Route::get('/switch/{username}', SwitchProfileController::class)->name('profile.switch');
     Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [UserController::class, 'destroy'])->name('profile.destroy');
 
@@ -86,3 +90,9 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('login', [AuthenticatedSessionController::class, 'create'])
+    ->name('login');
+
+Route::post('/login', [FortifyAuthenticatedSessionController::class, 'store'])
+    ->middleware('throttle:login');
