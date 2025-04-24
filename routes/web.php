@@ -9,7 +9,6 @@ use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\SwitchProfileController;
 use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserGitHubUsernameController;
@@ -68,7 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/qr-code', QrCodeController::class)->name('qr-code.image');
 
     Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
-    Route::get('/switch/{username}', SwitchProfileController::class)->name('profile.switch');
     Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [UserController::class, 'destroy'])->name('profile.destroy');
 
