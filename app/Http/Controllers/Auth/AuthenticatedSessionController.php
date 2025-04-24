@@ -25,6 +25,7 @@ final readonly class AuthenticatedSessionController
         auth()->guard('web')->logout();
         session()->invalidate();
         session()->regenerateToken();
+        cookie()->queue(cookie()->forget('accounts'));
 
         return back();
     }
