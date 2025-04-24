@@ -1,12 +1,6 @@
-@use('App\Models\User')
 @php
     $navClasses = 'fixed z-50 inset-0 md:inset-auto md:right-0 h-16 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
-
-    $accounts = User::query()
-        ->select('id', 'username')
-        ->whereIn('id', session()->get('accounts', []))
-        ->get();
 @endphp
 
 <nav>
@@ -126,21 +120,7 @@
                                 {{ __('Settings') }}
                             </x-dropdown-link>
 
-                            @foreach ($accounts as $account)
-                            @if ($account->is(auth()->user()))
-                                <x-dropdown-link
-                                    class="dark:bg-slate-800 bg-slate-200"
-                                >
-                                    {{ '@'.$account->username }}
-                                </x-dropdown-link>
-                            @else
-                                <x-dropdown-link
-                                    :href="route('profile.switch', ['username' => $account->username])"
-                                >
-                                    {{ '@'.$account->username }}
-                                </x-dropdown-link>
-                            @endif
-                            @endforeach
+                            <livewire:profile.switch-account />
 
                             <x-dropdown-link
                                 :href="route('login')"
