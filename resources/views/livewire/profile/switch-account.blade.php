@@ -10,9 +10,4 @@
             </x-dropdown-button>
         @endif
     @endforeach
-    @session('username')
-        <x-dropdown-button class="dark:bg-slate-800 bg-slate-200">
-            {{ '@' . $value }}
-        </x-dropdown-button>
-    @endsession
 </div>

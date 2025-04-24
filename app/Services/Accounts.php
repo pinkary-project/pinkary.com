@@ -28,10 +28,7 @@ final class Accounts
     {
         $accounts = self::all();
 
-        $accounts = array_unique([
-            $username => session()->getId(),
-            ...$accounts,
-        ]);
+        $accounts[$username] = session()->getId();
 
         cookie()->queue(cookie()->forever('accounts', json_encode($accounts)));
     }
@@ -44,7 +41,8 @@ final class Accounts
         $accounts = self::all();
         if (isset($accounts[$username])) {
             session()->setId($accounts[$username]);
-            auth()->login(User::where('username', $username)->first());
+            session()->start();
+            auth()->setUser(User::where('username', $username)->first());
 
             return;
         }
