@@ -49,4 +49,15 @@ final class Accounts
 
         abort(403, 'Unauthorized action.');
     }
+
+    /**
+     * Remove an account from the cookie.
+     */
+    public static function remove(string $username): void
+    {
+        $accounts = self::all();
+        unset($accounts[$username]);
+
+        cookie()->queue(cookie()->forever('accounts', json_encode($accounts)));
+    }
 }
