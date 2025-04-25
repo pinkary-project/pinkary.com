@@ -43,23 +43,6 @@ final class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn () => view('auth.login'));
         Fortify::twoFactorChallengeView(fn () => view('auth.two-factor-challenge'));
 
-        Fortify::authenticateUsing(function (Request $request) {
-
-            $user = User::where('email', $request->email)->first();
-
-            if ($user && Hash::check($request->password, $user->password)) {
-                if (auth()->check()) {
-                    if ($user->id === auth()->id()) {
-                        return $user;
-                    }
-
-                    Accounts::push($user->username);
-                }
-
-                return $user;
-            }
-        });
-
         RateLimiter::for('login', function (Request $request) {
             $username = $request->string(Fortify::username())->toString();
             $throttleKey = Str::transliterate(Str::lower($username).'|'.$request->ip());
