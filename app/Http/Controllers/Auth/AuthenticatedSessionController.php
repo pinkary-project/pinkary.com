@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
+use App\Services\Accounts;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -22,10 +23,22 @@ final readonly class AuthenticatedSessionController
      */
     public function destroy(): RedirectResponse
     {
-        auth()->guard('web')->logout();
-        session()->invalidate();
-        session()->regenerateToken();
-        cookie()->queue(cookie()->forget('accounts'));
+        $user = auth()->user();
+
+        $accounts = Accounts::all();
+        unset($accounts[$user->username]);
+
+        Accounts::remove($user->username);
+
+        if (filled($accounts)) {
+            $lastAccount = array_key_last($accounts);
+            Accounts::switch($lastAccount);
+        } else {
+            auth()->guard('web')->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            cookie()->queue(cookie()->forget('accounts'));
+        }
 
         return back();
     }
