@@ -32,10 +32,6 @@ final class AppServiceProvider extends ServiceProvider
         Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
 
         Livewire::component('notifications-index', \App\Livewire\Notifications\Index::class);
-
-        Event::listen(Login::class, function (Login $event) {
-            Accounts::push($event->user->username);
-        });
     }
 
     /**
