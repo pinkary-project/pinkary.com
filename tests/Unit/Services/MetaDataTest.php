@@ -282,3 +282,16 @@ it('handles all exceptions', function (Exception $exception) {
     new HttpClientException('Not Found'),
     new TransferException('Transfer error'),
 ]);
+
+it('handles empty content', function () {
+    $url = 'https://laravel.com';
+
+    Http::fake([
+        $url => Http::response('', 200),
+    ]);
+
+    $service = new MetaData($url);
+    $data = $service->fetch();
+
+    expect($data->isEmpty())->toBeTrue();
+});

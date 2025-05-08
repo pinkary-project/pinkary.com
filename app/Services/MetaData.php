@@ -57,6 +57,10 @@ final readonly class MetaData
      */
     public function ensureCorrectSize(string $value): string
     {
+        if (! Str::contains($value, 'iframe')) {
+            return $value;
+        }
+
         $doc = new DOMDocument();
         @$doc->loadHTML($value);
         $iframe = $doc->getElementsByTagName('iframe')->item(0);
@@ -118,7 +122,7 @@ final readonly class MetaData
         try {
             $response = Http::get($this->url);
 
-            if ($response->ok()) {
+            if ($response->ok() && $response->body() !== '') {
                 $data = $this->parse(
                     $response->body()
                 );
@@ -222,7 +226,7 @@ final readonly class MetaData
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
             $response = Http::withHeader('User-Agent', 'Twitterbot')->get($this->url);
 
-            if ($response->ok()) {
+            if ($response->ok() && $response->body() !== '') {
                 $data = $this->parseContent($response->body());
                 if ($data->has('image')) {
                     $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
