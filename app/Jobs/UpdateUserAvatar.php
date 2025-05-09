@@ -60,7 +60,7 @@ final class UpdateUserAvatar implements ShouldQueue
 
         $disk->put($avatar, $contents, 'public');
 
-        $this->resizer()->read(file_get_contents($disk->path($avatar)))
+        $this->resizer()->read($disk->get($avatar))
             ->coverDown(200, 200)
             ->save();
 
