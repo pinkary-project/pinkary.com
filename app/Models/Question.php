@@ -84,6 +84,26 @@ final class Question extends Model implements Viewable
     }
 
     /**
+     * checks if the user has reposted the question.
+     */
+    public function hasUserReposted(?User $user): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return $this->reposts()->where('from_id', $user->id)->exists();
+    }
+
+    /**
+     * @return HasMany<Question>
+     */
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->where('is_repost', true);
+    }
+
+    /**
      * The attributes that should be cast.
      */
     public function getSharableAnswerAttribute(): ?string
@@ -138,6 +158,7 @@ final class Question extends Model implements Viewable
             'pinned' => 'boolean',
             'is_ignored' => 'boolean',
             'views' => 'integer',
+            'is_repost' => 'boolean',
         ];
     }
 
@@ -238,7 +259,8 @@ final class Question extends Model implements Viewable
     {
         return $this->hasMany(self::class, 'parent_id')
             ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->where('is_reported', false)
+            ->where('is_repost', false);
     }
 
     /**

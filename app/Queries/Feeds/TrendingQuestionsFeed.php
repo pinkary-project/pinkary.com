@@ -42,7 +42,7 @@ final readonly class TrendingQuestionsFeed
         $maxDaysSincePosted = self::MAX_DAYS_SINCE_POSTED;
 
         return Question::query()
-            ->select('id')
+            ->select('id', 'is_repost')
             ->from(
                 Question::query()
                     ->withCount('likes', 'children')

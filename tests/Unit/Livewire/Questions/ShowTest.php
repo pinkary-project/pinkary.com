@@ -497,3 +497,61 @@ test('pinnable', function () {
 
     $component->assertSee('Pinned');
 });
+
+test('repost', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+
+    $component->assertDispatched('notification.created', message: 'Question reposted.');
+
+    expect($question->reposts->count())->toBe(1);
+});
+
+test('repost auth', function () {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+
+    $component->assertRedirect(route('login'));
+});
+
+test('un-repost', function () {
+    $question = Question::factory()->create();
+
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+
+    $component->call('unRepost');
+
+    $component->assertDispatched('notification.created', message: 'Question un-reposted.');
+
+    expect($question->reposts->count())->toBe(0);
+});
+
+test('un-repost auth', function () {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('unRepost');
+
+    $component->assertRedirect(route('login'));
+});
