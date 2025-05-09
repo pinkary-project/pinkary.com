@@ -12,6 +12,7 @@
         "laravel/pennant": "^1.18.3",
         "laravel/socialite": "^5.23.1",
         "laravel/tinker": "^2.10.1",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/livewire": "^3.6.4",
         "matomo/device-detector": "^6.4.7",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
