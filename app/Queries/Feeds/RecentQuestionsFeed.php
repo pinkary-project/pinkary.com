@@ -6,6 +6,7 @@ namespace App\Queries\Feeds;
 
 use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 final readonly class RecentQuestionsFeed
@@ -25,7 +26,7 @@ final readonly class RecentQuestionsFeed
     public function builder(): Builder
     {
         return Question::query()
-            ->select('id')
+            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
             ->whereNotNull('answer')
             ->where('is_ignored', false)
             ->where('is_reported', false)
@@ -38,10 +39,21 @@ final readonly class RecentQuestionsFeed
                         ->where('name', 'like', $this->hashtag);
                 })->orderByDesc('updated_at');
             }, function (Builder $query): void {
-                $query->addSelect('root_id', 'parent_id')
+                $query->joinSub(
+                    Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
+                        ->selectRaw('MAX(updated_at) as last_update')
+                        ->whereNotNull('answer')
+                        ->where('is_ignored', false)
+                        ->where('is_reported', false)
+                        ->groupBy(DB::raw('IFNULL(root_id, id)')),
+                    'grouped_questions',
+                    function (JoinClause $join): void {
+                        $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped_questions.group_id')
+                            ->whereRaw('questions.updated_at = grouped_questions.last_update');
+                    }
+                )
                     ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
-                    ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-                    ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+                    ->orderByDesc('grouped_questions.last_update');
             });
     }
 }
