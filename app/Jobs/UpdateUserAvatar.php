@@ -59,7 +59,7 @@ final class UpdateUserAvatar implements ShouldQueue
         $avatar = 'avatars/'.hash('sha256', random_int(0, PHP_INT_MAX).'@'.$this->user->id).'.png';
 
         $image = $this->resizer()->read($contents)
-            ->coverDown(200, 200)->toPng();
+            ->coverDown(200, 200)->toPng()->toFilePointer();
 
         $disk->put($avatar, $image);
 
