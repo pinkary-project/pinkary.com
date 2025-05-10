@@ -100,7 +100,7 @@ test('custom avatar url', function () {
     ]);
 
     expect($user->avatar)->toBe('avatars/123.png')
-        ->and($user->avatar_url)->toBe(Storage::disk('public')->url('avatars/123.png'));
+        ->and($user->avatar_url)->toBe(Storage::disk('s3')->url('avatars/123.png'));
 });
 
 test('following', function () {
