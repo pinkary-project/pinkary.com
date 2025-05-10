@@ -374,7 +374,7 @@ test('image exists', function () {
 
     $pngFile = UploadedFile::fake()->image('pathtoimage.png');
     $filePath = 'images/pathtoimage.png';
-    Storage::disk('public')->put($filePath, $pngFile->getContent());
+    Storage::disk('s3')->put($filePath, $pngFile->getContent());
 
     // Use the direct file path in the markdown
     $content = "![]({$filePath})";

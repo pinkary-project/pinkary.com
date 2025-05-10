@@ -240,9 +240,9 @@ test('avatar is deleted when account is deleted', function () {
         'avatar' => 'avatars/default.png',
     ]);
 
-    Storage::disk('public')->put('avatars/default.png', '...');
+    Storage::disk('s3')->put('avatars/default.png', '...');
 
-    Storage::disk('public')->assertExists('avatars/default.png');
+    Storage::disk('s3')->assertExists('avatars/default.png');
 
     $response = $this
         ->actingAs($user)
@@ -250,7 +250,7 @@ test('avatar is deleted when account is deleted', function () {
             'password' => 'password',
         ]);
 
-    Storage::disk('public')->assertMissing('avatars/default.png');
+    Storage::disk('s3')->assertMissing('avatars/default.png');
 
     $response->assertSessionHasNoErrors();
 
@@ -403,14 +403,14 @@ test('user can delete custom avatar and update using Gravatar', function () {
         'email' => 'jitewaboh@lagify.com', // test Gravatar email
     ]);
 
-    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+    Storage::disk('s3')->put('avatars/avatar.jpg', '...');
 
     $this->actingAs($user)
         ->delete('/profile/avatar')
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+    Storage::disk('s3')->assertMissing('avatars/avatar.jpg');
 
     $user->refresh();
 
@@ -429,14 +429,14 @@ test('user can delete custom avatar and update using GitHub', function () {
         'github_username' => 'testuser',
     ]);
 
-    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+    Storage::disk('s3')->put('avatars/avatar.jpg', '...');
 
     $this->actingAs($user)
         ->delete('/profile/avatar')
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+    Storage::disk('s3')->assertMissing('avatars/avatar.jpg');
 
     $user->refresh();
 
