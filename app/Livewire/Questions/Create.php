@@ -17,6 +17,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
 use Imagick;
+use Intervention\Image\Drivers;
+use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -35,7 +37,7 @@ final class Create extends Component
     /**
      * The disk to store the images.
      */
-    private const string IMAGE_DISK = 'public';
+    private const string IMAGE_DISK = 's3';
 
     /**
      * Max number of images allowed.
@@ -409,31 +411,52 @@ final class Create extends Component
     /**
      * Optimize the images.
      */
-    private function optimizeImage(string $path): void
+    private function optimizeImage(UploadedFile $image): string|bool
     {
-        $imagePath = Storage::disk(self::IMAGE_DISK)->path($path);
-        $imagick = new Imagick($imagePath);
+        $today = today()->format('Y-m-d');
 
-        if ($imagick->getNumberImages() > 1) {
-            $imagick = $imagick->coalesceImages();
+        $imagePath = 'images/'.$today;
 
-            foreach ($imagick as $frame) {
-                $frame->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-                $frame->stripImage();
-                $frame->setImageCompressionQuality(80);
-            }
-
-            $imagick = $imagick->deconstructImages();
-            $imagick->writeImages($imagePath, true);
-        } else {
-            $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-            $imagick->stripImage();
-            $imagick->setImageCompressionQuality(80);
-            $imagick->writeImage($imagePath);
+        if ($image->getMimeType() === 'image/gif') {
+            return $image->store(
+                $imagePath,
+                self::IMAGE_DISK
+            );
         }
 
-        $imagick->clear();
-        $imagick->destroy();
+        $resizer = $this->resizer()->read($image) // todo: remove meta data
+            ->resize(1000, 1000);
+
+        // if ($imagick->getNumberImages() > 1) {
+        //     $imagick = $imagick->coalesceImages();
+
+        //     foreach ($imagick as $frame) {
+        //         $frame->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
+        //         $frame->stripImage();
+        //         $frame->setImageCompressionQuality(80);
+        //     }
+
+        //     $imagick = $imagick->deconstructImages();
+        //     $imagick->writeImages($imagePath, true);
+        // } else {
+        //     $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
+        //     $imagick->stripImage();
+        //     $imagick->setImageCompressionQuality(80);
+        //     $imagick->writeImage($imagePath);
+        // }
+
+        // $imagick->clear();
+        // $imagick->destroy();
+
+        $imagePath .= '/'.$image->hashName();
+
+        return Storage::disk(self::IMAGE_DISK)->put(
+            $imagePath,
+            $resizer->encodeByExtension(
+                $image->getClientOriginalExtension(),
+                quality: 80
+            )
+        ) ? $imagePath : false;
     }
 
     /**
@@ -455,18 +478,15 @@ final class Create extends Component
     private function uploadImages(): void
     {
         collect($this->images)->each(function (UploadedFile $image): void {
-            $today = now()->format('Y-m-d');
 
-            /** @var string $path */
-            $path = $image->store("images/{$today}", self::IMAGE_DISK);
-            $this->optimizeImage($path);
+            $path = $this->optimizeImage($image);
 
             if ($path) {
                 session()->push('images', $path);
 
                 $this->dispatch(
                     'image.uploaded',
-                    path: Storage::url($path),
+                    path: Storage::disk(self::IMAGE_DISK)->url($path),
                     originalName: $image->getClientOriginalName()
                 );
             } else { // @codeCoverageIgnoreStart
@@ -512,5 +532,15 @@ final class Create extends Component
         $images = session()->get('images', []);
 
         return $images;
+    }
+
+    /**
+     * Creates a new image resizer.
+     */
+    private function resizer(): ImageManager
+    {
+        return new ImageManager(
+            new Drivers\Imagick\Driver(),
+        );
     }
 }

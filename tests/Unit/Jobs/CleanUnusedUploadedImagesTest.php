@@ -41,9 +41,9 @@ it('cleans up unused images', function () {
 
     CleanUnusedUploadedImages::dispatchSync();
 
-    expect(Storage::disk('public')->allFiles())->not->toContain($path3);
+    expect(Storage::disk('s3')->allFiles())->not->toContain($path3);
 
-    Storage::disk('public')->assertExists($path1);
-    Storage::disk('public')->assertExists($path2);
-    Storage::disk('public')->assertMissing($path3);
+    Storage::disk('s3')->assertExists($path1);
+    Storage::disk('s3')->assertExists($path2);
+    Storage::disk('s3')->assertMissing($path3);
 });
