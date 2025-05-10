@@ -686,7 +686,7 @@ test('unused image cleanup when store is called', function () {
     $method->setAccessible(true);
     $method->invoke($component->instance());
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk('s3')->assertExists($path);
 
     expect(session('images'))->toBeArray()
         ->and(session('images'))->toContain($path);
@@ -694,7 +694,7 @@ test('unused image cleanup when store is called', function () {
     $component->set('content', 'Hello World');
     $component->call('store');
 
-    Storage::disk('public')->assertMissing($path);
+    Storage::disk('s3')->assertMissing($path);
     expect(session('images'))->toBeNull();
 });
 
@@ -711,17 +711,17 @@ test('used images are NOT cleanup when store is called', function () {
     ]);
     $component->set('images', [$file]);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk('s3')->assertExists($path);
 
     expect(session('images'))->toBeArray()
         ->and(session('images'))->toContain($path);
 
-    $url = Storage::disk('public')->url($path);
+    $url = Storage::disk('s3')->url($path);
 
     $component->set('content', "![Image Alt Text]({$url})");
     $component->call('store');
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk('s3')->assertExists($path);
     expect(session('images'))->toBeNull();
 });
 
@@ -735,18 +735,18 @@ test('delete image', function () {
         'toId' => $user->id,
     ]);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk('s3')->assertExists($path);
 
     $method = new ReflectionMethod(Create::class, 'deleteImage');
     $method->setAccessible(true);
     $method->invoke($component->instance(), $path);
 
     $pathAgain = $file->store('images', 'public');
-    Storage::disk('public')->assertExists($pathAgain);
+    Storage::disk('s3')->assertExists($pathAgain);
 
     $method->invoke($component->instance(), $pathAgain);
 
-    Storage::disk('public')->assertMissing($pathAgain);
+    Storage::disk('s3')->assertMissing($pathAgain);
 });
 
 test('optimizeImage method resizes and saves the image', function () {
@@ -764,9 +764,9 @@ test('optimizeImage method resizes and saves the image', function () {
     $method->setAccessible(true);
     $method->invoke($component->instance(), $path);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk('s3')->assertExists($path);
 
-    $optimizedImagePath = Storage::disk('public')->path($path);
+    $optimizedImagePath = Storage::disk('s3')->path($path);
 
     $originalImageSize = filesize($testImage->getPathname());
     $optimizedImageSize = filesize($optimizedImagePath);
@@ -815,9 +815,9 @@ test('optimizeImage method resizes and saves image with multiple frames', functi
     $method->setAccessible(true);
     $method->invoke($component->instance(), $path);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk('s3')->assertExists($path);
 
-    $optimizedImagePath = Storage::disk('public')->path($path);
+    $optimizedImagePath = Storage::disk('s3')->path($path);
 
     $originalImageSize = filesize($testImage->getPathname());
     $optimizedImageSize = filesize($optimizedImagePath);

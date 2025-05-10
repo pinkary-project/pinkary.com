@@ -18,7 +18,7 @@ it('stores a file base avatar', function () {
     $user = $user->fresh();
 
     expect($user->avatar)->toBeString();
-    Storage::disk('public')->assertExists($user->avatar);
+    Storage::disk('s3')->assertExists($user->avatar);
 });
 
 it('returns default avatar if not service or file passed', function () {
@@ -40,18 +40,18 @@ it('deletes the given avatar file', function () {
     Storage::fake('public');
 
     $contents = file_get_contents(public_path('img/default-avatar.png'));
-    Storage::disk('public')->put('avatars/1.png', $contents, 'public');
+    Storage::disk('s3')->put('avatars/1.png', $contents, 'public');
 
     $user = User::factory()->create();
 
-    UpdateUserAvatar::dispatchSync($user, Storage::disk('public')->path('avatars/1.png'));
+    UpdateUserAvatar::dispatchSync($user, Storage::disk('s3')->path('avatars/1.png'));
 
     $user = $user->fresh();
 
     expect($user->avatar)->toBeString();
-    Storage::disk('public')->assertExists($user->avatar);
+    Storage::disk('s3')->assertExists($user->avatar);
 
-    Storage::disk('public')->assertMissing('avatars/1.png');
+    Storage::disk('s3')->assertMissing('avatars/1.png');
 });
 
 it('sets resets avatar state when job fails', function () {
@@ -84,7 +84,7 @@ it('accepts different services to download avatar', function () {
 
     expect($user->avatar)
         ->toBeString()
-        ->and(Storage::disk('public')
+        ->and(Storage::disk('s3')
             ->exists($user->avatar)
         )
         ->toBeTrue();

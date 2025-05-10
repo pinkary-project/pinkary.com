@@ -34,7 +34,7 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     public function handle(): void
     {
-        $disk = Storage::disk('public');
+        $disk = Storage::disk('s3');
 
         if ($this->user->avatar && $disk->exists($this->user->avatar)) {
             $disk->delete($this->user->avatar);
@@ -58,12 +58,10 @@ final class UpdateUserAvatar implements ShouldQueue
 
         $avatar = 'avatars/'.hash('sha256', random_int(0, PHP_INT_MAX).'@'.$this->user->id).'.png';
 
-        $disk->put($avatar, $contents, 'public');
+        $image = $this->resizer()->read($contents)
+            ->coverDown(200, 200)->toPng();
 
-        $image = $this->resizer()->read($disk->get($avatar))
-            ->coverDown(200, 200);
-
-        $disk->put($avatar, (string) $image);
+        $disk->put($avatar, $image);
 
         $this->user->update([
             'avatar' => "$avatar",
@@ -104,7 +102,7 @@ final class UpdateUserAvatar implements ShouldQueue
     private function resizer(): ImageManager
     {
         return new ImageManager(
-            new Drivers\Gd\Driver(),
+            new Drivers\Imagick\Driver(),
         );
     }
 }
