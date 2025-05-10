@@ -108,6 +108,7 @@ final class UpdateUserAvatar implements ShouldQueue
     {
         return new ImageManager(
             new Drivers\Imagick\Driver(),
+            strip: true,
         );
     }
 }

@@ -424,29 +424,8 @@ final class Create extends Component
             );
         }
 
-        $resizer = $this->resizer()->read($image) // todo: remove meta data
-            ->resize(1000, 1000);
-
-        // if ($imagick->getNumberImages() > 1) {
-        //     $imagick = $imagick->coalesceImages();
-
-        //     foreach ($imagick as $frame) {
-        //         $frame->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-        //         $frame->stripImage();
-        //         $frame->setImageCompressionQuality(80);
-        //     }
-
-        //     $imagick = $imagick->deconstructImages();
-        //     $imagick->writeImages($imagePath, true);
-        // } else {
-        //     $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-        //     $imagick->stripImage();
-        //     $imagick->setImageCompressionQuality(80);
-        //     $imagick->writeImage($imagePath);
-        // }
-
-        // $imagick->clear();
-        // $imagick->destroy();
+        $resizer = $this->resizer()->read($image)
+            ->resizeDown(1000, 1000);
 
         $imagePath .= '/'.$image->hashName();
 
@@ -541,6 +520,7 @@ final class Create extends Component
     {
         return new ImageManager(
             new Drivers\Imagick\Driver(),
+            strip: true,
         );
     }
 }
