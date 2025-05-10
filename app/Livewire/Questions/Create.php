@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Imagick;
 use Intervention\Image\Drivers;
 use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
@@ -411,7 +410,7 @@ final class Create extends Component
     /**
      * Optimize the images.
      */
-    private function optimizeImage(UploadedFile $image): string|bool
+    private function optimizeImage(UploadedFile $image): string|false
     {
         $today = today()->format('Y-m-d');
 
@@ -434,7 +433,7 @@ final class Create extends Component
             $resizer->encodeByExtension(
                 $image->getClientOriginalExtension(),
                 quality: 80
-            )
+            )->toFilePointer()
         ) ? $imagePath : false;
     }
 
