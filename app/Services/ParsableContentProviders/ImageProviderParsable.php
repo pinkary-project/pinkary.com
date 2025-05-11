@@ -17,7 +17,7 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
         return (string) preg_replace_callback(
             '/!\[(.*?)\]\((.*?)\)/',
             static function (array $match) use ($content): string {
-                $disk = Storage::disk('s3');
+                $disk = Storage::disk();
 
                 if (! $disk->exists($match[2])) {
                     $tag = "![{$match[1]}]({$match[2]})";

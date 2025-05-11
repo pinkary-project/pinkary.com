@@ -36,7 +36,7 @@ final class Create extends Component
     /**
      * The disk to store the images.
      */
-    private const string IMAGE_DISK = 's3';
+    public const ?string IMAGE_DISK = null;
 
     /**
      * Max number of images allowed.
@@ -343,8 +343,9 @@ final class Create extends Component
 
         if ($image->getMimeType() === 'image/gif') {
             return $image->store(
-                $imagePath,
-                self::IMAGE_DISK
+                $imagePath, [
+                    'disk' => self::IMAGE_DISK,
+                ]
             );
         }
 
