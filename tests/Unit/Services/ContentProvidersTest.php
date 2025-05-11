@@ -369,12 +369,12 @@ test('mention', function (string $content) {
 ]);
 
 test('image exists', function () {
-    Storage::fake('public');
+    Storage::fake();
     $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
 
     $pngFile = UploadedFile::fake()->image('pathtoimage.png');
     $filePath = 'images/pathtoimage.png';
-    Storage::disk('s3')->put($filePath, $pngFile->getContent());
+    Storage::disk()->put($filePath, $pngFile->getContent());
 
     // Use the direct file path in the markdown
     $content = "![]({$filePath})";
