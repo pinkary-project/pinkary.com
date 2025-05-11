@@ -34,7 +34,7 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     public function handle(): void
     {
-        $disk = Storage::disk('s3');
+        $disk = Storage::disk();
 
         if ($this->user->avatar && $disk->exists($this->user->avatar)) {
             $disk->delete($this->user->avatar);
