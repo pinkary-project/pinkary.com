@@ -354,6 +354,7 @@ final readonly class ValidTimezone implements ValidationRule
             'Asia/Tashkent' => 'Tashkent (UTC+05:00)',
             'Asia/Colombo' => 'Colombo (UTC+05:30)',
             'Asia/Kolkata' => 'Kolkata (UTC+05:30)',
+            'Asia/Calcutta' => 'Kolkata (UTC+05:30)',
             'Asia/Kathmandu' => 'Kathmandu (UTC+05:45)',
             'Asia/Almaty' => 'Almaty (UTC+06:00)',
             'Asia/Bishkek' => 'Bishkek (UTC+06:00)',
