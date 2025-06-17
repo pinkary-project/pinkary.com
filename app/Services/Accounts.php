@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\User;
+
+final class Accounts
+{
+    /**
+     * Get all accounts from the cookie.
+     *
+     * @return array<string, string>
+     */
+    public static function all(): array
+    {
+        $accounts = json_decode((string) request()->cookie('accounts'), true);
+        $accounts = is_array($accounts) ? $accounts : [];
+
+        return $accounts;
+    }
+
+    /**
+     * Push a new account to the cookie.
+     */
+    public static function push(string $username): void
+    {
+        $accounts = self::all();
+
+        $accounts[$username] = session()->getId();
+
+        cookie()->queue(cookie()->forever('accounts', json_encode($accounts)));
+    }
+
+    /**
+     * Switch the current account.
+     */
+    public static function switch(string $username): void
+    {
+        $accounts = self::all();
+        if (isset($accounts[$username])) {
+            session()->setId($accounts[$username]);
+            session()->start();
+            auth()->setUser(User::where('username', $username)->first());
+
+            return;
+        }
+
+        abort(403, 'Unauthorized action.');
+    }
+
+    /**
+     * Remove an account from the cookie.
+     */
+    public static function remove(string $username): void
+    {
+        $accounts = self::all();
+        unset($accounts[$username]);
+
+        cookie()->queue(cookie()->forever('accounts', json_encode($accounts)));
+    }
+}
