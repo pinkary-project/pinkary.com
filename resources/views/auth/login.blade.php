@@ -14,8 +14,8 @@
 
                             <div>
                                 <x-input-label for="email" :value="__('Email')" />
-                                <x-text-input id="email" class="mt-1 block w-full h-12" type="email" name="email"
-                                    :value="old('email')" required autofocus autocomplete="username" />
+                                <x-text-input id="email" class="mt-1 block w-full h-12" type="email"
+                                    name="email" :value="old('email')" required autofocus autocomplete="username" />
                                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
                             </div>
 
@@ -61,6 +61,8 @@
                                 </x-primary-button>
                             </div>
                         </form>
+                        <p class="text-sm text-gray-600 mt-5">Don't Have account ? <a href="{{ route('register') }}"
+                                class="font-semibold text-blue-500">Register Now</a></p>
                     </div>
                 </div>
             </div>
