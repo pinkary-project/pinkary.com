@@ -5,11 +5,12 @@
     @include('layouts.components.head')
 </head>
 
-<body class="dark:bg-slate-950 bg-slate-100 bg-center bg-repeat font-sans dark:text-slate-50 text-slate-900 antialiased"
+<body
+    class="font-['inter'] dark:bg-slate-950 bg-slate-100 bg-center bg-repeat dark:text-slate-50 text-slate-900 antialiased"
     style="background-image: url({{ asset('/img/dots.svg') }})">
     <livewire:flash-messages.show />
 
-    <div class="flex min-h-screen flex-col">
+    {{-- <div class="flex min-h-screen flex-col">
         <main class="flex-grow">
             <div class="fixed right-0 z-50">
                 @if (!request()->routeIs('about'))
@@ -29,7 +30,17 @@
         </main>
 
         <x-footer />
-    </div>
+        <div class="grid grid-cols-2">
+            <div class="p-10 bg-white h-[100vh] px-24 flex flex-col">
+                <h2 class="font-['poppins'] font-bold text-xl">batuly</h2>
+                <div class="flex-grow flex items-center">
+                    {{ $slot }}
+                </div>
+            </div>
+            <div class="p-10"></div>
+        </div>
+    </div> --}}
+    {{ $slot }}
     @livewireScriptConfig
 </body>
 
