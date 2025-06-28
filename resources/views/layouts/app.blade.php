@@ -24,7 +24,8 @@
                     class="{{ request()->routeIs('bookmarks.index') ? 'font-semibold' : '' }} inline-flex items-center gap-2"><x-heroicon-o-bookmark
                         class="h-6 w-6" />
                     Bookmarks</a>
-                <a href="#" class="inline-flex items-center gap-2"><x-heroicon-o-bell class="h-6 w-6" />
+                <a href="{{ route('notifications.index') }}" wire:navigate
+                    class="{{ request()->routeIs('notifications.index') ? 'font-semibold' : '' }} inline-flex items-center gap-2"><x-heroicon-o-bell class="h-6 w-6" />
                     Notifications</a>
             </div>
             @if (auth()->user())
@@ -50,7 +51,7 @@
                 {{ $slot }}
             </div>
         </div>
-        <div class="h-fit sticky top-10">
+        <div class="hidden md:block h-fit sticky top-10 mt-10">
             <livewire:trending-tags />
             <div class="mt-10">
                 <div class="p-5 border rounded-xl space-y-2 bg-white">
@@ -60,8 +61,12 @@
                     </div>
                     <p class="text-sm text-gray-700">Smart, Simple, Powerful – The Only Business Assistant You’ll Ever
                         Need</p>
-                    <button class="btn text-sm bg-blue-500 px-3 py-2 hover:bg-blue-600 text-white rounded-md">Get
-                        Started</button>
+                    <div>
+                        <a href="https://batuly.com" target="_blank">
+                            <button
+                                class="btn text-sm bg-blue-500 px-3 py-2 hover:bg-blue-600 text-white rounded-md">Get
+                                Started</button></a>
+                    </div>
                 </div>
             </div>
             <div class="mt-10 text-xs text-gray-700 divide-black divide-x">

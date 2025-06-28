@@ -6,7 +6,7 @@
                     <label
                         for="{{ 'answer_question_'.$question->id }}"
                         class="sr-only"
-                        >Answer</label
+                        >Reply</label
                     >
 
                     <x-textarea
