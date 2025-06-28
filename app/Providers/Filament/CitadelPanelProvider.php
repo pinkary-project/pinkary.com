@@ -8,6 +8,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Pages\Auth\Login;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -34,6 +35,7 @@ final class CitadelPanelProvider extends PanelProvider
             ->path('citadel')
             ->homeUrl(fn (): string => route('home.feed'))
             ->spa()
+            ->Login()
             ->pages([
                 Dashboard::class,
             ])

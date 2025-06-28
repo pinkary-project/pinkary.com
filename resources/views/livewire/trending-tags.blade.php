@@ -7,7 +7,8 @@
                 <div>
                     <span class="text-base">#{{ $tag->name }}</span>
                     <div class="text-xs text-gray-700">
-                        <span class="font-normal text-xs">{{ $tag->questions_count }}</span> <span class="font-medium">Posts</span>
+                        <span class="font-normal text-xs">{{ $tag->questions_count }}</span> <span
+                            class="font-medium">Posts</span>
                     </div>
                 </div>
             </a>
