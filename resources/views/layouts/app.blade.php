@@ -5,8 +5,7 @@
     @include('layouts.components.head')
 </head>
 
-<body
-    class="font-['inter'] dark:bg-slate-950 bg-slate-100 bg-center bg-repeat dark:text-slate-50 text-slate-950 antialiased"
+<body class="font-['inter']  bg-slate-100 bg-center bg-repeat text-slate-950 antialiased"
     style="background-image: url({{ asset('/img/dots.svg') }})">
     @persist('flash-messages')
         <livewire:flash-messages.show />
@@ -25,24 +24,34 @@
                         class="h-6 w-6" />
                     Bookmarks</a>
                 <a href="{{ route('notifications.index') }}" wire:navigate
-                    class="{{ request()->routeIs('notifications.index') ? 'font-semibold' : '' }} inline-flex items-center gap-2"><x-heroicon-o-bell class="h-6 w-6" />
+                    class="{{ request()->routeIs('notifications.index') ? 'font-semibold' : '' }} inline-flex items-center gap-2"><x-heroicon-o-bell
+                        class="h-6 w-6" />
                     Notifications</a>
             </div>
             @if (auth()->user())
-                <a href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                    class="block mt-10 p-2 cursor-pointer rounded-full hover:bg-white duration-300">
-                    <div class="flex gap-2 items-center">
-                        <div class="size-10">
-                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->username }}"
-                                class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-full w-full object-contain cursor-pointer"
-                                x-on:click="showAvatar = true" />
+                <div
+                    class="relative flex cursor-pointer rounded-full justify-between items-center group mt-10 hover:bg-white duration-300">
+                    <a href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
+                        class="block w-full p-2">
+                        <div class="flex gap-2 items-center">
+                            <div class="size-10">
+                                <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->username }}"
+                                    class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-full w-full object-contain cursor-pointer"
+                                    x-on:click="showAvatar = true" />
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-bold duration-300">
+                                    {{ auth()->user()->name }}</h2>
+                                <h3 class="font-medium text-gray-700 text-xs">@
+                                    {{ auth()->user()->username }}</h3>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-sm font-bold">{{ auth()->user()->name }}</h2>
-                            <h3 class="font-medium text-gray-700 text-xs">@ {{ auth()->user()->username }}</h3>
-                        </div>
-                    </div>
-                </a>
+                    </a>
+                    <button
+                        class="btn size-10 rounded-full absolute border flex justify-center items-center hover:bg-black hover:text-white right-5 duration-300">
+                        <x-heroicon-o-arrow-right-end-on-rectangle class="h-5 w-5" />
+                    </button>
+                </div>
             @endif
         </div>
         <div class="col-span-2 pt-10">
