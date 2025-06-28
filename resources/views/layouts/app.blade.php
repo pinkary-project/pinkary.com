@@ -17,14 +17,32 @@
                 <h2 class="font-bold font-['poppins'] text-2xl">batuly</h2>
             </a>
             <div class="mt-10 grid space-y-5">
-                <a href="{{ route('home.feed') }}" wire:navigate wire:current="text-primary font-semibold"
-                    class="inline-flex items-center gap-2"><x-heroicon-o-home class="h-6 w-6" /> Home</a>
-                <a href="{{ route('bookmarks.index') }}" wire:navigate wire:current="text-primary font-semibold"
-                    class="inline-flex items-center gap-2"><x-heroicon-o-bookmark class="h-6 w-6" />
+                <a href="{{ route('home.feed') }}" wire:navigate
+                    class="{{ request()->routeIs('home.feed') ? 'font-semibold' : '' }} inline-flex items-center gap-2"><x-heroicon-o-home
+                        class="h-6 w-6" /> Home</a>
+                <a href="{{ route('bookmarks.index') }}" wire:navigate
+                    class="{{ request()->routeIs('bookmarks.index') ? 'font-semibold' : '' }} inline-flex items-center gap-2"><x-heroicon-o-bookmark
+                        class="h-6 w-6" />
                     Bookmarks</a>
                 <a href="#" class="inline-flex items-center gap-2"><x-heroicon-o-bell class="h-6 w-6" />
                     Notifications</a>
             </div>
+            @if (auth()->user())
+                <a href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
+                    class="block mt-10 p-2 cursor-pointer rounded-full hover:bg-white duration-300">
+                    <div class="flex gap-2 items-center">
+                        <div class="size-10">
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->username }}"
+                                class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-full w-full object-contain cursor-pointer"
+                                x-on:click="showAvatar = true" />
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold">{{ auth()->user()->name }}</h2>
+                            <h3 class="font-medium text-gray-700 text-xs">@ {{ auth()->user()->username }}</h3>
+                        </div>
+                    </div>
+                </a>
+            @endif
         </div>
         <div class="col-span-2 pt-10">
             {{-- @include('layouts.navigation') --}}
@@ -42,7 +60,8 @@
                     </div>
                     <p class="text-sm text-gray-700">Smart, Simple, Powerful – The Only Business Assistant You’ll Ever
                         Need</p>
-                    <button class="btn text-sm bg-blue-500 px-3 py-2 hover:bg-blue-600 text-white rounded-md">Get Started</button>
+                    <button class="btn text-sm bg-blue-500 px-3 py-2 hover:bg-blue-600 text-white rounded-md">Get
+                        Started</button>
                 </div>
             </div>
             <div class="mt-10 text-xs text-gray-700 divide-black divide-x">
