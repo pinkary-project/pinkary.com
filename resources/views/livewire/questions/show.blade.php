@@ -369,7 +369,7 @@
                 name="question.edit.answer.{{ $questionId }}"
             >
                 <div class="p-8">
-                    <h2 class="text-lg font-medium dark:text-slate-50 text-slate-950">Edit Answer</h2>
+                    <h2 class="text-lg font-medium dark:text-slate-50 text-slate-950">Edit</h2>
                     <livewire:questions.edit
                         :questionId="$question->id"
                         :key="'edit-answer-'.$question->id"

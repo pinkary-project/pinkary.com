@@ -46,7 +46,7 @@
                     href="{{ route('about') }}"
                     wire:navigate
                 >
-                    <x-pinkary-logo class="z-10 w-72"/>
+                    <h2 class="text-4xl font-bold font-['poppins']">batuly</h2>
                     <x-icons.verified
                         :color="'blue-500'"
                         class="ml-1 mt-0.5 h-10 w-10 absolute -top-4 -right-4"
