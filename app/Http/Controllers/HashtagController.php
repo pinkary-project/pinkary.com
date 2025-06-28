@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Hashtag;
 use Illuminate\View\View;
 
 final readonly class HashtagController
