@@ -25,7 +25,7 @@ final readonly class RecentQuestionsFeed
     public function builder(): Builder
     {
         return Question::query()
-            ->select('id')
+            ->select('id', 'is_repost')
             ->whereNotNull('answer')
             ->where('is_ignored', false)
             ->where('is_reported', false)

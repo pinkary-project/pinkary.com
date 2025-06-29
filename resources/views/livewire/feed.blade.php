@@ -15,6 +15,7 @@
                         :parentId="$question->parent?->id"
                         :questionId="$question->id"
                         :username="$question->root?->to->username"
+                        :isRepost="$question->is_repost"
                     />
                 @endif
             </div>

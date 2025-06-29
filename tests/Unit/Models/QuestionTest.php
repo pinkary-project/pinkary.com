@@ -27,6 +27,7 @@ test('to array', function () {
         'answer_updated_at',
         'parent_id',
         'root_id',
+        'is_repost',
     ]);
 });
 

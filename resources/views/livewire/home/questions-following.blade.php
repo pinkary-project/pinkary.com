@@ -14,6 +14,7 @@
                     :parentId="$question->showParent ? $question->parent_id : null"
                     :questionId="$question->id"
                     :username="$question->root?->to->username"
+                    :isRepost="$question->is_repost"
                 />
             @endforeach
 

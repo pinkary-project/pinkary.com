@@ -37,7 +37,7 @@ final readonly class QuestionsFollowingFeed
         };
 
         return Question::query()
-            ->select('id', 'root_id', 'parent_id')
+            ->select('id', 'root_id', 'parent_id', 'is_repost')
             ->withExists([
                 'root as showRoot' => $followQueryClosure,
                 'parent as showParent' => $followQueryClosure,
