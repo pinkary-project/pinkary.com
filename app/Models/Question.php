@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
+use Carbon\CarbonImmutable;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,7 +17,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 
 /**
  * @property string $id
@@ -28,13 +28,13 @@ use Illuminate\Support\Carbon;
  * @property string $content
  * @property bool $anonymously
  * @property string|null $answer
- * @property Carbon|null $answer_created_at
- * @property Carbon|null $answer_updated_at
+ * @property CarbonImmutable|null $answer_created_at
+ * @property CarbonImmutable|null $answer_updated_at
  * @property bool $is_reported
  * @property bool $is_ignored
  * @property int $views
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property CarbonImmutable $created_at
+ * @property CarbonImmutable $updated_at
  * @property-read User $from
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
