@@ -7,8 +7,8 @@ namespace App\Http\Controllers;
 use App\Jobs\SyncVerifiedUser;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
@@ -26,11 +26,9 @@ final readonly class UserGitHubUsernameController
     /**
      * Handles the GitHub connection update.
      */
-    public function update(Request $request): RedirectResponse
+    public function update(#[CurrentUser] User $user): RedirectResponse
     {
         $githubUser = Socialite::driver('github')->user();
-
-        $user = $request->user();
 
         try {
             /** @var array<string, string> $validated */
@@ -55,15 +53,19 @@ final readonly class UserGitHubUsernameController
 
         SyncVerifiedUser::dispatchSync($user);
 
-        $user = $user->fresh();
+        $freshUser = $user->fresh();
 
-        $user->is_verified
+        if ($freshUser === null) {
+            return to_route('profile.edit');
+        }
+
+        $freshUser->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
             : session()->flash('flash-message', 'Your GitHub account has been connected.');
 
-        if (! $user->is_uploaded_avatar) {
+        if (! $freshUser->is_uploaded_avatar) {
             UpdateUserAvatar::dispatch(
-                $user,
+                $freshUser,
                 null,
                 'github',
             );
@@ -75,9 +77,8 @@ final readonly class UserGitHubUsernameController
     /**
      * Handles the GitHub connection destroy.
      */
-    public function destroy(): RedirectResponse
+    public function destroy(#[CurrentUser] User $user): RedirectResponse
     {
-        $user = request()->user();
         $user->update(['github_username' => null]);
         SyncVerifiedUser::dispatchSync($user);
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');

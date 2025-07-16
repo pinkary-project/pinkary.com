@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SyncVerifiedUser;
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 
 final readonly class UserIsVerifiedController
@@ -13,15 +14,17 @@ final readonly class UserIsVerifiedController
     /**
      * Handles the verified refresh.
      */
-    public function update(): RedirectResponse
+    public function update(#[CurrentUser] User $user): RedirectResponse
     {
-        $user = request()->user();
-
         SyncVerifiedUser::dispatchSync($user);
 
-        $user = $user->fresh();
+        $freshUser = $user->fresh();
 
-        $user->is_verified
+        if ($freshUser === null) {
+            return to_route('profile.edit');
+        }
+
+        $freshUser->is_verified
             ? session()->flash('flash-message', 'Your account has been verified.')
             : session()->flash('flash-message', 'Your account is not verified yet.');
 

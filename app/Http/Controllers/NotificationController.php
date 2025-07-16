@@ -24,6 +24,7 @@ final readonly class NotificationController
      */
     public function show(DatabaseNotification $notification): RedirectResponse
     {
+        /** @var Question $question */
         $question = Question::findOrFail($notification->data['question_id']);
 
         if ($question->answer !== null) {

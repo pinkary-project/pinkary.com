@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use SimpleSoftwareIO\QrCode\Generator;
@@ -15,10 +16,8 @@ final readonly class QrCodeController
     /**
      * Generate a QR code for the user.
      */
-    public function __invoke(Request $request): StreamedResponse
+    public function __invoke(Request $request, #[CurrentUser] User $user): StreamedResponse
     {
-        $user = $request->user();
-
         /** @var Generator $qrCodeGenerator */
         $qrCodeGenerator = QrCode::getFacadeRoot();
 

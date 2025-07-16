@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
 use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -146,11 +146,9 @@ final class Create extends Component
     /**
      * Mount the component.
      */
-    public function mount(Request $request): void
+    public function mount(#[CurrentUser] ?User $user): void
     {
-        if (auth()->check()) {
-            $user = $request->user();
-
+        if ($user instanceof User) {
             $this->anonymously = $user->prefers_anonymous_questions;
         }
     }
@@ -212,9 +210,9 @@ final class Create extends Component
     /**
      * Stores a new question.
      */
-    public function store(Request $request): void
+    public function store(#[CurrentUser] ?User $user): void
     {
-        if (! auth()->check()) {
+        if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -223,8 +221,6 @@ final class Create extends Component
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
-
-        $user = $request->user();
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');

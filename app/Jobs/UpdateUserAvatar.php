@@ -80,11 +80,15 @@ final class UpdateUserAvatar implements ShouldQueue
     {
         $this->ensureFileIsDeleted();
 
-        $this->user->fresh()->update([
-            'avatar' => null,
-            'avatar_updated_at' => null,
-            'is_uploaded_avatar' => false,
-        ]);
+        $user = $this->user->fresh();
+
+        if ($user !== null) {
+            $user->update([
+                'avatar' => null,
+                'avatar_updated_at' => null,
+                'is_uploaded_avatar' => false,
+            ]);
+        }
     }
 
     /**

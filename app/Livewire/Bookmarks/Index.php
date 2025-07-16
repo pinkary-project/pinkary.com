@@ -6,7 +6,7 @@ namespace App\Livewire\Bookmarks;
 
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -24,10 +24,8 @@ final class Index extends Component
     /**
      * Render the component.
      */
-    public function render(Request $request): View
+    public function render(#[CurrentUser] User $user): View
     {
-        $user = $request->user();
-
         return view('livewire.bookmarks.index', [
             'user' => $user,
             'bookmarks' => $user->bookmarks()

@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -173,9 +174,9 @@ final class Show extends Component
     /**
      * Pin a question.
      */
-    public function pin(): void
+    public function pin(#[CurrentUser] ?User $user): void
     {
-        if (! auth()->check()) {
+        if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -184,8 +185,6 @@ final class Show extends Component
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
-
-        $user = auth()->user();
 
         $question = Question::findOrFail($this->questionId);
 

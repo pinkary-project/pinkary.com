@@ -8,7 +8,7 @@ use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -42,7 +42,7 @@ final class Edit extends Component
     /**
      * Updates the question with the given answer.
      */
-    public function update(Request $request): void
+    public function update(#[CurrentUser] User $user): void
     {
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
@@ -52,8 +52,6 @@ final class Edit extends Component
         $validated = $this->validate([
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
-
-        $user = $request->user();
 
         $question = Question::query()
             ->where('is_reported', false)
@@ -125,11 +123,11 @@ final class Edit extends Component
     /**
      * Render the component.
      */
-    public function render(Request $request): View
+    public function render(#[CurrentUser] User $user): View
     {
         return view('livewire.questions.edit', [
             'question' => Question::findOrFail($this->questionId),
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 }

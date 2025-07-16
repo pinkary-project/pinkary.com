@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\LinkSettings;
 
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\In;
 use Illuminate\View\View;
@@ -25,10 +26,8 @@ final class Edit extends Component
     /**
      * Mount the component.
      */
-    public function mount(Request $request): void
+    public function mount(#[CurrentUser] User $user): void
     {
-        $user = $request->user();
-
         $this->link_shape = $user->link_shape;
         $this->gradient = $user->gradient;
     }
@@ -36,9 +35,8 @@ final class Edit extends Component
     /**
      * Update the user's link settings.
      */
-    public function update(Request $request): void
+    public function update(#[CurrentUser] User $user): void
     {
-        $user = $request->user();
 
         $validated = $this->validate([
             'link_shape' => 'required|in:rounded-none,rounded-lg,rounded-full',

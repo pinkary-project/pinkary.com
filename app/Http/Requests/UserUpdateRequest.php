@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,10 +23,8 @@ final class UserUpdateRequest extends FormRequest
      *
      * @return array<string, array<int, ValidatorAwareRule|ValidationRule|Stringable|string>>
      */
-    public function rules(): array
+    public function rules(#[CurrentUser] User $user): array
     {
-        $user = $this->user();
-
         return [
             'name' => ['required', 'string', 'max:255', new NoBlankCharacters],
             'username' => [

@@ -7,7 +7,7 @@ namespace App\Livewire\Notifications;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionCreated;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -16,10 +16,8 @@ final class Index extends Component
     /**
      * Ignore all notifications.
      */
-    public function ignoreAll(string $untilDatetime): void
+    public function ignoreAll(string $untilDatetime, #[CurrentUser] User $user): void
     {
-        $user = auth()->user();
-
         $questionsToIgnore = $user
             ->notifications()
             ->where('created_at', '<=', $untilDatetime)
@@ -44,10 +42,8 @@ final class Index extends Component
     /**
      * Render the component.
      */
-    public function render(Request $request): View
+    public function render(#[CurrentUser] User $user): View
     {
-        $user = $request->user();
-
         return view('livewire.notifications.index', [
             'user' => $user,
             'notifications' => $user->notifications()->get(),
