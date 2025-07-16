@@ -21,7 +21,7 @@ trait Followable
             return;
         }
 
-        $user = type(auth()->user())->as(User::class);
+        $user = auth()->user();
         $user->following()->attach($id);
 
         if ($this->shouldHandleFollowingCount()) {
@@ -43,7 +43,7 @@ trait Followable
             return;
         }
 
-        $user = type(auth()->user())->as(User::class);
+        $user = auth()->user();
         $user->following()->detach($id);
 
         if ($this->shouldHandleFollowingCount()) {

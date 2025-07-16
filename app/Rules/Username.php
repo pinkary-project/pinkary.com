@@ -637,7 +637,7 @@ final readonly class Username implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $value = type($value)->asString();
+        $value = (string) $value;
 
         if (preg_match('/[A-Za-z].*[A-Za-z]/', $value) === 0) {
             $fail('The :attribute must contain at least 2 letters.');

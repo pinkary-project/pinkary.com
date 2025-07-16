@@ -20,7 +20,7 @@ final readonly class UserGitHubUsernameController
      */
     public function index(): RedirectResponse
     {
-        return type(Socialite::driver('github')->redirect())->as(RedirectResponse::class);
+        return Socialite::driver('github')->redirect();
     }
 
     /**
@@ -30,7 +30,7 @@ final readonly class UserGitHubUsernameController
     {
         $githubUser = Socialite::driver('github')->user();
 
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         try {
             /** @var array<string, string> $validated */
@@ -55,7 +55,7 @@ final readonly class UserGitHubUsernameController
 
         SyncVerifiedUser::dispatchSync($user);
 
-        $user = type($user->fresh())->as(User::class);
+        $user = $user->fresh();
 
         $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
@@ -77,7 +77,7 @@ final readonly class UserGitHubUsernameController
      */
     public function destroy(): RedirectResponse
     {
-        $user = type(request()->user())->as(User::class);
+        $user = request()->user();
         $user->update(['github_username' => null]);
         SyncVerifiedUser::dispatchSync($user);
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');

@@ -27,7 +27,7 @@ final class Edit extends Component
      */
     public function mount(Request $request): void
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         $this->link_shape = $user->link_shape;
         $this->gradient = $user->gradient;
@@ -38,7 +38,7 @@ final class Edit extends Component
      */
     public function update(Request $request): void
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         $validated = $this->validate([
             'link_shape' => 'required|in:rounded-none,rounded-lg,rounded-full',

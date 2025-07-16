@@ -18,9 +18,9 @@ final readonly class UserAvatarController
      */
     public function update(UserAvatarUpdateRequest $request): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
-        $file = type($request->file('avatar'))->as(UploadedFile::class);
+        $file = $request->file('avatar');
         UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
 
         return to_route('profile.edit')
@@ -32,7 +32,7 @@ final readonly class UserAvatarController
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         UpdateUserAvatar::dispatchSync(
             $user,

@@ -149,7 +149,7 @@ final class Create extends Component
     public function mount(Request $request): void
     {
         if (auth()->check()) {
-            $user = type($request->user())->as(User::class);
+            $user = $request->user();
 
             $this->anonymously = $user->prefers_anonymous_questions;
         }
@@ -224,7 +224,7 @@ final class Create extends Component
             return;
         }
 
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');

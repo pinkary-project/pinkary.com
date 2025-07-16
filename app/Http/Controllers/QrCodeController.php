@@ -17,7 +17,7 @@ final readonly class QrCodeController
      */
     public function __invoke(Request $request): StreamedResponse
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         /** @var Generator $qrCodeGenerator */
         $qrCodeGenerator = QrCode::getFacadeRoot();

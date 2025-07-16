@@ -26,7 +26,7 @@ final class SyncVerifiedUser implements ShouldQueue
      */
     public function handle(GitHub $github): void
     {
-        $user = type($this->user->fresh())->as(User::class);
+        $user = $this->user->fresh();
 
         $user->update([
             'is_verified' => $user->github_username && $github->isSponsor($user->github_username),

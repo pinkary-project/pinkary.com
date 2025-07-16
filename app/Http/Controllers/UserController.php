@@ -41,7 +41,7 @@ final readonly class UserController
      */
     public function update(UserUpdateRequest $request): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         $user->fill($request->validated());
 
@@ -72,7 +72,7 @@ final readonly class UserController
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         auth()->logout();
 

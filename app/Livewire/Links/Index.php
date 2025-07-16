@@ -32,7 +32,7 @@ final class Index extends Component
     #[Renderless]
     public function click(int $linkId): void
     {
-        $ipAddress = type(request()->ip())->asString();
+        $ipAddress = (string) request()->ip();
         $cacheKey = IpUtils::anonymize($ipAddress).'-clicked-'.$linkId;
 
         if (auth()->id() === $this->userId || Cache::has($cacheKey)) {
@@ -53,7 +53,7 @@ final class Index extends Component
      */
     public function storeSort(array $sort): void
     {
-        $user = type(auth()->user())->as(User::class);
+        $user = auth()->user();
 
         $sort = collect($sort)
             ->map(fn (string $linkId): ?int => $user->links->contains($linkId) ? ((int) $linkId) : null)
@@ -73,7 +73,7 @@ final class Index extends Component
      */
     public function destroy(int $linkId): void
     {
-        $user = type(auth()->user())->as(User::class);
+        $user = auth()->user();
 
         $link = Link::findOrFail($linkId);
 
@@ -113,7 +113,7 @@ final class Index extends Component
             return;
         }
 
-        $user = type(auth()->user())->as(User::class);
+        $user = auth()->user();
 
         $target = User::findOrFail($targetId);
 
@@ -139,7 +139,7 @@ final class Index extends Component
             return;
         }
 
-        $user = type(auth()->user())->as(User::class);
+        $user = auth()->user();
 
         $target = User::findOrFail($targetId);
 

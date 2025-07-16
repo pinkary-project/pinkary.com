@@ -53,7 +53,7 @@ final class Edit extends Component
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
         ]);
 
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         $question = Question::query()
             ->where('is_reported', false)

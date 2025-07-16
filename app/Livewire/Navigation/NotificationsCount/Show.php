@@ -29,7 +29,7 @@ final class Show extends Component
      */
     public function render(Request $request): View
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         return view('livewire.navigation.notifications-count.show', [
             'count' => $user->notifications()->count(),

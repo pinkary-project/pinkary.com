@@ -26,7 +26,7 @@ final class Index extends Component
      */
     public function render(Request $request): View
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         return view('livewire.bookmarks.index', [
             'user' => $user,

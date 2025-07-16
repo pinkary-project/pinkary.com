@@ -22,7 +22,7 @@ final readonly class EnsureVerifiedEmailsForSignInUsers
             return $next($request);
         }
 
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         if ($user->hasVerifiedEmail()) {
             return $next($request);

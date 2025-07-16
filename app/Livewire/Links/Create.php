@@ -27,7 +27,7 @@ final class Create extends Component
      */
     public function store(Request $request): void
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         $linksCount = $user->links()->count();
 

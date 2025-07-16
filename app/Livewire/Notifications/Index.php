@@ -18,7 +18,7 @@ final class Index extends Component
      */
     public function ignoreAll(string $untilDatetime): void
     {
-        $user = type(auth()->user())->as(User::class);
+        $user = auth()->user();
 
         $questionsToIgnore = $user
             ->notifications()
@@ -46,7 +46,7 @@ final class Index extends Component
      */
     public function render(Request $request): View
     {
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
         return view('livewire.notifications.index', [
             'user' => $user,
