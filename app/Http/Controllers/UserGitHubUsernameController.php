@@ -9,16 +9,18 @@ use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
 final readonly class UserGitHubUsernameController
 {
     /**
      * Handles the GitHub connection redirect.
      */
-    public function index(): RedirectResponse
+    public function index(): SymfonyRedirectResponse
     {
         return Socialite::driver('github')->redirect();
     }
