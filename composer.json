@@ -17,7 +17,6 @@
         "matomo/device-detector": "^6.4.2",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
         "panphp/pan": "^0.1.8",
-        "pinkary-project/type-guard": "^0.1.0",
         "ryangjchandler/laravel-cloudflare-turnstile": "^1.1",
         "scrivo/highlight.php": "^9.18.1.10",
         "simplesoftwareio/simple-qrcode": "^4.2",
