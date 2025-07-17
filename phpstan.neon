@@ -11,3 +11,14 @@ parameters:
         - bootstrap
         - database/factories
         - routes
+
+    ignoreErrors:
+        -
+            identifier: 'classConstant.internalClass'
+            paths:
+                - config/pulse.php
+        -
+            identifier: 'staticMethod.internalClass'
+            paths:
+                - config/pulse.php
+
