@@ -20,13 +20,11 @@ final readonly class UserIsVerifiedController
 
         $freshUser = $user->fresh();
 
-        if ($freshUser === null) {
-            return to_route('profile.edit');
+        if ($freshUser instanceof User) {
+            $freshUser->is_verified
+                ? session()->flash('flash-message', 'Your account has been verified.')
+                : session()->flash('flash-message', 'Your account is not verified yet.');
         }
-
-        $freshUser->is_verified
-            ? session()->flash('flash-message', 'Your account has been verified.')
-            : session()->flash('flash-message', 'Your account is not verified yet.');
 
         return to_route('profile.edit');
     }

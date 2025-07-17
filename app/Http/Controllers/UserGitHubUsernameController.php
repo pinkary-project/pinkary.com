@@ -54,19 +54,15 @@ final readonly class UserGitHubUsernameController
 
         SyncVerifiedUser::dispatchSync($user);
 
-        $freshUser = $user->fresh();
+        $user = User::findOrFail($user->id);
 
-        if ($freshUser === null) {
-            return to_route('profile.edit');
-        }
-
-        $freshUser->is_verified
+        $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
             : session()->flash('flash-message', 'Your GitHub account has been connected.');
 
-        if (! $freshUser->is_uploaded_avatar) {
+        if (! $user->is_uploaded_avatar) {
             UpdateUserAvatar::dispatch(
-                $freshUser,
+                $user,
                 null,
                 'github',
             );
