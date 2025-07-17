@@ -16,16 +16,16 @@ it('caches the last run time', function () {
 });
 
 it('cleans up unused images', function () {
-    Storage::fake('public');
+    Storage::fake();
     $day = now()->format('Y-m-d');
 
     $file1 = UploadedFile::fake()->image('image1.jpg');
     $file2 = UploadedFile::fake()->image('image2.jpg');
     $file3 = UploadedFile::fake()->image('image3.jpg');
 
-    $path1 = $file1->store("images/{$day}", 'public');
-    $path2 = $file2->store("images/{$day}", 'public');
-    $path3 = $file3->store("images/{$day}", 'public');
+    $path1 = $file1->store("images/{$day}");
+    $path2 = $file2->store("images/{$day}");
+    $path3 = $file3->store("images/{$day}");
 
     Question::factory(2)->sequence(
         [
@@ -41,9 +41,9 @@ it('cleans up unused images', function () {
 
     CleanUnusedUploadedImages::dispatchSync();
 
-    expect(Storage::disk('public')->allFiles())->not->toContain($path3);
+    expect(Storage::disk()->allFiles())->not->toContain($path3);
 
-    Storage::disk('public')->assertExists($path1);
-    Storage::disk('public')->assertExists($path2);
-    Storage::disk('public')->assertMissing($path3);
+    Storage::disk()->assertExists($path1);
+    Storage::disk()->assertExists($path2);
+    Storage::disk()->assertMissing($path3);
 });

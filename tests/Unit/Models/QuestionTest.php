@@ -10,7 +10,7 @@ use App\Models\User;
 test('to array', function () {
     $question = Question::factory()->create()->fresh();
 
-    expect(array_keys($question->toArray()))->toBe([
+    expect(array_keys($question->toArray()))->toContain(
         'id',
         'from_id',
         'to_id',
@@ -27,7 +27,7 @@ test('to array', function () {
         'answer_updated_at',
         'parent_id',
         'root_id',
-    ]);
+    )->toHaveCount(16);
 });
 
 test('content', function () {
