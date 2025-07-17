@@ -70,7 +70,7 @@ arch('ensure datetime casts', function () {
  */
 function getModels(): array
 {
-    $models = type(glob(__DIR__.'/../../app/Models/*.php'))->asArray();
+    $models = glob(__DIR__.'/../../app/Models/*.php');
 
     return collect($models)
         ->map(function ($file) {

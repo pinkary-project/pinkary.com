@@ -7,8 +7,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserAvatarUpdateRequest;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
 final readonly class UserAvatarController
@@ -16,11 +16,10 @@ final readonly class UserAvatarController
     /**
      * Handles the verified refresh.
      */
-    public function update(UserAvatarUpdateRequest $request): RedirectResponse
+    public function update(UserAvatarUpdateRequest $request, #[CurrentUser] User $user): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
-
-        $file = type($request->file('avatar'))->as(UploadedFile::class);
+        /** @var UploadedFile $file */
+        $file = $request->file('avatar');
         UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
 
         return to_route('profile.edit')
@@ -30,10 +29,8 @@ final readonly class UserAvatarController
     /**
      * Delete the existing avatar.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(#[CurrentUser] User $user): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
-
         UpdateUserAvatar::dispatchSync(
             $user,
             null,

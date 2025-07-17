@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
 
@@ -14,10 +15,8 @@ final readonly class VerifyEmailController
     /**
      * Mark the authenticated user's email address as verified.
      */
-    public function __invoke(EmailVerificationRequest $request): RedirectResponse
+    public function __invoke(EmailVerificationRequest $request, #[CurrentUser] User $user): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
-
         if ($user->hasVerifiedEmail()) {
             session()->flash('flash-message', 'Your email is already verified.');
 

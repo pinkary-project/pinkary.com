@@ -195,7 +195,7 @@ final class Question extends Model implements Viewable
             return $mentionedUsers;
         }
 
-        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", (string) $this->content, $contentMatches);
         preg_match_all("/@([^\s,.?!\/@<]+)/i", $this->answer, $answerMatches);
 
         $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));

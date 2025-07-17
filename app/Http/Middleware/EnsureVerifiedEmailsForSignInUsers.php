@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,9 +21,9 @@ final readonly class EnsureVerifiedEmailsForSignInUsers
             return $next($request);
         }
 
-        $user = type($request->user())->as(User::class);
+        $user = $request->user();
 
-        if ($user->hasVerifiedEmail()) {
+        if ($user === null || $user->hasVerifiedEmail()) {
             return $next($request);
         }
 

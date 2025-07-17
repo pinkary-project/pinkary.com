@@ -22,7 +22,7 @@ final readonly class NoBlankCharacters implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $value = type($value)->asString();
+        $value = is_scalar($value) ? (string) $value : '';
 
         if (preg_match(self::BLANK_CHARACTERS_PATTERN, $value) || preg_match(self::FORMAT_CHARACTERS_PATTERN, $value)) {
             $fail('The :attribute field cannot contain blank characters.');
