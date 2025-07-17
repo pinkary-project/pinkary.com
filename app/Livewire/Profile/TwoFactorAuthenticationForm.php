@@ -78,11 +78,12 @@ final class TwoFactorAuthenticationForm extends Component
      */
     public function confirmTwoFactorAuthentication(ConfirmTwoFactorAuthentication $confirm): void
     {
-        $confirm(auth()->user(), (string) $this->pull('code'));
+        $confirm(auth()->user(), (string) $this->code);
 
         $this->showingQrCode = false;
         $this->showingConfirmation = false;
         $this->showingRecoveryCodes = true;
+        $this->code = null;
     }
 
     /**

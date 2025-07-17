@@ -16,7 +16,7 @@ final readonly class ValidTimezone implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $value = (string) $value;
+        $value = is_scalar($value) ? (string) $value : '';
 
         if (! array_key_exists($value, $this->getTimezones())) {
             $fail(__('The :attribute must be a valid timezone.'));

@@ -33,8 +33,8 @@ final readonly class CodeProviderParsable implements ParsableContentProvider
                     $highlighted = $highlighter->highlight('plaintext', $code);
                 } // @codeCoverageIgnoreEnd
 
-                $highlightedCode = (string) $highlighted->value;
-                $highlightedLanguage = (string) $highlighted->language;
+                $highlightedCode = is_scalar($highlighted->value) ? $highlighted->value : '';
+                $highlightedLanguage = is_scalar($highlighted->language) ? $highlighted->language : 'plaintext';
 
                 return '<pre><code class="p-4 rounded-lg hljs '.$highlightedLanguage.' text-xs" style="background-color: #23262E">'.$highlightedCode.'</code></pre>';
             },

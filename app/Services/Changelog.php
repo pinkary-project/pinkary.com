@@ -26,7 +26,6 @@ final readonly class Changelog
 
         return collect($blocks)
             ->mapWithKeys(function (string $block): array {
-                /** @var string $block */
                 $lines = explode("\n", trim($block));
                 $version = trim(array_shift($lines));
 

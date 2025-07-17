@@ -225,7 +225,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
 
         $linkShape = data_get($settings, 'link_shape', 'rounded-lg');
 
-        return (string) $linkShape;
+        return is_string($linkShape) ? $linkShape : 'rounded-lg';
     }
 
     /**
@@ -237,7 +237,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
 
         $gradient = data_get($settings, 'gradient', 'from-blue-500 to-purple-600');
 
-        return (string) $gradient;
+        return is_string($gradient) ? $gradient : 'from-blue-500 to-purple-600';
     }
 
     /**
