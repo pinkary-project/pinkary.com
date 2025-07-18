@@ -32,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $answer_updated_at
  * @property bool $is_reported
  * @property bool $is_ignored
+ * @property bool $is_poll
  * @property int $views
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -43,6 +44,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Question> $children
  * @property-read Collection<int, Question> $descendants
  * @property-read Collection<int, Hashtag> $hashtags
+ * @property-read Collection<int, PollOption> $pollOptions
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
@@ -137,6 +139,7 @@ final class Question extends Model implements Viewable
             'updated_at' => 'datetime',
             'pinned' => 'boolean',
             'is_ignored' => 'boolean',
+            'is_poll' => 'boolean',
             'views' => 'integer',
         ];
     }
@@ -257,5 +260,15 @@ final class Question extends Model implements Viewable
     public function hashtags(): BelongsToMany
     {
         return $this->belongsToMany(Hashtag::class);
+    }
+
+    /**
+     * Get the poll options for the question.
+     *
+     * @return HasMany<PollOption, $this>
+     */
+    public function pollOptions(): HasMany
+    {
+        return $this->hasMany(PollOption::class);
     }
 }

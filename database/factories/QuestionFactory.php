@@ -41,6 +41,7 @@ final class QuestionFactory extends Factory
             'answer' => $this->faker->sentence,
             'answer_created_at' => $this->faker->dateTime,
             'pinned' => false,
+            'is_poll' => false,
             'views' => $this->faker->numberBetween(0, 1000),
         ];
     }
@@ -53,6 +54,16 @@ final class QuestionFactory extends Factory
         return $this->state(fn (array $attributes): array => [
             'content' => '__UPDATE__',
             'answer' => $this->faker->sentence,
+        ]);
+    }
+
+    /**
+     * Indicate that the question is a poll.
+     */
+    public function poll(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_poll' => true,
         ]);
     }
 }
