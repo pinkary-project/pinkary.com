@@ -180,6 +180,10 @@
                 </div>
             </div>
 
+            @if ($question->is_poll)
+                <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
+            @endif
+
             <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
                 <div class="flex items-center gap-1">
                     <a
