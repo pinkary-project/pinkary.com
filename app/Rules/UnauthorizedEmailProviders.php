@@ -3646,7 +3646,6 @@ final readonly class UnauthorizedEmailProviders implements ValidationRule
             'xoxox.cc',
             'xperiae5.com',
             'xrap.de',
-            'xrho.com',
             'xvx.us',
             'xww.ro',
             'xxhamsterxx.ga',
