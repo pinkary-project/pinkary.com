@@ -25,8 +25,7 @@ final readonly class QrCodeController
 
         return response()->streamDownload(
             function () use ($qrCode): void {
-                /** @var string $qrCode */
-                echo $qrCode;
+                echo $qrCode->toHtml();
             },
             'pinkary_'.$user->username.'.png',
             ['Content-Type' => 'image/png']

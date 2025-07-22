@@ -15,31 +15,34 @@ use BaconQrCode\Writer;
 use Illuminate\Support\HtmlString;
 use Imagick;
 
-final class QrCode
+final readonly class QrCode
 {
     /**
      * The background color of the QR code.
      */
-    private readonly Rgb $backgroundColor;
+    private Rgb $backgroundColor;
 
     /**
      * The foreground color of the QR code.
      */
-    private readonly Rgb $foregroundColor;
+    private Rgb $foregroundColor;
 
     /**
      * The path to the icon that will be added to the QR code.
      */
-    private readonly string $iconPath;
+    private string $iconPath;
 
     /**
      * The size of the icon to be added to the QR code.
      */
-    private int $iconSize = 100;
+    private int $iconSize;
 
+    /**
+     * Create a new QR code service instance.
+     */
     public function __construct(bool $lightMode = true)
     {
-        if ($lightMode === true) {
+        if ($lightMode) {
             $this->backgroundColor = new Rgb(248, 250, 252);
             $this->foregroundColor = new Rgb(236, 72, 153);
         } else {
@@ -48,6 +51,7 @@ final class QrCode
         }
 
         $this->iconPath = public_path('img/ico.png');
+        $this->iconSize = 100;
     }
 
     /**
