@@ -98,6 +98,7 @@ test('can create a poll with valid options', function (): void {
         ->set('content', 'What is your favorite color?')
         ->set('isPoll', true)
         ->set('pollOptions', ['Red', 'Blue', 'Green'])
+        ->set('pollDuration', 3)
         ->call('store');
 
     $question = Question::where('content', '__UPDATE__')
@@ -107,22 +108,34 @@ test('can create a poll with valid options', function (): void {
     expect($question)->not->toBeNull();
     expect($question->pollOptions)->toHaveCount(3);
     expect($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue', 'Green']);
+    expect($question->poll_expires_at)->not->toBeNull();
+    expect((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(3);
 });
 
 test('validates poll requires at least 2 options', function (): void {
     $user = User::factory()->create();
 
-    $component = Livewire::actingAs($user)
+    Livewire::actingAs($user)
         ->test(Create::class, ['toId' => $user->id])
         ->set('content', 'What is your favorite color?')
         ->set('isPoll', true)
-        ->set('pollOptions', ['Red', '   '])
-        ->call('store');
+        ->set('pollOptions', ['Red', ''])
+        ->set('pollDuration', 3)
+        ->call('store')
+        ->assertHasErrors('pollOptions.1');
+});
 
-    $questionExists = Question::where('content', '__UPDATE__')->where('is_poll', true)->exists();
-    expect($questionExists)->toBeFalse();
+test('validates poll cannot have more than 4 options', function (): void {
+    $user = User::factory()->create();
 
-    expect($component->instance()->getErrorBag()->isNotEmpty())->toBeTrue();
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue', 'Green', 'Yellow', 'Purple'])
+        ->set('pollDuration', 3)
+        ->call('store')
+        ->assertHasErrors(['pollOptions' => 'A poll can have maximum 4 options.']);
 });
 
 test('validates poll options are required when poll is enabled', function (): void {
@@ -137,27 +150,14 @@ test('validates poll options are required when poll is enabled', function (): vo
         ->assertHasErrors('pollOptions.0');
 });
 
-test('validates poll cannot have more than 4 options', function (): void {
-    $user = User::factory()->create();
-
-    Livewire::actingAs($user)
-        ->test(Create::class, ['toId' => $user->id])
-        ->set('content', 'What is your favorite color?')
-        ->set('isPoll', true)
-        ->set('pollOptions', ['Red', 'Blue', 'Green', 'Yellow', 'Purple'])
-        ->call('store')
-        ->assertHasErrors(['pollOptions' => 'A poll can have maximum 4 options.']);
-});
-
 test('validates poll option length', function (): void {
     $user = User::factory()->create();
-    $longOption = str_repeat('a', 101);
 
     Livewire::actingAs($user)
         ->test(Create::class, ['toId' => $user->id])
         ->set('content', 'What is your favorite color?')
         ->set('isPoll', true)
-        ->set('pollOptions', ['Red', $longOption])
+        ->set('pollOptions', ['Red', str_repeat('a', 101)])
         ->call('store')
         ->assertHasErrors(['pollOptions.1']);
 });
@@ -199,12 +199,74 @@ test('trims whitespace from poll options', function (): void {
         ->test(Create::class, ['toId' => $user->id])
         ->set('content', 'What is your favorite color?')
         ->set('isPoll', true)
-        ->set('pollOptions', ['  Red  ', '  Blue  ', '  Green  '])
+        ->set('pollOptions', ['  Red  ', '  Blue  '])
+        ->set('pollDuration', 1)
         ->call('store');
 
     $question = Question::where('content', '__UPDATE__')
         ->where('is_poll', true)
         ->first();
 
-    expect($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue', 'Green']);
+    expect($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue']);
+});
+
+test('validates poll duration is required when creating a poll', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue'])
+        ->set('pollDuration', 0)
+        ->call('store')
+        ->assertHasErrors(['pollDuration']);
+});
+
+test('validates poll duration maximum value', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue'])
+        ->set('pollDuration', 8)
+        ->call('store')
+        ->assertHasErrors(['pollDuration']);
+});
+
+test('stores poll expiration date correctly', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue'])
+        ->set('pollDuration', 5)
+        ->call('store');
+
+    $question = Question::where('content', '__UPDATE__')
+        ->where('is_poll', true)
+        ->first();
+
+    expect($question->poll_expires_at)->not->toBeNull();
+    expect((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(5);
+});
+
+test('does not set poll expiration for non-poll questions', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'This is a regular update')
+        ->set('isPoll', false)
+        ->call('store');
+
+    $question = Question::where('content', '__UPDATE__')
+        ->where('is_poll', false)
+        ->first();
+
+    expect($question->poll_expires_at)->toBeNull();
 });

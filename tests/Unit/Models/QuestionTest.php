@@ -29,6 +29,7 @@ test('to array', function () {
         'parent_id',
         'root_id',
         'is_poll',
+        'poll_expires_at',
     ]);
 });
 

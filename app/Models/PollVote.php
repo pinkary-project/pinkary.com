@@ -24,16 +24,6 @@ final class PollVote extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'user_id',
-        'poll_option_id',
-    ];
-
-    /**
      * The attributes that should be cast.
      *
      * @return array<string, string>

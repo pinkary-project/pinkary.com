@@ -10,6 +10,8 @@ use App\Models\PollVote;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -40,6 +42,13 @@ final class PollVoting extends Component
         }
 
         $question = Question::findOrFail($this->questionId);
+
+        if ($question->isPollExpired()) {
+            $this->addError('poll', 'This poll has expired and voting is no longer allowed.');
+
+            return;
+        }
+
         $pollOption = PollOption::where('question_id', $question->id)
             ->findOrFail($pollOptionId);
 
@@ -73,7 +82,7 @@ final class PollVoting extends Component
      */
     public function render(): View
     {
-        $question = Question::with(['pollOptions' => function ($query): void {
+        $question = Question::with(['pollOptions' => function (Builder|HasMany $query): void {
             $query->orderBy('id');
         }])->findOrFail($this->questionId);
 
@@ -91,6 +100,8 @@ final class PollVoting extends Component
             'pollOptions' => $question->pollOptions,
             'userVote' => $userVote,
             'totalVotes' => $totalVotes,
+            'isPollExpired' => $question->isPollExpired(),
+            'timeRemaining' => $question->getPollTimeRemaining(),
         ]);
     }
 }

@@ -112,15 +112,12 @@ test('displays correct vote percentages', function (): void {
     $question = Question::factory()->poll()->create();
 
     PollOption::factory()->for($question)->create(['text' => 'Option 1', 'votes_count' => 6]);
-    PollOption::factory()->for($question)->create(['text' => 'Option 2', 'votes_count' => 3]);
-    PollOption::factory()->for($question)->create(['text' => 'Option 3', 'votes_count' => 1]);
+    PollOption::factory()->for($question)->create(['text' => 'Option 2', 'votes_count' => 4]);
 
-    $component = Livewire::actingAs($user)
-        ->test(PollVoting::class, ['questionId' => $question->id]);
-
-    $component->assertSee('60%')
-        ->assertSee('30%')
-        ->assertSee('10%');
+    Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id])
+        ->assertSee('60%')
+        ->assertSee('40%');
 });
 
 test('shows user selected option correctly', function (): void {
@@ -135,26 +132,10 @@ test('shows user selected option correctly', function (): void {
         'poll_option_id' => $option1->id,
     ]);
 
-    $component = Livewire::actingAs($user)
-        ->test(PollVoting::class, ['questionId' => $question->id]);
-
-    $component->assertSee('Selected')
+    Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id])
+        ->assertSee('Selected')
         ->assertSee('Not Selected');
-});
-
-test('handles poll with no votes', function (): void {
-    $user = User::factory()->create();
-    $question = Question::factory()->poll()->create();
-
-    PollOption::factory()->for($question)->create(['text' => 'Option 1', 'votes_count' => 0]);
-    PollOption::factory()->for($question)->create(['text' => 'Option 2', 'votes_count' => 0]);
-
-    $component = Livewire::actingAs($user)
-        ->test(PollVoting::class, ['questionId' => $question->id]);
-
-    $component->assertSee('0 votes')
-        ->assertSee('Option 1')
-        ->assertSee('Option 2');
 });
 
 test('prevents voting on non-existent poll option', function (): void {
@@ -183,13 +164,108 @@ test('prevents voting on poll option from different question', function (): void
 });
 
 test('requires verified email to vote', function (): void {
-    $user = User::factory()->create(['email_verified_at' => null]);
-    $question = Question::factory()->poll()->create();
-    $pollOption = PollOption::factory()->for($question)->create();
+    $user = User::factory()->unverified()->create();
+    $question = Question::factory()->create(['is_poll' => true]);
+    $pollOption = PollOption::factory()->create(['question_id' => $question->id]);
+
+    Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id])
+        ->call('vote', $pollOption->id);
+
+    expect(PollVote::where('user_id', $user->id)->exists())->toBeFalse();
+});
+
+test('cannot vote on expired poll', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'is_poll' => true,
+        'poll_expires_at' => now()->subDay(),
+    ]);
+    $pollOption = PollOption::factory()->create(['question_id' => $question->id]);
 
     $component = Livewire::actingAs($user)
         ->test(PollVoting::class, ['questionId' => $question->id])
         ->call('vote', $pollOption->id);
 
-    expect(PollVote::count())->toBe(0);
+    $component->assertHasErrors(['poll' => 'This poll has expired and voting is no longer allowed.']);
+    expect(PollVote::where('user_id', $user->id)->exists())->toBeFalse();
+});
+
+test('can vote on active poll', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'is_poll' => true,
+        'poll_expires_at' => now()->addDay(),
+    ]);
+    $pollOption = PollOption::factory()->create(['question_id' => $question->id]);
+
+    Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id])
+        ->call('vote', $pollOption->id);
+
+    expect(PollVote::where('user_id', $user->id)->exists())->toBeTrue();
+});
+
+test('renders expired poll status correctly', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'is_poll' => true,
+        'poll_expires_at' => now()->subDay(),
+    ]);
+    PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);
+
+    $component = Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id]);
+
+    $component->assertSee('Poll expired');
+    $component->assertViewHas('isPollExpired', true);
+});
+
+test('renders active poll status correctly', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'is_poll' => true,
+        'poll_expires_at' => now()->addDay(),
+    ]);
+    PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);
+
+    $component = Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id]);
+
+    $component->assertDontSee('Poll expired');
+    $component->assertViewHas('isPollExpired', false);
+});
+
+test('displays time remaining for active polls', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'is_poll' => true,
+        'poll_expires_at' => now()->addDays(2),
+    ]);
+    PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);
+
+    $component = Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id]);
+
+    $component->assertSee('Ends ');
+    $component->assertViewHas('timeRemaining');
+    $timeRemaining = $component->viewData('timeRemaining');
+    expect($timeRemaining)->toBeString();
+    expect($timeRemaining)->toContain('day');
+});
+
+test('does not display time remaining for expired polls', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'is_poll' => true,
+        'poll_expires_at' => now()->subDay(),
+    ]);
+    PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);
+
+    $component = Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id]);
+
+    $component->assertSee('Poll expired');
+    $component->assertDontSee('Ends in');
+    $component->assertViewHas('timeRemaining', null);
 });

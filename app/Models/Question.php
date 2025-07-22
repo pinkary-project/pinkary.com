@@ -33,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property bool $is_reported
  * @property bool $is_ignored
  * @property bool $is_poll
+ * @property Carbon|null $poll_expires_at
  * @property int $views
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -140,6 +141,7 @@ final class Question extends Model implements Viewable
             'pinned' => 'boolean',
             'is_ignored' => 'boolean',
             'is_poll' => 'boolean',
+            'poll_expires_at' => 'datetime',
             'views' => 'integer',
         ];
     }
@@ -270,5 +272,33 @@ final class Question extends Model implements Viewable
     public function pollOptions(): HasMany
     {
         return $this->hasMany(PollOption::class);
+    }
+
+    /**
+     * Check if the poll has expired.
+     */
+    public function isPollExpired(): bool
+    {
+        if (! $this->is_poll || $this->poll_expires_at === null) {
+            return false;
+        }
+
+        return $this->poll_expires_at->isPast();
+    }
+
+    /**
+     * Get the time remaining for the poll.
+     */
+    public function getPollTimeRemaining(): ?string
+    {
+        if (! $this->is_poll || $this->poll_expires_at === null) {
+            return null;
+        }
+
+        if ($this->isPollExpired()) {
+            return null;
+        }
+
+        return $this->poll_expires_at->diffForHumans();
     }
 }

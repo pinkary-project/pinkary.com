@@ -91,6 +91,11 @@ final class Create extends Component
     public array $pollOptions = ['', ''];
 
     /**
+     * Poll duration in days.
+     */
+    public int $pollDuration = 1;
+
+    /**
      * The updated lifecycle hook.
      */
     public function updated(mixed $property): void
@@ -249,6 +254,7 @@ final class Create extends Component
 
         if (! $this->isPoll) {
             $this->pollOptions = ['', ''];
+            $this->pollDuration = 1;
         }
     }
 
@@ -285,14 +291,15 @@ final class Create extends Component
             'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
         ]);
 
-        // Validate poll options separately if it's a poll
         if ($this->isPoll) {
             $this->validate([
                 'pollOptions' => ['array', 'required'],
                 'pollOptions.*' => ['required', 'string', 'max:100'],
+                'pollDuration' => ['required', 'integer', 'min:1', 'max:7'],
             ]);
 
-            $validOptions = array_filter($this->pollOptions, fn ($option): bool => ! in_array(trim((string) $option), ['', '0'], true));
+            /** @var array<int, string> $validOptions */
+            $validOptions = array_filter($this->pollOptions, fn (string $option): bool => trim($option) !== '');
 
             if (count($validOptions) < 2) {
                 $this->addError('pollOptions', 'A poll must have at least 2 options.');
@@ -322,12 +329,10 @@ final class Create extends Component
             ...$validated,
             'to_id' => $this->toId,
             'is_poll' => $this->isPoll,
+            'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
         ]);
 
-        // Create poll options if this is a poll
-        if ($this->isPoll && $question) {
-            $validOptions = array_filter($this->pollOptions, fn ($option): bool => ! in_array(trim((string) $option), ['', '0'], true));
-
+        if ($this->isPoll && isset($validOptions)) {
             foreach ($validOptions as $optionText) {
                 $question->pollOptions()->create([
                     'text' => trim($optionText),
@@ -338,7 +343,7 @@ final class Create extends Component
 
         $this->deleteUnusedImages();
 
-        $this->reset(['content', 'isPoll']);
+        $this->reset(['content', 'isPoll', 'pollDuration']);
         $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
