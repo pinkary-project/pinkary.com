@@ -9,6 +9,7 @@
             <div class="relative">
                 <button
                     wire:click="vote({{ $option->id }})"
+                    data-navigate-ignore="true"
                     class="w-full text-left p-3 rounded-lg border transition-colors duration-200 hover:bg-slate-50 dark:hover:bg-slate-800 {{ $isSelected ? 'border-pink-500 bg-pink-50 dark:bg-pink-900/20' : 'border-slate-200 dark:border-slate-700' }}"
                     @guest disabled @endguest
                 >
@@ -43,7 +44,7 @@
         <div class="pt-2 text-sm text-slate-500 dark:text-slate-400">
             {{ $totalVotes }} {{ $totalVotes === 1 ? 'vote' : 'votes' }}
             @guest
-                · <a href="{{ route('login') }}" class="text-pink-500 hover:text-pink-600">Sign in to vote</a>
+                · <a href="{{ route('login') }}" data-navigate-ignore="true" class="text-pink-500 hover:text-pink-600">Sign in to vote</a>
             @endguest
         </div>
     @endif
