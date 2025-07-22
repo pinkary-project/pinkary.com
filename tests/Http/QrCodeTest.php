@@ -14,9 +14,9 @@ test('can QR Code be downloaded only by authenticated users', function () {
 test('for dark or default theme', function () {
     $user = User::factory()->create();
 
-    $qrCode = (new QrCode())->generate(
+    $qrCode = (new QrCode(lightMode: false))->generate(
         route('profile.show', [
-            'username' => $this->user->username,
+            'username' => $user->username,
         ])
     );
 
@@ -32,9 +32,9 @@ test('for dark or default theme', function () {
 test('for light theme', function () {
     $user = User::factory()->create();
 
-    $qrCode = (new QrCode())->generate(
+    $qrCode = (new QrCode(lightMode: true))->generate(
         route('profile.show', [
-            'username' => $this->user->username,
+            'username' => $user->username,
         ])
     );
 

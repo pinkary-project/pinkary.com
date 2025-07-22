@@ -17,18 +17,36 @@ use Imagick;
 
 final class QrCode
 {
+    /**
+     * The background color of the QR code.
+     */
     private readonly Rgb $backgroundColor;
 
+    /**
+     * The foreground color of the QR code.
+     */
     private readonly Rgb $foregroundColor;
 
+    /**
+     * The path to the icon that will be added to the QR code.
+     */
     private readonly string $iconPath;
 
+    /**
+     * The size of the icon to be added to the QR code.
+     */
     private int $iconSize = 100;
 
-    public function __construct()
+    public function __construct(bool $lightMode = true)
     {
-        $this->backgroundColor = new Rgb(3, 7, 18);
-        $this->foregroundColor = new Rgb(236, 72, 153);
+        if ($lightMode === true) {
+            $this->backgroundColor = new Rgb(248, 250, 252);
+            $this->foregroundColor = new Rgb(236, 72, 153);
+        } else {
+            $this->backgroundColor = new Rgb(3, 7, 18);
+            $this->foregroundColor = new Rgb(236, 72, 153);
+        }
+
         $this->iconPath = public_path('img/ico.png');
     }
 
@@ -47,6 +65,9 @@ final class QrCode
         return new HtmlString($qrCodeImage->getImageBlob());
     }
 
+    /**
+     * Create the QR code data.
+     */
     private function createQrCodeData(string $content): string
     {
         return (new Writer(
@@ -64,6 +85,9 @@ final class QrCode
         );
     }
 
+    /**
+     * Create the QR code image.
+     */
     private function createQrCodeImage(string $qrCodeBinary): Imagick
     {
         $qrCodeImage = new Imagick();
@@ -72,6 +96,9 @@ final class QrCode
         return $qrCodeImage;
     }
 
+    /**
+     * Add an icon to the center of the QR code.
+     */
     private function addIconToQrCode(Imagick $qrCodeImage): void
     {
         $icon = new Imagick($this->iconPath);

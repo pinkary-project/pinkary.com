@@ -17,7 +17,7 @@ final readonly class QrCodeController
      */
     public function __invoke(Request $request, #[CurrentUser] User $user): StreamedResponse
     {
-        $qrCode = (new QrCode())->generate(
+        $qrCode = (new QrCode($request->query('theme') === 'light'))->generate(
             route('profile.show', [
                 'username' => $user->username,
             ])
