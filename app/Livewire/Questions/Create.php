@@ -259,13 +259,33 @@ final class Create extends Component
 
         if ($this->isPoll) {
             $this->validate([
-                'pollOptions' => ['array', 'required'],
-                'pollOptions.*' => ['required', 'string', 'max:100'],
                 'pollDuration' => ['required', 'integer', 'min:1', 'max:7'],
             ]);
 
             /** @var array<int, string> $validOptions */
             $validOptions = array_filter($this->pollOptions, fn (string $option): bool => trim($option) !== '');
+
+            $hasEmptyOptions = false;
+            foreach ($this->pollOptions as $option) {
+                if (trim($option) === '') {
+                    $hasEmptyOptions = true;
+                    break;
+                }
+            }
+
+            if ($hasEmptyOptions) {
+                $this->addError('pollOptions', 'All poll options are required.');
+
+                return;
+            }
+
+            foreach ($this->pollOptions as $option) {
+                if (mb_strlen($option) > 40) {
+                    $this->addError('pollOptions', 'Poll options cannot exceed 40 characters.');
+
+                    return;
+                }
+            }
 
             if (count($validOptions) < 2) {
                 $this->addError('pollOptions', 'A poll must have at least 2 options.');
