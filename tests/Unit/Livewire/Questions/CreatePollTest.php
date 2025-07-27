@@ -32,63 +32,6 @@ test('poll button is not visible for replies', function (): void {
     $component->assertDontSee('Create a poll');
 });
 
-test('can toggle poll mode', function (): void {
-    $user = User::factory()->create();
-
-    $component = Livewire::actingAs($user)
-        ->test(Create::class, ['toId' => $user->id])
-        ->assertSet('isPoll', false)
-        ->call('togglePoll')
-        ->assertSet('isPoll', true)
-        ->call('togglePoll')
-        ->assertSet('isPoll', false);
-});
-
-test('can add poll options', function (): void {
-    $user = User::factory()->create();
-
-    $component = Livewire::actingAs($user)
-        ->test(Create::class, ['toId' => $user->id])
-        ->set('isPoll', true)
-        ->assertCount('pollOptions', 2)
-        ->call('addPollOption')
-        ->assertCount('pollOptions', 3)
-        ->call('addPollOption')
-        ->assertCount('pollOptions', 4);
-
-    $component->call('addPollOption')
-        ->assertCount('pollOptions', 4);
-});
-
-test('can remove poll options', function (): void {
-    $user = User::factory()->create();
-
-    $component = Livewire::actingAs($user)
-        ->test(Create::class, ['toId' => $user->id])
-        ->set('isPoll', true)
-        ->call('addPollOption')
-        ->call('addPollOption')
-        ->assertCount('pollOptions', 4)
-        ->call('removePollOption', 0)
-        ->assertCount('pollOptions', 3)
-        ->call('removePollOption', 0)
-        ->assertCount('pollOptions', 2);
-
-    $component->call('removePollOption', 0)
-        ->assertCount('pollOptions', 2);
-});
-
-test('poll options reset when toggling off poll mode', function (): void {
-    $user = User::factory()->create();
-
-    Livewire::actingAs($user)
-        ->test(Create::class, ['toId' => $user->id])
-        ->set('isPoll', true)
-        ->set('pollOptions', ['Option 1', 'Option 2', 'Option 3'])
-        ->call('togglePoll')
-        ->assertSet('isPoll', false)
-        ->assertSet('pollOptions', ['', '']);
-});
 
 test('can create a poll with valid options', function (): void {
     $user = User::factory()->create();

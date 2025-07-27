@@ -225,40 +225,6 @@ final class Create extends Component
     }
 
     /**
-     * Add a new poll option.
-     */
-    public function addPollOption(): void
-    {
-        if (count($this->pollOptions) < 4) {
-            $this->pollOptions[] = '';
-        }
-    }
-
-    /**
-     * Remove a poll option.
-     */
-    public function removePollOption(int $index): void
-    {
-        if (count($this->pollOptions) > 2) {
-            unset($this->pollOptions[$index]);
-            $this->pollOptions = array_values($this->pollOptions);
-        }
-    }
-
-    /**
-     * Toggle poll mode.
-     */
-    public function togglePoll(): void
-    {
-        $this->isPoll = ! $this->isPoll;
-
-        if (! $this->isPoll) {
-            $this->pollOptions = ['', ''];
-            $this->pollDuration = 1;
-        }
-    }
-
-    /**
      * Stores a new question.
      */
     public function store(#[CurrentUser] ?User $user): void
