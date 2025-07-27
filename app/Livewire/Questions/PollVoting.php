@@ -52,7 +52,7 @@ final class PollVoting extends Component
         $pollOption = PollOption::where('question_id', $question->id)
             ->findOrFail($pollOptionId);
 
-        $existingVote = PollVote::whereHas('pollOption', function ($query) use ($question): void {
+        $existingVote = PollVote::whereHas('pollOption', function (Builder $query) use ($question): void {
             $query->where('question_id', $question->id);
         })->where('user_id', $user->id)->first();
 
@@ -88,7 +88,7 @@ final class PollVoting extends Component
 
         $userVote = null;
         if (auth()->check()) {
-            $userVote = PollVote::whereHas('pollOption', function ($query) use ($question): void {
+            $userVote = PollVote::whereHas('pollOption', function (Builder $query) use ($question): void {
                 $query->where('question_id', $question->id);
             })->where('user_id', auth()->id())->first();
         }
