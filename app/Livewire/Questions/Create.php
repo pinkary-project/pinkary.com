@@ -263,11 +263,11 @@ final class Create extends Component
             ]);
 
             /** @var array<int, string> $validOptions */
-            $validOptions = array_filter($this->pollOptions, fn (string $option): bool => trim($option) !== '');
+            $validOptions = array_filter($this->pollOptions, fn (string $option): bool => mb_trim($option) !== '');
 
             $hasEmptyOptions = false;
             foreach ($this->pollOptions as $option) {
-                if (trim($option) === '') {
+                if (mb_trim($option) === '') {
                     $hasEmptyOptions = true;
                     break;
                 }
@@ -322,7 +322,7 @@ final class Create extends Component
 
             foreach ($validOptions as $optionText) {
                 $options[] = [
-                    'text' => trim($optionText),
+                    'text' => mb_trim($optionText),
                     'votes_count' => 0,
                 ];
             }
