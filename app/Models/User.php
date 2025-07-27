@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Enums\UserMailPreference;
 use App\Services\ParsableBio;
+use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -19,7 +20,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -30,12 +30,12 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $avatar_url
  * @property string|null $bio
  * @property HtmlString $parsed_bio
- * @property Carbon $created_at
+ * @property CarbonImmutable $created_at
  * @property string $email
- * @property Carbon|null $email_verified_at
+ * @property CarbonImmutable|null $email_verified_at
  * @property ?string $two_factor_secret
  * @property array<int, string> $two_factor_recovery_codes
- * @property ?Carbon $two_factor_confirmed_at
+ * @property ?CarbonImmutable $two_factor_confirmed_at
  * @property string $gradient
  * @property int $id
  * @property bool $is_verified
@@ -48,8 +48,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $name
  * @property string $right_color
  * @property array<string, string>|null $settings
- * @property Carbon $updated_at
- * @property ?Carbon $avatar_updated_at
+ * @property CarbonImmutable $updated_at
+ * @property ?CarbonImmutable $avatar_updated_at
  * @property string $username
  * @property int $views
  * @property bool $is_uploaded_avatar

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Database\Factories\LikeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,8 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $user_id
  * @property string $question_id
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property CarbonImmutable $created_at
+ * @property CarbonImmutable $updated_at
  * @property-read User $user
  * @property-read Question $question
  */
