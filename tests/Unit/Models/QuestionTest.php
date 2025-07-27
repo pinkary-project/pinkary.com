@@ -28,7 +28,6 @@ test('to array', function () {
         'answer_updated_at',
         'parent_id',
         'root_id',
-        'is_poll',
         'poll_expires_at',
     ]);
 });
@@ -50,7 +49,7 @@ test('relations', function () {
         ->hasDescendants(2)
         ->hasChildren(2)
         ->hasHashtags(1)
-        ->create(['is_poll' => true]);
+        ->create(['poll_expires_at' => now()->addDays(1)]);
 
     $question->likes()->saveMany(Like::factory()->count(3)->make());
     $question->pollOptions()->saveMany(PollOption::factory()->count(2)->make());

@@ -102,7 +102,7 @@ test('can create a poll with valid options', function (): void {
         ->call('store');
 
     $question = Question::where('content', '__UPDATE__')
-        ->where('is_poll', true)
+        ->whereNotNull('poll_expires_at')
         ->first();
 
     expect($question)->not->toBeNull();
@@ -172,7 +172,7 @@ test('creates regular question when poll is disabled', function (): void {
         ->call('store');
 
     $question = Question::where('content', '__UPDATE__')
-        ->where('is_poll', false)
+        ->whereNull('poll_expires_at')
         ->first();
 
     expect($question)->not->toBeNull();
@@ -204,7 +204,7 @@ test('trims whitespace from poll options', function (): void {
         ->call('store');
 
     $question = Question::where('content', '__UPDATE__')
-        ->where('is_poll', true)
+        ->whereNotNull('poll_expires_at')
         ->first();
 
     expect($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue']);
@@ -248,7 +248,7 @@ test('stores poll expiration date correctly', function (): void {
         ->call('store');
 
     $question = Question::where('content', '__UPDATE__')
-        ->where('is_poll', true)
+        ->whereNotNull('poll_expires_at')
         ->first();
 
     expect($question->poll_expires_at)->not->toBeNull();
@@ -265,7 +265,7 @@ test('does not set poll expiration for non-poll questions', function (): void {
         ->call('store');
 
     $question = Question::where('content', '__UPDATE__')
-        ->where('is_poll', false)
+        ->whereNull('poll_expires_at')
         ->first();
 
     expect($question->poll_expires_at)->toBeNull();

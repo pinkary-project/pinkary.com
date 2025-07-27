@@ -165,7 +165,7 @@ test('prevents voting on poll option from different question', function (): void
 
 test('requires verified email to vote', function (): void {
     $user = User::factory()->unverified()->create();
-    $question = Question::factory()->create(['is_poll' => true]);
+    $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
     $pollOption = PollOption::factory()->create(['question_id' => $question->id]);
 
     Livewire::actingAs($user)
@@ -178,7 +178,6 @@ test('requires verified email to vote', function (): void {
 test('cannot vote on expired poll', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->subDay(),
     ]);
     $pollOption = PollOption::factory()->create(['question_id' => $question->id]);
@@ -194,7 +193,6 @@ test('cannot vote on expired poll', function (): void {
 test('can vote on active poll', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->addDay(),
     ]);
     $pollOption = PollOption::factory()->create(['question_id' => $question->id]);
@@ -209,7 +207,6 @@ test('can vote on active poll', function (): void {
 test('renders expired poll status correctly', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->subDay(),
     ]);
     PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);
@@ -224,7 +221,6 @@ test('renders expired poll status correctly', function (): void {
 test('renders active poll status correctly', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->addDay(),
     ]);
     PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);
@@ -239,7 +235,6 @@ test('renders active poll status correctly', function (): void {
 test('displays time remaining for active polls', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->addDays(2),
     ]);
     PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);
@@ -257,7 +252,6 @@ test('displays time remaining for active polls', function (): void {
 test('does not display time remaining for expired polls', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->subDay(),
     ]);
     PollOption::factory()->create(['question_id' => $question->id, 'text' => 'Option 1']);

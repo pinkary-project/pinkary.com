@@ -180,7 +180,7 @@
                 </div>
             </div>
 
-            @if ($question->is_poll)
+            @if ($question->isPoll())
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 

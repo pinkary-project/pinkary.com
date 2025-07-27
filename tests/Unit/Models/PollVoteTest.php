@@ -22,7 +22,7 @@ test('to array', function () {
 
 test('relations', function () {
     $user = User::factory()->create();
-    $question = Question::factory()->create(['is_poll' => true]);
+    $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
     $pollOption = PollOption::factory()->for($question)->create();
 
     $pollVote = PollVote::factory()
@@ -38,7 +38,7 @@ test('relations', function () {
 
 test('fillable attributes', function () {
     $user = User::factory()->create();
-    $question = Question::factory()->create(['is_poll' => true]);
+    $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
     $pollOption = PollOption::factory()->for($question)->create();
 
     $pollVote = PollVote::create([
@@ -61,7 +61,7 @@ test('casts', function () {
 
 test('unique vote constraint', function () {
     $user = User::factory()->create();
-    $question = Question::factory()->create(['is_poll' => true]);
+    $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
     $pollOption = PollOption::factory()->for($question)->create();
 
     // First vote should succeed

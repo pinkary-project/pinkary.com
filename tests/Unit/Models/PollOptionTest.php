@@ -21,7 +21,7 @@ test('to array', function () {
 });
 
 test('relations', function () {
-    $question = Question::factory()->create(['is_poll' => true]);
+    $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
 
     $pollOption = PollOption::factory()
         ->for($question)
@@ -38,7 +38,7 @@ test('relations', function () {
 });
 
 test('fillable attributes', function () {
-    $question = Question::factory()->create(['is_poll' => true]);
+    $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
 
     $pollOption = PollOption::create([
         'question_id' => $question->id,

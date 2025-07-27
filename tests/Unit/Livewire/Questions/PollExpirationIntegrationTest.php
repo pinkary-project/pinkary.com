@@ -12,7 +12,6 @@ test('poll expiration integration test', function (): void {
     $user = User::factory()->create();
 
     $activeQuestion = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->addHour(),
     ]);
     $activePollOption = PollOption::factory()->create([
@@ -21,7 +20,6 @@ test('poll expiration integration test', function (): void {
     ]);
 
     $expiredQuestion = Question::factory()->create([
-        'is_poll' => true,
         'poll_expires_at' => now()->subHour(),
     ]);
     $expiredPollOption = PollOption::factory()->create([

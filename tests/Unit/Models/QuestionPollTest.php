@@ -12,12 +12,35 @@ test('question can have poll expiration date', function (): void {
     $question = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => $expirationDate,
     ]);
 
     expect($question->poll_expires_at)->toBeInstanceOf(Carbon\CarbonInterface::class);
     expect($question->poll_expires_at->format('Y-m-d H:i:s'))->toBe($expirationDate->format('Y-m-d H:i:s'));
+});
+
+test('isPoll returns true when poll_expires_at is set', function (): void {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'poll_expires_at' => now()->addDays(1),
+    ]);
+
+    expect($question->isPoll())->toBeTrue();
+});
+
+test('isPoll returns false when poll_expires_at is null', function (): void {
+    $user = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'poll_expires_at' => null,
+    ]);
+
+    expect($question->isPoll())->toBeFalse();
 });
 
 test('question poll expiration date is nullable', function (): void {
@@ -26,7 +49,6 @@ test('question poll expiration date is nullable', function (): void {
     $question = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => false,
         'poll_expires_at' => null,
     ]);
 
@@ -40,7 +62,6 @@ test('question can determine if poll is expired', function (): void {
     $expiredQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => now()->subDay(),
     ]);
 
@@ -48,7 +69,6 @@ test('question can determine if poll is expired', function (): void {
     $activeQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => now()->addDay(),
     ]);
 
@@ -56,7 +76,6 @@ test('question can determine if poll is expired', function (): void {
     $nonPollQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => false,
         'poll_expires_at' => null,
     ]);
 
@@ -71,7 +90,6 @@ test('question poll expiration date is cast to datetime', function (): void {
     $question = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => '2025-07-25 12:00:00',
     ]);
 
@@ -85,7 +103,6 @@ test('isPollExpired returns true for expired polls', function (): void {
     $expiredQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => now()->subDay(),
     ]);
 
@@ -98,7 +115,6 @@ test('isPollExpired returns false for active polls', function (): void {
     $activeQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => now()->addDay(),
     ]);
 
@@ -111,7 +127,6 @@ test('isPollExpired returns false for non-poll questions', function (): void {
     $nonPollQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => false,
         'poll_expires_at' => null,
     ]);
 
@@ -124,7 +139,6 @@ test('isPollExpired returns false for polls without expiration date', function (
     $pollWithoutExpiration = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => null,
     ]);
 
@@ -137,7 +151,6 @@ test('getPollTimeRemaining returns null for expired polls', function (): void {
     $expiredQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => now()->subDay(),
     ]);
 
@@ -150,7 +163,6 @@ test('getPollTimeRemaining returns null for non-poll questions', function (): vo
     $nonPollQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => false,
         'poll_expires_at' => null,
     ]);
 
@@ -163,7 +175,6 @@ test('getPollTimeRemaining returns null for polls without expiration date', func
     $pollWithoutExpiration = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => null,
     ]);
 
@@ -176,7 +187,6 @@ test('getPollTimeRemaining returns time remaining for active polls', function ()
     $activeQuestion = Question::factory()->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
-        'is_poll' => true,
         'poll_expires_at' => now()->addDays(2),
     ]);
 

@@ -328,17 +328,20 @@ final class Create extends Component
         $question = $user->questionsSent()->create([
             ...$validated,
             'to_id' => $this->toId,
-            'is_poll' => $this->isPoll,
             'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
         ]);
 
         if ($this->isPoll) {
+            $options = [];
+
             foreach ($validOptions as $optionText) {
-                $question->pollOptions()->create([
+                $options[] = [
                     'text' => trim($optionText),
                     'votes_count' => 0,
-                ]);
+                ];
             }
+
+            $question->pollOptions()->createMany($options);
         }
 
         $this->deleteUnusedImages();
