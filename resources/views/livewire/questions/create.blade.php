@@ -10,11 +10,8 @@
             ...imageUpload(),
             ...poll(),
             initComponents() {
-                const imageUploadComponent = imageUpload();
-                const pollComponent = poll();
-
-                imageUploadComponent.init.call(this);
-                pollComponent.init.call(this);
+                imageUpload().init.call(this);
+                poll().init.call(this);
             }
         }"
         x-init='() => {
