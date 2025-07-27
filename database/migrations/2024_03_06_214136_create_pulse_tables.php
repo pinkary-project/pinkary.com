@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Laravel\Pulse\Support\PulseMigration;
 
-return new class extends PulseMigration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -72,5 +72,13 @@ return new class extends PulseMigration
             $table->index('type'); // For purging...
             $table->index(['period', 'type', 'aggregate', 'bucket']); // For aggregate queries...
         });
+    }
+
+    /**
+     * Determine if this migration should run.
+     */
+    public function shouldRun(): bool
+    {
+        return false;
     }
 };
