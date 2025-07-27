@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\QrCode;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use SimpleSoftwareIO\QrCode\Generator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final readonly class QrCodeController
@@ -18,29 +17,15 @@ final readonly class QrCodeController
      */
     public function __invoke(Request $request, #[CurrentUser] User $user): StreamedResponse
     {
-        /** @var Generator $qrCodeGenerator */
-        $qrCodeGenerator = QrCode::getFacadeRoot();
-
-        $light = [248, 250, 252, 100];
-        $dark = [3, 7, 18, 100];
-        $bgColor = $request->query('theme') === 'light' ? $light : $dark;
-
-        $qrCode = $qrCodeGenerator
-            ->margin(2)
-            ->size(512)
-            ->format('png')
-            ->backgroundColor(...$bgColor)
-            ->color(236, 72, 153, 100)
-            ->merge('/public/img/ico.png')
-            ->errorCorrection('M')
-            ->generate(route('profile.show', [
+        $qrCode = (new QrCode($request->query('theme') === 'light'))->generate(
+            route('profile.show', [
                 'username' => $user->username,
-            ]));
+            ])
+        );
 
         return response()->streamDownload(
             function () use ($qrCode): void {
-                /** @var string $qrCode */
-                echo $qrCode;
+                echo $qrCode->toHtml();
             },
             'pinkary_'.$user->username.'.png',
             ['Content-Type' => 'image/png']

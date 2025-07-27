@@ -19,7 +19,7 @@
         "panphp/pan": "^0.1.8",
         "ryangjchandler/laravel-cloudflare-turnstile": "^1.1",
         "scrivo/highlight.php": "^9.18.1.10",
-        "simplesoftwareio/simple-qrcode": "^4.2",
+        "bacon/bacon-qr-code": "^2.0",
         "spatie/laravel-mailcoach-mailer": "^1.5.1"
     },
     "require-dev": {
