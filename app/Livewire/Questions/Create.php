@@ -332,7 +332,7 @@ final class Create extends Component
             'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
         ]);
 
-        if ($this->isPoll && isset($validOptions)) {
+        if ($this->isPoll) {
             foreach ($validOptions as $optionText) {
                 $question->pollOptions()->create([
                     'text' => trim($optionText),

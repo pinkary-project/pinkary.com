@@ -239,6 +239,46 @@ test('cannot store with blank characters', function () {
     ]);
 });
 
+test('poll should have at least 2 options', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('isPoll', true);
+    $component->set('pollOptions', ['Option 1']);
+    $component->set('content', 'What is your favorite color?');
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'pollOptions' => 'A poll must have at least 2 options.',
+    ]);
+});
+
+test('poll should have at most 4 options', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('isPoll', true);
+    $component->set('pollOptions', ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5']);
+    $component->set('content', 'What is your favorite color?');
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'pollOptions' => 'A poll can have maximum 4 options.',
+    ]);
+});
+
 test('store with user questions_preference set to public', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
