@@ -55,4 +55,14 @@ final class QuestionFactory extends Factory
             'answer' => $this->faker->sentence,
         ]);
     }
+
+    /**
+     * Indicate that the question is a poll.
+     */
+    public function poll(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'poll_expires_at' => now()->addDays(3),
+        ]);
+    }
 }

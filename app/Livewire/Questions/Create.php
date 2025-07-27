@@ -79,6 +79,23 @@ final class Create extends Component
     public bool $anonymously = true;
 
     /**
+     * Whether this is a poll.
+     */
+    public bool $isPoll = false;
+
+    /**
+     * Poll options.
+     *
+     * @var array<int, string>
+     */
+    public array $pollOptions = ['', ''];
+
+    /**
+     * Poll duration in days.
+     */
+    public int $pollDuration = 1;
+
+    /**
      * The updated lifecycle hook.
      */
     public function updated(mixed $property): void
@@ -240,6 +257,49 @@ final class Create extends Component
             'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
         ]);
 
+        if ($this->isPoll) {
+            $this->validate([
+                'pollDuration' => ['required', 'integer', 'min:1', 'max:7'],
+            ]);
+
+            /** @var array<int, string> $validOptions */
+            $validOptions = array_filter($this->pollOptions, fn (string $option): bool => trim($option) !== '');
+
+            $hasEmptyOptions = false;
+            foreach ($this->pollOptions as $option) {
+                if (trim($option) === '') {
+                    $hasEmptyOptions = true;
+                    break;
+                }
+            }
+
+            if ($hasEmptyOptions) {
+                $this->addError('pollOptions', 'All poll options are required.');
+
+                return;
+            }
+
+            foreach ($this->pollOptions as $option) {
+                if (mb_strlen($option) > 40) {
+                    $this->addError('pollOptions', 'Poll options cannot exceed 40 characters.');
+
+                    return;
+                }
+            }
+
+            if (count($validOptions) < 2) {
+                $this->addError('pollOptions', 'A poll must have at least 2 options.');
+
+                return;
+            }
+
+            if (count($validOptions) > 4) {
+                $this->addError('pollOptions', 'A poll can have maximum 4 options.');
+
+                return;
+            }
+        }
+
         if ($this->isSharingUpdate) {
             $validated['answer_created_at'] = now();
             $validated['answer'] = $validated['content'];
@@ -251,14 +311,29 @@ final class Create extends Component
             $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
-        $user->questionsSent()->create([
+        $question = $user->questionsSent()->create([
             ...$validated,
             'to_id' => $this->toId,
+            'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
         ]);
+
+        if ($this->isPoll) {
+            $options = [];
+
+            foreach ($validOptions as $optionText) {
+                $options[] = [
+                    'text' => trim($optionText),
+                    'votes_count' => 0,
+                ];
+            }
+
+            $question->pollOptions()->createMany($options);
+        }
 
         $this->deleteUnusedImages();
 
-        $this->reset(['content']);
+        $this->reset(['content', 'isPoll', 'pollDuration']);
+        $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
 
