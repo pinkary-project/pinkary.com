@@ -71,7 +71,7 @@
         "test:types": "phpstan analyse",
         "test:arch": "pest --filter=arch",
         "test:type-coverage": "pest --type-coverage --min=100",
-        "test:unit": "pest --parallel --coverage --exactly=99.4",
+        "test:unit": "pest --parallel --coverage --exactly=99.5",
         "test": [
             "@test:lint",
             "@test:refactor",
