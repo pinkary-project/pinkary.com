@@ -17,14 +17,4 @@ return new class extends Migration
             $table->timestamp('poll_expires_at')->nullable()->after('is_poll');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('questions', function (Blueprint $table): void {
-            $table->dropColumn('poll_expires_at');
-        });
-    }
 };

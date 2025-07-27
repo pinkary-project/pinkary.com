@@ -26,12 +26,4 @@ return new class extends Migration
             $table->index(['poll_option_id']);
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('poll_votes');
-    }
 };
