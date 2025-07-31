@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\User;
-use App\Services\Accounts;
 use Carbon\CarbonImmutable;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;

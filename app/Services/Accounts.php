@@ -11,14 +11,16 @@ final class Accounts
     /**
      * Get all accounts from the cookie.
      *
-     * @return array<string, string>
+     * @return array<string, bool>
      */
     public static function all(): array
     {
-        $accounts = json_decode((string) request()->cookie('accounts'), true);
-        $accounts = is_array($accounts) ? $accounts : [];
+        /**
+         * @var array<string, bool>|null $accounts
+         */
+        $accounts = json_decode(is_string(request()->cookie('accounts')) ? request()->cookie('accounts') : '[]', true);
 
-        return $accounts;
+        return is_array($accounts) ? $accounts : [];
     }
 
     /**
@@ -30,7 +32,11 @@ final class Accounts
 
         $accounts[$username] = true;
 
-        cookie()->queue(cookie()->forever('accounts', json_encode($accounts)));
+        $accounts = json_encode($accounts);
+
+        if ($accounts !== false) {
+            cookie()->queue(cookie()->forever('accounts', $accounts));
+        }
     }
 
     /**
@@ -42,7 +48,7 @@ final class Accounts
         if (isset($accounts[$username])) {
             $user = User::where('username', $username)->first();
 
-            if (!$user) {
+            if (! $user) {
                 abort(403, 'User not found.');
             }
 
@@ -63,6 +69,9 @@ final class Accounts
         $accounts = self::all();
         unset($accounts[$username]);
 
-        cookie()->queue(cookie()->forever('accounts', json_encode($accounts)));
+        $accounts = json_encode($accounts);
+        if ($accounts !== false) {
+            cookie()->queue(cookie()->forever('accounts', $accounts));
+        }
     }
 }

@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\User;
 use App\Services\Accounts;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -27,7 +25,7 @@ final class FortifyServiceProvider extends ServiceProvider
         {
             public function toResponse($request): RedirectResponse // @pest-ignore-type
             {
-                Accounts::push(auth()->user()->username);
+                Accounts::push((string) auth()->user()?->username);
 
                 return redirect()->intended(route('home.feed'));
             }
