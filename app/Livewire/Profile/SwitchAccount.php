@@ -13,6 +13,9 @@ use Livewire\Livewire;
 
 final class SwitchAccount extends Component
 {
+    /**
+     * Switch to a different user account.
+     */
     public function switch(Request $request, string $username): void
     {
         Accounts::switch($username);
@@ -20,15 +23,18 @@ final class SwitchAccount extends Component
         $this->redirect(Livewire::originalUrl());
     }
 
+    /**
+     * Render the component.
+     */
     public function render(): View
     {
         $accounts = array_keys(Accounts::all());
 
         return view('livewire.profile.switch-account', [
             'accounts' => User::query()
-                ->select('id', 'username')
-                ->whereIn('username', $accounts)
-                ->get(),
+            ->select('id', 'username')
+            ->whereIn('username', $accounts)
+            ->get(),
         ]);
     }
 }

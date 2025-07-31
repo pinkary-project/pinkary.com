@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
-final class Accounts
+final readonly class Accounts
 {
     /**
      * Get all accounts from the cookie.
@@ -18,7 +22,7 @@ final class Accounts
         /**
          * @var array<string, bool>|null $accounts
          */
-        $accounts = json_decode(is_string(request()->cookie('accounts')) ? request()->cookie('accounts') : '[]', true);
+        $accounts = json_decode(is_string(Request::cookie('accounts')) ? Request::cookie('accounts') : '[]', true);
 
         return is_array($accounts) ? $accounts : [];
     }
@@ -35,7 +39,7 @@ final class Accounts
         $accounts = json_encode($accounts);
 
         if ($accounts !== false) {
-            cookie()->queue(cookie()->forever('accounts', $accounts));
+            Cookie::queue(Cookie::forever('accounts', $accounts));
         }
     }
 
@@ -52,8 +56,8 @@ final class Accounts
                 abort(403, 'User not found.');
             }
 
-            session()->regenerate();
-            auth()->login($user);
+            Session::regenerate();
+            Auth::login($user);
 
             return;
         }
@@ -71,7 +75,7 @@ final class Accounts
 
         $accounts = json_encode($accounts);
         if ($accounts !== false) {
-            cookie()->queue(cookie()->forever('accounts', $accounts));
+            Cookie::queue(Cookie::forever('accounts', $accounts));
         }
     }
 }
