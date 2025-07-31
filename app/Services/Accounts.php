@@ -28,7 +28,7 @@ final class Accounts
     {
         $accounts = self::all();
 
-        $accounts[$username] = session()->getId();
+        $accounts[$username] = true;
 
         cookie()->queue(cookie()->forever('accounts', json_encode($accounts)));
     }
@@ -40,9 +40,14 @@ final class Accounts
     {
         $accounts = self::all();
         if (isset($accounts[$username])) {
-            session()->setId($accounts[$username]);
-            session()->start();
-            auth()->setUser(User::where('username', $username)->first());
+            $user = User::where('username', $username)->first();
+
+            if (!$user) {
+                abort(403, 'User not found.');
+            }
+
+            session()->regenerate();
+            auth()->login($user);
 
             return;
         }
