@@ -32,9 +32,9 @@ final class SwitchAccount extends Component
 
         return view('livewire.profile.switch-account', [
             'accounts' => User::query()
-            ->select('id', 'username')
-            ->whereIn('username', $accounts)
-            ->get(),
+                ->select('id', 'username')
+                ->whereIn('username', $accounts)
+                ->get(),
         ]);
     }
 }
