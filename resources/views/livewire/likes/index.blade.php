@@ -54,7 +54,7 @@
                                     </a>
                                     <p class="truncate text-left text-slate-500 transition-colors group-hover:text-slate-400">
                                         {{ '@'.$user->username }}
-                                        @if (auth()->user()?->isNot($question->to) && $user->hasAttribute('is_follower') && $user->is_follower)
+                                        @if ($user->hasAttribute('is_follower') && $user->is_follower)
                                             <x-badge class="ml-1">
                                                 Follows you
                                             </x-badge>
