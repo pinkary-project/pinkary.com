@@ -230,6 +230,17 @@
                         <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
                         <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
                     </button>
+
+                    @if (auth()->user()?->can('viewLikes', $question) && $likesCount > 0)
+                        <button
+                            data-navigate-ignore="true"
+                            x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
+                            class="flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none ml-1"
+                            title="View {{ Number::format($likesCount) }} {{ str('person')->plural($likesCount) }} who liked this"
+                        >
+                            <x-heroicon-o-eye class="h-4 w-4" />
+                        </button>
+                    @endif
                     <span>•</span>
                     <p
                         class="inline-flex cursor-help items-center"
@@ -410,6 +421,13 @@
         <livewire:questions.edit
             :questionId="$question->id"
             :key="'edit-'.$question->id"
+        />
+    @endif
+
+    @if (auth()->user()?->can('viewLikes', $question))
+        <livewire:likes.index
+            :questionId="$question->id"
+            :key="'likes-'.$question->id"
         />
     @endif
 
