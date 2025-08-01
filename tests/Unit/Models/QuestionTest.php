@@ -84,6 +84,18 @@ test('mentions', function () {
         ->and($question->mentions()->last()->username)->toBe('seconduser');
 });
 
+test('likers relationship returns users who liked the question', function () {
+    $question = Question::factory()->create();
+    $users = User::factory()->count(2)->create();
+
+    foreach ($users as $user) {
+        $question->likes()->create(['user_id' => $user->id]);
+    }
+
+    expect($question->likers)->toHaveCount(2);
+    expect($question->likers->pluck('id')->sort()->values())->toEqual($users->pluck('id')->sort()->values());
+});
+
 test('mentions when there is no answer', function () {
     User::factory()->create(['username' => 'firstuser']);
     User::factory()->create(['username' => 'seconduser']);

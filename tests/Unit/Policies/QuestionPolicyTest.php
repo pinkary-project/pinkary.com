@@ -42,3 +42,14 @@ test('ignore', function () {
 
     expect($user->can('ignore', $question))->toBeFalse();
 });
+
+test('view likes', function () {
+    $user = User::factory()->create();
+    $question = Question::factory()->create(['to_id' => $user->id]);
+
+    expect($user->can('viewLikes', $question))->toBeTrue();
+
+    $otherUser = User::factory()->create();
+
+    expect($otherUser->can('viewLikes', $question))->toBeFalse();
+});

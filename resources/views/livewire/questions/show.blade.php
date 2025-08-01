@@ -138,6 +138,16 @@
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
+                            @if (auth()->user()->can('viewLikes', $question) && $question->likes_count > 0)
+                                <x-dropdown-button
+                                    data-navigate-ignore="true"
+                                    x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
+                                    class="flex items-center gap-1.5"
+                                >
+                                    <x-heroicon-s-heart class="h-4 w-4" />
+                                    <span>View likes</span>
+                                </x-dropdown-button>
+                            @endif
                         </x-slot>
                     </x-dropdown>
                 @endif
@@ -410,6 +420,13 @@
         <livewire:questions.edit
             :questionId="$question->id"
             :key="'edit-'.$question->id"
+        />
+    @endif
+
+    @if (auth()->user()?->can('viewLikes', $question))
+        <livewire:likes.index
+            :questionId="$question->id"
+            :key="'likes-'.$question->id"
         />
     @endif
 
