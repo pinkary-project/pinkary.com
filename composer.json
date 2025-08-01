@@ -10,7 +10,6 @@
         "laravel/framework": "^12.21.0",
         "laravel/nightwatch": "^1.11.4",
         "laravel/pennant": "^1.18.0",
-        "laravel/pulse": "^1.4.3",
         "laravel/socialite": "^5.23.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6.4",
