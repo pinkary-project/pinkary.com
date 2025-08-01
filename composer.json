@@ -75,6 +75,7 @@
         "test": [
             "@test:lint",
             "@test:refactor",
+            "@test:arch",
             "@test:types",
             "@test:type-coverage",
             "@test:unit"
