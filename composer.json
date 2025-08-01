@@ -4,7 +4,7 @@
     "require": {
         "php": "^8.3",
         "ext-imagick": "^3.7.0",
-        "filament/filament": "^3.3.33",
+        "filament/filament": "^3.3.34",
         "intervention/image": "^3.11.3",
         "laravel/fortify": "^1.27.0",
         "laravel/framework": "^12.21.0",
@@ -63,6 +63,10 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --ansi"
+        ],
+        "bump:minor": [
+            "composer update && composer bump",
+            "npx npm-check-updates -u -t minor && npm install"
         ],
         "lint": "pint --parallel",
         "refactor": "rector",
