@@ -138,6 +138,16 @@
                                     <span>Delete</span>
                                 </x-dropdown-button>
                             @endif
+                            @if (auth()->user()->can('viewLikes', $question) && $question->likes_count > 0)
+                                <x-dropdown-button
+                                    data-navigate-ignore="true"
+                                    x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
+                                    class="flex items-center gap-1.5"
+                                >
+                                    <x-heroicon-s-heart class="h-4 w-4" />
+                                    <span>View likes</span>
+                                </x-dropdown-button>
+                            @endif
                         </x-slot>
                     </x-dropdown>
                 @endif
@@ -230,17 +240,6 @@
                         <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
                         <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
                     </button>
-
-                    @if (auth()->user()?->can('viewLikes', $question) && $likesCount > 0)
-                        <button
-                            data-navigate-ignore="true"
-                            x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
-                            class="flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none ml-1"
-                            title="View {{ Number::format($likesCount) }} {{ str('person')->plural($likesCount) }} who liked this"
-                        >
-                            <x-heroicon-o-eye class="h-4 w-4" />
-                        </button>
-                    @endif
                     <span>•</span>
                     <p
                         class="inline-flex cursor-help items-center"
