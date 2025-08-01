@@ -63,7 +63,7 @@
                                 </div>
                                 <x-follow-button
                                     :id="$user->id"
-                                    :isFollower="$question->to->is(auth()->user()) || ($user->hasAttribute('is_follower') && $user->is_follower)"
+                                    :isFollower="$user->hasAttribute('is_follower') && $user->is_follower"
                                     :isFollowing="$user->hasAttribute('is_following') && $user->is_following"
                                     class="ml-auto"
                                     wire:key="follow-button-{{ $user->id }}"
