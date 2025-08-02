@@ -44,6 +44,39 @@ test('render with likes', function () {
     });
 });
 
+test('render with follows you badge', function () {
+    $user = User::factory()->create();
+    $question = Question::factory()->create(['to_id' => $user->id]);
+    $likers = User::factory(5)->create();
+
+    $likers->each(function (User $liker) use ($question): void {
+        Like::factory()->create([
+            'user_id' => $liker->id,
+            'question_id' => $question->id,
+        ]);
+    });
+
+    $followers = $likers->random(3);
+    $user->followers()->sync($followers->pluck('id'));
+
+    $component = Livewire::actingAs($user)->test(Index::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->set('isOpened', true);
+
+    $component->refresh();
+
+    $component->assertSeeInOrder([
+        $followers[0]->name,
+        'Follows you',
+        $followers[1]->name,
+        'Follows you',
+        $followers[2]->name,
+        'Follows you',
+    ]);
+});
+
 test('users data has is_following and is_follower keys as expected', function () {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
