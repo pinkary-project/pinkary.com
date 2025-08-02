@@ -5,7 +5,7 @@
         <div class="w-full max-w-md overflow-hidden rounded-lg px-2 dark:shadow-md sm:px-0">
             <x-home-menu></x-home-menu>
 
-            <livewire:home.feed :hashtag="$hashtag" />
+            <livewire:home.recent :hashtag="$hashtag" />
         </div>
     </div>
 </x-app-layout>
