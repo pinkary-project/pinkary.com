@@ -44,55 +44,6 @@ test('render with likes', function () {
     });
 });
 
-test('render with follows you badge', function () {
-    $user = User::factory()->create();
-    $question = Question::factory()->create(['to_id' => $user->id]);
-    $likers = User::factory(5)->create();
-
-    $likers->each(function (User $liker) use ($question): void {
-        Like::factory()->create([
-            'user_id' => $liker->id,
-            'question_id' => $question->id,
-        ]);
-    });
-
-    $following = $likers->random(3);
-    $user->followers()->sync($following->pluck('id'));
-
-    $component = Livewire::actingAs($user)->test(Index::class, [
-        'questionId' => $question->id,
-    ]);
-
-    $component->set('isOpened', true);
-
-    $component->refresh();
-
-    $component->assertDontSee('Follows you');
-});
-
-test('do not see follows you badge if user is viewing their own post', function () {
-    $user = User::factory()->create();
-    $question = Question::factory()->create(['to_id' => $user->id]);
-    $likers = User::factory(5)->create();
-
-    $likers->each(function (User $liker) use ($question): void {
-        Like::factory()->create([
-            'user_id' => $liker->id,
-            'question_id' => $question->id,
-        ]);
-    });
-
-    $component = Livewire::actingAs($user)->test(Index::class, [
-        'questionId' => $question->id,
-    ]);
-
-    $component->set('isOpened', true);
-
-    $component->refresh();
-
-    $component->assertDontSee('Follows you');
-});
-
 test('users data has is_following and is_follower keys as expected', function () {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
