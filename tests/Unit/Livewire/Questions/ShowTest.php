@@ -497,3 +497,17 @@ test('pinnable', function () {
 
     $component->assertSee('Pinned');
 });
+
+test('it has a likes component', function () {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'answer' => 'Sample answer',
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->assertSeeLivewire('likes');
+});

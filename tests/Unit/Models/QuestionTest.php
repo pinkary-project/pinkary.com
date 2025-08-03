@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Hashtag;
 use App\Models\Like;
+use App\Models\PollOption;
 use App\Models\Question;
 use App\Models\User;
 
@@ -27,6 +28,7 @@ test('to array', function () {
         'answer_updated_at',
         'parent_id',
         'root_id',
+        'poll_expires_at',
     ]);
 });
 
@@ -47,9 +49,10 @@ test('relations', function () {
         ->hasDescendants(2)
         ->hasChildren(2)
         ->hasHashtags(1)
-        ->create();
+        ->create(['poll_expires_at' => now()->addDays(1)]);
 
     $question->likes()->saveMany(Like::factory()->count(3)->make());
+    $question->pollOptions()->saveMany(PollOption::factory()->count(2)->make());
 
     $child = $question->children()->with('parent')->first();
 
@@ -62,7 +65,9 @@ test('relations', function () {
         ->and($question->children)->each->toBeInstanceOf(Question::class)
         ->and($child->parent)->toBeInstanceOf(Question::class)
         ->and($descendant->root)->toBeInstanceOf(Question::class)
-        ->and($question->descendants)->each->toBeInstanceOf(Question::class);
+        ->and($question->descendants)->each->toBeInstanceOf(Question::class)
+        ->and($question->pollOptions)->each->toBeInstanceOf(PollOption::class)
+        ->and($question->pollOptions)->toHaveCount(2);
 });
 
 test('mentions', function () {
@@ -77,6 +82,18 @@ test('mentions', function () {
     expect($question->mentions()->count())->toBe(2)
         ->and($question->mentions()->first()->username)->toBe('firstuser')
         ->and($question->mentions()->last()->username)->toBe('seconduser');
+});
+
+test('likers relationship returns users who liked the question', function () {
+    $question = Question::factory()->create();
+    $users = User::factory()->count(2)->create();
+
+    foreach ($users as $user) {
+        $question->likes()->create(['user_id' => $user->id]);
+    }
+
+    expect($question->likers)->toHaveCount(2);
+    expect($question->likers->pluck('id')->sort()->values())->toEqual($users->pluck('id')->sort()->values());
 });
 
 test('mentions when there is no answer', function () {

@@ -8,6 +8,7 @@ use App\Jobs\UpdateUserAvatar;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Cache;
@@ -32,7 +33,7 @@ final class Index extends Component
     #[Renderless]
     public function click(int $linkId): void
     {
-        $ipAddress = type(request()->ip())->asString();
+        $ipAddress = (string) request()->ip();
         $cacheKey = IpUtils::anonymize($ipAddress).'-clicked-'.$linkId;
 
         if (auth()->id() === $this->userId || Cache::has($cacheKey)) {
@@ -51,9 +52,8 @@ final class Index extends Component
      *
      * @param  array<int, string>  $sort
      */
-    public function storeSort(array $sort): void
+    public function storeSort(array $sort, #[CurrentUser] User $user): void
     {
-        $user = type(auth()->user())->as(User::class);
 
         $sort = collect($sort)
             ->map(fn (string $linkId): ?int => $user->links->contains($linkId) ? ((int) $linkId) : null)
@@ -71,9 +71,8 @@ final class Index extends Component
      *
      * @throws AuthorizationException
      */
-    public function destroy(int $linkId): void
+    public function destroy(int $linkId, #[CurrentUser] User $user): void
     {
-        $user = type(auth()->user())->as(User::class);
 
         $link = Link::findOrFail($linkId);
 
@@ -105,15 +104,13 @@ final class Index extends Component
     /**
      * Follow the given user.
      */
-    public function follow(int $targetId): void
+    public function follow(int $targetId, #[CurrentUser] ?User $user): void
     {
-        if (! auth()->check()) {
+        if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
             return;
         }
-
-        $user = type(auth()->user())->as(User::class);
 
         $target = User::findOrFail($targetId);
 
@@ -131,15 +128,13 @@ final class Index extends Component
     /**
      * Unfollow the given user.
      */
-    public function unfollow(int $targetId): void
+    public function unfollow(int $targetId, #[CurrentUser] ?User $user): void
     {
-        if (! auth()->check()) {
+        if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
             return;
         }
-
-        $user = type(auth()->user())->as(User::class);
 
         $target = User::findOrFail($targetId);
 

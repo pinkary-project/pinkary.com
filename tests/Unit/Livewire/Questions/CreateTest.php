@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Livewire\Questions\Create;
+use App\Models\Question;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -46,7 +47,7 @@ test('store', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
@@ -62,7 +63,7 @@ test('store', function () {
     $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
-    $question = App\Models\Question::first();
+    $question = Question::first();
 
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)
@@ -75,7 +76,7 @@ test('store', function () {
 test('store auth', function () {
     $user = User::factory()->create();
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 
     $component = Livewire::test(Create::class, [
         'toId' => $user->id,
@@ -87,14 +88,14 @@ test('store auth', function () {
 
     $component->assertRedirect('login');
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 });
 
 test('store rate limit', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
@@ -134,7 +135,7 @@ test('store rate limit', function () {
 test('store comment', function () {
     $userA = User::factory()->create();
 
-    $question = App\Models\Question::factory()->create();
+    $question = Question::factory()->create();
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
@@ -151,7 +152,7 @@ test('store comment', function () {
     $component->assertDispatched('notification.created', message: 'Comment sent.');
     $component->assertDispatched('question.created');
 
-    $comment = App\Models\Question::latest()->limit(1)->first();
+    $comment = Question::latest()->limit(1)->first();
 
     expect($comment->from_id)->toBe($userA->id)
         ->and($comment->to_id)->toBe($userA->id)
@@ -163,9 +164,9 @@ test('store comment', function () {
 test('store comment on a comment', function () {
     $userA = User::factory()->create();
 
-    $question = App\Models\Question::factory()->create();
+    $question = Question::factory()->create();
 
-    $questionWithComment = App\Models\Question::factory()->create([
+    $questionWithComment = Question::factory()->create([
         'to_id' => $userA->id,
         'parent_id' => $question->id,
         'root_id' => $question->id,
@@ -187,7 +188,7 @@ test('store comment on a comment', function () {
     $component->assertDispatched('notification.created', message: 'Comment sent.');
     $component->assertDispatched('question.created');
 
-    $comment = App\Models\Question::latest()->limit(1)->first();
+    $comment = Question::latest()->limit(1)->first();
 
     expect($comment->from_id)->toBe($userA->id)
         ->and($comment->to_id)->toBe($userA->id)
@@ -224,7 +225,7 @@ test('cannot store with blank characters', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
@@ -239,13 +240,259 @@ test('cannot store with blank characters', function () {
     ]);
 });
 
+test('poll should have at least 2 options', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('isPoll', true);
+    $component->set('pollOptions', ['Option 1']);
+    $component->set('content', 'What is your favorite color?');
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'pollOptions' => 'A poll must have at least 2 options.',
+    ]);
+});
+
+test('poll should have at most 4 options', function () {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('isPoll', true);
+    $component->set('pollOptions', ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5']);
+    $component->set('content', 'What is your favorite color?');
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'pollOptions' => 'A poll can have maximum 4 options.',
+    ]);
+});
+
+test('poll button is visible only for shared updates', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id]);
+
+    $component->assertSee('Create a poll');
+
+    $otherUser = User::factory()->create();
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $otherUser->id]);
+
+    $component->assertDontSee('Create a poll');
+});
+
+test('poll button is not visible for replies', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create(['to_id' => $user->id]);
+
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id, 'parentId' => $question->id]);
+
+    $component->assertDontSee('Create a poll');
+});
+
+test('can create a poll with valid options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue', 'Green'])
+        ->set('pollDuration', 3)
+        ->call('store');
+
+    $question = Question::where('content', '__UPDATE__')
+        ->whereNotNull('poll_expires_at')
+        ->first();
+
+    expect($question)->not->toBeNull();
+    expect($question->pollOptions)->toHaveCount(3);
+    expect($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue', 'Green']);
+    expect($question->poll_expires_at)->not->toBeNull();
+    expect((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(3);
+});
+
+test('validates poll requires at least 2 options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', ''])
+        ->set('pollDuration', 3)
+        ->call('store')
+        ->assertHasErrors('pollOptions');
+});
+
+test('validates poll cannot have more than 4 options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue', 'Green', 'Yellow', 'Purple'])
+        ->set('pollDuration', 3)
+        ->call('store')
+        ->assertHasErrors(['pollOptions' => 'A poll can have maximum 4 options.']);
+});
+
+test('validates poll options are required when poll is enabled', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['', ''])
+        ->call('store')
+        ->assertHasErrors('pollOptions');
+});
+
+test('validates poll option length', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', str_repeat('a', 41)])
+        ->call('store')
+        ->assertHasErrors('pollOptions');
+});
+
+test('creates regular question when poll is disabled', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'This is a regular update')
+        ->set('isPoll', false)
+        ->call('store');
+
+    $question = Question::where('content', '__UPDATE__')
+        ->whereNull('poll_expires_at')
+        ->first();
+
+    expect($question)->not->toBeNull();
+    expect($question->pollOptions)->toHaveCount(0);
+});
+
+test('resets poll state after successful submission', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue'])
+        ->call('store')
+        ->assertSet('isPoll', false)
+        ->assertSet('pollOptions', ['', '']);
+});
+
+test('trims whitespace from poll options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['  Red  ', '  Blue  '])
+        ->set('pollDuration', 1)
+        ->call('store');
+
+    $question = Question::where('content', '__UPDATE__')
+        ->whereNotNull('poll_expires_at')
+        ->first();
+
+    expect($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue']);
+});
+
+test('validates poll duration is required when creating a poll', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue'])
+        ->set('pollDuration', 0)
+        ->call('store')
+        ->assertHasErrors(['pollDuration']);
+});
+
+test('validates poll duration maximum value', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue'])
+        ->set('pollDuration', 8)
+        ->call('store')
+        ->assertHasErrors(['pollDuration']);
+});
+
+test('stores poll expiration date correctly', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'What is your favorite color?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Red', 'Blue'])
+        ->set('pollDuration', 5)
+        ->call('store');
+
+    $question = Question::where('content', '__UPDATE__')
+        ->whereNotNull('poll_expires_at')
+        ->first();
+
+    expect($question->poll_expires_at)->not->toBeNull();
+    expect((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(5);
+});
+
+test('does not set poll expiration for non-poll questions', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'This is a regular update')
+        ->set('isPoll', false)
+        ->call('store');
+
+    $question = Question::where('content', '__UPDATE__')
+        ->whereNull('poll_expires_at')
+        ->first();
+
+    expect($question->poll_expires_at)->toBeNull();
+});
+
 test('store with user questions_preference set to public', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
     $userA->update(['prefers_anonymous_questions' => false]);
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
@@ -261,7 +508,7 @@ test('store with user questions_preference set to public', function () {
     $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
-    $question = App\Models\Question::first();
+    $question = Question::first();
 
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)
@@ -275,7 +522,7 @@ test('store with user questions_preference set to anonymously', function () {
 
     $userA->update(['prefers_anonymous_questions' => true]);
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
@@ -291,7 +538,7 @@ test('store with user questions_preference set to anonymously', function () {
     $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
-    $question = App\Models\Question::first();
+    $question = Question::first();
 
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)
@@ -305,7 +552,7 @@ test('anonymous set back to user\'s preference after sending a question', functi
 
     $userA->update(['prefers_anonymous_questions' => false]);
 
-    expect(App\Models\Question::count())->toBe(0);
+    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
@@ -322,7 +569,7 @@ test('anonymous set back to user\'s preference after sending a question', functi
     $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
-    $question = App\Models\Question::first();
+    $question = Question::first();
 
     expect($question->from_id)->toBe($userA->id)
         ->and($question->to_id)->toBe($userB->id)

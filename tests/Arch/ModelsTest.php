@@ -29,7 +29,7 @@ arch('models')
     ])->ignoring('App\Models\Concerns');
 
 arch('ensure factories', function () {
-    expect($models = getModels())->toHaveCount(7);
+    expect($models = getModels())->toHaveCount(9);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
@@ -39,7 +39,7 @@ arch('ensure factories', function () {
 });
 
 arch('ensure datetime casts', function () {
-    expect($models = getModels())->toHaveCount(7);
+    expect($models = getModels())->toHaveCount(9);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
@@ -70,7 +70,7 @@ arch('ensure datetime casts', function () {
  */
 function getModels(): array
 {
-    $models = type(glob(__DIR__.'/../../app/Models/*.php'))->asArray();
+    $models = glob(__DIR__.'/../../app/Models/*.php');
 
     return collect($models)
         ->map(function ($file) {

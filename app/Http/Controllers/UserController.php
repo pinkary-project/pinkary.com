@@ -8,6 +8,7 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Jobs\IncrementViews;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,10 +18,10 @@ final readonly class UserController
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(#[CurrentUser] User $user): View
     {
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 
@@ -39,10 +40,8 @@ final readonly class UserController
     /**
      * Update the user's profile information.
      */
-    public function update(UserUpdateRequest $request): RedirectResponse
+    public function update(UserUpdateRequest $request, #[CurrentUser] User $user): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
-
         $user->fill($request->validated());
 
         if ($user->isDirty('email')) {
@@ -66,13 +65,11 @@ final readonly class UserController
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, #[CurrentUser] User $user): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
-
-        $user = type($request->user())->as(User::class);
 
         auth()->logout();
 

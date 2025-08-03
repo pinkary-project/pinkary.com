@@ -6,6 +6,7 @@ namespace App\Livewire\Profile;
 
 use App\Livewire\Concerns\ConfirmsPasswords;
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\View\View;
 use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
@@ -51,9 +52,8 @@ final class TwoFactorAuthenticationForm extends Component
     /**
      * Mount the component.
      */
-    public function mount(): void
+    public function mount(#[CurrentUser] User $user): void
     {
-        $user = type(auth()->user())->as(User::class);
         $this->enabled = $user->hasEnabledTwoFactorAuthentication();
     }
 
@@ -78,11 +78,12 @@ final class TwoFactorAuthenticationForm extends Component
      */
     public function confirmTwoFactorAuthentication(ConfirmTwoFactorAuthentication $confirm): void
     {
-        $confirm(auth()->user(), type($this->pull('code'))->asString());
+        $confirm(auth()->user(), (string) $this->code);
 
         $this->showingQrCode = false;
         $this->showingConfirmation = false;
         $this->showingRecoveryCodes = true;
+        $this->code = null;
     }
 
     /**
