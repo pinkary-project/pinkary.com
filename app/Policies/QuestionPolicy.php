@@ -45,4 +45,12 @@ final readonly class QuestionPolicy
         return $user->id === $question->to_id
             && $question->answer !== null;
     }
+
+    /**
+     * Determine whether the user can view who liked the question.
+     */
+    public function viewLikes(User $user, Question $question): bool
+    {
+        return $user->id === $question->to_id;
+    }
 }
