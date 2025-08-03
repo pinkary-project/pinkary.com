@@ -5,7 +5,7 @@
         "php": "^8.3",
         "ext-imagick": "^3.7.0",
         "filament/filament": "^3.3.34",
-        "intervention/image": "^3.11.3",
+        "intervention/image": "^3.11.4",
         "laravel/fortify": "^1.27.0",
         "laravel/framework": "^12.21.0",
         "laravel/nightwatch": "^1.11.4",
