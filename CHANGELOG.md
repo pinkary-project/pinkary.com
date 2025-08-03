@@ -1,5 +1,6 @@
 ## Version 1.45.0
 > 3 August, 2025
+
 - Adds view likes button to posts.
 - Update to Laravel 12.
 - minor improvements
