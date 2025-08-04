@@ -26,7 +26,7 @@ final class VacuumDatabaseCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         DB::statement('VACUUM');
     }
