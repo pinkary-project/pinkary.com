@@ -55,3 +55,7 @@ particleEffect {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#link-preview-card iframe {
+    width: 100%;
+}
