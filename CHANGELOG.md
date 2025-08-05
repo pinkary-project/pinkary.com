@@ -1,3 +1,9 @@
+## Version 1.45.1
+> 4 August, 2025
+
+- Improves link previews for posts.
+- Internal improvements and bug fixes.
+
 ## Version 1.45.0
 > 3 August, 2025
 
