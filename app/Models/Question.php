@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Carbon;
 
 /**
  * @property string $id
@@ -32,9 +31,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $answer
  * @property CarbonImmutable|null $answer_created_at
  * @property CarbonImmutable|null $answer_updated_at
+ * @property CarbonImmutable|null $poll_expires_at
  * @property bool $is_reported
  * @property bool $is_ignored
- * @property Carbon|null $poll_expires_at
  * @property int $views
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
