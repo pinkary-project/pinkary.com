@@ -3,14 +3,6 @@
 declare(strict_types=1);
 
 test('user can register for a new account', function (): void {
-    $fixtureFile = base_path('tests/Fixtures/Turnstile/success.json');
-
-    $jsonFixture = File::json($fixtureFile);
-
-    Http::fake([
-        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response($jsonFixture),
-    ]);
-
     $page = visit('/register');
 
     $page->assertPathContains('register')
