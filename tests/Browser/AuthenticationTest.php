@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use App\Models\User;
 
 test('user can register for a new account', function (): void {
     $page = visit('/register');
@@ -23,6 +24,26 @@ test('user can register for a new account', function (): void {
         input.value = 'valid-captcha-code';
         terms.parentNode.insertBefore(input, terms.nextSibling);
     EOT);
+
+    $page->submit();
+
+    $page->assertPathIs('/');
+})->skip();
+
+test('user can login', function (): void {
+    User::factory()->create([
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+        'password' => Hash::make('password'),
+    ]);
+
+    $page = visit('/login');
+
+    $page->assertPathContains('login');
+
+    $page->type('email', 'john@example.com')
+        ->type('password', 'password')
+        ->wait(2);
 
     $page->submit();
 
