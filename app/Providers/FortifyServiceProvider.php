@@ -27,8 +27,8 @@ final class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::ignoreRoutes();
-        Fortify::loginView(fn () => view('auth.login'));
-        Fortify::twoFactorChallengeView(fn () => view('auth.two-factor-challenge'));
+        Fortify::loginView(fn (): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View => view('auth.login'));
+        Fortify::twoFactorChallengeView(fn (): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View => view('auth.two-factor-challenge'));
 
         RateLimiter::for('login', function (Request $request) {
             $username = $request->string(Fortify::username())->toString();

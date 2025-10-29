@@ -74,7 +74,7 @@ final class Question extends Model implements Viewable
     {
         $content = new ParsableContent();
 
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
     }
 
     /**
@@ -84,7 +84,7 @@ final class Question extends Model implements Viewable
     {
         $content = new ParsableContent();
 
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
     }
 
     /**
