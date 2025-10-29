@@ -151,7 +151,6 @@ const imageUpload = () => ({
     },
 
     createMarkdownImage(item) {
-        console.log(item);
         let path, originalName;
         if (item instanceof Object) {
             ({ path, originalName } = item);
