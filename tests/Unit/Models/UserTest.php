@@ -8,7 +8,7 @@ use App\Models\User;
 test('to array', function () {
     $user = User::factory()->create()->fresh();
 
-    expect(array_keys($user->toArray()))->toBe([
+    expect(array_keys($user->toArray()))->toContain(
         'id',
         'name',
         'username',
@@ -31,7 +31,7 @@ test('to array', function () {
         'two_factor_secret',
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
-    ]);
+    )->toHaveCount(22);
 });
 
 test('is verified', function () {
@@ -100,7 +100,7 @@ test('custom avatar url', function () {
     ]);
 
     expect($user->avatar)->toBe('avatars/123.png')
-        ->and($user->avatar_url)->toBe(Storage::disk('public')->url('avatars/123.png'));
+        ->and($user->avatar_url)->toBe(Storage::disk()->url('avatars/123.png'));
 });
 
 test('following', function () {
