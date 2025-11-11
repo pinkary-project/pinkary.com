@@ -9,6 +9,7 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -41,7 +42,21 @@ final class Index extends Component
 
         $questions = $user
             ->questionsReceived()
-            ->select('id', 'root_id', 'parent_id')
+            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
+            ->joinSub(
+                Question::select(DB::raw('IFNULL(root_id, id) as group_id'))
+                    ->selectRaw('MAX(updated_at) as last_update')
+                    ->whereNotNull('answer')
+                    ->where('is_ignored', false)
+                    ->where('is_reported', false)
+                    ->where('to_id', $user->id)
+                    ->groupBy(DB::raw('IFNULL(root_id, id)')),
+                'grouped_questions',
+                function (JoinClause $join): void {
+                    $join->on(DB::raw('IFNULL(questions.root_id, questions.id)'), '=', 'grouped_questions.group_id')
+                        ->whereRaw('questions.updated_at = grouped_questions.last_update');
+                }
+            )
             ->withExists([
                 'root as showRoot' => function (Builder $query) use ($user): void {
                     $query->where('to_id', $user->id);
@@ -51,15 +66,14 @@ final class Index extends Component
                 },
             ])
             ->with('parent:id,parent_id')
-            ->where('pinned', false)
-            ->where('is_reported', false)
-            ->where('is_ignored', false)
             ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
                 $query->whereNotNull('answer');
             })
+            ->when($pinnedQuestion?->exists(), function (Builder $query) use ($pinnedQuestion): void {
+                $query->orWhere('questions.id', $pinnedQuestion?->id);
+            })
             ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-            ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-            ->orderByDesc(DB::raw('MAX(`updated_at`)'))
+            ->orderByDesc('grouped_questions.last_update')
             ->simplePaginate($this->perPage);
 
         return view('livewire.questions.index', [

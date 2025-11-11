@@ -11,6 +11,10 @@ use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
+beforeEach(function () {
+    Storage::fake();
+});
+
 test('render', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
@@ -648,11 +652,10 @@ test('updated lifecycle method', function () {
 });
 
 test('updated method invokes handleUploads', function () {
-    Storage::fake('public');
     $user = User::factory()->create(['is_verified' => true]);
     $file = UploadedFile::fake()->image('photo1.jpg');
     $date = now()->format('Y-m-d');
-    $path = $file->store("images/{$date}", 'public');
+    $path = $file->store("images/{$date}", ['disk' => Create::IMAGE_DISK]);
 
     $component = Livewire::actingAs($user)->test(Create::class);
 
@@ -671,11 +674,10 @@ test('updated method invokes handleUploads', function () {
 });
 
 test('unused image cleanup when store is called', function () {
-    Storage::fake('public');
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $date = now()->format('Y-m-d');
-    $path = $file->store("images/{$date}", 'public');
+    $path = $file->store("images/{$date}", ['disk' => Create::IMAGE_DISK]);
 
     $component = Livewire::actingAs($user)->test(Create::class, [
         'toId' => $user->id,
@@ -686,7 +688,7 @@ test('unused image cleanup when store is called', function () {
     $method->setAccessible(true);
     $method->invoke($component->instance());
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk()->assertExists($path);
 
     expect(session('images'))->toBeArray()
         ->and(session('images'))->toContain($path);
@@ -694,12 +696,11 @@ test('unused image cleanup when store is called', function () {
     $component->set('content', 'Hello World');
     $component->call('store');
 
-    Storage::disk('public')->assertMissing($path);
+    Storage::disk()->assertMissing($path);
     expect(session('images'))->toBeNull();
 });
 
 test('used images are NOT cleanup when store is called', function () {
-    Storage::fake('public');
     $user = User::factory()->create(['is_verified' => true]);
     $file = UploadedFile::fake()->image('photo1.jpg');
     $name = $file->hashName();
@@ -711,50 +712,47 @@ test('used images are NOT cleanup when store is called', function () {
     ]);
     $component->set('images', [$file]);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk()->assertExists($path);
 
     expect(session('images'))->toBeArray()
         ->and(session('images'))->toContain($path);
 
-    $url = Storage::disk('public')->url($path);
+    $url = Storage::disk()->url($path);
 
     $component->set('content', "![Image Alt Text]({$url})");
     $component->call('store');
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk()->assertExists($path);
     expect(session('images'))->toBeNull();
 });
 
 test('delete image', function () {
-    Storage::fake('public');
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
-    $path = $file->store('images', 'public');
+    $path = $file->store('images', ['disk' => Create::IMAGE_DISK]);
 
     $component = Livewire::actingAs($user)->test(Create::class, [
         'toId' => $user->id,
     ]);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk()->assertExists($path);
 
     $method = new ReflectionMethod(Create::class, 'deleteImage');
     $method->setAccessible(true);
     $method->invoke($component->instance(), $path);
 
-    $pathAgain = $file->store('images', 'public');
-    Storage::disk('public')->assertExists($pathAgain);
+    $pathAgain = $file->store('images', ['disk' => Create::IMAGE_DISK]);
+    Storage::disk()->assertExists($pathAgain);
 
     $method->invoke($component->instance(), $pathAgain);
 
-    Storage::disk('public')->assertMissing($pathAgain);
+    Storage::disk()->assertMissing($pathAgain);
 });
 
 test('optimizeImage method resizes and saves the image', function () {
-    Storage::fake('public');
 
     $user = User::factory()->create();
     $testImage = UploadedFile::fake()->image('test.jpg', 1200, 1200); // Larger than 1000x1000
-    $path = $testImage->store('images', 'public');
 
     $component = Livewire::actingAs($user)->test(Create::class, [
         'toId' => $user->id,
@@ -762,11 +760,11 @@ test('optimizeImage method resizes and saves the image', function () {
 
     $method = new ReflectionMethod(Create::class, 'optimizeImage');
     $method->setAccessible(true);
-    $method->invoke($component->instance(), $path);
+    $path = $method->invoke($component->instance(), $testImage);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk()->assertExists($path);
 
-    $optimizedImagePath = Storage::disk('public')->path($path);
+    $optimizedImagePath = Storage::disk()->path($path);
 
     $originalImageSize = filesize($testImage->getPathname());
     $optimizedImageSize = filesize($optimizedImagePath);
@@ -780,32 +778,11 @@ test('optimizeImage method resizes and saves the image', function () {
         ->and($image->height())->toBeLessThanOrEqual(1000);
 });
 
-test('optimizeImage method resizes and saves image with multiple frames', function () {
-    Storage::fake('public');
+test('it skips the optimization for gif', function () {
 
     $user = User::factory()->create();
 
-    $gif = new Imagick();
-
-    $gif->setFormat('gif');
-
-    for ($i = 0; $i < 3; $i++) {
-        $frame = new Imagick();
-
-        $frame->newImage(1200, 1200, new ImagickPixel(match ($i) {
-            0 => 'red',
-            1 => 'green',
-            2 => 'blue',
-        }));
-
-        $frame->setImageFormat('gif');
-
-        $gif->addImage($frame);
-    }
-
-    $testImage = UploadedFile::fake()->createWithContent('test.gif', $gif->getImagesBlob());
-
-    $path = $testImage->store('images', 'public');
+    $testImage = UploadedFile::fake()->image('test.gif', 1200, 1200); // Larger than 1000x1000
 
     $component = Livewire::actingAs($user)->test(Create::class, [
         'toId' => $user->id,
@@ -813,29 +790,20 @@ test('optimizeImage method resizes and saves image with multiple frames', functi
 
     $method = new ReflectionMethod(Create::class, 'optimizeImage');
     $method->setAccessible(true);
-    $method->invoke($component->instance(), $path);
+    $path = $method->invoke($component->instance(), $testImage);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk()->assertExists($path);
 
-    $optimizedImagePath = Storage::disk('public')->path($path);
-
+    // cross check the image
+    $optimizedImagePath = Storage::disk()->path($path);
     $originalImageSize = filesize($testImage->getPathname());
     $optimizedImageSize = filesize($optimizedImagePath);
+    expect($optimizedImageSize)->toBe($originalImageSize);
 
-    expect($optimizedImageSize)->toBeLessThan($originalImageSize);
-
-    $optimizedImage = new Imagick($optimizedImagePath);
-
-    expect($optimizedImage->getImageWidth())->toBeLessThanOrEqual(1000)
-        ->and($optimizedImage->getImageHeight())->toBeLessThanOrEqual(1000)
-        ->and($optimizedImage->getNumberImages())->toBe(3);
-
-    $frames = $optimizedImage->coalesceImages();
-
-    foreach ($frames as $frame) {
-        expect($frame->getImageWidth())->toBeLessThanOrEqual(1000)
-            ->and($frame->getImageHeight())->toBeLessThanOrEqual(1000);
-    }
+    $manager = ImageManager::imagick();
+    $image = $manager->read($optimizedImagePath);
+    expect($image->width())->toBe(1200)
+        ->and($image->height())->toBe(1200);
 });
 
 test('maxFileSize and maxImages', function () {
