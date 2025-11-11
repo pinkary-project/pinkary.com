@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 use App\Models\User;
 
 test('user can register for a new account', function (): void {
@@ -25,10 +26,14 @@ test('user can register for a new account', function (): void {
         terms.parentNode.insertBefore(input, terms.nextSibling);
     EOT);
 
-    $page->submit();
+    $page->wait(0.5)->submit();
 
-    $page->assertPathIs('/');
-})->skip();
+    $this->assertAuthenticatedAs(User::where('email', 'john@example.com')->first());
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'john@example.com',
+    ]);
+});
 
 test('user can login', function (): void {
     User::factory()->create([
@@ -42,8 +47,7 @@ test('user can login', function (): void {
     $page->assertPathContains('login');
 
     $page->type('email', 'john@example.com')
-        ->type('password', 'password')
-        ->wait(2);
+        ->type('password', 'password');
 
     $page->submit();
 

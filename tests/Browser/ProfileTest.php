@@ -19,7 +19,8 @@ test('user can update their profile information', function (): void {
 
     $page->fill('name', 'Jane Doe')
         ->fill('email', 'jane@example.com')
-        ->press('@update-profile-button');
+        ->press('@update-profile-button')
+        ->wait(0.1);
 
     $this->assertDatabaseHas('users', [
         'id' => $user->id,
