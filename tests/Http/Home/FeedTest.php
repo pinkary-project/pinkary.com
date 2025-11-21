@@ -8,6 +8,9 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
+use function Pest\Laravel\get;
+use function Pest\Laravel\withCookie;
+
 it('can see the "feed" view', function () {
     $response = $this->get(route('home.feed'));
 
@@ -39,4 +42,34 @@ it('can filter questions to those with a particular hashtag', function () {
         ->assertSee('question 1')
         ->assertDontSee('question 2')
         ->assertDontSee('There are no questions to show.');
+});
+
+it('can show pagination buttons if infinite scroll is disabled', function () {
+    Question::factory(20)->create();
+
+    $response = withCookie('infinite-scroll', '0')
+        ->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertSeeText('Previous')
+        ->assertSeeText('Next');
+});
+
+it('can hide pagination buttons if infinite scroll is enabled', function () {
+    Question::factory(20)->create();
+
+    $response = withCookie('infinite-scroll', '1')
+        ->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertDontSeeText('Previous')
+        ->assertDontSeeText('Next');
+});
+
+test('infinite scroll is the default mode', function () {
+    $response = get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertDontSeeText('Previous')
+        ->assertDontSeeText('Next');
 });

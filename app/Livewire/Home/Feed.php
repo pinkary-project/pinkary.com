@@ -21,6 +21,21 @@ final class Feed extends Component
     public ?string $hashtag = null;
 
     /**
+     * Whether infinite scroll is enabled.
+     */
+    public bool $enableInfiniteScroll = false;
+
+    /**
+     * Mount the component.
+     */
+    public function mount(): void
+    {
+        $cookie = request()->cookie('infinite-scroll') === '1';
+
+        $this->enableInfiniteScroll = $cookie;
+    }
+
+    /**
      * Ignore the given question.
      */
     #[On('question.ignore')]

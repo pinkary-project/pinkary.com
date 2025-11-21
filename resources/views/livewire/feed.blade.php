@@ -22,10 +22,14 @@
             <div class="text-center dark:text-slate-400 text-slate-600">There are no questions to show.</div>
         @endforelse
 
-        <x-load-more-button
-            :perPage="$perPage"
-            :paginator="$questions"
-            message="There are no more questions to load, or you have scrolled too far."
-        />
+        @if($enableInfiniteScroll)
+            <x-load-more-button
+                :perPage="$perPage"
+                :paginator="$questions"
+                message="There are no more questions to load, or you have scrolled too far."
+            />
+        @else
+            {{ $questions->links() }}
+        @endif
     </section>
 </div>

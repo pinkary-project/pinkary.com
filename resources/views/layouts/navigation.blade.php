@@ -1,6 +1,8 @@
 @php
     $navClasses = 'fixed z-50 inset-0 md:inset-auto md:right-0 h-16 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
+
+    $infiniteScroll = request()->cookie('infinite-scroll') === '1';
 @endphp
 
 <nav>
@@ -99,17 +101,51 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between dark:hover:bg-transparent hover:bg-transparent">
+                        <x-dropdown-button x-data="themeSwitch()"
+                                           class="flex flex-col items-center justify-between dark:hover:bg-transparent hover:bg-transparent">
                             <div class="flex flex-row justify-between gap-2">
-                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'light' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('light')">
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200"
+                                     x-bind:class="theme == 'light' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'"
+                                     @click="setTheme('light')">
                                     <x-heroicon-o-sun class="w-4 h-4"/>
                                 </div>
-                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'dark' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('dark')">
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200"
+                                     x-bind:class="theme == 'dark' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'"
+                                     @click="setTheme('dark')">
                                     <x-heroicon-o-moon class="w-4 h-4"/>
                                 </div>
-                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200" x-bind:class="theme == 'system' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'" @click="setTheme('system')">
+                                <div class="rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200"
+                                     x-bind:class="theme == 'system' ? 'bg-pink-600 text-slate-50' : 'dark:hover:bg-slate-800/50 hover:bg-slate-200/50'"
+                                     @click="setTheme('system')">
                                     <x-heroicon-o-computer-desktop class="w-4 h-4"/>
                                 </div>
+                            </div>
+                        </x-dropdown-button>
+                        <x-dropdown-button
+                            class="flex flex-col items-center justify-between dark:hover:bg-transparent hover:bg-transparent">
+                            <div class="flex flex-row justify-between gap-2">
+                                <a href="{{ route('infinite-scroll.enable') }}"
+                                    @class(["rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200", "bg-pink-600 text-slate-50" => $infiniteScroll, "dark:hover:bg-slate-800/50 hover:bg-slate-200/50" => !$infiniteScroll])
+                                >
+                                    <span class="relative group">
+                                        <x-heroicon-o-chevron-double-down class="w-4 h-4"/>
+                                        <span
+                                            class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-2 py-1 text-sm text-white bg-gray-700 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            Enable Infinite Scroll
+                                        </span>
+                                    </span>
+                                </a>
+                                <a href="{{ route('infinite-scroll.disable') }}"
+                                    @class(["rounded-md px-4 py-2 border dark:border-slate-800 border-slate-200", "bg-pink-600 text-slate-50" => !$infiniteScroll, "dark:hover:bg-slate-800/50 hover:bg-slate-200/50" => $infiniteScroll])
+                                >
+                                    <span class="relative group">
+                                        <x-heroicon-o-chevron-double-right class="w-4 h-4"/>
+                                        <span
+                                            class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-2 py-1 text-sm text-white bg-gray-700 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            Disable Infinite Scroll
+                                        </span>
+                                    </span>
+                                </a>
                             </div>
                         </x-dropdown-button>
                         <x-dropdown-link :href="route('about')">

@@ -48,6 +48,20 @@ Route::prefix('/@{username}')->group(function () {
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
 });
 
+Route::name('infinite-scroll.')->prefix('infinite-scroll')->group(function () {
+    Route::get('/disable', static function () {
+        Cookie::queue(Cookie::forever('infinite-scroll', '0'));
+
+        return to_route('home.feed');
+    })->name('disable');
+
+    Route::get('/enable', static function () {
+        Cookie::queue(Cookie::forever('infinite-scroll', '1'));
+
+        return to_route('home.feed');
+    })->name('enable');
+});
+
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('bookmarks', [BookmarksController::class, 'index'])->name('bookmarks.index');
 
