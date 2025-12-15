@@ -183,7 +183,7 @@ final class Index extends Component
             'questionsReceivedCount' => $user->questionsReceived()
                 ->where('is_reported', false)
                 ->where('is_ignored', false)
-                ->where('answer', '!=', null)->count(),
+                ->where('answer', '!=')->count(),
             'links' => $user->links->sortBy(function (Link $link) use ($sort): int {
                 if (($index = array_search($link->id, $sort)) === false) {
                     return 1_000_000 + $link->id;
