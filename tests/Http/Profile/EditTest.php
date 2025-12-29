@@ -30,6 +30,8 @@ test('auth', function () {
 });
 
 test('profile information can be updated', function () {
+    Queue::fake();
+
     $user = User::factory()->create();
 
     $response = $this
