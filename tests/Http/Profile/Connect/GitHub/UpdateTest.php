@@ -15,7 +15,15 @@ test('guest', function () {
 });
 
 test('connect github', function () {
-    Http::fake();
+    Http::fake([
+        'github.com/*' => Http::response([
+            'data' => [
+                'user' => [
+                    'sponsorshipForViewerAsSponsorable' => [],
+                ],
+            ],
+        ]),
+    ]);
 
     $user = User::factory()->create();
     expect($user->github_username)->toBeNull();
