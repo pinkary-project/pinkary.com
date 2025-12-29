@@ -297,6 +297,8 @@ test('unique constraint validation is case insensitive', function (string $exist
 ]);
 
 test("user's name can contain blank characters", function (string $given, string $expected) {
+    Queue::fake();
+
     mockTurnstileResponse(true);
     $response = $this->from('/register')->post('/register', [
         ...$this->basePayload, 'name' => $given,
