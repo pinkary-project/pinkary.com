@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers;
 use Intervention\Image\ImageManager;
-use RuntimeException;
 use Throwable;
 
 final class UpdateUserAvatar implements ShouldQueue
@@ -57,13 +56,7 @@ final class UpdateUserAvatar implements ShouldQueue
         }
 
         if (str_contains($file, 'gravatar.com')) {
-            $response = Http::withoutVerifying()->get($file);
-
-            if ($response->failed()) {
-                throw new RuntimeException('Failed to fetch avatar from '.$file);
-            }
-
-            $contents = $response->body();
+            $contents = Http::withoutVerifying()->get($file)->body();
         } else {
             $contents = (string) file_get_contents($file);
         }
