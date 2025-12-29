@@ -57,6 +57,8 @@ test('stores links order', function () {
 });
 
 test('destroy link', function () {
+    Queue::fake();
+
     $user = User::factory()->create();
 
     $link = Link::factory()->create([
