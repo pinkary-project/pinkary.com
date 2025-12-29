@@ -6,6 +6,7 @@ use App\Console\Commands\DeleteNonEmailVerifiedUsersCommand;
 use App\Console\Commands\PerformDatabaseBackupCommand;
 use App\Console\Commands\SendUnreadNotificationEmailsCommand;
 use App\Console\Commands\SyncVerifiedUsersCommand;
+use App\Console\Commands\VacuumDatabaseCommand;
 use App\Jobs\CleanUnusedUploadedImages;
 use Illuminate\Support\Facades\Schedule;
 
@@ -14,4 +15,5 @@ Schedule::command(SendUnreadNotificationEmailsCommand::class, ['--weekly'])->wee
 Schedule::command(PerformDatabaseBackupCommand::class)->everySixHours();
 Schedule::command(DeleteNonEmailVerifiedUsersCommand::class)->hourly();
 Schedule::command(SyncVerifiedUsersCommand::class)->daily();
+Schedule::command(VacuumDatabaseCommand::class)->weekly();
 Schedule::job(CleanUnusedUploadedImages::class)->hourly();
