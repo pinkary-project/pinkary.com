@@ -123,7 +123,16 @@ test('connect to github may get you verified if you are sponsoring us', function
 });
 
 test('fetches github avatar if no custom avatar uploaded', function () {
-    Http::fake();
+    Http::fake([
+        'github.com/*' => Http::response([
+            'data' => [
+                'user' => [
+                    'sponsorshipForViewerAsSponsorable' => [],
+                ],
+            ],
+        ]),
+    ]);
+
     Queue::fake();
 
     $user = User::factory()->create();
