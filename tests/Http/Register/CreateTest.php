@@ -37,6 +37,8 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+    Queue::fake();
+
     mockTurnstileResponse(true);
 
     $response = $this->from('/register')->post('/register', $this->basePayload);
