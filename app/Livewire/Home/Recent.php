@@ -11,7 +11,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-final class Feed extends Component
+final class Recent extends Component
 {
     use HasLoadMore;
 
@@ -50,7 +50,7 @@ final class Feed extends Component
             ->builder()
             ->simplePaginate($this->perPage);
 
-        return view('livewire.feed', [
+        return view('livewire.recent', [
             'questions' => $questions,
         ]);
     }

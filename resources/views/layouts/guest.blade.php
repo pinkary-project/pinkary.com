@@ -19,7 +19,7 @@
 
                 <div>
                     <a
-                        href="{{ route('home.feed') }}"
+                        href="{{ route('home.recent') }}"
                         wire:navigate
                         class="mt-20 flex justify-center"
                     >

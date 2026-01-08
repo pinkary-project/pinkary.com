@@ -18,7 +18,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/about', 'about')->name('about');
 
-Route::view('/', 'home/feed')->name('home.feed');
+Route::get('/', function () {
+    $tab = 'recent';
+    if (auth()->check()) {
+        $tab = type(auth()->user())->as(App\Models\User::class)->default_tab;
+    }
+
+    return to_route('home.'.$tab);
+})->name('home');
+
+Route::view('/recent', 'home/recent')->name('home.recent');
 Route::redirect('/for-you', '/following')->name('home.for_you');
 Route::view('/following', 'home/following')->name('home.following');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');

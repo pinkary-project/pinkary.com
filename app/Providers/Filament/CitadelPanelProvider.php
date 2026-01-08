@@ -32,7 +32,7 @@ final class CitadelPanelProvider extends PanelProvider
             ->default()
             ->id('citadel')
             ->path('citadel')
-            ->homeUrl(fn (): string => route('home.feed'))
+            ->homeUrl(fn (): string => route('home.recent'))
             ->spa()
             ->pages([
                 Dashboard::class,

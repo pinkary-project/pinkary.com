@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\Feeds;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -42,6 +43,7 @@ test('profile information can be updated', function () {
             'email' => 'test@example.com',
             'mail_preference_time' => 'daily',
             'prefers_anonymous_questions' => false,
+            'default_tab' => Feeds::Following->value,
         ]);
 
     $response
@@ -55,6 +57,7 @@ test('profile information can be updated', function () {
     $this->assertSame('testuser', $user->username);
     $this->assertNull($user->email_verified_at);
     $this->assertFalse($user->prefers_anonymous_questions);
+    $this->assertSame(Feeds::Following->value, $user->default_tab);
 });
 
 test('email provider must be authorized', function () {

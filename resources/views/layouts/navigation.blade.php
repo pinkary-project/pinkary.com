@@ -1,6 +1,9 @@
 @php
+     use App\Enums\Feeds;
+
     $navClasses = 'fixed z-50 inset-0 md:inset-auto md:right-0 h-16 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
+    $defaultTab = auth()?->user()->default_tab ?? Feeds::Recent->value;
 @endphp
 
 <nav>
@@ -13,7 +16,7 @@
                 @auth
                     <a
                         title="Home"
-                        href="{{ route('home.feed') }}"
+                        href="{{ route('home.'.$defaultTab) }}"
                         class=""
                         wire:navigate
                     >
@@ -133,10 +136,10 @@
                             </form>
                         @else
                             <x-dropdown-link
-                                :href="route('home.feed')"
-                                :class="request()->routeIs('home.feed') ? 'dark:bg-slate-800 bg-slate-200' : ''"
+                                :href="route('home.recent')"
+                                :class="request()->routeIs('home.recent') ? 'dark:bg-slate-800 bg-slate-200' : ''"
                             >
-                                {{ __('Feed') }}
+                                {{ __('Recent') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link
