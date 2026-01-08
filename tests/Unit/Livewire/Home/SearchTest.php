@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Home\Users;
+use App\Livewire\Home\Search;
 use App\Models\Link;
+use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
-test('lists no users when there are no users', function () {
-    $component = Livewire::test(Users::class);
+test('lists no result when there are no users', function () {
+    $component = Livewire::test(Search::class);
 
-    $component->assertSee('No users found.');
+    $component->assertSee('No matching users or content found.');
 });
 
 test('lists by default users with GitHub or Twitter links', function () {
@@ -19,7 +22,7 @@ test('lists by default users with GitHub or Twitter links', function () {
         'url' => 'twitter.com/nunomaduro',
     ]);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $users = User::all();
     expect($users->count())->toBe(3);
@@ -43,7 +46,7 @@ test('search by name', function () {
         'email_verified_at' => now(),
     ]);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $component->assertDontSee('Nuno Maduro')
         ->assertDontSee('Taylor Otwell');
@@ -91,7 +94,7 @@ test('order by the number of answered questions', function () {
         'answer' => 'Livewire',
     ]);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $component->set('query', 'Artisan');
 
@@ -126,7 +129,7 @@ test('default users should have 2 verified users', function () {
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create();
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $component->assertSee('Nuno Maduro')
         ->assertSee('Punyapal Shah');
@@ -149,7 +152,7 @@ test('default users should be from top 50 famous users', function () {
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create(['name' => 'Adam Lee']);
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     foreach (range(1, 50) as $index) {
         $component->refresh();
@@ -167,7 +170,7 @@ test('famous users are cached for a day', function () {
 
     Cache::forget('top-50-users');
 
-    Livewire::test(Users::class);
+    Livewire::test(Search::class);
 
     $this->assertTrue(Cache::has('top-50-users'));
 
@@ -186,7 +189,7 @@ test('cached famous users are refreshed after a day', function () {
 
     Cache::forget('top-50-users');
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
     $this->assertTrue(Cache::has('top-50-users'));
 
@@ -231,16 +234,16 @@ test('users has is_follower and is_following attributes only when authenticated'
         ])
         ->create();
 
-    $component = Livewire::test(Users::class);
+    $component = Livewire::test(Search::class);
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user)->not->toHaveKey('is_follower');
         expect($user)->not->toHaveKey('is_following');
     });
 
     $component->set('query', 'un');
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user)->not->toHaveKey('is_follower');
         expect($user)->not->toHaveKey('is_following');
     });
@@ -249,15 +252,87 @@ test('users has is_follower and is_following attributes only when authenticated'
 
     $component->set('query', '');
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user->is_follower)->toBeBool();
         expect($user->is_following)->toBeBool();
     });
 
     $component->set('query', 'un');
 
-    $component->viewData('users')->each(function (User $user): void {
+    $component->viewData('results')->each(function (User $user): void {
         expect($user->is_follower)->toBeBool();
         expect($user->is_following)->toBeBool();
+    });
+});
+
+test('search for questions when query at least 3 characters', function () {
+    User::factory()->create([
+        'name' => 'Nuno Maduro',
+        'email_verified_at' => now(),
+    ]);
+
+    Question::factory()->create([
+        'content' => 'How to start?',
+        'answer' => 'Hello world!',
+    ]);
+
+    $component = Livewire::test(Search::class);
+
+    $component->assertDontSee('Nuno Maduro')
+        ->assertDontSee('Hello world');
+
+    $component->set('query', 'Hello');
+
+    $component->assertDontSee('Nuno Maduro')
+        ->assertSee('Hello world');
+});
+
+test('returns up to 4 questions in welcome search with enough matching users', function () {
+    User::factory(10)->create([
+        'name' => 'Nuno Maduro',
+        'email_verified_at' => now(),
+    ]);
+
+    Question::factory(5)->create([
+        'content' => 'Who created Pest?',
+        'answer' => 'Nuno Maduro',
+    ]);
+
+    $component = Livewire::test(Search::class, ['welcomeSearch' => true]);
+
+    $component->set('query', 'Nuno');
+
+    $component->assertViewHas('results', function (Collection $results) {
+        $counts = $results->countBy(function (Model $result) {
+            return $result::class;
+        });
+
+        return $counts->get(Question::class) === 4
+            && $counts->get(User::class) === 6;
+    });
+});
+
+test('returns more questions in welcome search with less than 6 matching users', function () {
+    User::factory(5)->create([
+        'name' => 'Nuno Maduro',
+        'email_verified_at' => now(),
+    ]);
+
+    Question::factory(10)->create([
+        'content' => 'Who created Pest?',
+        'answer' => 'Nuno Maduro',
+    ]);
+
+    $component = Livewire::test(Search::class, ['welcomeSearch' => true]);
+
+    $component->set('query', 'Nuno');
+
+    $component->assertViewHas('results', function (Collection $results) {
+        $counts = $results->countBy(function (Model $result) {
+            return $result::class;
+        });
+
+        return $counts->get(User::class) === 5
+            && $counts->get(Question::class) === 5;
     });
 });

@@ -22,7 +22,7 @@ Route::view('/', 'home/feed')->name('home.feed');
 Route::redirect('/for-you', '/following')->name('home.for_you');
 Route::view('/following', 'home/following')->name('home.following');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');
-Route::view('/users', 'home/users')->name('home.users');
+Route::view('/search', 'home/search')->name('home.search');
 
 Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
 
