@@ -41,26 +41,24 @@ final class MigrateFilesToS3Command extends Command
     protected $description = 'Upload local storage files (avatars, images) to the S3-compatible bucket.';
 
     /**
-     * Execute the console command.
+     * Directories to migrate from local storage.
+     *
+     * @var array<int, string>
      */
+    private const DIRECTORIES = [
+        'avatars',
+        'images',
+    ];
+
     public function handle(): int
     {
         $targetDisk = (string) $this->option('disk');
-        $sourceDisk = (string) $this->option('source');
         $overwrite = (bool) $this->option('overwrite');
 
-        if ($sourceDisk === $targetDisk) {
-            $this->error('The source and target disks must be different.');
-
-            return self::FAILURE;
-        }
-
-        $local = Storage::disk($sourceDisk);
+        $local = Storage::disk('local');
         $remote = Storage::disk($targetDisk);
 
-        if (! $this->validateDisks($local, $remote, $sourceDisk, $targetDisk)) {
-            return self::FAILURE;
-        }
+        $this->validateDisks($local, $remote, $targetDisk);
 
         $allFiles = $this->collectFiles($local);
 
@@ -84,41 +82,35 @@ final class MigrateFilesToS3Command extends Command
     }
 
     /**
-     * Validates that both storage disks are accessible.
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $local
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $remote
      */
-    private function validateDisks(
-        Filesystem $local,
-        Filesystem $remote,
-        string $sourceDisk,
-        string $targetDisk,
-    ): bool {
+    private function validateDisks($local, $remote, string $targetDisk): void
+    {
         try {
             $local->directories('/');
-        } catch (Exception $e) {
-            $this->error('Cannot access "'.$sourceDisk.'" disk: '.$e->getMessage());
-
-            return false;
+        } catch (\Exception $e) {
+            $this->error('Cannot access local disk: '.$e->getMessage());
+            exit(self::FAILURE);
         }
 
         try {
             $remote->directories('/');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->error('Cannot access "'.$targetDisk.'" disk: '.$e->getMessage());
-
-            return false;
+            exit(self::FAILURE);
         }
 
         $this->info('Both storage disks verified.');
-
-        return true;
     }
 
     /**
      * Collects all files from the configured directories.
      *
-     * @return array<array-key, string>
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $local
+     * @return array<int, string>
      */
-    private function collectFiles(Filesystem $local): array
+    private function collectFiles($local): array
     {
         $allFiles = [];
 
@@ -140,10 +132,12 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Uploads files from local to remote disk.
      *
-     * @param  array<array-key, string>  $files
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $local
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $remote
+     * @param array<int, string> $files
      * @return array{uploaded: int, skipped: int, failed: int, errors: array<int, string>}
      */
-    private function uploadFiles(Filesystem $local, Filesystem $remote, array $files, bool $overwrite): array
+    private function uploadFiles($local, $remote, array $files, bool $overwrite): array
     {
         $bar = $this->output->createProgressBar(count($files));
         $bar->start();
@@ -151,15 +145,10 @@ final class MigrateFilesToS3Command extends Command
         $results = ['uploaded' => 0, 'skipped' => 0, 'failed' => 0, 'errors' => []];
 
         foreach ($files as $path) {
-            $stream = null;
-
             try {
                 if (! $overwrite && $remote->exists($path)) {
-                    if ($local->size($path) !== $remote->size($path)) {
-                        throw new Exception('Remote file exists with a different size; rerun with --overwrite.');
-                    }
-
                     $results['skipped']++;
+                    $bar->advance();
 
                     continue;
                 }
@@ -169,29 +158,24 @@ final class MigrateFilesToS3Command extends Command
                 if ($stream === null) {
                     $results['failed']++;
                     $results['errors'][] = "Failed to read: {$path}";
+                    $bar->advance();
 
                     continue;
                 }
 
-                if (! $remote->writeStream($path, $stream, ['visibility' => 'public'])) {
-                    throw new Exception('The target disk rejected the upload.');
-                }
+                $remote->writeStream($path, $stream);
 
-                if ($local->size($path) !== $remote->size($path)) {
-                    throw new Exception('Uploaded file size does not match the source.');
-                }
-
-                $results['uploaded']++;
-            } catch (Exception $e) {
-                $results['failed']++;
-                $results['errors'][] = "{$path}: {$e->getMessage()}";
-            } finally {
                 if (is_resource($stream)) {
                     fclose($stream);
                 }
 
-                $bar->advance();
+                $results['uploaded']++;
+            } catch (\Exception $e) {
+                $results['failed']++;
+                $results['errors'][] = "{$path}: {$e->getMessage()}";
             }
+
+            $bar->advance();
         }
 
         $bar->finish();
@@ -203,7 +187,7 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Prints the upload summary.
      *
-     * @param  array{uploaded: int, skipped: int, failed: int, errors: array<int, string>}  $results
+     * @param array{uploaded: int, skipped: int, failed: int, errors: array<int, string>} $results
      */
     private function printSummary(array $results): void
     {
