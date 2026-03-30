@@ -4,6 +4,7 @@
             <x-home-menu></x-home-menu>
 
             @auth
+                <livewire:questions.create :toId="auth()->id()" />
                 <livewire:home.questions-following :focus-input="true"/>
             @else
                 <div class="mb-4">
