@@ -23,4 +23,16 @@ enum UserDefaultFeed: string
             self::Trending->value => 'Trending',
         ];
     }
+
+    /**
+     * Get the URL for the feed.
+     */
+    public function toUrl(): string
+    {
+        return match ($this) {
+            self::Following => route('home.following'),
+            self::Trending => route('home.trending'),
+            self::Recent => route('home.feed'),
+        };
+    }
 }

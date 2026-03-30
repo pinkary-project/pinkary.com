@@ -20,12 +20,11 @@ final readonly class HomeFeedResponse
         /** @var User|null $user */
         $user = auth()->user();
 
-        if ($user instanceof User && ! $request->hasHeader('X-Livewire-Navigate')) {
-            return match ($user->default_feed) {
-                UserDefaultFeed::Following => redirect()->route('home.following'),
-                UserDefaultFeed::Trending => redirect()->route('home.trending'),
-                UserDefaultFeed::Recent => view('home/feed'),
-            };
+        if ($user instanceof User
+            && $user->default_feed !== UserDefaultFeed::Recent
+            && ! $request->hasHeader('X-Livewire-Navigate')
+        ) {
+            return redirect($user->default_feed->toUrl());
         }
 
         return view('home/feed');
