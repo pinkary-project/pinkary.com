@@ -1,5 +1,5 @@
 ## Version 1.46.0
-> 4 August, 2025
+> 31 March, 2026
 
 - Adds option to select default feed
 - Internal improvements and bug fixes.
