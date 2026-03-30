@@ -1,6 +1,14 @@
 @php
+    use App\Enums\UserDefaultFeed;
+
     $navClasses = 'fixed z-50 inset-0 md:inset-auto md:right-0 h-16 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
+
+    $homeRoute = match(auth()->user()?->default_feed) {
+        UserDefaultFeed::Following => route('home.following'),
+        UserDefaultFeed::Trending => route('home.trending'),
+        default => route('home.feed'),
+    };
 @endphp
 
 <nav>
@@ -13,7 +21,7 @@
                 @auth
                     <a
                         title="Home"
-                        href="{{ route('home.feed') }}"
+                        href="{{ $homeRoute }}"
                         class=""
                         wire:navigate
                     >
