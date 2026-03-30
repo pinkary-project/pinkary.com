@@ -19,7 +19,7 @@ final class Create extends Component
     #[Renderless]
     public function store(array $postIds): void
     {
-        $questions = collect($postIds)->map(fn (string $postId): Question => (new Question())->setRawAttributes(['id' => $postId]));
+        $questions = collect($postIds)->map(fn (string $postId): Question => new Question()->setRawAttributes(['id' => $postId]));
 
         IncrementViews::dispatchUsingSession($questions);
     }

@@ -20,7 +20,7 @@ final class QuestionsFollowing extends Component
      */
     public function render(#[CurrentUser] User $user): View
     {
-        $questions = (new QuestionsFollowingFeed($user))->builder()->simplePaginate($this->perPage);
+        $questions = new QuestionsFollowingFeed($user)->builder()->simplePaginate($this->perPage);
 
         return view('livewire.home.questions-following', [
             'followingQuestions' => $questions,

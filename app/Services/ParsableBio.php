@@ -31,6 +31,6 @@ final readonly class ParsableBio
             return '';
         }
 
-        return (new ParsableContent($this->providers))->parse($content);
+        return new ParsableContent($this->providers)->parse($content);
     }
 }

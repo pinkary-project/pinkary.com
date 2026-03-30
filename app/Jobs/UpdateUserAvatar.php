@@ -41,7 +41,7 @@ final class UpdateUserAvatar implements ShouldQueue
             $disk->delete($this->user->avatar);
         }
 
-        $file = $this->file ?? (new Avatar($this->user))->url(
+        $file = $this->file ?? new Avatar($this->user)->url(
             $this->service ?? 'gravatar',
         );
 
