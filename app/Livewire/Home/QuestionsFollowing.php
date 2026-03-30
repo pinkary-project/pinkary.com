@@ -9,8 +9,10 @@ use App\Models\User;
 use App\Queries\Feeds\QuestionsFollowingFeed;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
+#[On('question.created')]
 final class QuestionsFollowing extends Component
 {
     use HasLoadMore;
