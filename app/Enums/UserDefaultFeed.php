@@ -25,14 +25,14 @@ enum UserDefaultFeed: string
     }
 
     /**
-     * Get the URL for the feed.
+     * Get the route name for the feed.
      */
-    public function toUrl(): string
+    public function toRouteName(): string
     {
         return match ($this) {
-            self::Following => route('home.following'),
-            self::Trending => route('home.trending'),
-            self::Recent => route('home.feed'),
+            self::Following => 'home.following',
+            self::Trending => 'home.trending',
+            self::Recent => 'home.feed',
         };
     }
 }

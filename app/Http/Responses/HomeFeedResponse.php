@@ -24,7 +24,7 @@ final readonly class HomeFeedResponse
             && $user->default_feed !== UserDefaultFeed::Recent
             && ! $request->hasHeader('X-Livewire-Navigate')
         ) {
-            return redirect($user->default_feed->toUrl());
+            return redirect()->route($user->default_feed->toRouteName());
         }
 
         return view('home/feed');
