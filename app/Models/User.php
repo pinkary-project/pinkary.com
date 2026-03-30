@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Contracts\Models\Viewable;
+use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
 use App\Services\ParsableBio;
 use Carbon\CarbonImmutable;
@@ -44,6 +45,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $left_color
  * @property array<int, string> $links_sort
  * @property string $link_shape
+ * @property UserDefaultFeed $default_feed
  * @property UserMailPreference $mail_preference_time
  * @property string $name
  * @property string $right_color
@@ -315,6 +317,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'prefers_anonymous_questions' => 'boolean',
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
+            'default_feed' => UserDefaultFeed::class,
             'views' => 'integer',
             'is_uploaded_avatar' => 'boolean',
         ];
