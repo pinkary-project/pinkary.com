@@ -112,10 +112,7 @@ final class IncrementViews implements ShouldQueue
 
         $recentlyViewed = $this->viewables->reject(fn (Question|User $model): bool => in_array($model->id, $viewed, true))->values();
 
-        Cache::put($key, array_unique(array_merge(
-            $viewed,
-            $recentlyViewed->pluck('id')->toArray(),
-        )), now()->addMinutes(120));
+        Cache::put($key, $recentlyViewed->pluck('id')->merge($viewed)->unique()->toArray(), now()->addMinutes(120));
 
         return $recentlyViewed;
     }
