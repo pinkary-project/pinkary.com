@@ -1,4 +1,5 @@
 @php
+    use App\Enums\UserDefaultFeed;
     use App\Enums\UserMailPreference;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
@@ -141,6 +142,26 @@
             <x-input-error
                 class="mt-2"
                 :messages="$errors->get('mail_preference_time')"
+            />
+        </div>
+
+        <div>
+            <x-input-label
+                for="default_feed"
+                :value="__('Default Feed')"
+            />
+            <x-select-input
+                id="default_feed"
+                name="default_feed"
+                class="mt-1 block w-full"
+                :options="UserDefaultFeed::toArray()"
+                :value="old('default_feed', $user->default_feed->value)"
+                required
+                autocomplete="default_feed"
+            />
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('default_feed')"
             />
         </div>
 

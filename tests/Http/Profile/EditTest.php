@@ -41,6 +41,7 @@ test('profile information can be updated', function () {
             'username' => 'testuser',
             'email' => 'test@example.com',
             'mail_preference_time' => 'daily',
+            'default_feed' => 'recent',
             'prefers_anonymous_questions' => false,
         ]);
 
@@ -346,6 +347,30 @@ test('prefers_anonymous_questions can be updated', function () {
         ->assertRedirect('/profile');
 
     expect($user->refresh()->prefers_anonymous_questions)->toBeFalse();
+});
+
+test('default_feed can be updated', function () {
+    $user = User::factory()->create([
+        'username' => 'testuser',
+        'default_feed' => 'following',
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'username' => 'testuser',
+            'email' => $user->email,
+            'mail_preference_time' => 'daily',
+            'default_feed' => 'trending',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    expect($user->refresh()->default_feed->value)->toBe('trending');
 });
 
 test('user can upload an avatar', function () {

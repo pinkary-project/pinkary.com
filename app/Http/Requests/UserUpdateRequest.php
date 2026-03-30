@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
@@ -36,6 +37,7 @@ final class UserUpdateRequest extends FormRequest
                 new UnauthorizedEmailProviders(),
             ],
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
+            'default_feed' => [Rule::enum(UserDefaultFeed::class)],
             'bio' => ['nullable', 'string', 'max:255'],
             'prefers_anonymous_questions' => ['required', 'boolean'],
         ];
