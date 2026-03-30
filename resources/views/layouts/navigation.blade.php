@@ -1,6 +1,8 @@
 @php
     $navClasses = 'fixed z-50 inset-0 md:inset-auto md:right-0 h-16 flex md:justify-end md:px-4 ';
     $navClasses .= auth()->check() ? ' justify-center' : ' justify-end px-4';
+
+    $homeRoute = route(auth()->user()?->default_feed->toRouteName() ?? 'home.feed');
 @endphp
 
 <nav>
@@ -13,7 +15,7 @@
                 @auth
                     <a
                         title="Home"
-                        href="{{ route('home.feed') }}"
+                        href="{{ $homeRoute }}"
                         class=""
                         wire:navigate
                     >
