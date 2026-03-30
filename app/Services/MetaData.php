@@ -116,7 +116,24 @@ final readonly class MetaData
                 return $oembed;
             }
         }
-
+        // If it's a Vimeo link, go straight to oEmbed
+        // return early to bypass bot detection issues.
+        if (in_array(
+            needle: Uri::of($this->url)->host(),
+            haystack: ['vimeo.com', 'www.vimeo.com'],
+            strict: true
+        )) {
+            $oembed = $this->fetchOEmbed(
+                service: 'https://vimeo.com/oembed',
+                options: [
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
+                ]
+            );
+            if ($oembed->isNotEmpty()) {
+                return $oembed;
+            }
+        }
         $data = collect();
 
         try {
