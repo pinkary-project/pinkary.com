@@ -6,6 +6,7 @@ namespace App\Queries\Feeds;
 
 use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 final readonly class RecentQuestionsFeed
@@ -29,6 +30,16 @@ final readonly class RecentQuestionsFeed
             ->whereNotNull('answer')
             ->where('is_ignored', false)
             ->where('is_reported', false)
+            ->when(Auth::check(), function (Builder $query): void {
+                /** @var \App\Models\User $user */
+                $user = Auth::user();
+                $blockedIds = $user->blocks()->pluck('blocked_id');
+                $blockerIds = $user->blockedBy()->pluck('user_id');
+                $excludedIds = $blockedIds->merge($blockerIds)->unique();
+
+                $query->whereNotIn('to_id', $excludedIds)
+                    ->whereNotIn('from_id', $excludedIds);
+            })
             ->when($this->hashtag, function (Builder $query): void {
                 $query->whereHas('hashtags', function (Builder $query): void {
                     $query

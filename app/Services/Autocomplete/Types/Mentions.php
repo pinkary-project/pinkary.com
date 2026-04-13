@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\Autocomplete\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 final readonly class Mentions extends Type
 {
@@ -38,7 +39,15 @@ final readonly class Mentions extends Type
     {
         return Collection::make(
             User::query()
-                ->when(auth()->id(), fn (Builder $constraint, string|int $id) => $constraint->whereKeyNot($id))
+                ->when(Auth::id(), function (Builder $constraint, string|int $id): void {
+                    $user = User::findOrFail($id);
+                    $blockedIds = $user->blocks()->pluck('blocked_id');
+                    $blockerIds = $user->blockedBy()->pluck('user_id');
+                    $excludedIds = $blockedIds->merge($blockerIds)->unique();
+
+                    $constraint->whereKeyNot($id)
+                        ->whereNotIn('id', $excludedIds);
+                })
                 ->whereNotNull('email_verified_at')
                 ->where(fn (Builder $groupedConstraint) => $groupedConstraint
                     ->where('name', 'like', "{$query}%")
@@ -47,7 +56,7 @@ final readonly class Mentions extends Type
                 ->withCount('followers')
                 ->withExists([
                     'followers as is_followed_by_user' => fn (Builder $follower): Builder => $follower
-                        ->where('follower_id', '=', auth()->id()),
+                        ->where('follower_id', '=', Auth::id()),
                 ])
                 ->orderByDesc('is_followed_by_user')
                 ->orderByDesc('followers_count')

@@ -150,6 +150,54 @@ final class Index extends Component
     }
 
     /**
+     * Block the given user.
+     */
+    public function block(int $targetId, #[CurrentUser] ?User $user): void
+    {
+        if (! $user instanceof User) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $target = User::findOrFail($targetId);
+
+        if ($target->id === $user->id) {
+            return;
+        }
+
+        if ($user->blocks()->where('blocked_id', $targetId)->exists()) {
+            return;
+        }
+
+        $user->blocks()->attach($targetId);
+
+        // Also unfollow if blocking
+        $user->following()->detach($targetId);
+        $target->following()->detach($user->id);
+
+        $this->dispatch('notification.created', message: 'User blocked.');
+        $this->dispatch('user.blocked');
+    }
+
+    /**
+     * Unblock the given user.
+     */
+    public function unblock(int $targetId, #[CurrentUser] ?User $user): void
+    {
+        if (! $user instanceof User) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $user->blocks()->detach($targetId);
+
+        $this->dispatch('notification.created', message: 'User unblocked.');
+        $this->dispatch('user.unblocked');
+    }
+
+    /**
      * Refresh the component.
      */
     #[On('link.created')]
