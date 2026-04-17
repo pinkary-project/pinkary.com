@@ -94,6 +94,7 @@ final class IncrementViews implements ShouldQueue
             return '';
         }
 
+        /** @var Question|User $model */
         $model = $this->viewables->first();
 
         return mb_strtolower(class_basename($model));
