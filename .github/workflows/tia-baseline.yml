@@ -8,6 +8,10 @@ on:
     - cron: '0 3 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: tia-baseline
+  cancel-in-progress: true
+
 jobs:
   baseline:
     runs-on: ubuntu-latest
@@ -20,14 +24,54 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-php-composer-${{ hashFiles('composer.lock') }}
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: json, dom, curl, libxml, mbstring, zip, imagick, intl, bcmath, pdo, pdo_sqlite, sqlite3
+          tools: composer:v2
           coverage: xdebug
 
+      - name: Set up Node & NPM
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+
       - name: Install PHP dependencies
-        run: composer install --no-interaction --prefer-dist
+        run: composer install --no-interaction --no-progress --ansi
+
+      - name: Get NPM cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Build front-end assets
+        # Vite manifest is read during Laravel boot (Filament + Livewire).
+        # Without it, every test that renders a view blows up long before
+        # TIA gets to record anything.
+        run: npm run build
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
 
       - name: Record TIA baseline
         run: ./vendor/bin/pest --parallel --tia --coverage
@@ -38,3 +82,4 @@ jobs:
           name: pest-tia-baseline
           path: vendor/pestphp/pest/.temp/tia/
           retention-days: 30
+          if-no-files-found: error
