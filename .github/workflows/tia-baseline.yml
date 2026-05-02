@@ -41,7 +41,7 @@ jobs:
       - name: Set up Node & NPM
         uses: actions/setup-node@v2
         with:
-          node-version: '18.x'
+          node-version: '22.x'
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --no-progress --ansi
