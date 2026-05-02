@@ -20,8 +20,8 @@ Pinkary is a regular Laravel application; it's build on top of Laravel 11 and us
 
 In terms of local development, you can use the following requirements:
 
-- PHP 8.3 - with SQLite, GD, and other common extensions.
-- Node.js 16 or more recent.
+- PHP 8.4 - with SQLite, GD, and other common extensions.
+- Node.js 22 or more recent.
 
 If you have these requirements, you can start by cloning the repository and installing the dependencies:
 
