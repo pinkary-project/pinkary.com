@@ -29,7 +29,8 @@
         "laravel/sail": "^1.58.0",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.9.4",
-        "pestphp/pest": "dev-feat/tia as 4.7.0",
+        "laravel/pao": "^1.0.6",
+        "pestphp/pest": "dev-feat/tia as 4.99.0",
         "pestphp/pest-plugin-laravel": "^4.1.0",
         "pestphp/pest-plugin-type-coverage": "^4.0.4",
         "rector/rector": "^2.4.2"

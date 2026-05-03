@@ -76,10 +76,12 @@ jobs:
       - name: Record TIA baseline
         run: ./vendor/bin/pest --parallel --tia --coverage
 
-      - id: baseline
+      - name: Resolve TIA baseline path
+        id: baseline
         run: echo "path=$(vendor/bin/pest --baseline)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload TIA baseline
+        uses: actions/upload-artifact@v4
         with:
           name: pest-tia-baseline
           path: ${{ steps.baseline.outputs.path }}
