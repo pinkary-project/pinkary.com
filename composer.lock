@@ -10224,16 +10224,16 @@
         },
         {
             "name": "web-auth/cose-lib",
-            "version": "4.5.1",
+            "version": "4.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-auth/cose-lib.git",
-                "reference": "3185af4df10dc537b65c140c315b88d15ae15b80"
+                "reference": "5b38660f90070a8e45f3dbc9528ade3b608dd77d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/web-auth/cose-lib/zipball/3185af4df10dc537b65c140c315b88d15ae15b80",
-                "reference": "3185af4df10dc537b65c140c315b88d15ae15b80",
+                "url": "https://api.github.com/repos/web-auth/cose-lib/zipball/5b38660f90070a8e45f3dbc9528ade3b608dd77d",
+                "reference": "5b38660f90070a8e45f3dbc9528ade3b608dd77d",
                 "shasum": ""
             },
             "require": {
@@ -10279,7 +10279,7 @@
             ],
             "support": {
                 "issues": "https://github.com/web-auth/cose-lib/issues",
-                "source": "https://github.com/web-auth/cose-lib/tree/4.5.1"
+                "source": "https://github.com/web-auth/cose-lib/tree/4.5.2"
             },
             "funding": [
                 {
@@ -10291,7 +10291,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2026-04-01T12:47:39+00:00"
+            "time": "2026-05-03T09:49:50+00:00"
         },
         {
             "name": "web-auth/webauthn-lib",
@@ -11658,18 +11658,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "5242803694c96f528f20b5d40eb87d3ee4ca44e5"
+                "reference": "e1a4b98b711a1d6fc19ea34a3c6b8267415d079a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/5242803694c96f528f20b5d40eb87d3ee4ca44e5",
-                "reference": "5242803694c96f528f20b5d40eb87d3ee4ca44e5",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/e1a4b98b711a1d6fc19ea34a3c6b8267415d079a",
+                "reference": "e1a4b98b711a1d6fc19ea34a3c6b8267415d079a",
                 "shasum": ""
             },
             "require": {
                 "brianium/paratest": "^7.20.0",
                 "composer/xdebug-handler": "^3.0.5",
-                "fidry/cpu-core-counter": "^1.3",
                 "nunomaduro/collision": "^8.9.4",
                 "nunomaduro/termwind": "^2.4.0",
                 "pestphp/pest-plugin": "^4.0.0",
@@ -11770,7 +11769,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-02T14:54:00+00:00"
+            "time": "2026-05-03T13:16:10+00:00"
         },
         {
             "name": "pestphp/pest-plugin",

@@ -31,6 +31,7 @@ final readonly class ValidTimezone implements ValidationRule
     private function getTimezones(): array
     {
         return [
+            // @phpstan-ignore-next-line
             null => 'Select a timezone',
             'Pacific/Midway' => 'Midway (UTC-11:00)',
             'Pacific/Niue' => 'Niue (UTC-11:00)',
