@@ -282,7 +282,7 @@ final class MigrateSqliteToMysqlCommand extends Command
         $maxId = DB::connection('mysql')->table($table)->max('id');
 
         if ($maxId !== null) {
-            $next = ((int) $maxId) + 1;
+            $next = ((int) $maxId) + 1; // @phpstan-ignore-line
             DB::connection('mysql')->statement("ALTER TABLE `{$table}` AUTO_INCREMENT = {$next}");
         }
     }

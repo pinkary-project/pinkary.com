@@ -109,7 +109,7 @@ final class MigrateFilesToS3Command extends Command
      * Collects all files from the configured directories.
      *
      * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
-     * @return array<int, string>
+     * @return array<array-key, string>
      */
     private function collectFiles($local): array
     {
@@ -135,7 +135,7 @@ final class MigrateFilesToS3Command extends Command
      *
      * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
      * @param  \Illuminate\Contracts\Filesystem\Filesystem  $remote
-     * @param  array<int, string>  $files
+     * @param  array<array-key, string>  $files
      * @return array{uploaded: int, skipped: int, failed: int, errors: array<int, string>}
      */
     private function uploadFiles($local, $remote, array $files, bool $overwrite): array
