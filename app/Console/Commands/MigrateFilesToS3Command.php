@@ -41,16 +41,6 @@ final class MigrateFilesToS3Command extends Command
     protected $description = 'Upload local storage files (avatars, images) to the S3-compatible bucket.';
 
     /**
-     * Directories to migrate from local storage.
-     *
-     * @var array<int, string>
-     */
-    private const DIRECTORIES = [
-        'avatars',
-        'images',
-    ];
-
-    /**
      * Execute the console command.
      */
     public function handle(): int
@@ -89,14 +79,14 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Validates that both storage disks are accessible.
      *
-     * @param \Illuminate\Contracts\Filesystem\Filesystem $local
-     * @param \Illuminate\Contracts\Filesystem\Filesystem $remote
+     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
+     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $remote
      */
     private function validateDisks($local, $remote, string $targetDisk): bool
     {
         try {
             $local->directories('/');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Cannot access local disk: '.$e->getMessage());
 
             return false;
@@ -104,7 +94,7 @@ final class MigrateFilesToS3Command extends Command
 
         try {
             $remote->directories('/');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Cannot access "'.$targetDisk.'" disk: '.$e->getMessage());
 
             return false;
@@ -118,7 +108,7 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Collects all files from the configured directories.
      *
-     * @param \Illuminate\Contracts\Filesystem\Filesystem $local
+     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
      * @return array<int, string>
      */
     private function collectFiles($local): array
@@ -143,9 +133,9 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Uploads files from local to remote disk.
      *
-     * @param \Illuminate\Contracts\Filesystem\Filesystem $local
-     * @param \Illuminate\Contracts\Filesystem\Filesystem $remote
-     * @param array<int, string> $files
+     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
+     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $remote
+     * @param  array<int, string>  $files
      * @return array{uploaded: int, skipped: int, failed: int, errors: array<int, string>}
      */
     private function uploadFiles($local, $remote, array $files, bool $overwrite): array
@@ -181,7 +171,7 @@ final class MigrateFilesToS3Command extends Command
                 }
 
                 $results['uploaded']++;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $results['failed']++;
                 $results['errors'][] = "{$path}: {$e->getMessage()}";
             }
@@ -198,7 +188,7 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Prints the upload summary.
      *
-     * @param array{uploaded: int, skipped: int, failed: int, errors: array<int, string>} $results
+     * @param  array{uploaded: int, skipped: int, failed: int, errors: array<int, string>}  $results
      */
     private function printSummary(array $results): void
     {

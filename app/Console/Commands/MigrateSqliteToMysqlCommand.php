@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Collection;
@@ -54,6 +55,18 @@ final class MigrateSqliteToMysqlCommand extends Command
 
     /** @var string */
     protected $description = 'Copy application data from SQLite to an empty MySQL database.';
+
+    /**
+     * @var string
+     */
+    protected $signature = 'migrate:sqlite-to-mysql
+        {--force : Run without confirmation}
+        {--fresh : Drop all MySQL tables and re-run migrations before importing}';
+
+    /**
+     * @var string
+     */
+    protected $description = 'Migrate data from the local SQLite database to the MySQL database on Laravel Cloud.';
 
     /**
      * Execute the console command.
@@ -157,7 +170,7 @@ final class MigrateSqliteToMysqlCommand extends Command
     {
         try {
             DB::connection('sqlite')->getPdo();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Cannot connect to SQLite: '.$e->getMessage());
 
             return false;
@@ -165,7 +178,7 @@ final class MigrateSqliteToMysqlCommand extends Command
 
         try {
             DB::connection('mysql')->getPdo();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Cannot connect to MySQL: '.$e->getMessage());
 
             return false;
@@ -206,13 +219,13 @@ final class MigrateSqliteToMysqlCommand extends Command
 
         try {
             DB::connection('sqlite')->table($table)
-                ->orderBy($this->getPrimaryKey($table))
+                ->orderBy($this->getPrimaryKey())
                 ->chunk($chunkSize, function ($rows) use ($table, $bar): void {
-                    $data = collect($rows)->map(fn ($row) => (array) $row)->all();
+                    $data = collect($rows)->map(fn ($row): array => (array) $row)->all();
                     DB::connection('mysql')->table($table)->insert($data);
                     $bar->advance(count($data));
                 });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $hasErrors = true;
             $bar->finish();
             $this->newLine();
@@ -241,7 +254,7 @@ final class MigrateSqliteToMysqlCommand extends Command
     /**
      * Returns the primary key column for the given table.
      */
-    private function getPrimaryKey(string $table): string
+    private function getPrimaryKey(): string
     {
         return 'id';
     }
