@@ -150,25 +150,35 @@ final class MigrateSqliteToMysqlCommand extends Command
         DB::purge('mysql');
     }
 
-    private function validateConnections(): void
+    /**
+     * Validates that both database connections are accessible.
+     */
+    private function validateConnections(): bool
     {
         try {
             DB::connection('sqlite')->getPdo();
         } catch (\Exception $e) {
             $this->error('Cannot connect to SQLite: '.$e->getMessage());
-            exit(self::FAILURE);
+
+            return false;
         }
 
         try {
             DB::connection('mysql')->getPdo();
         } catch (\Exception $e) {
             $this->error('Cannot connect to MySQL: '.$e->getMessage());
-            exit(self::FAILURE);
+
+            return false;
         }
 
         $this->info('Both database connections verified.');
+
+        return true;
     }
 
+    /**
+     * Migrates a single table from SQLite to MySQL.
+     */
     private function migrateTable(string $table): bool
     {
         if (! Schema::connection('sqlite')->hasTable($table)) {
@@ -228,6 +238,9 @@ final class MigrateSqliteToMysqlCommand extends Command
         return true;
     }
 
+    /**
+     * Returns the primary key column for the given table.
+     */
     private function getPrimaryKey(string $table): string
     {
         return 'id';
@@ -261,18 +274,27 @@ final class MigrateSqliteToMysqlCommand extends Command
         }
     }
 
+    /**
+     * Disables foreign key checks on the MySQL connection.
+     */
     private function disableForeignKeyChecks(): void
     {
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=0');
         $this->info('Foreign key checks disabled.');
     }
 
+    /**
+     * Re-enables foreign key checks on the MySQL connection.
+     */
     private function enableForeignKeyChecks(): void
     {
         DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1');
         $this->info('Foreign key checks re-enabled.');
     }
 
+    /**
+     * Prints a summary table comparing row counts between SQLite and MySQL.
+     */
     private function printSummary(): void
     {
         $this->newLine();

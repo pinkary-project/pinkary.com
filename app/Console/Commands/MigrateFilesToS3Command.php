@@ -50,6 +50,9 @@ final class MigrateFilesToS3Command extends Command
         'images',
     ];
 
+    /**
+     * Execute the console command.
+     */
     public function handle(): int
     {
         $targetDisk = (string) $this->option('disk');
@@ -58,7 +61,9 @@ final class MigrateFilesToS3Command extends Command
         $local = Storage::disk('local');
         $remote = Storage::disk($targetDisk);
 
-        $this->validateDisks($local, $remote, $targetDisk);
+        if (! $this->validateDisks($local, $remote, $targetDisk)) {
+            return self::FAILURE;
+        }
 
         $allFiles = $this->collectFiles($local);
 
@@ -82,26 +87,32 @@ final class MigrateFilesToS3Command extends Command
     }
 
     /**
+     * Validates that both storage disks are accessible.
+     *
      * @param \Illuminate\Contracts\Filesystem\Filesystem $local
      * @param \Illuminate\Contracts\Filesystem\Filesystem $remote
      */
-    private function validateDisks($local, $remote, string $targetDisk): void
+    private function validateDisks($local, $remote, string $targetDisk): bool
     {
         try {
             $local->directories('/');
         } catch (\Exception $e) {
             $this->error('Cannot access local disk: '.$e->getMessage());
-            exit(self::FAILURE);
+
+            return false;
         }
 
         try {
             $remote->directories('/');
         } catch (\Exception $e) {
             $this->error('Cannot access "'.$targetDisk.'" disk: '.$e->getMessage());
-            exit(self::FAILURE);
+
+            return false;
         }
 
         $this->info('Both storage disks verified.');
+
+        return true;
     }
 
     /**
