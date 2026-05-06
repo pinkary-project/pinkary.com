@@ -169,6 +169,48 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Get the users blocked by this user.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function blocks(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'blocks', 'user_id', 'blocked_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the users who blocked this user.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function blockedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'blocks', 'blocked_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Determine if the user is blocking the given user.
+     */
+    public function isBlocking(self|int $user): bool
+    {
+        $userId = $user instanceof self ? $user->id : $user;
+
+        return $this->blocks()->where('blocked_id', $userId)->exists();
+    }
+
+    /**
+     * Determine if the user is blocked by the given user.
+     */
+    public function isBlockedBy(self|int $user): bool
+    {
+        $userId = $user instanceof self ? $user->id : $user;
+
+        return $this->blockedBy()->where('user_id', $userId)->exists();
+    }
+
+    /**
      * Get the user's avatar URL attribute.
      */
     public function getAvatarUrlAttribute(): string

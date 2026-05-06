@@ -12,6 +12,7 @@ use App\Rules\NoBlankCharacters;
 use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
@@ -176,7 +177,7 @@ final class Create extends Component
     #[Computed]
     public function isSharingUpdate(): bool
     {
-        return $this->toId === auth()->id();
+        return $this->toId === Auth::id();
     }
 
     /**
@@ -231,6 +232,13 @@ final class Create extends Component
     {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        $targetUser = User::findOrFail($this->toId);
+        if ($user->isBlocking($targetUser) || $user->isBlockedBy($targetUser)) {
+            $this->addError('content', 'You cannot send a question to this user.');
 
             return;
         }
@@ -359,6 +367,10 @@ final class Create extends Component
      */
     public function render(): View
     {
+        if (Auth::check() && (Auth::user()->isBlocking($this->toId) || Auth::user()->isBlockedBy($this->toId))) {
+            return view('livewire.empty');
+        }
+
         $user = new User;
 
         if (filled($this->toId)) {

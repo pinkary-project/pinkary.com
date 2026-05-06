@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -61,6 +62,10 @@ final class Index extends Component
             ->groupBy(DB::Raw('IFNULL(root_id, id)'))
             ->orderByDesc(DB::raw('MAX(`updated_at`)'))
             ->simplePaginate($this->perPage);
+
+        if (Auth::check() && (Auth::user()->isBlocking($user) || Auth::user()->isBlockedBy($user))) {
+            return view('livewire.empty');
+        }
 
         return view('livewire.questions.index', [
             'user' => $user,
