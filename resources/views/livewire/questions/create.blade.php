@@ -1,5 +1,5 @@
 <div
-    class="mb-12 pt-4"
+    class=""
     id="questions-create"
 >
     <form
@@ -20,10 +20,11 @@
             maxContentLength = {{ $this->maxContentLength }};
             initComponents();
         }'
+        class="rounded-[2rem] border border-white/70 bg-white/90 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/85 dark:shadow-black/20 sm:p-5"
     >
         <div
             class="relative group/menu">
-                <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }">
+                <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="rounded-[1.75rem] border border-slate-200/70 bg-slate-50/80 p-4 dark:border-slate-800/70 dark:bg-slate-900/70 sm:p-5">
                     <x-textarea
                         x-model="content"
                         placeholder="{{ $this->placeholder }}"
@@ -33,12 +34,15 @@
                         x-autosize
                         x-ref="content"
                         autocomplete
+                        class="!min-h-[6.5rem] !rounded-[1.25rem] !border-slate-200/70 !bg-white/70 !px-4 !py-3 !text-sm !leading-7 shadow-none placeholder:!text-slate-500 dark:!border-slate-800/70 dark:!bg-slate-950/70 dark:placeholder:!text-slate-500"
                     />
+
+                    <p class="mt-3 text-right text-xs text-slate-500 dark:text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
                 </div>
             <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
             <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
 
-            <div x-show="images.length > 0" class="relative mt-2 flex h-20 flex-wrap gap-2">
+            <div x-show="images.length > 0" class="relative mt-3 flex flex-wrap gap-2">
                 <template x-for="(image, index) in images" :key="index">
                     <div class="relative h-20 w-20">
                         <img :src="image.path" :alt="image.originalName"
@@ -53,8 +57,6 @@
                 </template>
             </div>
 
-            <p class="text-right text-xs dark:text-slate-400 text-slate-600"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
-
             <ul>
                 <template x-for="(error, index) in errors" :key="index">
                     <li class="py-2 text-sm text-red-600 w-full"><span x-text="error"></span></li>
@@ -64,7 +66,7 @@
         <div class="mt-4 flex items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <x-primary-button
-                    class="text-{{ $user->left_color }} border-{{ $user->left_color }}"
+                    class="rounded-[1rem] px-5 py-2.5 text-sm font-medium tracking-normal text-{{ $user->left_color }} border-{{ $user->left_color }}"
                     type="submit"
                 >
                     {{ __('Send') }}
@@ -73,7 +75,7 @@
                     title="Upload an image"
                     x-ref="imageButton"
                     :disabled="uploading || images.length >= uploadLimit"
-                    class="p-1.5 rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-800 bg-slate-50 text-sm dark:text-slate-400 text-slate-600 hover:text-pink-500 dark:hover:bg-slate-700 hover:bg-slate-100"
+                    class="flex size-10 items-center justify-center rounded-[1rem] border border-slate-200 bg-slate-50 text-sm text-slate-600 hover:bg-slate-100 hover:text-pink-500 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:bg-slate-800"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-photo class="h-5 w-5"/>
@@ -83,7 +85,7 @@
                         type="button"
                         x-on:click="togglePoll()"
                         title="Create a poll"
-                        class="p-1.5 rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-800 bg-slate-50 text-sm dark:text-slate-400 text-slate-600 hover:text-pink-500 dark:hover:bg-slate-700 hover:bg-slate-100"
+                        class="flex size-10 items-center justify-center rounded-[1rem] border border-slate-200 bg-slate-50 text-sm text-slate-600 hover:bg-slate-100 hover:text-pink-500 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:bg-slate-800"
                         :class="{'text-pink-500': isPoll}"
                     >
                         <x-heroicon-o-chart-bar class="h-5 w-5"/>
@@ -91,7 +93,7 @@
                 @endif
             </div>
             @if (! $this->parentId && ! $this->isSharingUpdate)
-                <div class="flex items-center">
+                <div class="flex items-center rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-2 dark:border-slate-800/70 dark:bg-slate-900/70">
                     <x-checkbox
                         wire:model="anonymously"
                         id="anonymously"
@@ -99,7 +101,7 @@
 
                     <label
                         for="anonymously"
-                        class="ml-2 dark:text-slate-400 text-slate-600"
+                        class="ml-2 text-sm dark:text-slate-400 text-slate-600"
                         >Anonymously</label
                     >
                 </div>

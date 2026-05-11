@@ -1,17 +1,19 @@
 <x-app-layout>
-    <div class="space-y-6">
-        <section class="rounded-[2rem] border border-white/70 bg-white/85 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/80 dark:shadow-black/20 sm:p-5">
-            <div class="space-y-4">
-                <h2 class="font-mona text-2xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
-                    Trending
-                </h2>
+    <section class="overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/85 dark:shadow-black/20">
+        <div class="flex flex-col gap-4 border-b border-slate-200/70 px-4 py-4 dark:border-slate-800/70 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <h2 class="font-mona text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
+                Feed
+            </h2>
 
-                <x-home-menu></x-home-menu>
-            </div>
-        </section>
+            <x-home-menu></x-home-menu>
+        </div>
 
-        <section class="rounded-[2rem] border border-white/70 bg-white/85 p-3 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/80 dark:shadow-black/20 sm:p-4">
+        <div class="space-y-4 p-4 sm:p-6">
+            @auth
+                <livewire:questions.create :toId="auth()->id()" />
+            @endauth
+
             <livewire:home.trending-questions :focus-input="true" />
-        </section>
-    </div>
+        </div>
+    </section>
 </x-app-layout>
