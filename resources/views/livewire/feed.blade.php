@@ -1,5 +1,5 @@
 <div>
-    <section class="mb-12 min-h-screen space-y-10">
+    <section class="mb-6 min-h-screen space-y-6 sm:space-y-8">
         @forelse ($questions as $question)
             <div wire:key="thread-{{ $question->id }}">
                 @if($hashtag !== null && $hashtag !== '')
@@ -19,7 +19,10 @@
                 @endif
             </div>
         @empty
-            <div class="text-center dark:text-slate-400 text-slate-600">There are no questions to show.</div>
+            <div class="rounded-[1.75rem] border border-dashed border-slate-300/80 bg-slate-50/70 p-8 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
+                <p class="text-lg font-medium text-slate-950 dark:text-white">There are no questions to show.</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Try switching to another feed view or come back once new posts are published.</p>
+            </div>
         @endforelse
 
         <x-load-more-button

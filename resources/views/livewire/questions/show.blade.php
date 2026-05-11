@@ -1,68 +1,88 @@
-<article class="block" id="q-{{ $questionId }}" x-data="copyCode">
-    <div>
-        <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
+<article class="block space-y-3" id="q-{{ $questionId }}" x-data="copyCode">
+    <div class="space-y-3">
+        <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
-                    <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                        <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed dark:border-slate-400 border-slate-600">
+                    <div class="inline-flex items-center gap-3 rounded-full border border-dashed border-slate-300/80 bg-slate-50/80 px-4 py-2 text-sm text-slate-500 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-400">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-400 dark:border-slate-500">
                             <span>?</span>
                         </div>
 
                         <p class="font-medium">Anonymously</p>
                     </div>
                 @else
-                    <x-avatar-with-name :user="$question->from" />
+                    <div class="min-w-0">
+                        <x-avatar-with-name :user="$question->from" />
+                    </div>
                 @endif
-                <a
-                    class="text-xs text-pink-500 flex items-end gap-1.5"
-                    href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
-                    target="_blank"
-                    data-navigate-ignore="true"
-                >
-                    <x-heroicon-o-language class="h-4 w-4"/>
-                </a>
-            @endunless
-            @if ($question->pinned && $pinnable)
-                <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                    <x-icons.pin class="h-4 w-4 dark:text-slate-400 text-slate-600" />
-                    <span class="dark:text-slate-400 text-slate-600">Pinned</span>
+
+                <div class="flex items-center gap-2 self-start">
+                    <a
+                        class="inline-flex items-center gap-1.5 rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-2 text-xs font-medium text-pink-600 transition hover:bg-pink-500 hover:text-white dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300"
+                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
+                        target="_blank"
+                        data-navigate-ignore="true"
+                    >
+                        <x-heroicon-o-language class="h-4 w-4"/>
+                        <span class="hidden sm:inline">Translate</span>
+                    </a>
+
+                    @if ($question->pinned && $pinnable)
+                        <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-2 text-xs font-medium text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400">
+                            <x-icons.pin class="h-4 w-4" />
+                            <span>Pinned</span>
+                        </div>
+                    @endif
                 </div>
-            @endif
+            @else
+                @if ($question->pinned && $pinnable)
+                    <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-2 text-xs font-medium text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400">
+                        <x-icons.pin class="h-4 w-4" />
+                        <span>Pinned</span>
+                    </div>
+                @endif
+            @endunless
         </div>
 
         @unless ($question->isSharedUpdate())
-        <p class="mt-3 px-4 dark:text-slate-200 text-slate-800">
-            {!! $question->content !!}
-        </p>
+            <div class="rounded-[1.75rem] border border-slate-200/70 bg-white/80 p-4 shadow-lg shadow-slate-900/5 backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/70 dark:shadow-black/20 sm:p-5">
+                <p class="text-sm leading-7 text-slate-700 dark:text-slate-200 sm:text-[0.95rem]">
+                    {!! $question->content !!}
+                </p>
+            </div>
         @endunless
     </div>
 
     @if ($question->answer)
+        @php
+            $actionChipClasses = 'inline-flex items-center gap-1.5 rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-1.5 transition-colors dark:border-slate-800/70 dark:bg-slate-900/70';
+            $actionChipHoverClasses = 'hover:text-slate-950 hover:bg-white dark:hover:text-white dark:hover:bg-slate-950';
+        @endphp
         <div
             data-parent=true
             x-intersect.once.full="$dispatch('post-viewed', { postId: '{{ $questionId }}' })"
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
-            class="group p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'dark:bg-slate-700/60 bg-slate-200/60' : 'border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50' }}
-            {{ $commenting ?: "cursor-pointer transition-colors duration-100 ease-in-out dark:hover:bg-slate-700/60 hover:bg-slate-100/60" }}"
+            class="group rounded-[2rem] border p-5 shadow-xl shadow-slate-900/5 backdrop-blur dark:shadow-black/20 sm:p-6 {{ $previousQuestionId === $questionId ? 'border-pink-500/30 bg-pink-500/10 ring-2 ring-pink-500/20 dark:border-pink-500/30 dark:bg-pink-500/10' : 'border-slate-200/70 bg-white/90 dark:border-slate-800/70 dark:bg-slate-950/85' }}
+            {{ $commenting ?: 'cursor-pointer transition-colors duration-100 ease-in-out hover:bg-white dark:hover:bg-slate-950' }}"
         >
-            <div class="flex justify-between">
+            <div class="flex items-start justify-between gap-4">
                 <a
                     href="{{ route('profile.show', ['username' => $question->to->username]) }}"
                     class="group/profile flex items-center gap-3"
                     data-navigate-ignore="true"
                     wire:navigate
                 >
-                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-100 transition-opacity group-hover/profile:opacity-90">
+                    <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12 flex-shrink-0 border border-slate-200/70 bg-slate-100 transition-opacity group-hover/profile:opacity-90 dark:border-slate-800/70 dark:bg-slate-900">
                         <img
                             src="{{ $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
-                            class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
+                            class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12"
                         />
                     </figure>
-                    <div class="overflow-hidden text-sm">
-                        <div class="items flex">
-                            <p class="truncate font-medium dark:text-slate-50 text-slate-950">
+                    <div class="min-w-0 overflow-hidden text-sm">
+                        <div class="flex items-center">
+                            <p class="truncate font-medium text-slate-950 dark:text-slate-50">
                                 {{ $question->to->name }}
                             </p>
 
@@ -79,7 +99,7 @@
                             @endif
                         </div>
 
-                        <p class="truncate text-slate-500 transition-colors dark:group-hover/profile:text-slate-400 group-hover/profile:text-slate-600">
+                        <p class="mt-1 truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:group-hover/profile:text-slate-300">
                             {{ '@'.$question->to->username }}
                         </p>
                     </div>
@@ -93,8 +113,8 @@
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                class="inline-flex items-center rounded-md border border-transparent py-1 text-sm dark:text-slate-400 text-slate-600 transition duration-150 ease-in-out dark:hover:text-slate-50 hover:text-slate-950 focus:outline-none">
-                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
+                                class="inline-flex items-center rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-2 text-sm text-slate-600 transition duration-150 ease-in-out hover:bg-white hover:text-slate-950 focus:outline-none dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:bg-slate-950 dark:hover:text-white">
+                                <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
                             </button>
                         </x-slot>
 
@@ -163,15 +183,16 @@
                     }}"
                    data-navigate-ignore="true"
                    wire:navigate
-                   class="truncate text-xs text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600"
+                   class="mt-4 inline-flex max-w-full items-center gap-2 rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-white hover:text-slate-950 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:bg-slate-950 dark:hover:text-white"
                 >
+                    <x-heroicon-o-arrow-turn-down-right class="h-3.5 w-3.5" />
                     In response to {{ '@'.$question->parent->to->username }}
                 </a>
             @endif
 
             <div x-data="showMore">
                 <div
-                    class="mt-3 break-words dark:text-slate-200 text-slate-800 overflow-hidden answer"
+                    class="mt-4 overflow-hidden break-words text-slate-800 answer dark:text-slate-200"
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
@@ -180,11 +201,11 @@
                     </p>
                 </div>
 
-                <div x-show="showMore === true" class="mt-1 answer">
+                <div x-show="showMore === true" class="mt-2 answer">
                     <button
                         data-navigate-ignore="true"
                         @click="showButtonAction"
-                        class="text-sm text-pink-500 flex ml-auto"
+                        class="ml-auto flex text-sm font-medium text-pink-500"
                         x-text="showMoreButtonText"
                     ></button>
                 </div>
@@ -194,8 +215,8 @@
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 
-            <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
-                <div class="flex items-center gap-1">
+            <div class="mt-5 flex flex-col gap-3 border-t border-slate-200/70 pt-4 text-sm text-slate-500 dark:border-slate-800/70 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-wrap items-center gap-2">
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
@@ -207,7 +228,7 @@
                         @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
                         @class([
-                            "flex items-center transition-colors group-hover:text-pink-500 dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none",
+                            "$actionChipClasses $actionChipHoverClasses focus:outline-none",
                             "cursor-pointer" => ! $commenting,
                         ])
                     >
@@ -218,8 +239,6 @@
                             </span>
                         @endif
                     </a>
-
-                    <span>•</span>
 
                     @php
                         $likeExists = $question->is_liked;
@@ -234,15 +253,14 @@
                         data-navigate-ignore="true"
                         x-on:click="toggleLike"
                         :title="likeButtonTitle"
-                        class="flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                        class="{{ $actionChipClasses }} {{ $actionChipHoverClasses }} focus:outline-none"
                     >
                         <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
                         <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
                         <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
                     </button>
-                    <span>•</span>
                     <p
-                        class="inline-flex cursor-help items-center"
+                        class="{{ $actionChipClasses }} cursor-help"
                         title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
                     >
                         <x-icons.chart class="h-4 w-4"/>
@@ -253,26 +271,25 @@
                         @endif
                     </p>
 
-                    <span>•</span>
-
                     <a
-                        class="flex items-center transition-colors group-hover:text-pink-500 dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
+                        class="{{ $actionChipClasses }} {{ $actionChipHoverClasses }} cursor-pointer focus:outline-none"
                         title="Translate"
                         href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
                         data-navigate-ignore="true"
                         target="_blank"
                     >
                         <x-heroicon-o-language class="h-4 w-4"/>
+                        <span class="hidden sm:inline">Translate</span>
                     </a>
                 </div>
 
-                <div class="flex items-center text-slate-500 ">
+                <div class="flex flex-wrap items-center gap-2 text-slate-500 dark:text-slate-400">
                     @php
                         $timestamp = $question->answer_updated_at ?: $question->answer_created_at
                     @endphp
 
                     <time
-                        class="cursor-help"
+                        class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-1.5 dark:border-slate-800/70 dark:bg-slate-900/70"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                         datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                     >
@@ -283,8 +300,6 @@
                         }}
                     </time>
 
-                    <span class="mx-1">•</span>
-
                     <button
                         data-navigate-ignore="true"
                         x-data="bookmarkButton('{{ $question->id }}', @js(auth()->check()))"
@@ -293,7 +308,7 @@
                         x-cloak
                         x-on:click="toggleBookmark"
                         :title="bookmarkButtonTitle"
-                        class="mr-1 flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                        class="{{ $actionChipClasses }} {{ $actionChipHoverClasses }} focus:outline-none"
                     >
                         <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
                         <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
@@ -301,16 +316,16 @@
                     </button>
                     <x-dropdown align="left"
                                 width=""
-                                dropdown-classes="top-[-3.4rem] shadow-none"
-                                content-classes="flex flex-col space-y-1"
+                                dropdown-classes="top-[-3.8rem] shadow-none"
+                                content-classes="flex flex-col space-y-1 rounded-2xl border border-white/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30"
                     >
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
-                                                'text-slate-500 dark:hover:text-slate-400 hover:text-slate-600': !open }"
+                                x-bind:class="{ 'border-pink-500 bg-pink-500/10 text-pink-500 hover:text-pink-600': open,
+                                                'border-slate-200/70 bg-slate-50/80 text-slate-500 dark:border-slate-800/70 dark:bg-slate-900/70 dark:hover:text-slate-400 hover:text-slate-600': !open }"
                                 title="Share"
-                                class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
+                                class="inline-flex items-center rounded-full border px-3 py-1.5 transition-colors duration-150 ease-in-out focus:outline-none"
                             >
                                 <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
@@ -333,7 +348,7 @@
                                     )
                                 "
                                 type="button"
-                                class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -352,7 +367,7 @@
                                         }}',
                                     })
                                 "
-                                class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -368,7 +383,7 @@
                                     })
                                 "
                                 type="button"
-                                class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <x-icons.twitter-x class="size-4" />
                             </button>
