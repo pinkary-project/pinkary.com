@@ -20,10 +20,10 @@
             maxContentLength = {{ $this->maxContentLength }};
             initComponents();
         }'
-        class="border-b border-slate-800 pb-3"
+        class="border-b border-slate-800/55 pb-3"
     >
         <div class="flex items-start gap-3">
-            <figure class="{{ $user->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} hidden h-12 w-12 flex-shrink-0 overflow-hidden border border-slate-800 bg-[#10182b] sm:block">
+            <figure class="{{ $user->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} hidden h-12 w-12 flex-shrink-0 overflow-hidden border border-slate-800/55 bg-[#10182b] sm:block">
                 <img
                     src="{{ $user->avatar_url }}"
                     alt="{{ $user->username }}"
@@ -43,7 +43,7 @@
                                 x-autosize
                                 x-ref="content"
                                 autocomplete
-                                class="!min-h-[4.5rem] !rounded-none !border-slate-800 !bg-[#10182b] !px-4 !py-3 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800 dark:!bg-[#10182b] dark:placeholder:!text-slate-500"
+                                class="!min-h-[4.5rem] !rounded-none !border-slate-800/55 !bg-[#10182b] !px-4 !py-3 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800/55 dark:!bg-[#10182b] dark:placeholder:!text-slate-500"
                             />
 
                             <p class="mt-2 text-right text-sm text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
@@ -84,7 +84,7 @@
                     title="Upload an image"
                     x-ref="imageButton"
                     :disabled="uploading || images.length >= uploadLimit"
-                    class="flex size-10 items-center justify-center border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
+                    class="flex size-10 items-center justify-center border border-slate-800/55 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-photo class="h-5 w-5"/>
@@ -94,7 +94,7 @@
                         type="button"
                         x-on:click="togglePoll()"
                         title="Create a poll"
-                        class="flex size-10 items-center justify-center border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
+                        class="flex size-10 items-center justify-center border border-slate-800/55 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
                         :class="{'text-pink-500': isPoll}"
                     >
                         <x-heroicon-o-chart-bar class="h-5 w-5"/>
@@ -102,7 +102,7 @@
                 @endif
                     </div>
                     @if (! $this->parentId && ! $this->isSharingUpdate)
-                <div class="flex items-center border border-slate-800 bg-[#10182b] px-3 py-2">
+                <div class="flex items-center border border-slate-800/55 bg-[#10182b] px-3 py-2">
                     <x-checkbox
                         wire:model="anonymously"
                         id="anonymously"

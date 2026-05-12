@@ -3,7 +3,7 @@
         <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
-                    <div class="inline-flex items-center gap-3 border border-dashed border-slate-800 bg-[#0b1324] px-3 py-2 text-sm text-slate-400">
+                    <div class="inline-flex items-center gap-3 border border-dashed border-slate-800/55 bg-[#0b1324] px-3 py-2 text-sm text-slate-400">
                         <div class="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-700">
                             <span>?</span>
                         </div>
@@ -18,7 +18,7 @@
 
                 <div class="flex items-center gap-2 self-start">
                     <a
-                        class="inline-flex items-center gap-1.5 border border-slate-800 bg-[#111a2d] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400 transition hover:bg-[#1a2440] hover:text-white"
+                        class="inline-flex items-center gap-1.5 border border-slate-800/55 bg-[#111a2d] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400 transition hover:bg-[#1a2440] hover:text-white"
                         href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
                         target="_blank"
                         data-navigate-ignore="true"
@@ -28,7 +28,7 @@
                     </a>
 
                     @if ($question->pinned && $pinnable)
-                        <div class="inline-flex items-center gap-1.5 border border-slate-800 bg-[#0b1324] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400">
+                        <div class="inline-flex items-center gap-1.5 border border-slate-800/55 bg-[#0b1324] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400">
                             <x-icons.pin class="h-4 w-4" />
                             <span>Pinned</span>
                         </div>
@@ -36,7 +36,7 @@
                 </div>
             @else
                 @if ($question->pinned && $pinnable)
-                    <div class="inline-flex items-center gap-1.5 border border-slate-800 bg-[#0b1324] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400">
+                    <div class="inline-flex items-center gap-1.5 border border-slate-800/55 bg-[#0b1324] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400">
                         <x-icons.pin class="h-4 w-4" />
                         <span>Pinned</span>
                     </div>
@@ -74,7 +74,7 @@
                     data-navigate-ignore="true"
                     wire:navigate
                 >
-                    <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12 flex-shrink-0 border border-slate-800 bg-[#10182b] transition-opacity group-hover/profile:opacity-90">
+                    <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12 flex-shrink-0 border border-slate-800/55 bg-[#10182b] transition-opacity group-hover/profile:opacity-90">
                         <img
                             src="{{ $question->to->avatar_url }}"
                             alt="{{ $question->to->username }}"
@@ -114,7 +114,7 @@
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                class="inline-flex items-center border border-slate-800 bg-[#0b1324] px-2.5 py-1.5 text-sm text-slate-400 transition duration-150 ease-in-out hover:bg-[#1a2440] hover:text-white focus:outline-none">
+                                class="inline-flex items-center border border-slate-800/55 bg-[#0b1324] px-2.5 py-1.5 text-sm text-slate-400 transition duration-150 ease-in-out hover:bg-[#1a2440] hover:text-white focus:outline-none">
                                 <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
                             </button>
                         </x-slot>
@@ -184,7 +184,7 @@
                     }}"
                    data-navigate-ignore="true"
                    wire:navigate
-                         class="mt-4 inline-flex max-w-full items-center gap-2 border border-slate-800 bg-[#0b1324] px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-[#1a2440] hover:text-white"
+                         class="mt-4 inline-flex max-w-full items-center gap-2 border border-slate-800/55 bg-[#0b1324] px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-[#1a2440] hover:text-white"
                 >
                     <x-heroicon-o-arrow-turn-down-right class="h-3.5 w-3.5" />
                     In response to {{ '@'.$question->parent->to->username }}
@@ -216,7 +216,7 @@
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 
-            <div class="mt-5 flex flex-col gap-3 border-t border-slate-800 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="mt-4 flex flex-col gap-2.5 border-t border-slate-800/55 pt-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex flex-wrap items-center gap-x-2.5 gap-y-2">
                     <a
                         @if (! $commenting)

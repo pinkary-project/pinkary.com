@@ -52,9 +52,7 @@
                     >
                         <x-heroicon-o-bell class="h-5 w-5" />
                         <span>Notifications</span>
-                        <span class="ml-auto inline-flex min-w-5 justify-center rounded-full bg-white/5 px-1.5 py-0.5 text-xs text-slate-300">
-                            <livewire:navigation.notifications-count.show />
-                        </span>
+                        <livewire:navigation.notifications-count.show class="ml-auto" />
                     </a>
 
                     <a
@@ -121,8 +119,8 @@
         </div>
 
         @auth
-            <div class="mt-auto border-t border-slate-800 pt-3">
-                <div class="flex items-center gap-2 px-2 py-2">
+            <div class="mt-auto border-t border-slate-800/55 pt-2">
+                <div class="flex items-center gap-2 px-1.5 py-1.5">
                     <a
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
                         class="flex min-w-0 flex-1 items-center gap-3 px-1 py-1 transition hover:bg-[#11192b] hover:text-white"

@@ -54,7 +54,7 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="flex items-center gap-3 border border-slate-800 bg-[#050c1d]/90 px-4 py-2.5"
+                            class="flex items-center gap-3 border border-slate-800/55 bg-[#050c1d]/90 px-4 py-2.5"
                         >
                             <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
 
@@ -93,8 +93,8 @@
                 @if ($showDiscoverLayout)
                     <aside class="hidden lg:block">
                         <div class="lg:sticky lg:top-3">
-                            <section class="overflow-hidden border border-slate-800 border-t-0 bg-[#071121]/95">
-                                <div class="flex items-center justify-between border-b border-slate-800 px-3 py-3">
+                            <section class="overflow-hidden border border-slate-800/55 border-t-0 bg-[#071121]/95">
+                                <div class="flex items-center justify-between border-b border-slate-800/55 px-3 py-3">
                                     <h2 class="text-[1.05rem] font-semibold text-white">People to follow</h2>
 
                                     <a
@@ -106,7 +106,7 @@
                                     </a>
                                 </div>
 
-                                <ul class="divide-y divide-slate-800">
+                                <ul class="divide-y divide-slate-800/55">
                                     @foreach ($recentSignups as $user)
                                         <li>
                                             <a
