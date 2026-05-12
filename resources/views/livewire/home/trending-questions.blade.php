@@ -4,9 +4,9 @@
             <p class="my-8 text-center text-lg text-slate-500">There is no trending questions right now.</p>
         </section>
     @else
-        <section class="mb-10 min-h-screen divide-y divide-slate-800/55">
+        <section class="mb-10 min-h-screen divide-y divide-slate-800/40">
             @foreach ($trendingQuestions as $question)
-                <div class="px-3 py-2.5 sm:px-4">
+                <div class="py-2">
                     <livewire:questions.show
                         :questionId="$question->id"
                         :key="'question-' . $question->id"

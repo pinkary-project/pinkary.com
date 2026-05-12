@@ -1,7 +1,7 @@
 @php
     $homeRoute = route(auth()->user()?->default_feed->toRouteName() ?? 'home.feed');
 
-    $desktopItemClasses = 'inline-flex w-full items-center gap-3 px-4 py-3 text-[0.96rem] font-medium transition duration-150 ease-in-out focus:outline-none';
+    $desktopItemClasses = 'inline-flex w-full items-center gap-3 px-3 py-2.5 text-[0.96rem] font-medium transition duration-150 ease-in-out focus:outline-none';
     $desktopIdleClasses = 'text-slate-400 hover:bg-[#11192b] hover:text-white';
     $desktopActiveClasses = 'bg-[#1a2438] text-white';
     $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-2xl px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
@@ -22,7 +22,7 @@
                 <x-pinkary-logo class="w-36" />
             </a>
 
-            <div class="mt-6 space-y-1">
+            <div class="mt-5 space-y-0.5">
                 @auth
                     <a
                         title="Home"
@@ -119,8 +119,8 @@
         </div>
 
         @auth
-            <div class="mt-auto border-t border-slate-800/55 pt-2">
-                <div class="flex items-center gap-2 px-1.5 py-1.5">
+            <div class="mt-auto border-t border-slate-800/40 pt-1.5">
+                <div class="flex items-center gap-2 px-1 py-1">
                     <a
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
                         class="flex min-w-0 flex-1 items-center gap-3 px-1 py-1 transition hover:bg-[#11192b] hover:text-white"
