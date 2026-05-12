@@ -22,7 +22,7 @@
                 <x-pinkary-logo class="w-36" />
             </a>
 
-            <div class="mt-8 space-y-1.5">
+            <div class="mt-6 space-y-1">
                 @auth
                     <a
                         title="Home"
@@ -121,11 +121,11 @@
         </div>
 
         @auth
-            <div class="mt-auto border border-slate-800 bg-[#071121]/95">
-                <div class="flex items-center gap-2 px-3 py-3">
+            <div class="mt-auto border-t border-slate-800 pt-3">
+                <div class="flex items-center gap-2 px-2 py-2">
                     <a
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="flex min-w-0 flex-1 items-center gap-3 transition hover:text-white"
+                        class="flex min-w-0 flex-1 items-center gap-3 px-1 py-1 transition hover:bg-[#11192b] hover:text-white"
                         wire:navigate
                     >
                         <img
@@ -153,7 +153,7 @@
                         <x-slot name="trigger">
                             <button
                                 type="button"
-                                class="inline-flex size-9 items-center justify-center text-slate-400 transition hover:bg-[#121c2f] hover:text-white"
+                                class="inline-flex size-8 items-center justify-center text-slate-400 transition hover:bg-[#121c2f] hover:text-white"
                             >
                                 <x-heroicon-o-ellipsis-horizontal class="size-5" />
                             </button>

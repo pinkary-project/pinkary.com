@@ -29,7 +29,7 @@
         </div>
 
         <div class="relative flex min-h-screen flex-col">
-            <div class="mx-auto flex w-full max-w-[96rem] flex-1 px-4 pb-24 pt-4 sm:px-5 lg:grid lg:px-6 lg:pb-8 lg:pt-5 {{ $showDiscoverLayout ? 'lg:grid-cols-[17.5rem_minmax(0,1fr)_19rem] lg:gap-x-5 lg:gap-y-3' : 'lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-6' }}">
+            <div class="mx-auto flex w-full max-w-[96rem] flex-1 px-4 pb-20 pt-3 sm:px-5 lg:grid lg:px-6 lg:pb-6 lg:pt-3 {{ $showDiscoverLayout ? 'lg:grid-cols-[17.5rem_minmax(0,1fr)_19rem] lg:gap-x-3 lg:gap-y-0' : 'lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-5' }}">
                 <aside class="{{ $showDiscoverLayout ? 'lg:row-span-2' : '' }} lg:sticky lg:top-5 lg:flex lg:h-[calc(100vh-2.5rem)] lg:flex-col lg:gap-4">
                     @include('layouts.navigation')
                 </aside>
@@ -54,7 +54,7 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="flex items-center gap-3 border border-slate-800 bg-[#050c1d]/90 px-5 py-3"
+                            class="flex items-center gap-3 border border-slate-800 bg-[#050c1d]/90 px-4 py-2.5"
                         >
                             <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
 
@@ -92,9 +92,9 @@
 
                 @if ($showDiscoverLayout)
                     <aside class="hidden lg:block">
-                        <div class="lg:sticky lg:top-8">
-                            <section class="overflow-hidden border border-slate-800 bg-[#071121]/95">
-                                <div class="flex items-center justify-between border-b border-slate-800 px-4 py-4">
+                        <div class="lg:sticky lg:top-3">
+                            <section class="overflow-hidden border border-slate-800 border-t-0 bg-[#071121]/95">
+                                <div class="flex items-center justify-between border-b border-slate-800 px-3 py-3">
                                     <h2 class="text-[1.05rem] font-semibold text-white">People to follow</h2>
 
                                     <a
@@ -111,7 +111,7 @@
                                         <li>
                                             <a
                                                 href="{{ route('profile.show', ['username' => $user->username]) }}"
-                                                class="flex items-center gap-3 px-4 py-3.5 transition hover:bg-slate-900/60"
+                                                class="flex items-center gap-3 px-3 py-3 transition hover:bg-slate-900/60"
                                                 wire:navigate
                                             >
                                                 <img

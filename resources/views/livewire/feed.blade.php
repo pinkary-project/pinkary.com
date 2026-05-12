@@ -1,7 +1,7 @@
 <div>
     <section class="min-h-screen space-y-0 divide-y divide-slate-800">
         @forelse ($questions as $question)
-            <div wire:key="thread-{{ $question->id }}" class="py-4">
+            <div wire:key="thread-{{ $question->id }}" class="py-3">
                 @if($hashtag !== null && $hashtag !== '')
                     <livewire:questions.show
                         :questionId="$question->id"

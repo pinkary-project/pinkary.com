@@ -8,7 +8,7 @@
     @else
         <section class="mb-10 min-h-screen divide-y divide-slate-800">
             @foreach ($followingQuestions as $question)
-                <div class="py-4">
+                <div class="py-3">
                     <x-thread
                         :rootId="$question->showRoot ? $question->root_id : null"
                         :grandParentId="$question->parent?->parent_id"

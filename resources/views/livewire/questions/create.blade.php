@@ -20,7 +20,7 @@
             maxContentLength = {{ $this->maxContentLength }};
             initComponents();
         }'
-        class="border-b border-slate-800 pb-4"
+        class="border-b border-slate-800 pb-3"
     >
         <div class="flex items-start gap-3">
             <figure class="{{ $user->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} hidden h-12 w-12 flex-shrink-0 overflow-hidden border border-slate-800 bg-[#10182b] sm:block">
@@ -33,7 +33,7 @@
 
             <div class="min-w-0 flex-1">
                 <div class="relative group/menu">
-                        <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="border border-slate-800 bg-[#10182b] p-4">
+                        <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="p-0">
                             <x-textarea
                                 x-model="content"
                                 placeholder="{{ $this->placeholder }}"
@@ -43,10 +43,10 @@
                                 x-autosize
                                 x-ref="content"
                                 autocomplete
-                                class="!min-h-[5rem] !rounded-none !border-slate-800 !bg-[#050d1b] !px-4 !py-3 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800 dark:!bg-[#050d1b] dark:placeholder:!text-slate-500"
+                                class="!min-h-[4.5rem] !rounded-none !border-slate-800 !bg-[#10182b] !px-4 !py-3 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800 dark:!bg-[#10182b] dark:placeholder:!text-slate-500"
                             />
 
-                            <p class="mt-3 text-right text-sm text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+                            <p class="mt-2 text-right text-sm text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
                         </div>
                     <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
                     <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
@@ -72,7 +72,7 @@
                         </template>
                     </ul>
                 </div>
-                <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2.5">
                     <div class="flex items-center gap-2">
                         <button
                             type="submit"

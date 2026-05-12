@@ -6,7 +6,7 @@
     @else
         <section class="mb-10 min-h-screen divide-y divide-slate-800">
             @foreach ($trendingQuestions as $question)
-                <div class="py-4">
+                <div class="py-3">
                     <livewire:questions.show
                         :questionId="$question->id"
                         :key="'question-' . $question->id"
