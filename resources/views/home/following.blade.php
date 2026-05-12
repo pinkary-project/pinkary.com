@@ -1,7 +1,7 @@
 <x-app-layout>
-    <section class="overflow-hidden rounded-[1.75rem] border border-slate-800/80 bg-[#07101f]/95 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur">
-        <div class="flex flex-col gap-4 border-b border-slate-800 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <h2 class="text-[2.15rem] font-semibold tracking-tight text-white">
+    <section class="overflow-hidden border border-slate-800 bg-[#07101f]/95">
+        <div class="flex flex-col gap-3 border-b border-slate-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <h2 class="text-[2rem] font-semibold tracking-tight text-white">
                 Feed
             </h2>
 
@@ -10,15 +10,15 @@
 
         <div class="space-y-0">
             @auth
-                <div class="px-5 py-5 sm:px-6">
+                <div class="px-4 py-4 sm:px-5">
                     <livewire:questions.create :toId="auth()->id()" />
                 </div>
 
-                <div class="px-5 pb-5 sm:px-6 sm:pb-6">
+                <div class="px-4 pb-4 sm:px-5 sm:pb-5">
                     <livewire:home.questions-following :focus-input="true"/>
                 </div>
             @else
-                <div class="m-5 rounded-[1.5rem] border border-dashed border-slate-800 bg-[#071121]/95 p-6 text-center sm:m-6 sm:p-8">
+                <div class="m-4 border border-dashed border-slate-800 bg-[#071121]/95 p-5 text-center sm:m-5 sm:p-6">
                     <h3 class="font-mona text-xl font-semibold text-white">Sign in for a personalized feed</h3>
                     <p class="mt-3 text-sm leading-6 text-slate-400">Log in or sign up to access personalized content. Following is already supported. You just need an account to see posts from the people you follow.</p>
 

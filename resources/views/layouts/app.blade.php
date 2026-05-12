@@ -29,8 +29,8 @@
         </div>
 
         <div class="relative flex min-h-screen flex-col">
-            <div class="mx-auto flex w-full max-w-[96rem] flex-1 px-4 pb-28 pt-6 sm:px-6 lg:grid lg:px-8 lg:pb-12 lg:pt-8 {{ $showDiscoverLayout ? 'lg:grid-cols-[18rem_minmax(0,1fr)_20rem] lg:gap-x-6 lg:gap-y-6' : 'lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8' }}">
-                <aside class="{{ $showDiscoverLayout ? 'lg:row-span-2' : '' }} lg:sticky lg:top-8 lg:flex lg:h-[calc(100vh-4rem)] lg:flex-col lg:justify-between lg:gap-4">
+            <div class="mx-auto flex w-full max-w-[96rem] flex-1 px-4 pb-24 pt-4 sm:px-5 lg:grid lg:px-6 lg:pb-8 lg:pt-5 {{ $showDiscoverLayout ? 'lg:grid-cols-[17.5rem_minmax(0,1fr)_19rem] lg:gap-x-5 lg:gap-y-3' : 'lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-6' }}">
+                <aside class="{{ $showDiscoverLayout ? 'lg:row-span-2' : '' }} lg:sticky lg:top-5 lg:flex lg:h-[calc(100vh-2.5rem)] lg:flex-col lg:gap-4">
                     @include('layouts.navigation')
                 </aside>
 
@@ -54,7 +54,7 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="flex items-center gap-3 rounded-full border border-slate-800/80 bg-[#050c1d]/90 px-6 py-4 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur"
+                            class="flex items-center gap-3 border border-slate-800 bg-[#050c1d]/90 px-5 py-3"
                         >
                             <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
 
@@ -93,8 +93,8 @@
                 @if ($showDiscoverLayout)
                     <aside class="hidden lg:block">
                         <div class="lg:sticky lg:top-8">
-                            <section class="overflow-hidden rounded-[1.75rem] border border-slate-800/80 bg-[#071121]/95 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur">
-                                <div class="flex items-center justify-between border-b border-slate-800 px-5 py-5">
+                            <section class="overflow-hidden border border-slate-800 bg-[#071121]/95">
+                                <div class="flex items-center justify-between border-b border-slate-800 px-4 py-4">
                                     <h2 class="text-[1.05rem] font-semibold text-white">People to follow</h2>
 
                                     <a
@@ -111,13 +111,13 @@
                                         <li>
                                             <a
                                                 href="{{ route('profile.show', ['username' => $user->username]) }}"
-                                                class="flex items-center gap-3 px-5 py-4 transition hover:bg-slate-900/60"
+                                                class="flex items-center gap-3 px-4 py-3.5 transition hover:bg-slate-900/60"
                                                 wire:navigate
                                             >
                                                 <img
                                                     src="{{ $user->avatar_url }}"
                                                     alt="{{ $user->username }}"
-                                                    class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0"
+                                                    class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-9 w-9 flex-shrink-0"
                                                 />
 
                                                 <div class="min-w-0 flex-1">

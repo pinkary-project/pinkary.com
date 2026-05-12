@@ -3,7 +3,7 @@
         <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
-                    <div class="inline-flex items-center gap-3 rounded-full border border-dashed border-slate-800 bg-[#0b1324] px-4 py-2 text-sm text-slate-400">
+                    <div class="inline-flex items-center gap-3 border border-dashed border-slate-800 bg-[#0b1324] px-3 py-2 text-sm text-slate-400">
                         <div class="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-700">
                             <span>?</span>
                         </div>
@@ -18,7 +18,7 @@
 
                 <div class="flex items-center gap-2 self-start">
                     <a
-                        class="inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#111a2d] px-3 py-2 text-xs font-medium text-slate-400 transition hover:bg-[#1a2440] hover:text-white"
+                        class="inline-flex items-center gap-1.5 border border-slate-800 bg-[#111a2d] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400 transition hover:bg-[#1a2440] hover:text-white"
                         href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
                         target="_blank"
                         data-navigate-ignore="true"
@@ -28,7 +28,7 @@
                     </a>
 
                     @if ($question->pinned && $pinnable)
-                        <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#0b1324] px-3 py-2 text-xs font-medium text-slate-400">
+                        <div class="inline-flex items-center gap-1.5 border border-slate-800 bg-[#0b1324] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400">
                             <x-icons.pin class="h-4 w-4" />
                             <span>Pinned</span>
                         </div>
@@ -36,7 +36,7 @@
                 </div>
             @else
                 @if ($question->pinned && $pinnable)
-                    <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#0b1324] px-3 py-2 text-xs font-medium text-slate-400">
+                    <div class="inline-flex items-center gap-1.5 border border-slate-800 bg-[#0b1324] px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-400">
                         <x-icons.pin class="h-4 w-4" />
                         <span>Pinned</span>
                     </div>
@@ -64,7 +64,7 @@
             x-intersect.once.full="$dispatch('post-viewed', { postId: '{{ $questionId }}' })"
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
-            class="group px-0 py-1 {{ $previousQuestionId === $questionId ? 'rounded-[1.25rem] bg-[#151225]' : '' }}
+            class="group px-0 py-1 {{ $previousQuestionId === $questionId ? 'bg-[#151225]' : '' }}
             {{ $commenting ?: 'cursor-pointer transition-colors duration-100 ease-in-out' }}"
         >
             <div class="flex items-start justify-between gap-4">
@@ -114,7 +114,7 @@
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                class="inline-flex items-center rounded-full border border-slate-800 bg-[#0b1324] px-3 py-2 text-sm text-slate-400 transition duration-150 ease-in-out hover:bg-[#1a2440] hover:text-white focus:outline-none">
+                                class="inline-flex items-center border border-slate-800 bg-[#0b1324] px-2.5 py-1.5 text-sm text-slate-400 transition duration-150 ease-in-out hover:bg-[#1a2440] hover:text-white focus:outline-none">
                                 <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
                             </button>
                         </x-slot>
@@ -184,7 +184,7 @@
                     }}"
                    data-navigate-ignore="true"
                    wire:navigate
-                         class="mt-4 inline-flex max-w-full items-center gap-2 rounded-full border border-slate-800 bg-[#0b1324] px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-[#1a2440] hover:text-white"
+                         class="mt-4 inline-flex max-w-full items-center gap-2 border border-slate-800 bg-[#0b1324] px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-[#1a2440] hover:text-white"
                 >
                     <x-heroicon-o-arrow-turn-down-right class="h-3.5 w-3.5" />
                     In response to {{ '@'.$question->parent->to->username }}
@@ -303,7 +303,7 @@
                     <x-dropdown align="left"
                                 width=""
                                 dropdown-classes="top-[-3.8rem] shadow-none"
-                                content-classes="flex flex-col space-y-1 rounded-2xl border border-white/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30"
+                                content-classes="flex flex-col space-y-1 border border-white/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30"
                     >
                         <x-slot name="trigger">
                             <button
@@ -323,7 +323,7 @@
                                 href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
                                 target="_blank"
                                 title="Translate"
-                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <x-heroicon-o-language class="size-4" />
                             </a>
@@ -343,7 +343,7 @@
                                     )
                                 "
                                 type="button"
-                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -362,7 +362,7 @@
                                         }}',
                                     })
                                 "
-                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -378,7 +378,7 @@
                                     })
                                 "
                                 type="button"
-                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
                             >
                                 <x-icons.twitter-x class="size-4" />
                             </button>

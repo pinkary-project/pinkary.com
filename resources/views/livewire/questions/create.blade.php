@@ -20,9 +20,9 @@
             maxContentLength = {{ $this->maxContentLength }};
             initComponents();
         }'
-        class="border-b border-slate-800 pb-6"
+        class="border-b border-slate-800 pb-4"
     >
-        <div class="flex items-start gap-4">
+        <div class="flex items-start gap-3">
             <figure class="{{ $user->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} hidden h-12 w-12 flex-shrink-0 overflow-hidden border border-slate-800 bg-[#10182b] sm:block">
                 <img
                     src="{{ $user->avatar_url }}"
@@ -32,9 +32,8 @@
             </figure>
 
             <div class="min-w-0 flex-1">
-                <div
-                    class="relative group/menu">
-                        <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="rounded-[1.9rem] border border-slate-800 bg-[#10182b] p-5">
+                <div class="relative group/menu">
+                        <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="border border-slate-800 bg-[#10182b] p-4">
                             <x-textarea
                                 x-model="content"
                                 placeholder="{{ $this->placeholder }}"
@@ -44,10 +43,10 @@
                                 x-autosize
                                 x-ref="content"
                                 autocomplete
-                                class="!min-h-[5.5rem] !rounded-[1.45rem] !border-slate-800 !bg-[#050d1b] !px-5 !py-4 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800 dark:!bg-[#050d1b] dark:placeholder:!text-slate-500"
+                                class="!min-h-[5rem] !rounded-none !border-slate-800 !bg-[#050d1b] !px-4 !py-3 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800 dark:!bg-[#050d1b] dark:placeholder:!text-slate-500"
                             />
 
-                            <p class="mt-4 text-right text-sm text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+                            <p class="mt-3 text-right text-sm text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
                         </div>
                     <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
                     <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
@@ -58,9 +57,9 @@
                                 <img :src="image.path" :alt="image.originalName"
                                      x-on:click="createMarkdownImage(index)"
                                      title="Reinsert the image"
-                                     class="h-full w-full rounded-xl object-cover cursor-pointer"/>
+                                     class="h-full w-full object-cover cursor-pointer"/>
                                 <button @click="removeImage($event, index)"
-                                        class="absolute top-0.5 right-0.5 rounded-md bg-[#050d1b]/80 p-1 text-slate-400 hover:text-pink-500">
+                                        class="absolute top-0.5 right-0.5 bg-[#050d1b]/80 p-1 text-slate-400 hover:text-pink-500">
                                     <x-icons.close class="size-4"/>
                                 </button>
                             </div>
@@ -73,11 +72,11 @@
                         </template>
                     </ul>
                 </div>
-                <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
                         <button
                             type="submit"
-                            class="inline-flex items-center rounded-full border border-{{ $user->left_color }} px-6 py-3 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-800 hover:text-white"
+                            class="inline-flex items-center border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-800 hover:text-white"
                         >
                             {{ $this->parentId ? __('Reply') : __('Post') }}
                         </button>
@@ -85,7 +84,7 @@
                     title="Upload an image"
                     x-ref="imageButton"
                     :disabled="uploading || images.length >= uploadLimit"
-                    class="flex size-11 items-center justify-center rounded-[1rem] border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
+                    class="flex size-10 items-center justify-center border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-photo class="h-5 w-5"/>
@@ -95,7 +94,7 @@
                         type="button"
                         x-on:click="togglePoll()"
                         title="Create a poll"
-                        class="flex size-11 items-center justify-center rounded-[1rem] border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
+                        class="flex size-10 items-center justify-center border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
                         :class="{'text-pink-500': isPoll}"
                     >
                         <x-heroicon-o-chart-bar class="h-5 w-5"/>
@@ -103,7 +102,7 @@
                 @endif
                     </div>
                     @if (! $this->parentId && ! $this->isSharingUpdate)
-                <div class="flex items-center rounded-full border border-slate-800 bg-[#10182b] px-3 py-2">
+                <div class="flex items-center border border-slate-800 bg-[#10182b] px-3 py-2">
                     <x-checkbox
                         wire:model="anonymously"
                         id="anonymously"

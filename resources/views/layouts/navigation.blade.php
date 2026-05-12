@@ -1,8 +1,8 @@
 @php
     $homeRoute = route(auth()->user()?->default_feed->toRouteName() ?? 'home.feed');
 
-    $desktopItemClasses = 'inline-flex w-full items-center gap-3 rounded-[1.15rem] px-5 py-3.5 text-[0.98rem] font-medium transition duration-150 ease-in-out focus:outline-none';
-    $desktopIdleClasses = 'text-slate-400 hover:bg-[#151f33] hover:text-white';
+    $desktopItemClasses = 'inline-flex w-full items-center gap-3 px-4 py-3 text-[0.96rem] font-medium transition duration-150 ease-in-out focus:outline-none';
+    $desktopIdleClasses = 'text-slate-400 hover:bg-[#11192b] hover:text-white';
     $desktopActiveClasses = 'bg-[#1a2438] text-white';
     $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-2xl px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
     $mobileIdleClasses = 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white';
@@ -12,17 +12,17 @@
 @endphp
 
 <nav class="w-full">
-    <div class="hidden lg:flex lg:h-full lg:flex-col lg:justify-between">
-        <div>
+    <div class="hidden lg:flex lg:h-full lg:flex-col">
+        <div class="flex flex-1 flex-col">
             <a
                 href="{{ route('home.feed') }}"
-                class="inline-flex items-center px-3 py-1"
+                class="inline-flex items-center px-2 py-1"
                 wire:navigate
             >
                 <x-pinkary-logo class="w-36" />
             </a>
 
-            <div class="mt-10 space-y-2">
+            <div class="mt-8 space-y-1.5">
                 @auth
                     <a
                         title="Home"
@@ -121,11 +121,11 @@
         </div>
 
         @auth
-            <div class="rounded-[1.6rem] border border-slate-800/80 bg-[#071121]/95 p-3 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur">
-                <div class="flex items-center gap-2">
+            <div class="mt-auto border border-slate-800 bg-[#071121]/95">
+                <div class="flex items-center gap-2 px-3 py-3">
                     <a
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="flex min-w-0 flex-1 items-center gap-3 rounded-[1.25rem] px-2 py-2 transition hover:bg-[#121c2f]"
+                        class="flex min-w-0 flex-1 items-center gap-3 transition hover:text-white"
                         wire:navigate
                     >
                         <img
@@ -148,27 +148,27 @@
                     <x-dropdown
                         align="right"
                         width="60"
-                        :content-classes="'space-y-1 rounded-3xl border border-white/70 bg-white/95 p-2 text-slate-500 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30'"
+                        :content-classes="'space-y-1 border border-white/70 bg-white/95 p-2 text-slate-500 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30'"
                     >
                         <x-slot name="trigger">
                             <button
                                 type="button"
-                                class="inline-flex size-10 items-center justify-center rounded-[1rem] text-slate-400 transition hover:bg-[#121c2f] hover:text-white"
+                                class="inline-flex size-9 items-center justify-center text-slate-400 transition hover:bg-[#121c2f] hover:text-white"
                             >
                                 <x-heroicon-o-ellipsis-horizontal class="size-5" />
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between rounded-2xl px-3 py-2 dark:hover:bg-transparent hover:bg-transparent">
+                            <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between px-3 py-2 dark:hover:bg-transparent hover:bg-transparent">
                                 <div class="flex w-full flex-row justify-between gap-2">
-                                    <div class="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'light' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('light')">
+                                    <div class="flex flex-1 items-center justify-center border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'light' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('light')">
                                         <x-heroicon-o-sun class="h-4 w-4" />
                                     </div>
-                                    <div class="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'dark' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('dark')">
+                                    <div class="flex flex-1 items-center justify-center border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'dark' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('dark')">
                                         <x-heroicon-o-moon class="h-4 w-4" />
                                     </div>
-                                    <div class="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'system' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('system')">
+                                    <div class="flex flex-1 items-center justify-center border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'system' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('system')">
                                         <x-heroicon-o-computer-desktop class="h-4 w-4" />
                                     </div>
                                 </div>
