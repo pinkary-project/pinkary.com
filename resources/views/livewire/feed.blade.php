@@ -1,7 +1,7 @@
 <div>
-    <section class="min-h-screen space-y-5">
+    <section class="min-h-screen space-y-0 divide-y divide-slate-800">
         @forelse ($questions as $question)
-            <div wire:key="thread-{{ $question->id }}">
+            <div wire:key="thread-{{ $question->id }}" class="py-6">
                 @if($hashtag !== null && $hashtag !== '')
                     <livewire:questions.show
                         :questionId="$question->id"
@@ -19,7 +19,7 @@
                 @endif
             </div>
         @empty
-            <div class="rounded-[1.75rem] border border-dashed border-slate-800 bg-[#071121]/95 p-8 text-center">
+            <div class="py-8 text-center">
                 <p class="text-lg font-medium text-white">There are no questions to show.</p>
                 <p class="mt-2 text-sm text-slate-400">Try switching to another feed view or come back once new posts are published.</p>
             </div>

@@ -93,9 +93,9 @@
                 @if ($showDiscoverLayout)
                     <aside class="hidden lg:block">
                         <div class="lg:sticky lg:top-8">
-                            <section class="overflow-hidden rounded-[2rem] border border-slate-800/80 bg-[#071121]/95 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur">
+                            <section class="overflow-hidden rounded-[1.75rem] border border-slate-800/80 bg-[#071121]/95 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur">
                                 <div class="flex items-center justify-between border-b border-slate-800 px-5 py-5">
-                                    <h2 class="text-[1.05rem] font-semibold text-white">Recent signups</h2>
+                                    <h2 class="text-[1.05rem] font-semibold text-white">People to follow</h2>
 
                                     <a
                                         href="{{ route('home.users') }}"

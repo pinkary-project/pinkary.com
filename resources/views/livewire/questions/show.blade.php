@@ -1,9 +1,9 @@
 <article class="block space-y-4" id="q-{{ $questionId }}" x-data="copyCode">
-    <div class="space-y-4">
+    <div class="space-y-3">
         <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
-                    <div class="inline-flex items-center gap-3 rounded-full border border-dashed border-slate-800 bg-[#0f172a] px-4 py-2 text-sm text-slate-400">
+                    <div class="inline-flex items-center gap-3 rounded-full border border-dashed border-slate-800 bg-[#0b1324] px-4 py-2 text-sm text-slate-400">
                         <div class="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-700">
                             <span>?</span>
                         </div>
@@ -28,7 +28,7 @@
                     </a>
 
                     @if ($question->pinned && $pinnable)
-                        <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#111a2d] px-3 py-2 text-xs font-medium text-slate-400">
+                        <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#0b1324] px-3 py-2 text-xs font-medium text-slate-400">
                             <x-icons.pin class="h-4 w-4" />
                             <span>Pinned</span>
                         </div>
@@ -36,7 +36,7 @@
                 </div>
             @else
                 @if ($question->pinned && $pinnable)
-                    <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#111a2d] px-3 py-2 text-xs font-medium text-slate-400">
+                    <div class="inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#0b1324] px-3 py-2 text-xs font-medium text-slate-400">
                         <x-icons.pin class="h-4 w-4" />
                         <span>Pinned</span>
                     </div>
@@ -45,7 +45,7 @@
         </div>
 
         @unless ($question->isSharedUpdate())
-            <div class="rounded-[1.75rem] border border-slate-800 bg-[#0f172a] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] sm:p-5">
+            <div class="px-0 py-1">
                 <p class="text-sm leading-7 text-slate-200 sm:text-[0.95rem]">
                     {!! $question->content !!}
                 </p>
@@ -63,8 +63,8 @@
             x-intersect.once.full="$dispatch('post-viewed', { postId: '{{ $questionId }}' })"
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
-            class="group rounded-[2rem] border p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.03)] sm:p-6 {{ $previousQuestionId === $questionId ? 'border-pink-500/30 bg-[#151225] ring-1 ring-pink-500/20' : 'border-slate-800 bg-[#060d1d]' }}
-            {{ $commenting ?: 'cursor-pointer transition-colors duration-100 ease-in-out hover:bg-[#081223]' }}"
+            class="group px-0 py-1 {{ $previousQuestionId === $questionId ? 'rounded-[1.25rem] bg-[#151225]' : '' }}
+            {{ $commenting ?: 'cursor-pointer transition-colors duration-100 ease-in-out' }}"
         >
             <div class="flex items-start justify-between gap-4">
                 <a
@@ -113,7 +113,7 @@
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                class="inline-flex items-center rounded-full border border-slate-800 bg-[#111a2d] px-3 py-2 text-sm text-slate-400 transition duration-150 ease-in-out hover:bg-[#1a2440] hover:text-white focus:outline-none">
+                                class="inline-flex items-center rounded-full border border-slate-800 bg-[#0b1324] px-3 py-2 text-sm text-slate-400 transition duration-150 ease-in-out hover:bg-[#1a2440] hover:text-white focus:outline-none">
                                 <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
                             </button>
                         </x-slot>
@@ -183,7 +183,7 @@
                     }}"
                    data-navigate-ignore="true"
                    wire:navigate
-                         class="mt-4 inline-flex max-w-full items-center gap-2 rounded-full border border-slate-800 bg-[#111a2d] px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-[#1a2440] hover:text-white"
+                         class="mt-4 inline-flex max-w-full items-center gap-2 rounded-full border border-slate-800 bg-[#0b1324] px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:bg-[#1a2440] hover:text-white"
                 >
                     <x-heroicon-o-arrow-turn-down-right class="h-3.5 w-3.5" />
                     In response to {{ '@'.$question->parent->to->username }}
