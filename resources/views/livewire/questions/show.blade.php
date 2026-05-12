@@ -55,8 +55,9 @@
 
     @if ($question->answer)
         @php
-            $actionChipClasses = 'inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-[#111a2d] px-3 py-1.5 transition-colors';
-            $actionChipHoverClasses = 'hover:text-white hover:bg-[#1a2440]';
+            $actionMetricClasses = 'inline-flex items-center gap-1.5 text-[0.82rem] text-slate-500 transition-colors';
+            $actionMetricHoverClasses = 'hover:text-slate-200';
+            $actionSeparatorClasses = 'h-1 w-1 rounded-full bg-slate-700/80';
         @endphp
         <div
             data-parent=true
@@ -215,8 +216,8 @@
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 
-            <div class="mt-5 flex flex-col gap-3 border-t border-slate-800 pt-4 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex flex-wrap items-center gap-2">
+            <div class="mt-5 flex flex-col gap-3 border-t border-slate-800 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-wrap items-center gap-x-2.5 gap-y-2">
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
@@ -228,17 +229,19 @@
                         @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
                         @class([
-                            "$actionChipClasses $actionChipHoverClasses focus:outline-none",
+                            "$actionMetricClasses $actionMetricHoverClasses focus:outline-none",
                             "cursor-pointer" => ! $commenting,
                         ])
                     >
                         <x-heroicon-o-chat-bubble-left-right class="size-4" />
                         @if ($question->children_count > 0)
-                            <span class="ml-1">
+                            <span>
                                 {{ Number::abbreviate($question->children_count) }}
                             </span>
                         @endif
                     </a>
+
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
 
                     @php
                         $likeExists = $question->is_liked;
@@ -253,52 +256,28 @@
                         data-navigate-ignore="true"
                         x-on:click="toggleLike"
                         :title="likeButtonTitle"
-                        class="{{ $actionChipClasses }} {{ $actionChipHoverClasses }} focus:outline-none"
+                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
                     >
                         <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
                         <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
-                        <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
+                        <span x-show="count" x-text="likeButtonText"></span>
                     </button>
+
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
                     <p
-                        class="{{ $actionChipClasses }} cursor-help"
+                        class="{{ $actionMetricClasses }} cursor-help"
                         title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
                     >
                         <x-icons.chart class="h-4 w-4"/>
                         @if ($question->views > 0)
-                            <span class="mx-1">
+                            <span>
                                 {{ Number::abbreviate($question->views) }}
                             </span>
                         @endif
                     </p>
 
-                    <a
-                        class="{{ $actionChipClasses }} {{ $actionChipHoverClasses }} cursor-pointer focus:outline-none"
-                        title="Translate"
-                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
-                        data-navigate-ignore="true"
-                        target="_blank"
-                    >
-                        <x-heroicon-o-language class="h-4 w-4"/>
-                        <span class="hidden sm:inline">Translate</span>
-                    </a>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2 text-slate-500 dark:text-slate-400">
-                    @php
-                        $timestamp = $question->answer_updated_at ?: $question->answer_created_at
-                    @endphp
-
-                    <time
-                        class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-1.5 dark:border-slate-800/70 dark:bg-slate-900/70"
-                        title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
-                        datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
-                    >
-                        {{  $question->answer_updated_at ? 'Edited:' : null }}
-                        {{
-                            $timestamp->timezone(session()->get('timezone', 'UTC'))
-                                ->diffForHumans(short: true)
-                        }}
-                    </time>
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
 
                     <button
                         data-navigate-ignore="true"
@@ -308,12 +287,19 @@
                         x-cloak
                         x-on:click="toggleBookmark"
                         :title="bookmarkButtonTitle"
-                        class="{{ $actionChipClasses }} {{ $actionChipHoverClasses }} focus:outline-none"
+                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
                     >
                         <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
                         <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
-                        <span class="ml-1" x-show="count" x-text="bookmarkButtonText"></span>
+                        <span x-show="count" x-text="bookmarkButtonText"></span>
                     </button>
+
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
+                    @php
+                        $timestamp = $question->answer_updated_at ?: $question->answer_created_at
+                    @endphp
+
                     <x-dropdown align="left"
                                 width=""
                                 dropdown-classes="top-[-3.8rem] shadow-none"
@@ -322,16 +308,25 @@
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                x-bind:class="{ 'border-pink-500 bg-pink-500/10 text-pink-500 hover:text-pink-600': open,
-                                                'border-slate-200/70 bg-slate-50/80 text-slate-500 dark:border-slate-800/70 dark:bg-slate-900/70 dark:hover:text-slate-400 hover:text-slate-600': !open }"
+                                x-bind:class="{ 'text-pink-500': open,
+                                                'text-slate-500 hover:text-slate-200': !open }"
                                 title="Share"
-                                class="inline-flex items-center rounded-full border px-3 py-1.5 transition-colors duration-150 ease-in-out focus:outline-none"
+                                class="inline-flex items-center text-[0.82rem] transition-colors duration-150 ease-in-out focus:outline-none"
                             >
                                 <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
                         </x-slot>
 
                         <x-slot name="content">
+                            <a
+                                data-navigate-ignore="true"
+                                href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
+                                target="_blank"
+                                title="Translate"
+                                class="rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                            >
+                                <x-heroicon-o-language class="size-4" />
+                            </a>
                             <button
                                 data-navigate-ignore="true"
                                 x-cloak
@@ -389,6 +384,20 @@
                             </button>
                         </x-slot>
                     </x-dropdown>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 text-[0.82rem] text-slate-500">
+                    <time
+                        class="inline-flex cursor-help items-center whitespace-nowrap"
+                        title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
+                        datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
+                    >
+                        {{ $question->answer_updated_at ? 'Edited: ' : null }}
+                        {{
+                            $timestamp->timezone(session()->get('timezone', 'UTC'))
+                                ->diffForHumans(short: true)
+                        }}
+                    </time>
                 </div>
             </div>
         </div>
