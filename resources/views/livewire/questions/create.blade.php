@@ -20,62 +20,72 @@
             maxContentLength = {{ $this->maxContentLength }};
             initComponents();
         }'
-        class="rounded-[2rem] border border-white/70 bg-white/90 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/85 dark:shadow-black/20 sm:p-5"
+        class="border-b border-slate-800 pb-6"
     >
-        <div
-            class="relative group/menu">
-                <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="rounded-[1.75rem] border border-slate-200/70 bg-slate-50/80 p-4 dark:border-slate-800/70 dark:bg-slate-900/70 sm:p-5">
-                    <x-textarea
-                        x-model="content"
-                        placeholder="{{ $this->placeholder }}"
-                        maxlength="{{ $this->maxContentLength }}"
-                        rows="3"
-                        required
-                        x-autosize
-                        x-ref="content"
-                        autocomplete
-                        class="!min-h-[6.5rem] !rounded-[1.25rem] !border-slate-200/70 !bg-white/70 !px-4 !py-3 !text-sm !leading-7 shadow-none placeholder:!text-slate-500 dark:!border-slate-800/70 dark:!bg-slate-950/70 dark:placeholder:!text-slate-500"
-                    />
+        <div class="flex items-start gap-4">
+            <figure class="{{ $user->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} hidden h-12 w-12 flex-shrink-0 overflow-hidden border border-slate-800 bg-[#10182b] sm:block">
+                <img
+                    src="{{ $user->avatar_url }}"
+                    alt="{{ $user->username }}"
+                    class="{{ $user->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12"
+                />
+            </figure>
 
-                    <p class="mt-3 text-right text-xs text-slate-500 dark:text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
-                </div>
-            <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
-            <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
+            <div class="min-w-0 flex-1">
+                <div
+                    class="relative group/menu">
+                        <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="rounded-[1.9rem] border border-slate-800 bg-[#10182b] p-5">
+                            <x-textarea
+                                x-model="content"
+                                placeholder="{{ $this->placeholder }}"
+                                maxlength="{{ $this->maxContentLength }}"
+                                rows="3"
+                                required
+                                x-autosize
+                                x-ref="content"
+                                autocomplete
+                                class="!min-h-[5.5rem] !rounded-[1.45rem] !border-slate-800 !bg-[#050d1b] !px-5 !py-4 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800 dark:!bg-[#050d1b] dark:placeholder:!text-slate-500"
+                            />
 
-            <div x-show="images.length > 0" class="relative mt-3 flex flex-wrap gap-2">
-                <template x-for="(image, index) in images" :key="index">
-                    <div class="relative h-20 w-20">
-                        <img :src="image.path" :alt="image.originalName"
-                             x-on:click="createMarkdownImage(index)"
-                             title="Reinsert the image"
-                             class="h-full w-full rounded-lg object-cover cursor-pointer"/>
-                        <button @click="removeImage($event, index)"
-                                class="absolute top-0.5 right-0.5 p-1 rounded-md dark:bg-slate-800 bg-slate-200 bg-opacity-75 dark:text-slate-400 text-slate-600 hover:text-pink-500">
-                            <x-icons.close class="size-4"/>
-                        </button>
+                            <p class="mt-4 text-right text-sm text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+                        </div>
+                    <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
+                    <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
+
+                    <div x-show="images.length > 0" class="relative mt-3 flex flex-wrap gap-2">
+                        <template x-for="(image, index) in images" :key="index">
+                            <div class="relative h-20 w-20">
+                                <img :src="image.path" :alt="image.originalName"
+                                     x-on:click="createMarkdownImage(index)"
+                                     title="Reinsert the image"
+                                     class="h-full w-full rounded-xl object-cover cursor-pointer"/>
+                                <button @click="removeImage($event, index)"
+                                        class="absolute top-0.5 right-0.5 rounded-md bg-[#050d1b]/80 p-1 text-slate-400 hover:text-pink-500">
+                                    <x-icons.close class="size-4"/>
+                                </button>
+                            </div>
+                        </template>
                     </div>
-                </template>
-            </div>
 
-            <ul>
-                <template x-for="(error, index) in errors" :key="index">
-                    <li class="py-2 text-sm text-red-600 w-full"><span x-text="error"></span></li>
-                </template>
-            </ul>
-        </div>
-        <div class="mt-4 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <x-primary-button
-                    class="rounded-[1rem] px-5 py-2.5 text-sm font-medium tracking-normal text-{{ $user->left_color }} border-{{ $user->left_color }}"
-                    type="submit"
-                >
-                    {{ __('Send') }}
-                </x-primary-button>
+                    <ul>
+                        <template x-for="(error, index) in errors" :key="index">
+                            <li class="py-2 text-sm text-red-500 w-full"><span x-text="error"></span></li>
+                        </template>
+                    </ul>
+                </div>
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <button
+                            type="submit"
+                            class="inline-flex items-center rounded-full border border-{{ $user->left_color }} px-6 py-3 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-800 hover:text-white"
+                        >
+                            {{ $this->parentId ? __('Reply') : __('Post') }}
+                        </button>
                 <button
                     title="Upload an image"
                     x-ref="imageButton"
                     :disabled="uploading || images.length >= uploadLimit"
-                    class="flex size-10 items-center justify-center rounded-[1rem] border border-slate-200 bg-slate-50 text-sm text-slate-600 hover:bg-slate-100 hover:text-pink-500 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:bg-slate-800"
+                    class="flex size-11 items-center justify-center rounded-[1rem] border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-photo class="h-5 w-5"/>
@@ -85,15 +95,15 @@
                         type="button"
                         x-on:click="togglePoll()"
                         title="Create a poll"
-                        class="flex size-10 items-center justify-center rounded-[1rem] border border-slate-200 bg-slate-50 text-sm text-slate-600 hover:bg-slate-100 hover:text-pink-500 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400 dark:hover:bg-slate-800"
+                        class="flex size-11 items-center justify-center rounded-[1rem] border border-slate-800 bg-[#10182b] text-sm text-slate-400 hover:bg-[#162038] hover:text-white"
                         :class="{'text-pink-500': isPoll}"
                     >
                         <x-heroicon-o-chart-bar class="h-5 w-5"/>
                     </button>
                 @endif
-            </div>
-            @if (! $this->parentId && ! $this->isSharingUpdate)
-                <div class="flex items-center rounded-full border border-slate-200/70 bg-slate-50/80 px-3 py-2 dark:border-slate-800/70 dark:bg-slate-900/70">
+                    </div>
+                    @if (! $this->parentId && ! $this->isSharingUpdate)
+                <div class="flex items-center rounded-full border border-slate-800 bg-[#10182b] px-3 py-2">
                     <x-checkbox
                         wire:model="anonymously"
                         id="anonymously"
@@ -101,11 +111,13 @@
 
                     <label
                         for="anonymously"
-                        class="ml-2 text-sm dark:text-slate-400 text-slate-600"
+                        class="ml-2 text-sm text-slate-400"
                         >Anonymously</label
                     >
                 </div>
-            @endif
+                    @endif
+                </div>
+            </div>
         </div>
 
         <div x-show="isPoll" class="mt-4 space-y-4">

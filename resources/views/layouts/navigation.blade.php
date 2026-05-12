@@ -1,9 +1,9 @@
 @php
     $homeRoute = route(auth()->user()?->default_feed->toRouteName() ?? 'home.feed');
 
-    $desktopItemClasses = 'inline-flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
-    $desktopIdleClasses = 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white';
-    $desktopActiveClasses = 'bg-slate-950 text-white shadow-lg shadow-slate-900/10 dark:bg-slate-900 dark:text-white dark:shadow-black/20';
+    $desktopItemClasses = 'inline-flex w-full items-center gap-3 rounded-[1.15rem] px-5 py-3.5 text-[0.98rem] font-medium transition duration-150 ease-in-out focus:outline-none';
+    $desktopIdleClasses = 'text-slate-400 hover:bg-[#151f33] hover:text-white';
+    $desktopActiveClasses = 'bg-[#1a2438] text-white';
     $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-2xl px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
     $mobileIdleClasses = 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white';
     $mobileActiveClasses = 'bg-slate-950 text-white dark:bg-slate-900';
@@ -16,13 +16,13 @@
         <div>
             <a
                 href="{{ route('home.feed') }}"
-                class="inline-flex items-center px-3 py-2"
+                class="inline-flex items-center px-3 py-1"
                 wire:navigate
             >
-                <x-pinkary-logo class="w-32" />
+                <x-pinkary-logo class="w-36" />
             </a>
 
-            <div class="mt-8 space-y-1.5">
+            <div class="mt-10 space-y-2">
                 @auth
                     <a
                         title="Home"
@@ -52,7 +52,7 @@
                     >
                         <x-heroicon-o-bell class="h-5 w-5" />
                         <span>Notifications</span>
-                        <span class="ml-auto inline-flex min-w-5 justify-center rounded-full bg-slate-950/10 px-1.5 py-0.5 text-xs dark:bg-white/10">
+                        <span class="ml-auto inline-flex min-w-5 justify-center rounded-full bg-white/5 px-1.5 py-0.5 text-xs text-slate-300">
                             <livewire:navigation.notifications-count.show />
                         </span>
                     </a>
@@ -121,11 +121,11 @@
         </div>
 
         @auth
-            <div class="rounded-[1.75rem] border border-white/70 bg-white/85 p-2 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/85 dark:shadow-black/20">
+            <div class="rounded-[1.6rem] border border-slate-800/80 bg-[#071121]/95 p-3 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur">
                 <div class="flex items-center gap-2">
                     <a
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="flex min-w-0 flex-1 items-center gap-3 rounded-[1.25rem] px-2 py-2 transition hover:bg-slate-100 dark:hover:bg-slate-900"
+                        class="flex min-w-0 flex-1 items-center gap-3 rounded-[1.25rem] px-2 py-2 transition hover:bg-[#121c2f]"
                         wire:navigate
                     >
                         <img
@@ -135,11 +135,11 @@
                         />
 
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-semibold text-slate-950 dark:text-white">
+                            <p class="truncate text-sm font-semibold text-white">
                                 {{ auth()->user()->name }}
                             </p>
 
-                            <p class="truncate text-xs text-slate-500 dark:text-slate-400">
+                            <p class="truncate text-xs text-slate-400">
                                 {{ '@'.auth()->user()->username }}
                             </p>
                         </div>
@@ -153,7 +153,7 @@
                         <x-slot name="trigger">
                             <button
                                 type="button"
-                                class="inline-flex size-10 items-center justify-center rounded-[1rem] text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="inline-flex size-10 items-center justify-center rounded-[1rem] text-slate-400 transition hover:bg-[#121c2f] hover:text-white"
                             >
                                 <x-heroicon-o-ellipsis-horizontal class="size-5" />
                             </button>

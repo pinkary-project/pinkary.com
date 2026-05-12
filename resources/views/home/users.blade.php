@@ -1,8 +1,8 @@
 <x-app-layout>
     <div class="space-y-6">
-        <section class="rounded-[2rem] border border-white/70 bg-white/85 p-4 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/80 dark:shadow-black/20 sm:p-5">
+        <section class="rounded-[2.25rem] border border-slate-800/80 bg-[#07101f]/95 p-5 shadow-[0_0_0_1px_rgba(15,23,42,0.35)] ring-1 ring-white/5 backdrop-blur sm:p-6">
             <div class="space-y-4">
-                <h2 class="font-mona text-2xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
+                <h2 class="text-[2.15rem] font-semibold tracking-tight text-white sm:text-[2.3rem]">
                     Search
                 </h2>
 
