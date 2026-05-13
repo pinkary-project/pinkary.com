@@ -6,7 +6,7 @@
             </p>
         </section>
     @else
-        <section class="mb-10 min-h-screen divide-y divide-slate-800/40">
+        <section class="mb-10 min-h-screen divide-y divide-slate-800/30">
             @foreach ($followingQuestions as $question)
                 <div class="py-2">
                     <x-thread

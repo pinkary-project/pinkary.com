@@ -1,5 +1,5 @@
 <div>
-    <section class="min-h-screen space-y-0 divide-y divide-slate-800/40">
+    <section class="min-h-screen space-y-0 divide-y divide-slate-800/30">
         @forelse ($questions as $question)
             <div wire:key="thread-{{ $question->id }}" class="py-2">
                 @if($hashtag !== null && $hashtag !== '')

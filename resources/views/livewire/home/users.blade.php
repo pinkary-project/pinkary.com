@@ -1,5 +1,5 @@
 <div class="mb-10 w-full text-slate-200">
-    <div class="mb-5 border border-slate-800/40 bg-[#071121]/95 p-3.5 sm:p-4">
+    <div class="mb-5 border border-slate-800/30 bg-[#071121]/95 p-3.5 sm:p-4">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p class="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">People</p>
@@ -20,19 +20,19 @@
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
-                class="w-full !rounded-none !border-slate-800/40 !bg-[#050d1b] !py-3 !pl-12 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800/40 dark:!bg-[#050d1b] dark:placeholder:!text-slate-500"
+                class="w-full !rounded-none !border-slate-800/30 !bg-[#050d1b] !py-3 !pl-12 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800/30 dark:!bg-[#050d1b] dark:placeholder:!text-slate-500"
             />
         </div>
     </div>
 
     @if ($users->isEmpty())
-        <section class="border border-dashed border-slate-800/40 bg-[#071121]/95 p-6 text-center">
+        <section class="border border-dashed border-slate-800/30 bg-[#071121]/95 p-6 text-center">
             <p class="text-lg font-medium text-white">No users found.</p>
             <p class="mt-2 text-sm text-slate-400">Try another search or clear the query to return to the discovery list.</p>
         </section>
     @else
         <section>
-            <ul class="divide-y divide-slate-800/40 border border-slate-800/40 bg-[#071121]/60">
+            <ul class="divide-y divide-slate-800/30 border border-slate-800/30 bg-[#071121]/60">
                 @foreach ($users as $user)
                     <li
                         data-parent=true
