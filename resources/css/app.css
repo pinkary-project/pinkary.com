@@ -9,6 +9,11 @@
     padding-right: 1rem;
 }
 
+.answer img {
+    display: block;
+    margin-top: 2px;
+}
+
 .hover\:darken-gradient:hover {
     filter: saturate(2.5);
 }

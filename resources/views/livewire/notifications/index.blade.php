@@ -26,7 +26,7 @@
             href="{{ route('notifications.show', ['notification' => $notification->id]) }}"
             wire:navigate
         >
-            <div class="group overflow-hidden rounded-2xl border dark:border-slate-900 border-slate-200 dark:bg-slate-950 bg-slate-50 bg-opacity-80 p-4 transition-colors dark:hover:bg-slate-900 hover:bg-slate-100 hover:cursor-pointer">
+            <div class="group overflow-hidden border border-slate-800/30 bg-[#0b1324] p-4 transition-colors hover:bg-[#11192b] hover:cursor-pointer">
                 <div
                     class="cursor-help text-right text-xs text-slate-400"
                     title="{{ $notification->created_at->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"

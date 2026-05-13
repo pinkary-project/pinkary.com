@@ -1,7 +1,18 @@
 <x-guest-layout>
+    <div class="mb-8">
+        <h1 class="text-2xl font-semibold tracking-tight text-white">
+            {{ __('Choose a new password') }}
+        </h1>
+        <p class="mt-2 text-sm text-gray-500">
+            {{ __('Update your password to regain access to your Pinkary account.') }}
+        </p>
+    </div>
+
     <form
         method="POST"
         action="{{ route('password.store') }}"
+        onsubmit="event.submitter.disabled = true"
+        class="space-y-5"
     >
         @csrf
 
@@ -15,10 +26,11 @@
             <x-input-label
                 for="email"
                 :value="__('Email')"
+                class="text-gray-400"
             />
             <x-text-input
                 id="email"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="email"
                 name="email"
                 :value="old('email', $request->email)"
@@ -32,14 +44,15 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label
                 for="password"
                 :value="__('Password')"
+                class="text-gray-400"
             />
             <x-text-input
                 id="password"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="password"
                 name="password"
                 required
@@ -51,15 +64,16 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label
                 for="password_confirmation"
                 :value="__('Confirm Password')"
+                class="text-gray-400"
             />
 
             <x-text-input
                 id="password_confirmation"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="password"
                 name="password_confirmation"
                 required
@@ -72,8 +86,8 @@
             />
         </div>
 
-        <div class="mt-4 flex items-center justify-end">
-            <x-primary-button>
+        <div>
+            <x-primary-button class="w-full justify-center rounded-md border-pink-500 bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-pink-600 focus:ring-4 focus:ring-pink-500/20">
                 {{ __('Reset Password') }}
             </x-primary-button>
         </div>

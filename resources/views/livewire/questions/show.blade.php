@@ -303,7 +303,7 @@
                     <x-dropdown align="left"
                                 width=""
                                 dropdown-classes="top-[-3.8rem] shadow-none"
-                                content-classes="flex flex-col space-y-1 border border-white/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30"
+                                content-classes="flex flex-col space-y-1 rounded-2xl border border-white/10 bg-gray-900/95 p-2 shadow-xl shadow-black/30 backdrop-blur"
                     >
                         <x-slot name="trigger">
                             <button
@@ -323,7 +323,7 @@
                                 href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
                                 target="_blank"
                                 title="Translate"
-                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="rounded-xl px-3 py-2 text-slate-400 transition-colors hover:bg-gray-800 hover:text-white focus:outline-none"
                             >
                                 <x-heroicon-o-language class="size-4" />
                             </a>
@@ -343,7 +343,7 @@
                                     )
                                 "
                                 type="button"
-                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="rounded-xl px-3 py-2 text-slate-400 transition-colors hover:bg-gray-800 hover:text-white focus:outline-none"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -362,7 +362,7 @@
                                         }}',
                                     })
                                 "
-                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="rounded-xl px-3 py-2 text-slate-400 transition-colors hover:bg-gray-800 hover:text-white focus:outline-none"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -378,7 +378,7 @@
                                     })
                                 "
                                 type="button"
-                                class="px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:hover:bg-slate-900 dark:hover:text-white"
+                                class="rounded-xl px-3 py-2 text-slate-400 transition-colors hover:bg-gray-800 hover:text-white focus:outline-none"
                             >
                                 <x-icons.twitter-x class="size-4" />
                             </button>

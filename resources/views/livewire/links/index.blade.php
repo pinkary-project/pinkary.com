@@ -3,7 +3,7 @@
     gradient: '{{ $user->gradient }}',
     link_shape: '{{ $user->link_shape }}',
 }" @endif>
-    <div class="relative overflow-hidden rounded-[2rem] border border-slate-200/60 bg-gradient-to-br from-white/90 via-pink-50 to-slate-100 p-5 text-center text-black shadow-xl shadow-slate-900/5 dark:border-slate-800/70 dark:from-slate-950/90 dark:via-slate-900 dark:to-slate-950 dark:text-white dark:shadow-black/20 sm:p-6">
+    <div class="relative overflow-hidden rounded-md border border-slate-800/70 bg-gradient-to-br from-white/90 via-pink-50 to-slate-100 p-5 text-center text-black shadow-xl shadow-slate-900/5 dark:from-slate-950/90 dark:via-slate-900 dark:to-slate-950 dark:text-white dark:shadow-black/20 sm:p-6">
         <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_55%)] dark:bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.12),_transparent_50%)]"></div>
 
         <div class="absolute left-4 top-4 z-10 flex">
@@ -12,7 +12,7 @@
                     <button
                         x-bind:class="{ 'bg-pink-500 hover:bg-pink-500 text-white hover:text-white': open,
                                         'dark:bg-slate-900 bg-white dark:hover:bg-slate-800 hover:bg-slate-100 border dark:border-slate-800 border-slate-200': !open }"
-                                    class="mr-2 flex size-11 items-center justify-center rounded-2xl text-slate-600 transition duration-150 ease-in-out dark:text-slate-300"
+                                    class="mr-2 flex size-11 items-center justify-center rounded-md text-slate-600 transition duration-150 ease-in-out dark:text-slate-300"
                     >
                         <x-heroicon-o-share class="size-5" />
                     </button>
@@ -24,7 +24,7 @@
                         x-show="isVisible"
                         x-on:click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                        class="mr-2 flex size-10 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         <x-heroicon-o-link class="size-5" />
                     </button>
@@ -37,7 +37,7 @@
                             )
                         "
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                        class="mr-2 flex size-10 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         <x-heroicon-o-link class="size-5" />
                     </button>
@@ -50,7 +50,7 @@
                             })
                         "
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                        class="mr-2 flex size-10 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         <x-icons.twitter-x class="size-5" />
                     </button>
@@ -58,7 +58,7 @@
             </x-dropdown-link-profile>
             @if (auth()->user()?->is($user))
                 <button
-                    class="flex size-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                    class="flex size-11 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     x-on:click.prevent="$dispatch('open-modal', 'show-qr-code')"
                 >
                     <span class="sr-only">See QR Code</span>
@@ -115,7 +115,7 @@
 
             @if (auth()->user()?->is($user))
                 <button
-                    class="absolute right-0 top-0 m-1 rounded-2xl border border-slate-200 bg-white p-2 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                    class="absolute right-0 top-0 m-1 rounded-md border border-slate-200 bg-white p-2 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     href="{{ route('profile.edit') }}"
                     wire:navigate
                     title="Upload Avatar"
@@ -215,7 +215,7 @@
     <div class="border-t border-slate-200/70 pt-6 dark:border-slate-800/70">
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
-                <div class="rounded-[1.75rem] border border-dashed border-slate-300/80 bg-slate-50/70 p-8 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
+                <div class="rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 p-8 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
                     <p class="text-lg font-medium text-slate-950 dark:text-white">No links yet.</p>
                     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Add your first link to complete the profile card.</p>
                 </div>

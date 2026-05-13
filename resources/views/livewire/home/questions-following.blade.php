@@ -1,4 +1,4 @@
-<div class="w-full text-gray-200">
+<div class="w-full text-slate-200">
     @if ($followingQuestions->isEmpty())
         <section>
             <p class="my-8 text-center text-lg text-slate-500">
@@ -6,9 +6,9 @@
             </p>
         </section>
     @else
-        <section class="min-h-screen divide-y divide-white/5">
+        <section class="min-h-screen divide-y divide-slate-800/30">
             @foreach ($followingQuestions as $question)
-                <div class="px-6 py-6 transition hover:bg-gray-800/20">
+                <div class="px-6 py-6 transition hover:bg-[#0a1325]">
                     <x-thread
                         :rootId="$question->showRoot ? $question->root_id : null"
                         :grandParentId="$question->parent?->parent_id"

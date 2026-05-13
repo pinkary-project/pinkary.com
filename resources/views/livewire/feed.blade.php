@@ -1,7 +1,7 @@
 <div>
-    <section class="min-h-screen space-y-0 divide-y divide-white/5">
+    <section class="min-h-screen space-y-0 divide-y divide-slate-800/30">
         @forelse ($questions as $question)
-            <div wire:key="thread-{{ $question->id }}" class="px-6 py-6 transition hover:bg-gray-800/20">
+            <div wire:key="thread-{{ $question->id }}" class="px-6 py-6 transition hover:bg-[#0a1325]">
                 @if($hashtag !== null && $hashtag !== '')
                     <livewire:questions.show
                         :questionId="$question->id"

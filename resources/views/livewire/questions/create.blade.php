@@ -23,7 +23,7 @@
         class="pb-0"
     >
         <div class="flex items-start gap-3">
-            <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} hidden h-10 w-10 flex-shrink-0 overflow-hidden bg-gray-800 transition-opacity sm:block">
+            <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} hidden h-10 w-10 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity sm:block">
                 <img
                     src="{{ $user->avatar_url }}"
                     alt="{{ $user->username }}"
@@ -43,10 +43,10 @@
                                 x-autosize
                                 x-ref="content"
                                 autocomplete
-                                class="!min-h-[5rem] !rounded-none !border-white/5 !bg-gray-800/30 !px-3.5 !py-3 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-gray-500 dark:!border-white/5 dark:!bg-gray-800/30 dark:placeholder:!text-gray-500"
+                                class="!min-h-[5rem] !rounded-none !border-slate-800/30 !bg-[#10182b] !px-3.5 !py-3 !text-[0.95rem] !leading-7 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800/30 dark:!bg-[#10182b] dark:placeholder:!text-slate-500"
                             />
 
-                            <p class="mt-2 text-right text-sm text-gray-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
+                            <p class="mt-2 text-right text-sm text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
                         </div>
                     <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
                     <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
@@ -84,7 +84,7 @@
                     title="Upload an image"
                     x-ref="imageButton"
                     :disabled="uploading || images.length >= uploadLimit"
-                    class="flex size-10 items-center justify-center border border-white/5 bg-gray-800/30 text-sm text-gray-400 transition hover:bg-gray-800 hover:text-white"
+                    class="flex size-10 items-center justify-center border border-slate-800/30 bg-[#10182b] text-sm text-slate-400 transition hover:bg-[#162038] hover:text-white"
                     :class="{'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit}"
                 >
                     <x-heroicon-o-photo class="h-5 w-5"/>
@@ -94,7 +94,7 @@
                         type="button"
                         x-on:click="togglePoll()"
                         title="Create a poll"
-                        class="flex size-10 items-center justify-center border border-white/5 bg-gray-800/30 text-sm text-gray-400 transition hover:bg-gray-800 hover:text-white"
+                        class="flex size-10 items-center justify-center border border-slate-800/30 bg-[#10182b] text-sm text-slate-400 transition hover:bg-[#162038] hover:text-white"
                         :class="{'text-pink-500': isPoll}"
                     >
                         <x-heroicon-o-chart-bar class="h-5 w-5"/>
@@ -102,7 +102,7 @@
                 @endif
                     </div>
                     @if (! $this->parentId && ! $this->isSharingUpdate)
-                <div class="flex items-center border border-white/5 bg-gray-800/30 px-3 py-2">
+                <div class="flex items-center border border-slate-800/30 bg-[#10182b] px-3 py-2">
                     <x-checkbox
                         wire:model="anonymously"
                         id="anonymously"
@@ -110,7 +110,7 @@
 
                     <label
                         for="anonymously"
-                        class="ml-2 text-sm text-gray-400"
+                        class="ml-2 text-sm text-slate-400"
                         >Anonymously</label
                     >
                 </div>

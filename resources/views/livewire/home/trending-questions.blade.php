@@ -1,12 +1,12 @@
-<div class="w-full text-gray-200">
+<div class="w-full text-slate-200">
     @if ($trendingQuestions->isEmpty())
         <section>
             <p class="my-8 text-center text-lg text-slate-500">There is no trending questions right now.</p>
         </section>
     @else
-        <section class="min-h-screen divide-y divide-white/5">
+        <section class="min-h-screen divide-y divide-slate-800/30">
             @foreach ($trendingQuestions as $question)
-                <div class="px-6 py-6 transition hover:bg-gray-800/20">
+                <div class="px-6 py-6 transition hover:bg-[#0a1325]">
                     <livewire:questions.show
                         :questionId="$question->id"
                         :key="'question-' . $question->id"

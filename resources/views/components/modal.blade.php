@@ -64,7 +64,7 @@
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 z-50 overflow-y-auto {{$modalContentPosition}} bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
+    class="fixed inset-0 z-[100] overflow-y-auto {{$modalContentPosition}} bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
     style="display: {{ $show ? 'block' : 'none' }}"
 >
     <div
@@ -78,11 +78,11 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-slate-500 bg-opacity-25"></div>
+        <div class="absolute inset-0 bg-[#020617]/80"></div>
     </div>
     <div
         x-show="show"
-        class="{{ $maxWidth }} {{$contentOverflowStyle}} transform rounded-lg dark:bg-slate-950 bg-slate-50 shadow-xl transition-all sm:mx-auto sm:w-auto"
+        class="{{ $maxWidth }} {{$contentOverflowStyle}} transform rounded-lg border border-slate-800/80 bg-[#050d1b] shadow-xl shadow-black/40 transition-all sm:mx-auto sm:w-auto"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"

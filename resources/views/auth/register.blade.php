@@ -2,9 +2,21 @@
     @section('head')
         @turnstileScripts()
     @endsection
+
+    <div class="mb-8">
+        <h1 class="text-2xl font-semibold tracking-tight text-white">
+            {{ __('Create your account') }}
+        </h1>
+        <p class="mt-2 text-sm text-gray-500">
+            {{ __('Set up your Pinkary profile and start sharing your links and conversations.') }}
+        </p>
+    </div>
+
     <form
         method="POST"
         action="{{ route('register') }}"
+        onsubmit="event.submitter.disabled = true"
+        class="space-y-5"
     >
         @csrf
 
@@ -12,10 +24,11 @@
             <x-input-label
                 for="name"
                 :value="__('Name')"
+                class="text-gray-400"
             />
             <x-text-input
                 id="name"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="text"
                 name="name"
                 :value="old('name')"
@@ -29,19 +42,19 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label
                 for="username"
                 :value="__('Username')"
+                class="text-gray-400"
             />
             <x-text-input
                 id="username"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="text"
                 name="username"
                 :value="old('username')"
                 required
-                autofocus
                 autocomplete="username"
             />
             <x-input-error
@@ -50,14 +63,15 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label
                 for="email"
                 :value="__('Email')"
+                class="text-gray-400"
             />
             <x-text-input
                 id="email"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="email"
                 name="email"
                 :value="old('email')"
@@ -70,15 +84,16 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label
                 for="password"
                 :value="__('Password')"
+                class="text-gray-400"
             />
 
             <x-text-input
                 id="password"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="password"
                 name="password"
                 required
@@ -91,15 +106,16 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label
                 for="password_confirmation"
                 :value="__('Confirm Password')"
+                class="text-gray-400"
             />
 
             <x-text-input
                 id="password_confirmation"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="password"
                 name="password_confirmation"
                 required
@@ -112,38 +128,36 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div class="space-y-4">
 
             @if (App::environment(['production', 'testing']))
-                <div class="flex justify-center mt-4">
+                <div class="flex justify-center rounded-[1.5rem] border border-slate-800/30 bg-[#0b1324] px-4 py-4">
                     <x-turnstile data-theme="auto"/>
                 </div>
             @endif
 
-            <div class="flex items-center">
-                <input
+            <div class="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+                <label for="terms" class="flex items-start gap-3 text-sm text-gray-400">
+                    <x-checkbox
                     id="terms"
                     name="terms"
-                    type="checkbox"
-                    class="mr-2 h-4 w-4 rounded border-gray-300 text-pink-600 focus:ring-pink-600"
-                />
-
-                <x-input-label for="terms">
-                    By signing up, I confirm that I am at least 18 years old and accept the
+                    class="mt-0.5 rounded border-white/10 bg-white/5 text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0"
+                    />
+                    <span>
+                        {{ __('By signing up, I confirm that I am at least 18 years old and accept the') }}
                     <a
                         target="_blank"
                         href="{{ route('terms') }}"
-                        class="text-pink-500 underline hover:no-underline"
-                        >Terms of Service</a
-                    >
-                    and
+                        class="text-pink-500 transition hover:text-pink-400"
+                    >{{ __('Terms of Service') }}</a>
+                    {{ __('and') }}
                     <a
                         target="_blank"
                         href="{{ route('privacy') }}"
-                        class="text-pink-500 underline hover:no-underline"
-                        >Privacy Policy</a
-                    >.
-                </x-input-label>
+                        class="text-pink-500 transition hover:text-pink-400"
+                    >{{ __('Privacy Policy') }}</a>{{ __('.') }}
+                    </span>
+                </label>
             </div>
 
             <x-input-error
@@ -159,22 +173,25 @@
             />
         @endif
 
-        <div class="mt-4 flex items-center justify-end space-x-3.5 text-sm">
-            <div>
-                <span class="text-slate-500">Already have an account?</span>
-
-                <a
-                    class="rounded-md text-sm dark:text-slate-200 text-slate-800 underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
-                    href="{{ route('login') }}"
-                    wire:navigate
-                >
-                    {{ __(' Sign in here') }}
-                </a>
-            </div>
-
-            <x-primary-button>
+        <div>
+            <x-primary-button class="w-full justify-center rounded-md border-pink-500 bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-pink-600 focus:ring-4 focus:ring-pink-500/20">
                 {{ __('Register') }}
             </x-primary-button>
         </div>
     </form>
+
+    <div class="py-8">
+        <div class="border-t border-white/5"></div>
+    </div>
+
+    <div class="text-center text-sm text-gray-500">
+        {{ __('Already have an account?') }}
+        <a
+            class="font-medium text-pink-500 transition hover:text-pink-400"
+            href="{{ route('login') }}"
+            wire:navigate
+        >
+            {{ __('Sign in here') }}
+        </a>
+    </div>
 </x-guest-layout>

@@ -1,12 +1,12 @@
-<div class="w-full text-gray-200">
-    <div class="border-b border-r border-white/5 bg-black/10 p-6">
+<div class="w-full text-slate-200">
+    <div class="border-b border-r border-slate-800/30 bg-[#071121]/95 p-6">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p class="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">People</p>
                 <h3 class="mt-1 text-xl font-semibold text-white">Find the next profile to follow.</h3>
             </div>
 
-            <p class="max-w-sm text-sm leading-6 text-gray-400">
+            <p class="max-w-sm text-sm leading-6 text-slate-400">
                 Search by name or username, or browse the current discovery list powered by existing user data.
             </p>
         </div>
@@ -20,19 +20,19 @@
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
-                class="w-full !rounded-none !border-white/5 !bg-gray-800/30 !py-3 !pl-12 !text-white shadow-none placeholder:!text-gray-500 dark:!border-white/5 dark:!bg-gray-800/30 dark:placeholder:!text-gray-500"
+                class="w-full !rounded-none !border-slate-800/30 !bg-[#050d1b] !py-3 !pl-12 !text-white shadow-none placeholder:!text-slate-500 dark:!border-slate-800/30 dark:!bg-[#050d1b] dark:placeholder:!text-slate-500"
             />
         </div>
     </div>
 
     @if ($users->isEmpty())
-        <section class="border-b border-r border-dashed border-white/10 bg-black/10 p-6 text-center">
+        <section class="border-b border-r border-dashed border-slate-800/50 bg-[#071121]/95 p-6 text-center">
             <p class="text-lg font-medium text-white">No users found.</p>
             <p class="mt-2 text-sm text-slate-400">Try another search or clear the query to return to the discovery list.</p>
         </section>
     @else
         <section>
-            <ul class="divide-y divide-white/5 border-r border-white/5 bg-black/10">
+            <ul class="divide-y divide-slate-800/30 border-r border-slate-800/30 bg-[#071121]/60">
                 @foreach ($users as $user)
                     <li
                         data-parent=true
@@ -40,8 +40,8 @@
                         x-on:click="handleNavigation($event)"
                         wire:key="user-{{ $user->id }}"
                     >
-                        <div class="group flex items-center gap-3 px-6 py-4 transition-colors hover:bg-gray-800/20">
-                            <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 overflow-hidden bg-gray-800 transition-opacity group-hover:opacity-90">
+                        <div class="group flex items-center gap-3 px-6 py-4 transition-colors hover:bg-[#0a1325]">
+                            <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 overflow-hidden bg-slate-800 transition-opacity group-hover:opacity-90">
                                 <img
                                     class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                                     src="{{ $user->avatar_url }}"

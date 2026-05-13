@@ -5,10 +5,11 @@
     </head>
     @php
         $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show');
+        $showRightRail = $showDiscoverLayout || request()->routeIs('profile.show') || request()->routeIs('questions.show');
         $globalSearchQuery = request()->routeIs('home.users')
             ? (string) request()->query('q', '')
             : (request()->routeIs('hashtag.show') ? '#'.request()->route('hashtag') : '');
-        $recentSignups = $showDiscoverLayout
+        $recentSignups = $showRightRail
             ? \App\Models\User::query()
                 ->whereNotNull('username')
                 ->when(auth()->check(), fn ($query) => $query->whereKeyNot(auth()->id()))
@@ -17,18 +18,25 @@
                 ->get()
             : collect();
     @endphp
-    <body class="dark bg-gray-900 font-sans antialiased text-gray-200">
+    <body class="bg-[#060c18] font-sans antialiased text-slate-950 dark:text-slate-50">
         @persist('flash-messages')
             <livewire:flash-messages.show />
         @endpersist
+        <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+            <div class="absolute inset-0 bg-[linear-gradient(180deg,#040915_0%,#081223_100%)]"></div>
+            <div class="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_60%)]"></div>
+            <div class="absolute left-[28%] top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-pink-500/8 blur-3xl"></div>
+            <div class="absolute right-[-5rem] top-24 h-72 w-72 rounded-full bg-sky-500/6 blur-3xl"></div>
+        </div>
+
         <div class="relative flex min-h-screen flex-col">
-            <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 pb-20 lg:grid lg:pb-0 {{ $showDiscoverLayout ? 'lg:grid-cols-[18rem_minmax(0,1fr)_20rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
-                <aside class="{{ $showDiscoverLayout ? 'lg:row-span-2' : '' }} lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
+            <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 pb-28 lg:grid lg:pb-0 {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_20rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
+                <aside class="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
                     @include('layouts.navigation')
                 </aside>
 
-                @if ($showDiscoverLayout)
-                    <div class="hidden lg:col-start-2 lg:row-start-1 lg:-mb-px lg:block">
+                <div class="min-w-0 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }}">
+                    @if ($showDiscoverLayout)
                         <form
                             x-data="{ query: @js($globalSearchQuery) }"
                             x-on:submit.prevent="
@@ -47,7 +55,7 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="flex items-center gap-3 border-b border-r border-white/5 bg-black/10 px-6 py-4"
+                            class="hidden items-center gap-3 border-b border-r border-slate-800/30 bg-[#050c1d]/90 px-6 py-4 lg:flex"
                         >
                             <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
 
@@ -57,13 +65,43 @@
                                 name="q"
                                 autocomplete="off"
                                 placeholder="Search for users or hashtags..."
-                                class="w-full border-0 bg-transparent p-0 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-0"
+                                class="w-full border-0 bg-transparent p-0 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-0"
                             />
                         </form>
-                    </div>
-                @endif
 
-                <div class="min-w-0 {{ $showDiscoverLayout ? 'lg:col-start-2 lg:row-start-2' : 'px-4 py-6 lg:px-8' }}">
+                        <form
+                            x-data="{ query: @js($globalSearchQuery) }"
+                            x-on:submit.prevent="
+                                const value = query.trim();
+
+                                if (! value) {
+                                    return;
+                                }
+
+                                if (value.startsWith('#')) {
+                                    window.location.assign('{{ url('/hashtag') }}/' + encodeURIComponent(value.replace(/^#/, '')));
+                                    return;
+                                }
+
+                                const params = new URLSearchParams({ q: value });
+
+                                window.location.assign('{{ route('home.users') }}?' + params.toString());
+                            "
+                            class="sticky top-0 z-40 flex items-center gap-3 border-b border-slate-800/30 bg-[#050c1d]/95 px-6 py-4 backdrop-blur lg:hidden"
+                        >
+                            <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
+
+                            <input
+                                x-model="query"
+                                type="text"
+                                name="q"
+                                autocomplete="off"
+                                placeholder="Search users or hashtags..."
+                                class="w-full border-0 bg-transparent p-0 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-0"
+                            />
+                        </form>
+                    @endif
+
                     @if (isset($title))
                         <div class="{{ $showDiscoverLayout ? 'mb-8 w-full pt-2 lg:pt-0' : 'mx-auto mb-8 w-full max-w-[44rem] pt-2 lg:pt-4' }}">
                             <div class="inline-flex items-center rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300">
@@ -76,18 +114,18 @@
                         </div>
                     @endif
 
-                    <main class="{{ $showDiscoverLayout ? 'w-full' : 'mx-auto w-full max-w-[44rem]' }}">
+                    <main class="w-full">
                         {{ $slot }}
                     </main>
 
                     <x-image-lightbox />
                 </div>
 
-                @if ($showDiscoverLayout)
-                    <aside class="hidden lg:col-start-3 lg:row-start-2 lg:block">
+                @if ($showRightRail)
+                    <aside class="hidden lg:col-start-3 lg:block">
                         <div class="lg:sticky lg:top-0">
-                            <section class="overflow-hidden border-b border-r border-white/5 bg-black/10">
-                                <div class="flex items-center justify-between border-b border-white/5 px-6 py-6">
+                            <section class="overflow-hidden border-b border-r border-slate-800/30 bg-[#071121]/95">
+                                <div class="flex items-center justify-between border-b border-slate-800/30 px-6 py-6">
                                     <h2 class="text-[1.05rem] font-semibold text-white">People to follow</h2>
 
                                     <a
@@ -99,12 +137,12 @@
                                     </a>
                                 </div>
 
-                                <ul class="divide-y divide-white/5">
+                                <ul class="divide-y divide-slate-800/30">
                                     @foreach ($recentSignups as $user)
                                         <li>
                                             <a
                                                 href="{{ route('profile.show', ['username' => $user->username]) }}"
-                                                class="flex items-center gap-3 px-6 py-4 transition hover:bg-gray-800/20"
+                                                class="flex items-center gap-3 px-6 py-4 transition hover:bg-slate-900/60"
                                                 wire:navigate
                                             >
                                                 <img
