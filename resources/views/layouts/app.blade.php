@@ -55,9 +55,9 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="hidden items-center gap-3 border-b border-r border-slate-800/30 bg-[#050c1d]/90 px-6 py-4 lg:flex"
+                            class="hidden items-center gap-3 border-b border-r border-slate-200/70 bg-white/90 px-6 py-4 dark:border-slate-800/30 dark:bg-[#050c1d]/90 lg:flex"
                         >
-                            <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
+                            <x-heroicon-o-magnifying-glass class="size-5 text-slate-400 dark:text-slate-500" />
 
                             <input
                                 x-model="query"
@@ -65,7 +65,7 @@
                                 name="q"
                                 autocomplete="off"
                                 placeholder="Search for users or hashtags..."
-                                class="w-full border-0 bg-transparent p-0 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-0"
+                                class="w-full border-0 bg-transparent p-0 text-sm text-slate-950 placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-slate-500"
                             />
                         </form>
 
@@ -87,9 +87,9 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="sticky top-0 z-40 flex items-center gap-3 border-b border-slate-800/30 bg-[#050c1d]/95 px-6 py-4 backdrop-blur lg:hidden"
+                            class="sticky top-0 z-40 flex items-center gap-3 border-b border-slate-200/70 bg-white/95 px-6 py-4 backdrop-blur dark:border-slate-800/30 dark:bg-[#050c1d]/95 lg:hidden"
                         >
-                            <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
+                            <x-heroicon-o-magnifying-glass class="size-5 text-slate-400 dark:text-slate-500" />
 
                             <input
                                 x-model="query"
@@ -97,7 +97,7 @@
                                 name="q"
                                 autocomplete="off"
                                 placeholder="Search users or hashtags..."
-                                class="w-full border-0 bg-transparent p-0 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-0"
+                                class="w-full border-0 bg-transparent p-0 text-sm text-slate-950 placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-slate-500"
                             />
                         </form>
                     @endif

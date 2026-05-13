@@ -5,7 +5,7 @@
     class="group flex items-center gap-3"
     wire:navigate
 >
-    <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-800 transition-opacity group-hover:opacity-90">
+    <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
         <img
             src="{{ $user->avatar_url }}"
             alt="{{ $user->username }}"
@@ -15,7 +15,7 @@
 
     <div class="overflow-hidden text-sm">
         <div class="flex">
-            <p class="truncate font-medium text-white">
+            <p class="truncate font-medium text-slate-950 dark:text-white">
                 {{ $user->name }}
             </p>
 
@@ -32,7 +32,7 @@
             @endif
         </div>
 
-        <p class="truncate text-slate-500 transition-colors group-hover:text-slate-400">
+        <p class="truncate text-slate-500 transition-colors group-hover:text-slate-600 dark:group-hover:text-slate-400">
             {{ '@'.$user->username }}
         </p>
     </div>

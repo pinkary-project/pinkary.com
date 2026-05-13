@@ -9,6 +9,9 @@
     $mobileActiveClasses = 'bg-slate-950 text-white dark:bg-[#1a2438]';
     $profileIsActive = auth()->check() && request()->routeIs('profile.show') && request()->route('username')?->is(auth()->user());
     $menuLinkClasses = 'flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
+    $menuContentClasses = 'space-y-2 rounded-2xl border border-slate-200/80 bg-white/95 p-2 text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:text-slate-300 dark:shadow-black/30';
+    $themeSwitchPanelClasses = 'rounded-2xl border border-slate-200/70 bg-slate-50 p-2 dark:border-slate-800/40 dark:bg-[#0b1324]';
+    $themeSwitchButtonClasses = 'flex flex-1 items-center justify-center rounded-xl border border-slate-200/70 px-4 py-2 text-slate-500 transition dark:border-slate-800/50 dark:text-slate-300';
 @endphp
 
 <nav class="w-full lg:h-screen">
@@ -147,7 +150,7 @@
                         align="right"
                         width="60"
                         dropdown-classes="bottom-full"
-                        :content-classes="'space-y-2 rounded-2xl border border-slate-800/80 bg-[#050d1b]/95 p-2 text-slate-300 shadow-xl shadow-black/30 backdrop-blur'"
+                        :content-classes="$menuContentClasses"
                     >
                         <x-slot name="trigger">
                             <button
@@ -159,15 +162,15 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <div x-data="themeSwitch()" class="rounded-2xl border border-slate-800/40 bg-[#0b1324] p-2">
+                            <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
                                 <div class="flex w-full flex-row justify-between gap-2">
-                                    <button type="button" class="flex flex-1 items-center justify-center rounded-xl border border-slate-800/50 px-4 py-2 text-slate-300 transition" x-bind:class="theme == 'light' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-[#11192b] hover:text-white'" @click="setTheme('light')">
+                                    <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'light' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('light')">
                                         <x-heroicon-o-sun class="h-4 w-4" />
                                     </button>
-                                    <button type="button" class="flex flex-1 items-center justify-center rounded-xl border border-slate-800/50 px-4 py-2 text-slate-300 transition" x-bind:class="theme == 'dark' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-[#11192b] hover:text-white'" @click="setTheme('dark')">
+                                    <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'dark' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('dark')">
                                         <x-heroicon-o-moon class="h-4 w-4" />
                                     </button>
-                                    <button type="button" class="flex flex-1 items-center justify-center rounded-xl border border-slate-800/50 px-4 py-2 text-slate-300 transition" x-bind:class="theme == 'system' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-[#11192b] hover:text-white'" @click="setTheme('system')">
+                                    <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'system' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('system')">
                                         <x-heroicon-o-computer-desktop class="h-4 w-4" />
                                     </button>
                                 </div>
@@ -272,7 +275,7 @@
             align="right"
             width="60"
             dropdown-classes="bottom-full"
-            :content-classes="'space-y-2 rounded-2xl border border-slate-800/80 bg-[#050d1b]/95 p-2 text-slate-300 shadow-xl shadow-black/30 backdrop-blur'"
+            :content-classes="$menuContentClasses"
         >
             <x-slot name="trigger">
                 <button
@@ -284,15 +287,15 @@
             </x-slot>
 
             <x-slot name="content">
-                <div x-data="themeSwitch()" class="rounded-2xl border border-slate-800/40 bg-[#0b1324] p-2">
+                <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
                     <div class="flex w-full flex-row justify-between gap-2">
-                        <button type="button" class="flex flex-1 items-center justify-center rounded-xl border border-slate-800/50 px-4 py-2 text-slate-300 transition" x-bind:class="theme == 'light' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-[#11192b] hover:text-white'" @click="setTheme('light')">
+                        <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'light' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('light')">
                             <x-heroicon-o-sun class="h-4 w-4" />
                         </button>
-                        <button type="button" class="flex flex-1 items-center justify-center rounded-xl border border-slate-800/50 px-4 py-2 text-slate-300 transition" x-bind:class="theme == 'dark' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-[#11192b] hover:text-white'" @click="setTheme('dark')">
+                        <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'dark' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('dark')">
                             <x-heroicon-o-moon class="h-4 w-4" />
                         </button>
-                        <button type="button" class="flex flex-1 items-center justify-center rounded-xl border border-slate-800/50 px-4 py-2 text-slate-300 transition" x-bind:class="theme == 'system' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-[#11192b] hover:text-white'" @click="setTheme('system')">
+                        <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'system' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('system')">
                             <x-heroicon-o-computer-desktop class="h-4 w-4" />
                         </button>
                     </div>

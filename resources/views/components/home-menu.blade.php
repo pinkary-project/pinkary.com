@@ -12,7 +12,7 @@
             <a
                 data-pan="home-tabs-{{ str($tab['label'])->lower() }}"
                 href="{{ route($tab['route']) }}"
-                class="{{ $tab['active'] ? 'bg-[#1a2438] px-3.5 py-1.5 text-white' : 'px-2 py-1.5 text-slate-400 hover:text-white' }} inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold leading-4 transition duration-150 ease-in-out focus:outline-none"
+                class="{{ $tab['active'] ? 'bg-slate-950 px-3.5 py-1.5 text-white dark:bg-[#1a2438]' : 'px-2 py-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white' }} inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold leading-4 transition duration-150 ease-in-out focus:outline-none"
                 title="{{ $tab['label'] }}"
                 wire:navigate
                 wire:transition
