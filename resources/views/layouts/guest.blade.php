@@ -11,12 +11,6 @@
 
         <div class="flex min-h-screen flex-col">
             <main class="flex-grow">
-                <div class="fixed right-0 z-50">
-                    @if (! request()->routeIs('about'))
-                        @include('layouts.navigation')
-                    @endif
-                </div>
-
                 <div>
                     <a
                         href="{{ route('home.feed') }}"
