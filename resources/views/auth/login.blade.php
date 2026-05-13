@@ -1,8 +1,18 @@
 <x-guest-layout>
+    <div class="mb-8">
+        <h1 class="text-2xl font-semibold tracking-tight text-white">
+            {{ __('Log in') }}
+        </h1>
+        <p class="mt-2 text-sm text-gray-500">
+            {{ __('Continue to your Pinkary account.') }}
+        </p>
+    </div>
+
     <form
         method="POST"
         action="{{ route('login') }}"
         onsubmit="event.submitter.disabled = true"
+        class="space-y-5"
     >
         @csrf
 
@@ -10,10 +20,11 @@
             <x-input-label
                 for="email"
                 :value="__('Email')"
+                class="text-gray-400"
             />
             <x-text-input
                 id="email"
-                class="mt-1 block w-full"
+                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                 type="email"
                 name="email"
                 :value="old('email')"
@@ -27,10 +38,11 @@
             />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label
                 for="password"
                 :value="__('Password')"
+                class="text-gray-400"
             />
 
             <div 
@@ -39,16 +51,20 @@
             >
                 <x-text-input 
                     id="password" 
-                    class="mt-1 block w-full pr-10" 
+                    class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 pr-10 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
                     x-bind:type="showPassword ? 'text' : 'password'"
                     name="password"
                     required 
                     autocomplete="current-password"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <button type="button" x-on:click="showPassword = !showPassword">
-                        <x-icons.eye x-show="showPassword" class="size-5 text-slate-400 hover:text-pink-500" />
-                        <x-icons.eye-off x-show="!showPassword" class="size-5 text-slate-400 hover:text-pink-500" />
+                    <button
+                        type="button"
+                        x-on:click="showPassword = !showPassword"
+                        class="rounded-md text-gray-500 transition hover:text-gray-300 focus:outline-none focus:ring-4 focus:ring-pink-500/20"
+                    >
+                        <x-icons.eye x-show="showPassword" class="size-5" />
+                        <x-icons.eye-off x-show="!showPassword" class="size-5" />
                     </button>
                 </div>
             </div>
@@ -59,7 +75,7 @@
             />
         </div>
 
-        <div class="mt-4 block">
+        <div class="flex items-center justify-between gap-4">
             <label
                 for="remember_me"
                 class="flex items-center"
@@ -67,40 +83,43 @@
                 <x-checkbox
                     id="remember_me"
                     name="remember"
+                    class="rounded border-white/10 bg-white/5 text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0"
                 />
-                <span class="ml-2 text-sm text-slate-500">
+                <span class="ml-2 text-sm text-gray-500">
                     {{ __('Remember me') }}
                 </span>
             </label>
-        </div>
 
-        <div class="mt-4 flex items-center justify-end space-x-3.5">
             @if (Route::has('password.request'))
                 <a
-                    class="text-sm dark:text-slate-200 text-slate-800 underline hover:no-underline"
+                    class="text-sm font-medium text-pink-500 transition hover:text-pink-400"
                     href="{{ route('password.request') }}"
                     wire:navigate
                 >
-                    {{ __('Forgot your password?') }}
+                    {{ __('Forgot password?') }}
                 </a>
             @endif
+        </div>
 
-            <x-primary-button>
+        <div>
+            <x-primary-button class="w-full justify-center rounded-md border-pink-500 bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-pink-600 focus:ring-4 focus:ring-pink-500/20">
                 {{ __('Log In') }}
             </x-primary-button>
         </div>
     </form>
 
-    <x-section-border />
+    <div class="py-8">
+        <div class="border-t border-white/5"></div>
+    </div>
 
-    <div class="mt-4 text-center text-sm text-slate-500">
+    <div class="text-center text-sm text-gray-500">
         Don't have an account?
         <a
             href="{{ route('register') }}"
-            class="dark:text-slate-200 text-slate-800 underline hover:no-underline"
+            class="font-medium text-pink-500 transition hover:text-pink-400"
             wire:navigate
         >
-            {{ __('Sign up here') }}
+            {{ __('Create one') }}
         </a>
     </div>
 </x-guest-layout>
