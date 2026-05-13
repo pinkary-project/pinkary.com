@@ -1,28 +1,28 @@
 @php
     $homeRoute = route(auth()->user()?->default_feed->toRouteName() ?? 'home.feed');
 
-    $desktopItemClasses = 'inline-flex w-full items-center gap-3 px-3 py-3 text-[0.96rem] font-medium transition duration-150 ease-in-out focus:outline-none';
-    $desktopIdleClasses = 'text-slate-400 hover:bg-[#11192b] hover:text-white';
-    $desktopActiveClasses = 'bg-[#1a2438] text-white';
-    $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-2xl px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
-    $mobileIdleClasses = 'text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white';
-    $mobileActiveClasses = 'bg-slate-950 text-white dark:bg-slate-900';
+    $desktopItemClasses = 'inline-flex w-full items-center gap-3 rounded-md p-2 text-sm/6 font-semibold transition duration-150 ease-in-out focus:outline-none';
+    $desktopIdleClasses = 'text-gray-400 hover:bg-gray-800 hover:text-white';
+    $desktopActiveClasses = 'bg-gray-800 text-white';
+    $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-md px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
+    $mobileIdleClasses = 'text-gray-400 hover:bg-gray-800 hover:text-white';
+    $mobileActiveClasses = 'bg-gray-800 text-white';
     $profileIsActive = auth()->check() && request()->routeIs('profile.show') && request()->route('username')?->is(auth()->user());
-    $menuLinkClasses = 'flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white';
+    $menuLinkClasses = 'flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-gray-400 transition hover:bg-gray-800 hover:text-white';
 @endphp
 
 <nav class="w-full">
-    <div class="hidden lg:flex lg:h-full lg:flex-col">
+    <div class="hidden border-x border-white/5 bg-black/10 px-6 lg:flex lg:h-full lg:flex-col">
         <div class="flex flex-1 flex-col">
             <a
                 href="{{ route('home.feed') }}"
-                class="inline-flex items-center px-2 py-2"
+                class="mt-6 inline-flex items-center"
                 wire:navigate
             >
-                <x-pinkary-logo class="w-36" />
+                <x-pinkary-logo class="h-12 w-auto" />
             </a>
 
-            <div class="mt-6 space-y-1">
+            <div class="mt-14 space-y-1">
                 @auth
                     <a
                         title="Home"
@@ -119,11 +119,11 @@
         </div>
 
         @auth
-            <div class="mt-auto border-t border-slate-800/40 pt-3">
-                <div class="flex items-center gap-2 px-1 py-2">
+            <div class="mt-auto border-t border-white/5 py-6">
+                <div class="flex items-center gap-2">
                     <a
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="flex min-w-0 flex-1 items-center gap-3 px-1 py-1 transition hover:bg-[#11192b] hover:text-white"
+                        class="flex min-w-0 flex-1 items-center gap-3 rounded-md p-2 transition hover:bg-gray-800/30 hover:text-white"
                         wire:navigate
                     >
                         <img
@@ -146,12 +146,12 @@
                     <x-dropdown
                         align="right"
                         width="60"
-                        :content-classes="'space-y-1 border border-white/70 bg-white/95 p-2 text-slate-500 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30'"
+                        :content-classes="'space-y-1 rounded-md border border-white/10 bg-gray-900/95 p-2 text-gray-400 shadow-xl shadow-black/30 backdrop-blur'"
                     >
                         <x-slot name="trigger">
                             <button
                                 type="button"
-                                class="inline-flex size-8 items-center justify-center text-slate-400 transition hover:bg-[#121c2f] hover:text-white"
+                                class="inline-flex size-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-gray-800 hover:text-white"
                             >
                                 <x-heroicon-o-ellipsis-horizontal class="size-5" />
                             </button>
@@ -160,13 +160,13 @@
                         <x-slot name="content">
                             <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between px-3 py-2 dark:hover:bg-transparent hover:bg-transparent">
                                 <div class="flex w-full flex-row justify-between gap-2">
-                                    <div class="flex flex-1 items-center justify-center border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'light' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('light')">
+                                    <div class="flex flex-1 items-center justify-center rounded-md border border-white/10 px-4 py-2" x-bind:class="theme == 'light' ? 'bg-pink-500 text-white border-pink-500' : 'hover:bg-gray-800 hover:text-white'" @click="setTheme('light')">
                                         <x-heroicon-o-sun class="h-4 w-4" />
                                     </div>
-                                    <div class="flex flex-1 items-center justify-center border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'dark' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('dark')">
+                                    <div class="flex flex-1 items-center justify-center rounded-md border border-white/10 px-4 py-2" x-bind:class="theme == 'dark' ? 'bg-pink-500 text-white border-pink-500' : 'hover:bg-gray-800 hover:text-white'" @click="setTheme('dark')">
                                         <x-heroicon-o-moon class="h-4 w-4" />
                                     </div>
-                                    <div class="flex flex-1 items-center justify-center border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'system' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('system')">
+                                    <div class="flex flex-1 items-center justify-center rounded-md border border-white/10 px-4 py-2" x-bind:class="theme == 'system' ? 'bg-pink-500 text-white border-pink-500' : 'hover:bg-gray-800 hover:text-white'" @click="setTheme('system')">
                                         <x-heroicon-o-computer-desktop class="h-4 w-4" />
                                     </div>
                                 </div>
@@ -198,7 +198,7 @@
         @endif
     </div>
 
-    <div class="fixed inset-x-0 bottom-4 z-50 mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-[1.75rem] border border-white/70 bg-white/85 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/85 dark:shadow-black/30 lg:hidden">
+    <div class="fixed inset-x-0 bottom-4 z-50 mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-white/10 bg-gray-900/90 p-2 shadow-xl shadow-black/30 backdrop-blur lg:hidden">
         @auth
             <a
                 title="Home"
@@ -270,7 +270,7 @@
         <x-dropdown
             align="right"
             width="60"
-            :content-classes="'space-y-1 rounded-3xl border border-white/70 bg-white/95 p-2 text-slate-500 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/95 dark:shadow-black/30'"
+            :content-classes="'space-y-1 rounded-md border border-white/10 bg-gray-900/95 p-2 text-gray-400 shadow-xl shadow-black/30 backdrop-blur'"
         >
             <x-slot name="trigger">
                 <button
@@ -282,15 +282,15 @@
             </x-slot>
 
             <x-slot name="content">
-                <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between rounded-2xl px-3 py-2 dark:hover:bg-transparent hover:bg-transparent">
+                <x-dropdown-button x-data="themeSwitch()" class="flex flex-col items-center justify-between rounded-md px-3 py-2 dark:hover:bg-transparent hover:bg-transparent">
                     <div class="flex w-full flex-row justify-between gap-2">
-                        <div class="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'light' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('light')">
+                        <div class="flex flex-1 items-center justify-center rounded-md border border-white/10 px-4 py-2" x-bind:class="theme == 'light' ? 'bg-pink-500 text-white border-pink-500' : 'hover:bg-gray-800 hover:text-white'" @click="setTheme('light')">
                             <x-heroicon-o-sun class="h-4 w-4" />
                         </div>
-                        <div class="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'dark' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('dark')">
+                        <div class="flex flex-1 items-center justify-center rounded-md border border-white/10 px-4 py-2" x-bind:class="theme == 'dark' ? 'bg-pink-500 text-white border-pink-500' : 'hover:bg-gray-800 hover:text-white'" @click="setTheme('dark')">
                             <x-heroicon-o-moon class="h-4 w-4" />
                         </div>
-                        <div class="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 dark:border-slate-800" x-bind:class="theme == 'system' ? 'bg-pink-500 text-white border-pink-500' : 'dark:hover:bg-slate-800/50 hover:bg-slate-100'" @click="setTheme('system')">
+                        <div class="flex flex-1 items-center justify-center rounded-md border border-white/10 px-4 py-2" x-bind:class="theme == 'system' ? 'bg-pink-500 text-white border-pink-500' : 'hover:bg-gray-800 hover:text-white'" @click="setTheme('system')">
                             <x-heroicon-o-computer-desktop class="h-4 w-4" />
                         </div>
                     </div>

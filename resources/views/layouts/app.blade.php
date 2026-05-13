@@ -17,20 +17,13 @@
                 ->get()
             : collect();
     @endphp
-    <body class="bg-[#060c18] font-sans antialiased text-slate-950 dark:text-slate-50">
+    <body class="dark bg-gray-900 font-sans antialiased text-gray-200">
         @persist('flash-messages')
             <livewire:flash-messages.show />
         @endpersist
-        <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-            <div class="absolute inset-0 bg-[linear-gradient(180deg,#040915_0%,#081223_100%)]"></div>
-            <div class="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_60%)]"></div>
-            <div class="absolute left-[28%] top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-pink-500/8 blur-3xl"></div>
-            <div class="absolute right-[-5rem] top-24 h-72 w-72 rounded-full bg-sky-500/6 blur-3xl"></div>
-        </div>
-
         <div class="relative flex min-h-screen flex-col">
-            <div class="mx-auto flex w-full max-w-[96rem] flex-1 px-4 pb-20 pt-3 sm:px-5 lg:grid lg:px-6 lg:pb-6 lg:pt-3 {{ $showDiscoverLayout ? 'lg:grid-cols-[17.5rem_minmax(0,1fr)_19rem] lg:gap-x-0 lg:gap-y-0' : 'lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-5' }}">
-                <aside class="{{ $showDiscoverLayout ? 'lg:row-span-2' : '' }} lg:sticky lg:top-5 lg:flex lg:h-[calc(100vh-2.5rem)] lg:flex-col lg:gap-4">
+            <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 pb-20 lg:grid lg:pb-0 {{ $showDiscoverLayout ? 'lg:grid-cols-[18rem_minmax(0,1fr)_20rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
+                <aside class="{{ $showDiscoverLayout ? 'lg:row-span-2' : '' }} lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
                     @include('layouts.navigation')
                 </aside>
 
@@ -54,7 +47,7 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="flex items-center gap-3 border border-b-0 border-slate-800/30 bg-[#050c1d]/90 px-5 py-3"
+                            class="flex items-center gap-3 border-b border-r border-white/5 bg-black/10 px-6 py-4"
                         >
                             <x-heroicon-o-magnifying-glass class="size-5 text-slate-500" />
 
@@ -64,13 +57,13 @@
                                 name="q"
                                 autocomplete="off"
                                 placeholder="Search for users or hashtags..."
-                                class="w-full border-0 bg-transparent p-0 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-0"
+                                class="w-full border-0 bg-transparent p-0 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-0"
                             />
                         </form>
                     </div>
                 @endif
 
-                <div class="min-w-0 {{ $showDiscoverLayout ? 'lg:col-start-2 lg:row-start-2' : '' }}">
+                <div class="min-w-0 {{ $showDiscoverLayout ? 'lg:col-start-2 lg:row-start-2' : 'px-4 py-6 lg:px-8' }}">
                     @if (isset($title))
                         <div class="{{ $showDiscoverLayout ? 'mb-8 w-full pt-2 lg:pt-0' : 'mx-auto mb-8 w-full max-w-[44rem] pt-2 lg:pt-4' }}">
                             <div class="inline-flex items-center rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300">
@@ -92,9 +85,9 @@
 
                 @if ($showDiscoverLayout)
                     <aside class="hidden lg:col-start-3 lg:row-start-2 lg:block">
-                        <div class="lg:sticky lg:top-5">
-                            <section class="overflow-hidden border border-slate-800/30 bg-[#071121]/95">
-                                <div class="flex items-center justify-between border-b border-slate-800/30 px-4 py-3.5">
+                        <div class="lg:sticky lg:top-0">
+                            <section class="overflow-hidden border-b border-r border-white/5 bg-black/10">
+                                <div class="flex items-center justify-between border-b border-white/5 px-6 py-6">
                                     <h2 class="text-[1.05rem] font-semibold text-white">People to follow</h2>
 
                                     <a
@@ -106,12 +99,12 @@
                                     </a>
                                 </div>
 
-                                <ul class="divide-y divide-slate-800/30">
+                                <ul class="divide-y divide-white/5">
                                     @foreach ($recentSignups as $user)
                                         <li>
                                             <a
                                                 href="{{ route('profile.show', ['username' => $user->username]) }}"
-                                                class="flex items-center gap-3 px-4 py-3.5 transition hover:bg-slate-900/60"
+                                                class="flex items-center gap-3 px-6 py-4 transition hover:bg-gray-800/20"
                                                 wire:navigate
                                             >
                                                 <img
