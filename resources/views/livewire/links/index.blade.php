@@ -118,12 +118,12 @@
 
             @if (auth()->user()?->is($user))
                 <button
-                    class="absolute right-0 top-0 m-1 rounded-md border border-slate-200 bg-white p-2 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                    class="absolute right-0 top-0 m-1 rounded-md border border-slate-200 bg-white p-1 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     href="{{ route('profile.edit') }}"
                     wire:navigate
                     title="Upload Avatar"
                 >
-                    <x-heroicon-o-camera class="size-5" />
+                    <x-heroicon-o-camera class="size-4" />
                 </button>
             @endif
         </div>
