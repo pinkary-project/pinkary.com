@@ -44,5 +44,6 @@ test('auth', function () {
 
     $response->assertOk()
         ->assertSee('Notifications')
+        ->assertSee('People to follow')
         ->assertSeeLivewire(Index::class);
 });

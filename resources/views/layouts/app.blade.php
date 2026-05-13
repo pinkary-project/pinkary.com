@@ -5,7 +5,8 @@
     </head>
     @php
         $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show');
-        $showRightRail = $showDiscoverLayout || request()->routeIs('profile.show') || request()->routeIs('questions.show');
+        $showUtilityRail = request()->routeIs('bookmarks.*') || request()->routeIs('notifications.*');
+        $showRightRail = $showDiscoverLayout || $showUtilityRail || request()->routeIs('profile.show') || request()->routeIs('questions.show');
         $globalSearchQuery = request()->routeIs('home.users')
             ? (string) request()->query('q', '')
             : (request()->routeIs('hashtag.show') ? '#'.request()->route('hashtag') : '');
@@ -103,12 +104,8 @@
                     @endif
 
                     @if (isset($title))
-                        <div class="{{ $showDiscoverLayout ? 'mb-8 w-full pt-2 lg:pt-0' : 'mx-auto mb-8 w-full max-w-[44rem] pt-2 lg:pt-4' }}">
-                            <div class="inline-flex items-center rounded-full border border-pink-500/20 bg-pink-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300">
-                                Pinkary
-                            </div>
-
-                            <h1 class="mt-4 font-mona text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
+                        <div class="{{ $showDiscoverLayout ? 'mb-6 w-full pt-2 lg:pt-0' : 'mx-auto mb-6 w-full max-w-[44rem] pt-2 lg:pt-4' }}">
+                            <h1 class="font-mona text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
                                 {{ $title }}
                             </h1>
                         </div>

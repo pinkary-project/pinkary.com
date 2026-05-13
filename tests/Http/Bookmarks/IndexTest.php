@@ -20,5 +20,6 @@ test('auth', function () {
 
     $response->assertOk()
         ->assertSee('Bookmarks')
+        ->assertSee('People to follow')
         ->assertSeeLivewire(Index::class);
 });
