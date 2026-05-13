@@ -2,17 +2,17 @@
     $homeRoute = route(auth()->user()?->default_feed->toRouteName() ?? 'home.feed');
 
     $desktopItemClasses = 'inline-flex w-full items-center gap-3 rounded-md p-2 text-sm/6 font-semibold transition duration-150 ease-in-out focus:outline-none';
-    $desktopIdleClasses = 'text-slate-400 hover:bg-[#11192b] hover:text-white';
-    $desktopActiveClasses = 'bg-[#1a2438] text-white';
+    $desktopIdleClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
+    $desktopActiveClasses = 'bg-slate-950 text-white dark:bg-[#1a2438]';
     $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-md px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
-    $mobileIdleClasses = 'text-slate-400 hover:bg-[#11192b] hover:text-white';
-    $mobileActiveClasses = 'bg-[#1a2438] text-white';
+    $mobileIdleClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
+    $mobileActiveClasses = 'bg-slate-950 text-white dark:bg-[#1a2438]';
     $profileIsActive = auth()->check() && request()->routeIs('profile.show') && request()->route('username')?->is(auth()->user());
-    $menuLinkClasses = 'flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-slate-400 transition hover:bg-[#11192b] hover:text-white';
+    $menuLinkClasses = 'flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
 @endphp
 
 <nav class="w-full lg:h-screen">
-    <div class="hidden border-x border-slate-800/30 bg-[#07101f]/80 px-6 lg:flex lg:h-screen lg:min-h-screen lg:flex-col lg:justify-between">
+    <div class="hidden border-x border-slate-200/70 bg-white/80 px-6 dark:border-slate-800/30 dark:bg-[#07101f]/80 lg:flex lg:h-screen lg:min-h-screen lg:flex-col lg:justify-between">
         <div class="flex flex-col">
             <a
                 href="{{ route('home.feed') }}"
@@ -119,11 +119,11 @@
         </div>
 
         @auth
-            <div class="border-t border-slate-800/40 py-6">
+            <div class="border-t border-slate-200/70 py-6 dark:border-slate-800/40">
                 <div class="flex items-center gap-2">
                     <a
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="flex min-w-0 flex-1 items-center gap-3 rounded-md p-2 transition hover:bg-[#11192b] hover:text-white"
+                        class="flex min-w-0 flex-1 items-center gap-3 rounded-md p-2 transition hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white"
                         wire:navigate
                     >
                         <img
@@ -133,7 +133,7 @@
                         />
 
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-semibold text-white">
+                            <p class="truncate text-sm font-semibold text-slate-950 dark:text-white">
                                 {{ auth()->user()->name }}
                             </p>
 
@@ -199,7 +199,7 @@
         @endif
     </div>
 
-    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-800/80 bg-[#050d1b]/95 p-2 shadow-xl shadow-black/30 backdrop-blur lg:hidden">
+    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-200/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:shadow-black/30 lg:hidden">
         @auth
             <a
                 title="Home"

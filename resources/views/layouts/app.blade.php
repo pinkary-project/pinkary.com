@@ -18,11 +18,11 @@
                 ->get()
             : collect();
     @endphp
-    <body class="bg-[#060c18] font-sans antialiased text-slate-950 dark:text-slate-50">
+    <body class="bg-slate-100 font-sans antialiased text-slate-950 dark:bg-[#060c18] dark:text-slate-50">
         @persist('flash-messages')
             <livewire:flash-messages.show />
         @endpersist
-        <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div class="pointer-events-none fixed inset-0 -z-10 hidden overflow-hidden dark:block">
             <div class="absolute inset-0 bg-[linear-gradient(180deg,#040915_0%,#081223_100%)]"></div>
             <div class="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_60%)]"></div>
             <div class="absolute left-[28%] top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-pink-500/8 blur-3xl"></div>
@@ -124,9 +124,9 @@
                 @if ($showRightRail)
                     <aside class="hidden lg:col-start-3 lg:block">
                         <div class="lg:sticky lg:top-0">
-                            <section class="overflow-hidden border-b border-r border-slate-800/30 bg-[#071121]/95">
-                                <div class="flex items-center justify-between border-b border-slate-800/30 px-6 py-6">
-                                    <h2 class="text-[1.05rem] font-semibold text-white">People to follow</h2>
+                            <section class="overflow-hidden border-b border-r border-slate-200/70 bg-white/80 dark:border-slate-800/30 dark:bg-[#071121]/95">
+                                <div class="flex items-center justify-between border-b border-slate-200/70 px-6 py-6 dark:border-slate-800/30">
+                                    <h2 class="text-[1.05rem] font-semibold text-slate-950 dark:text-white">People to follow</h2>
 
                                     <a
                                         href="{{ route('home.users') }}"
@@ -137,12 +137,12 @@
                                     </a>
                                 </div>
 
-                                <ul class="divide-y divide-slate-800/30">
+                                <ul class="divide-y divide-slate-200/70 dark:divide-slate-800/30">
                                     @foreach ($recentSignups as $user)
                                         <li>
                                             <a
                                                 href="{{ route('profile.show', ['username' => $user->username]) }}"
-                                                class="flex items-center gap-3 px-6 py-4 transition hover:bg-slate-900/60"
+                                                class="flex items-center gap-3 px-6 py-4 transition hover:bg-slate-100 dark:hover:bg-slate-900/60"
                                                 wire:navigate
                                             >
                                                 <img
@@ -152,7 +152,7 @@
                                                 />
 
                                                 <div class="min-w-0 flex-1">
-                                                    <p class="truncate text-sm font-medium text-white">
+                                                    <p class="truncate text-sm font-medium text-slate-950 dark:text-white">
                                                         {{ $user->name }}
                                                     </p>
 

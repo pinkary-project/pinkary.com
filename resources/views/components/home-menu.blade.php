@@ -1,8 +1,8 @@
 @php
     $tabs = [
-        ['label' => __('Trending'), 'route' => 'home.trending', 'active' => request()->routeIs('home.trending')],
-        ['label' => __('Following'), 'route' => 'home.following', 'active' => request()->routeIs('home.following')],
         ['label' => __('Recent'), 'route' => 'home.feed', 'active' => request()->routeIs('home.feed') || request()->routeIs('hashtag.show')],
+        ['label' => __('Following'), 'route' => 'home.following', 'active' => request()->routeIs('home.following')],
+        ['label' => __('Trending'), 'route' => 'home.trending', 'active' => request()->routeIs('home.trending')],
     ];
 @endphp
 

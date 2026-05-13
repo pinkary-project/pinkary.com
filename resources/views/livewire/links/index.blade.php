@@ -1,10 +1,14 @@
-<div class="space-y-6" @if (auth()->user()?->is($user)) x-data="{
+<div class="space-y-4" @if (auth()->user()?->is($user)) x-data="{
     showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
     gradient: '{{ $user->gradient }}',
     link_shape: '{{ $user->link_shape }}',
 }" @endif>
-    <div class="relative overflow-hidden rounded-md border border-slate-800/70 bg-gradient-to-br from-white/90 via-pink-50 to-slate-100 p-5 text-center text-black shadow-xl shadow-slate-900/5 dark:from-slate-950/90 dark:via-slate-900 dark:to-slate-950 dark:text-white dark:shadow-black/20 sm:p-6">
-        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_55%)] dark:bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.12),_transparent_50%)]"></div>
+    @if (auth()->user()?->is($user))
+        <x-modal-qr-code />
+    @endif
+
+    <div class="relative overflow-hidden rounded-md border border-slate-200/70 bg-white/85 p-4 text-center text-slate-950 shadow-xl shadow-slate-900/5 dark:border-slate-800/30 dark:bg-[#07101f]/95 dark:text-white dark:shadow-black/20 sm:p-5">
+        <div class="pointer-events-none absolute inset-x-0 top-0 hidden h-32 bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.12),_transparent_55%)] dark:block"></div>
 
         <div class="absolute left-4 top-4 z-10 flex">
             <x-dropdown-link-profile>
@@ -65,7 +69,6 @@
 
                     <x-icons.qr-code class="size-5" />
                 </button>
-                <x-modal-qr-code />
             @endif
         </div>
 
@@ -91,11 +94,11 @@
             </div>
         @endif
 
-        <div class="relative z-10 mx-auto h-28 w-28" x-data="{ showAvatar: false }">
+        <div class="relative z-10 mx-auto h-20 w-20 sm:h-24 sm:w-24" x-data="{ showAvatar: false }">
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
-                class="{{ $user->is_company_verified ? 'rounded-[1.75rem]' : 'rounded-full' }} mx-auto mb-4 size-28 cursor-pointer border-4 border-white/80 shadow-xl shadow-slate-900/10 dark:border-slate-900/80 dark:shadow-black/30"
+                class="{{ $user->is_company_verified ? 'rounded-[1.5rem]' : 'rounded-full' }} mx-auto mb-3 size-20 cursor-pointer border-4 border-white/80 shadow-xl shadow-slate-900/10 dark:border-slate-900/80 dark:shadow-black/30 sm:size-24"
                 x-on:click="showAvatar = true"
             />
 
@@ -125,8 +128,8 @@
             @endif
         </div>
 
-        <div class="relative z-10 mt-6 flex items-center justify-center">
-            <h2 class="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">{{ $user->name }}</h2>
+        <div class="relative z-10 mt-4 flex items-center justify-center">
+            <h2 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">{{ $user->name }}</h2>
 
             @if ($user->is_verified && $user->is_company_verified)
                 <x-icons.verified-company
@@ -142,7 +145,7 @@
         </div>
 
         <a
-            class="relative z-10 mt-2 inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-4 py-1.5 text-sm text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+            class="relative z-10 mt-2 inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-sm text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
             href="{{ route('profile.show', ['username' => $user->username]) }}"
             wire:navigate
         >
@@ -150,11 +153,11 @@
         </a>
 
         @if ($user->bio)
-            <div class="relative z-10 mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">{{ $user->parsed_bio }}</div>
+            <div class="relative z-10 mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">{{ $user->parsed_bio }}</div>
         @elseif (auth()->user()?->is($user))
             <a
                 href="{{ route('profile.edit') }}"
-                class="relative z-10 mt-4 inline-flex text-sm text-slate-500 hover:underline"
+                class="relative z-10 mt-3 inline-flex text-sm text-slate-500 hover:underline"
                 wire:navigate
                 >Tell people about yourself</a
             >
@@ -163,11 +166,11 @@
         <livewire:followers.index :userId="$user->id" />
         <livewire:following.index :userId="$user->id" />
 
-        <div class="relative z-10 mt-5 flex flex-wrap justify-center gap-2 text-sm">
+        <div class="relative z-10 mt-4 flex flex-wrap justify-center gap-2 text-sm">
             @if ($user->followers_count > 0)
                 <button
                     x-on:click.prevent="$dispatch('open-modal', 'followers')"
-                    class="inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+                    class="inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
                 >
                     <span
                         class="cursor-help"
@@ -182,7 +185,7 @@
             @if ($user->following_count > 0)
                 <button
                     x-on:click.prevent="$dispatch('open-modal', 'following')"
-                    class="inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+                    class="inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
                 >
                     <span
                         class="cursor-help"
@@ -196,7 +199,7 @@
 
             @if ($questionsReceivedCount > 0)
                 <span
-                    class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+                    class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
                     title="{{ Number::format($questionsReceivedCount) }} {{ str('Post')->plural($questionsReceivedCount) }}"
                 >
                     {{ Number::abbreviate($questionsReceivedCount) }}
@@ -205,17 +208,17 @@
             @endif
 
             <span
-                class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1.5 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+                class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
                 title="{{ Number::format($user->views) }} {{ str('View')->plural($user->views) }}"
             >
                 {{ Number::abbreviate($user->views) }} {{ str('View')->plural($user->views) }}
             </span>
         </div>
     </div>
-    <div class="border-t border-slate-200/70 pt-6 dark:border-slate-800/70">
+    <div class="border-t border-slate-200/70 pt-4 dark:border-slate-800/70">
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
-                <div class="rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 p-8 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
+                <div class="rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 p-5 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
                     <p class="text-lg font-medium text-slate-950 dark:text-white">No links yet.</p>
                     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Add your first link to complete the profile card.</p>
                 </div>
@@ -228,11 +231,11 @@
                     x-on:choose.stop="isDragging = true"
                     x-on:unchoose.stop="isDragging = false"
                     wire:end.stop="storeSort($event.target.sortable.toArray())"
-                    class="space-y-4"
+                    class="space-y-2"
                 >
                     @foreach ($links as $link)
                         <li
-                            class="relative flex h-14 overflow-hidden rounded-[1.75rem] shadow-lg shadow-slate-900/10 hover:darken-gradient group {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }}"
+                            class="relative flex h-12 overflow-hidden rounded-[1.75rem] shadow-lg shadow-slate-900/10 hover:darken-gradient group {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }}"
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
@@ -328,10 +331,10 @@
                     </div>
                 </x-modal>
             @else
-                <div class="space-y-4">
+                <div class="space-y-2">
                     @foreach ($links as $link)
                         <div
-                            class="{{ $user->link_shape }} {{ $user->gradient }} h-14 rounded-[1.75rem] hover:darken-gradient flex justify-center bg-gradient-to-r shadow-lg shadow-slate-900/10"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 rounded-[1.75rem] hover:darken-gradient flex justify-center bg-gradient-to-r shadow-lg shadow-slate-900/10"
                             wire:click="click({{ $link->id }})"
                         >
                             <x-links.list-item
@@ -350,7 +353,7 @@
             x-data="{
                 showLinksForm: {{ $errors->links->isEmpty() ? 'false' : 'true' }},
             }"
-            class="py-4"
+            class="py-2"
         >
             <div>
                 <div class="flex gap-2">
