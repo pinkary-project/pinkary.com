@@ -7,11 +7,15 @@
 @endphp
 
 @if($question->children->isNotEmpty())
-    <div class="pl-3">
+    <div>
         @foreach($question->children as $comment)
             @break($loop->depth > 5)
 
-            <livewire:questions.show :question-id="$comment->id" :inThread='true' :wire:key="$comment->id" />
+            @if (!$loop->last)
+                <livewire:questions.show :question-id="$comment->id" :inThread="true" :wire:key="$comment->id" />
+            @else
+                <livewire:questions.show :question-id="$comment->id" :wire:key="$comment->id" />
+            @endif
 
             <x-comments :question="$comment" />
         @endforeach

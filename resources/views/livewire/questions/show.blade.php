@@ -74,25 +74,39 @@
             class="group px-0 py-0 {{ $previousQuestionId === $questionId ? 'bg-pink-50 dark:bg-[#151225]' : '' }}
             {{ $commenting ?: 'cursor-pointer transition-colors duration-100 ease-in-out' }}"
         >
-            <div class="flex items-start justify-between gap-3">
-                <a
-                    href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                    class="group/profile flex items-center gap-3"
-                    data-navigate-ignore="true"
-                    wire:navigate
-                >
-                    <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12 flex-shrink-0 border border-slate-200/70 bg-slate-100 transition-opacity group-hover/profile:opacity-90 dark:border-slate-800/30 dark:bg-[#10182b]">
-                        <img
-                            src="{{ $question->to->avatar_url }}"
-                            alt="{{ $question->to->username }}"
-                            class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12"
-                        />
-                    </figure>
-                    <div class="min-w-0 overflow-hidden text-sm">
-                        <div class="flex items-center">
-                            <p class="truncate font-medium text-slate-950 dark:text-white">
-                                {{ $question->to->name }}
-                            </p>
+            <div class="flex gap-3">
+                <div class="flex flex-col items-center flex-shrink-0">
+                    <a
+                        href="{{ route('profile.show', ['username' => $question->to->username]) }}"
+                        class="group/profile block"
+                        data-navigate-ignore="true"
+                        wire:navigate
+                    >
+                        <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12 border border-slate-200/70 bg-slate-100 transition-opacity group-hover/profile:opacity-90 dark:border-slate-800/30 dark:bg-[#10182b]">
+                            <img
+                                src="{{ $question->to->avatar_url }}"
+                                alt="{{ $question->to->username }}"
+                                class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12"
+                            />
+                        </figure>
+                    </a>
+                    @if($inThread)
+                        <div class="mt-2 w-0.5 flex-1 bg-slate-200 dark:bg-slate-700" aria-hidden="true"></div>
+                    @endif
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-2">
+                        <a
+                            href="{{ route('profile.show', ['username' => $question->to->username]) }}"
+                            class="group/profile min-w-0"
+                            data-navigate-ignore="true"
+                            wire:navigate
+                        >
+                            <div class="overflow-hidden text-sm">
+                                <div class="flex items-center">
+                                    <p class="truncate font-medium text-slate-950 dark:text-white">
+                                        {{ $question->to->name }}
+                                    </p>
 
                             @if ($question->to->is_verified && $question->to->is_company_verified)
                                 <x-icons.verified-company
@@ -107,17 +121,17 @@
                             @endif
                         </div>
 
-                        <p class="mt-1 truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
-                            {{ '@'.$question->to->username }}
-                        </p>
-                    </div>
-                </a>
+                                <p class="mt-1 truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
+                                    {{ '@'.$question->to->username }}
+                                </p>
+                            </div>
+                        </a>
 
-                @if (auth()->check() && auth()->user()->can('update', $question))
-                    <x-dropdown
-                        align="right"
-                        width="48"
-                    >
+                        @if (auth()->check() && auth()->user()->can('update', $question))
+                            <x-dropdown
+                                align="right"
+                                width="48"
+                            >
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
@@ -177,28 +191,11 @@
                                 </x-dropdown-button>
                             @endif
                         </x-slot>
-                    </x-dropdown>
-                @endif
-            </div>
+                            </x-dropdown>
+                        @endif
+                    </div>
 
-            @if((! $inThread || $commenting) && $question->parent)
-                <a href="{{
-                        route('questions.show', [
-                            'username' => $question->parent->to->username,
-                            'question' => $question->parent,
-                            'previousQuestionId' => $questionId,
-                        ])
-                    }}"
-                   data-navigate-ignore="true"
-                   wire:navigate
-                             class="mt-3 inline-flex max-w-full items-center gap-2 border border-slate-200/70 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#0b1324] dark:text-slate-400 dark:hover:bg-[#1a2440] dark:hover:text-white"
-                >
-                    <x-heroicon-o-arrow-turn-down-right class="h-3.5 w-3.5" />
-                    In response to {{ '@'.$question->parent->to->username }}
-                </a>
-            @endif
-
-            <div x-data="showMore">
+                    <div x-data="showMore">
                 <div
                         class="mt-3 overflow-hidden break-words text-slate-700 dark:text-slate-200 answer"
                     wire:ignore.self
@@ -407,6 +404,8 @@
                     </time>
                 </div>
             </div>
+                </div>
+            </div>
         </div>
         @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()?->can('update', $question))
             <x-modal
@@ -461,7 +460,7 @@
         />
     @endif
 
-    @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
+    @if($commenting && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
     @endif
 </article>

@@ -32,7 +32,7 @@
                 <x-post-divider />
             @endforeach
 
-            <livewire:questions.show :questionId="$question->id" :in-thread="true" :commenting="true" />
+            <livewire:questions.show :questionId="$question->id" :in-thread="false" :commenting="true" />
 
             <div class="mt-6 border border-slate-800/30 bg-[#0b1324] p-4">
                 <x-comments :question="$question" />
