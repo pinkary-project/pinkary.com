@@ -265,7 +265,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     /**
      * Get the user's "is_verified" attribute.
      */
-    public function getIsVerifiedAttribute(bool $isVerified): bool
+    public function getIsVerifiedAttribute(?bool $isVerified): bool
     {
         if (collect(config()->array('sponsors.github_usernames'))->contains($this->username)) {
             return true;
@@ -275,19 +275,19 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             return true;
         }
 
-        return $isVerified;
+        return $isVerified ?? false;
     }
 
     /**
      * Get the user's "is_company_verified" attribute.
      */
-    public function getIsCompanyVerifiedAttribute(bool $isCompanyVerified): bool
+    public function getIsCompanyVerifiedAttribute(?bool $isCompanyVerified): bool
     {
         if (collect(config()->array('sponsors.github_company_usernames'))->contains($this->username)) {
             return true;
         }
 
-        return $isCompanyVerified;
+        return $isCompanyVerified ?? false;
     }
 
     /**
