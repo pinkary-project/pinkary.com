@@ -1,9 +1,9 @@
 <x-guest-layout>
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold tracking-tight text-white">
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
             {{ __('Reset your password') }}
         </h1>
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
             {{ __('Enter the email address tied to your Pinkary account and we will send you a secure reset link.') }}
         </p>
     </div>
@@ -20,11 +20,11 @@
             <x-input-label
                 for="email"
                 :value="__('Email')"
-                class="text-gray-400"
+                class="text-slate-600 dark:text-slate-400"
             />
             <x-text-input
                 id="email"
-                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
+                class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
                 type="email"
                 name="email"
                 :value="old('email')"
@@ -45,10 +45,10 @@
     </form>
 
     <div class="py-8">
-        <div class="border-t border-white/5"></div>
+        <div class="border-t border-slate-200/80 dark:border-white/5"></div>
     </div>
 
-    <div class="text-center text-sm text-gray-500">
+    <div class="text-center text-sm text-slate-500 dark:text-slate-400">
         {{ __('Remembered it?') }}
         <a
             href="{{ route('login') }}"

@@ -1,19 +1,19 @@
 <x-guest-layout>
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold tracking-tight text-white">
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
             {{ __('Verify your email') }}
         </h1>
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
             {{ __('Before getting started, please verify your email address by clicking the link we just sent you.') }}
         </p>
     </div>
 
-    <div class="mb-4 text-sm text-gray-500">
+    <div class="mb-4 text-sm text-slate-500 dark:text-slate-400">
         {{ __('Accounts are required to be verified before they can be used. Non-verified accounts will be automatically deleted after 24 hours.') }}
     </div>
 
     @if (session('status') === 'verification-link-sent')
-        <div class="mb-5 rounded-[1.25rem] border border-pink-500/20 bg-pink-500/10 px-4 py-3 text-sm text-pink-300">
+        <div class="mb-5 rounded-[1.25rem] border border-pink-500/20 bg-pink-500/10 px-4 py-3 text-sm text-pink-700 dark:text-pink-300">
             {{ __('A fresh verification link has been sent to your email address.') }}
         </div>
     @endif

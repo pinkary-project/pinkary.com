@@ -1,9 +1,9 @@
 <x-guest-layout>
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold tracking-tight text-white">
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
             {{ __('Log in') }}
         </h1>
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
             {{ __('Continue to your Pinkary account.') }}
         </p>
     </div>
@@ -20,11 +20,11 @@
             <x-input-label
                 for="email"
                 :value="__('Email')"
-                class="text-gray-400"
+                class="text-slate-600 dark:text-slate-400"
             />
             <x-text-input
                 id="email"
-                class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
+                class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
                 type="email"
                 name="email"
                 :value="old('email')"
@@ -42,26 +42,26 @@
             <x-input-label
                 for="password"
                 :value="__('Password')"
-                class="text-gray-400"
+                class="text-slate-600 dark:text-slate-400"
             />
 
-            <div 
+            <div
                 class="relative"
-                x-data="{ showPassword: false }" 
+                x-data="{ showPassword: false }"
             >
-                <x-text-input 
-                    id="password" 
-                    class="mt-2 block w-full rounded-md border-white/10 bg-white/5 px-3 py-2.5 pr-10 text-sm text-white shadow-none placeholder:text-gray-600 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20"
+                <x-text-input
+                    id="password"
+                    class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 pr-10 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
                     x-bind:type="showPassword ? 'text' : 'password'"
                     name="password"
-                    required 
+                    required
                     autocomplete="current-password"
                 />
                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                     <button
                         type="button"
                         x-on:click="showPassword = !showPassword"
-                        class="rounded-md text-gray-500 transition hover:text-gray-300 focus:outline-none focus:ring-4 focus:ring-pink-500/20"
+                        class="rounded-md text-slate-400 transition hover:text-slate-600 focus:outline-none focus:ring-4 focus:ring-pink-500/20 dark:text-gray-500 dark:hover:text-gray-300"
                     >
                         <x-icons.eye x-show="showPassword" class="size-5" />
                         <x-icons.eye-off x-show="!showPassword" class="size-5" />
@@ -83,9 +83,9 @@
                 <x-checkbox
                     id="remember_me"
                     name="remember"
-                    class="rounded border-white/10 bg-white/5 text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0"
+                    class="rounded border-slate-200/80 bg-white text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0 dark:border-white/10 dark:bg-white/5"
                 />
-                <span class="ml-2 text-sm text-gray-500">
+                <span class="ml-2 text-sm text-slate-500 dark:text-slate-400">
                     {{ __('Remember me') }}
                 </span>
             </label>
@@ -109,10 +109,10 @@
     </form>
 
     <div class="py-8">
-        <div class="border-t border-white/5"></div>
+        <div class="border-t border-slate-200/80 dark:border-white/5"></div>
     </div>
 
-    <div class="text-center text-sm text-gray-500">
+    <div class="text-center text-sm text-slate-500 dark:text-slate-400">
         Don't have an account?
         <a
             href="{{ route('register') }}"
