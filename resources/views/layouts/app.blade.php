@@ -119,8 +119,8 @@
                 </div>
 
                 @if ($showRightRail)
-                    <aside class="hidden lg:col-start-3 lg:block">
-                        <div class="lg:sticky lg:top-0">
+                    <aside class="hidden lg:col-start-3 lg:block {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
+                        <div class="lg:sticky lg:top-4">
                             <section class="overflow-hidden border-b border-r border-slate-200/70 bg-white/80 dark:border-slate-800/30 dark:bg-[#071121]/95">
                                 <div class="flex items-center justify-between border-b border-slate-200/70 px-6 py-6 dark:border-slate-800/30">
                                     <h2 class="text-[1.05rem] font-semibold text-slate-950 dark:text-white">People to follow</h2>
