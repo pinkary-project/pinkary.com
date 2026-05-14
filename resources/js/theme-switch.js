@@ -3,7 +3,11 @@ const themeSwitch = () => ({
     currentTheme: null,
 
     init() {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (this.theme === 'system') {
+                this.updateTheme();
+            }
+        });
 
         const savedTheme = localStorage.getItem('theme') || this.theme;
         this.setTheme(savedTheme);
@@ -31,8 +35,12 @@ const themeSwitch = () => ({
     updateTheme() {
         const newTheme = this.getCurrentTheme();
 
-        document.documentElement.classList.remove('dark', 'light');
-        document.documentElement.classList.add(newTheme);
+        if (typeof window.updateTheme === 'function') {
+            window.updateTheme();
+        } else {
+            document.documentElement.classList.remove('dark', 'light');
+            document.documentElement.classList.add(newTheme);
+        }
 
         if (this.currentTheme !== newTheme) {
             this.currentTheme = newTheme;
