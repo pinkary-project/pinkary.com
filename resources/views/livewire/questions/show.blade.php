@@ -223,8 +223,8 @@
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 
-            <div class="mt-3 flex flex-col gap-2 border-t border-slate-200/70 pt-2.5 dark:border-slate-800/30 sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div class="mt-3 flex items-end justify-between gap-3 border-t border-slate-200/70 pt-2.5 dark:border-slate-800/30">
+                <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
@@ -393,7 +393,7 @@
                     </x-dropdown>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2 text-[0.82rem] text-slate-500">
+                <div class="flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
                     <time
                         class="inline-flex cursor-help items-center whitespace-nowrap"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
