@@ -1,5 +1,5 @@
 <div>
-    <section class="min-h-screen space-y-0 divide-y divide-slate-200/70 dark:divide-slate-800/30">
+    <section class="min-h-screen space-y-0">
         @forelse ($questions as $question)
             <div wire:key="thread-{{ $question->id }}" class="px-6 py-6 transition hover:bg-slate-50 dark:hover:bg-[#0a1325]">
                 @if($hashtag !== null && $hashtag !== '')

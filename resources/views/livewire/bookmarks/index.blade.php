@@ -1,4 +1,4 @@
-<div class="mb-20 divide-y divide-slate-200/70 dark:divide-slate-800/30">
+<div class="mb-20">
     @forelse ($bookmarks as $bookmark)
         <div class="px-0 py-6 first:pt-0">
             <livewire:questions.show

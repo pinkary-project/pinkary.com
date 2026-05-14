@@ -6,7 +6,7 @@
             </p>
         </section>
     @else
-        <section class="min-h-screen divide-y divide-slate-200/70 dark:divide-slate-800/30">
+        <section class="min-h-screen">
             @foreach ($followingQuestions as $question)
                 <div class="px-6 py-6 transition hover:bg-slate-50 dark:hover:bg-[#0a1325]">
                     <x-thread

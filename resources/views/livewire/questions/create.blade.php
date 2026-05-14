@@ -22,16 +22,7 @@
         }'
         class="pb-0"
     >
-        <div class="flex items-start gap-3">
-            <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} hidden h-10 w-10 flex-shrink-0 overflow-hidden bg-slate-100 transition-opacity dark:bg-slate-800 sm:block">
-                <img
-                    src="{{ $user->avatar_url }}"
-                    alt="{{ $user->username }}"
-                    class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
-                />
-            </figure>
-
-            <div class="min-w-0 flex-1">
+        <div class="min-w-0">
                 <div class="relative group/menu">
                         <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="p-0">
                             <x-textarea
@@ -116,7 +107,6 @@
                 </div>
                     @endif
                 </div>
-            </div>
         </div>
 
         <div x-show="isPoll" class="mt-4 space-y-4">

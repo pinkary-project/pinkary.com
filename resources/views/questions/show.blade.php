@@ -2,7 +2,7 @@
     <div class="py-0"
          x-data
          x-init="document.getElementById('q-{{ $question->id }}').scrollIntoView();">
-        <section class="overflow-hidden border-b border-r border-slate-800/30 bg-[#07101f]/95">
+        <section class="overflow-hidden border-b border-slate-800/30 bg-[#07101f]/95">
             <div class="flex px-6 py-5">
                 <a
                     x-data="{
@@ -26,7 +26,7 @@
             </div>
         </section>
 
-        <section class="border-b border-r border-slate-800/30 bg-[#07101f]/95 px-6 py-6">
+        <section class="border-b border-slate-800/30 bg-[#07101f]/95 px-6 py-6">
             @foreach($parentQuestions as $parentQuestion)
                 <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="true" :key="$parentQuestion->id" />
                 <x-post-divider />
