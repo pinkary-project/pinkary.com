@@ -12,9 +12,9 @@
             @break($loop->depth > 5)
 
             @if (!$loop->last)
-                <livewire:questions.show :question-id="$comment->id" :inThread="true" :wire:key="$comment->id" />
+                <livewire:questions.show :question-id="$comment->id" :inThread="true" :key="$comment->id" />
             @else
-                <livewire:questions.show :question-id="$comment->id" :wire:key="$comment->id" />
+                <livewire:questions.show :question-id="$comment->id" :key="$comment->id" />
             @endif
 
             <x-comments :question="$comment" />

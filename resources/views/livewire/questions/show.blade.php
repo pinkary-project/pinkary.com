@@ -82,11 +82,11 @@
                         data-navigate-ignore="true"
                         wire:navigate
                     >
-                        <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12 border border-slate-200/70 bg-slate-100 transition-opacity group-hover/profile:opacity-90 dark:border-slate-800/30 dark:bg-[#10182b]">
+                        <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-10 w-10 sm:h-12 sm:w-12 overflow-hidden border border-slate-200/70 bg-slate-100 transition-opacity group-hover/profile:opacity-90 dark:border-slate-800/30 dark:bg-[#10182b]">
                             <img
                                 src="{{ $question->to->avatar_url }}"
                                 alt="{{ $question->to->username }}"
-                                class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-12 w-12"
+                                class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-10 w-10 sm:h-12 sm:w-12"
                             />
                         </figure>
                     </a>
@@ -220,8 +220,8 @@
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 
-            <div class="mt-3 flex items-end justify-between gap-3 border-t border-slate-200/70 pt-2.5 dark:border-slate-800/30">
-                <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
+            <div class="mt-3 flex items-center justify-between gap-3 border-t border-slate-200/70 pt-2.5 dark:border-slate-800/30">
+                <div class="flex min-w-0 flex-1 items-center gap-x-3">
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
@@ -298,12 +298,13 @@
                         <span x-show="count" x-text="bookmarkButtonText"></span>
                     </button>
 
-                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+                </div>
 
-                    @php
-                        $timestamp = $question->answer_updated_at ?: $question->answer_created_at
-                    @endphp
+                @php
+                    $timestamp = $question->answer_updated_at ?: $question->answer_created_at
+                @endphp
 
+                <div class="flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
                     <x-dropdown align="left"
                                 width=""
                                 dropdown-classes="top-[-3.8rem] shadow-none"
@@ -388,9 +389,7 @@
                             </button>
                         </x-slot>
                     </x-dropdown>
-                </div>
 
-                <div class="flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
                     <time
                         class="inline-flex cursor-help items-center whitespace-nowrap"
                         title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"

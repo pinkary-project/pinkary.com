@@ -88,7 +88,7 @@
 
                                 window.location.assign('{{ route('home.users') }}?' + params.toString());
                             "
-                            class="sticky top-0 z-40 flex h-[57px] items-center gap-3 border-b border-slate-200/70 bg-white px-6 dark:border-slate-800/30 dark:bg-[#050c1d] sm:bg-white/95 sm:backdrop-blur dark:sm:bg-[#050c1d]/95 lg:hidden"
+                            class="flex h-[57px] items-center gap-3 border-b border-slate-200/70 bg-white px-6 dark:border-slate-800/30 dark:bg-[#050c1d] sm:bg-white/95 sm:backdrop-blur dark:sm:bg-[#050c1d]/95 lg:hidden"
                         >
                             <x-heroicon-o-magnifying-glass class="size-5 text-slate-400 dark:text-slate-500" />
 
