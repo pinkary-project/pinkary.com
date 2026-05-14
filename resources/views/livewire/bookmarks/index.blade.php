@@ -1,6 +1,6 @@
 <div class="mb-20">
     @forelse ($bookmarks as $bookmark)
-        <div class="px-0 py-6 first:pt-0">
+        <div class="border-b border-slate-200 dark:border-slate-700/50 px-0 py-6 first:pt-0">
             <livewire:questions.show
                 :questionId="$bookmark->question->id"
                 :key="'question-' . $bookmark->question->id"

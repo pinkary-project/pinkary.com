@@ -74,13 +74,13 @@
             x-on:click="handleNavigation($event)"
             @class([
                 'group',
-                'border-b border-slate-200/70 dark:border-slate-800/30' => ! $inThread,
+                'border-b border-slate-200 dark:border-slate-700/50' => $showBorder,
                 'bg-pink-50/70 dark:bg-[#151225]' => $previousQuestionId === $questionId,
                 'cursor-pointer transition-colors duration-100 ease-in-out' => ! $commenting,
             ])
         >
-            <div class="flex items-start gap-3">
-                <div class="flex flex-col items-center flex-shrink-0">
+            <div class="flex items-stretch gap-3">
+                <div class="flex flex-col items-center self-stretch flex-shrink-0">
                     <a
                         href="{{ route('profile.show', ['username' => $question->to->username]) }}"
                         class="group/profile block"
@@ -96,7 +96,7 @@
                         </figure>
                     </a>
                     @if($inThread)
-                        <div class="mt-2 w-px flex-1 bg-slate-200 dark:bg-slate-700" aria-hidden="true"></div>
+                        <div class="min-h-4 w-0.5 flex-1 bg-slate-300 dark:bg-slate-600" aria-hidden="true"></div>
                     @endif
                 </div>
                 <div class="min-w-0 flex-1 py-1">

@@ -8,7 +8,7 @@
     @else
         <section class="min-h-screen">
             @foreach ($followingQuestions as $question)
-                <div class="px-6 py-6 transition hover:bg-slate-50 dark:hover:bg-[#0a1325]">
+                <div class="border-b border-slate-200 dark:border-slate-700/50 px-6 py-6 transition hover:bg-slate-50 dark:hover:bg-[#0a1325]">
                     <x-thread
                         :rootId="$question->showRoot ? $question->root_id : null"
                         :grandParentId="$question->parent?->parent_id"

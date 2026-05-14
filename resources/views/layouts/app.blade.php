@@ -36,7 +36,7 @@
                     @include('layouts.navigation')
                 </aside>
 
-                <div class="min-w-0 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }}">
+                <div class="min-w-0 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-4' : '' }}">
                     @if ($showDiscoverLayout)
                         <form
                             x-data="{ query: @js($globalSearchQuery) }"
@@ -119,9 +119,9 @@
                 </div>
 
                 @if ($showRightRail)
-                    <aside class="hidden lg:col-start-3 lg:block {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
+                    <aside class="hidden lg:col-start-3 lg:block lg:pl-4 {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
                         <div class="lg:sticky lg:top-4">
-                            <section class="overflow-hidden border-b border-r border-slate-200/70 bg-white/80 dark:border-slate-800/30 dark:bg-[#071121]/95">
+                            <section class="overflow-hidden border border-slate-200 dark:border-slate-700/50 bg-white/80 dark:bg-[#071121]/95">
                                 <div class="flex items-center justify-between border-b border-slate-200/70 px-6 py-6 dark:border-slate-800/30">
                                     <h2 class="text-[1.05rem] font-semibold text-slate-950 dark:text-white">People to follow</h2>
 
