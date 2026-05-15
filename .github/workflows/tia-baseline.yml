@@ -1,5 +1,8 @@
 name: TIA Baseline
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
