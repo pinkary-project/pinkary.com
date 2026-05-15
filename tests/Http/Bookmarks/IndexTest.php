@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Livewire\Bookmarks\Index;
+use App\Livewire\PeopleToFollow;
 use App\Models\User;
 
 test('guest', function () {
@@ -21,7 +22,8 @@ test('auth', function () {
     $response->assertOk()
         ->assertSee('Bookmarks')
         ->assertSee('People to follow')
-        ->assertSeeLivewire(Index::class);
+        ->assertSeeLivewire(Index::class)
+        ->assertSeeLivewire(PeopleToFollow::class);
 });
 
 test('people to follow uses the discovery list', function () {
