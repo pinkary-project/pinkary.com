@@ -10,13 +10,8 @@
         $globalSearchQuery = request()->routeIs('home.users')
             ? (string) request()->query('q', '')
             : (request()->routeIs('hashtag.show') ? '#'.request()->route('hashtag') : '');
-        $recentSignups = $showRightRail
-            ? \App\Models\User::query()
-                ->whereNotNull('username')
-                ->when(auth()->check(), fn ($query) => $query->whereKeyNot(auth()->id()))
-                ->latest()
-                ->limit(5)
-                ->get()
+        $peopleToFollow = $showRightRail
+            ? (new \App\Queries\PeopleToFollow(request()->user()))->get(limit: 5)
             : collect();
     @endphp
     <body class="bg-slate-100 font-sans antialiased text-slate-950 dark:bg-[#060c18] dark:text-slate-50">
@@ -135,7 +130,7 @@
                                 </div>
 
                                 <ul class="divide-y divide-slate-200/70 dark:divide-slate-800/30">
-                                    @foreach ($recentSignups as $user)
+                                    @foreach ($peopleToFollow as $user)
                                         <li>
                                             <a
                                                 href="{{ route('profile.show', ['username' => $user->username]) }}"
