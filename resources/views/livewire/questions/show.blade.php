@@ -298,6 +298,18 @@
 
                     <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
 
+                    <a
+                        data-navigate-ignore="true"
+                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
+                        target="_blank"
+                        title="Translate"
+                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
+                    >
+                        <x-heroicon-o-language class="h-4 w-4" />
+                    </a>
+
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
                     <button
                         data-navigate-ignore="true"
                         x-data="bookmarkButton('{{ $question->id }}', @js(auth()->check()))"
@@ -334,15 +346,6 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <a
-                                data-navigate-ignore="true"
-                                href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
-                                target="_blank"
-                                title="Translate"
-                                class="{{ $shareMenuItemClasses }}"
-                            >
-                                <x-heroicon-o-language class="size-4" />
-                            </a>
                             <button
                                 data-navigate-ignore="true"
                                 x-cloak

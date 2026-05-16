@@ -46,6 +46,26 @@ test('auth', function () {
     $response->assertSeeLivewire(Create::class);
 });
 
+test('answer translate action is visible before bookmarks', function () {
+    $question = Question::factory()->create([
+        'content' => 'Question content',
+        'answer' => 'Answer content',
+    ]);
+
+    $response = $this->get(route('questions.show', [
+        'username' => $question->to->username,
+        'question' => $question->id,
+    ]));
+
+    $answerTranslateUrl = e('https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer));
+
+    $response->assertOk()
+        ->assertSeeInOrder([
+            $answerTranslateUrl,
+            'data-is-bookmarked="false"',
+        ], false);
+});
+
 test('reported question is not visible', function () {
     $question = Question::factory()->create([
         'is_reported' => true,
