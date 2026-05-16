@@ -6,7 +6,7 @@
     @else
         <section class="min-h-screen">
             @foreach ($trendingQuestions as $question)
-                <div class="border-b border-slate-200 dark:border-slate-700/50 px-6 py-6 transition hover:bg-slate-50 dark:hover:bg-[#0a1325]">
+                <div class="border-b border-slate-200 dark:border-slate-700/50 px-4 py-4 transition hover:bg-slate-50 dark:hover:bg-[#0a1325]">
                     <livewire:questions.show
                         :questionId="$question->id"
                         :key="'question-' . $question->id"

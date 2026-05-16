@@ -5,7 +5,7 @@
         </section>
 
         <section class="border-b border-slate-200 bg-white/80 dark:border-slate-700/50 dark:bg-[#07101f]/95">
-            <div class="border-b border-slate-200 px-6 py-6 dark:border-slate-700/50">
+            <div class="border-b border-slate-200 px-4 py-4 dark:border-slate-700/50">
                 <div class="border border-slate-200/70 bg-slate-50/80 p-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
                     <livewire:questions.create :toId="$user->id" />
                 </div>

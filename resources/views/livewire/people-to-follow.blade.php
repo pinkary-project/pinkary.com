@@ -1,5 +1,5 @@
 <section class="overflow-hidden border border-slate-200 bg-white/80 dark:border-slate-700/50 dark:bg-[#071121]/95">
-    <div class="flex items-center justify-between border-b border-slate-200/70 px-6 py-6 dark:border-slate-800/30">
+    <div class="flex items-center justify-between border-b border-slate-200/70 px-4 py-4 dark:border-slate-800/30">
         <h2 class="text-[1.05rem] font-semibold text-slate-950 dark:text-white">People to follow</h2>
 
         <a

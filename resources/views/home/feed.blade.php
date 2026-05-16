@@ -10,7 +10,7 @@
 
         <div class="space-y-0">
             @auth
-                <div class="border-b border-slate-200/70 px-6 py-6 dark:border-slate-800/30">
+                <div class="border-b border-slate-200/70 px-4 py-4 dark:border-slate-800/30">
                     <livewire:questions.create :toId="auth()->id()" />
                 </div>
             @endauth
