@@ -113,7 +113,11 @@
                 @if ($showRightRail)
                     <aside class="hidden lg:col-start-3 lg:block lg:pl-4 {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
                         <div class="lg:sticky lg:top-4">
-                            <livewire:people-to-follow />
+                            <livewire:people-to-follow
+                                :context="$peopleToFollowContext"
+                                :contextUserId="$peopleToFollowUserId"
+                                :contextQuestionId="$peopleToFollowQuestionId"
+                            />
                         </div>
                     </aside>
                 @endif
