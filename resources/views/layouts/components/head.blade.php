@@ -208,16 +208,43 @@
 </style>
 
 <script>
+    const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]')
+
     function isDarkTheme() {
-        return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        const savedTheme = localStorage.getItem('theme')
+
+        if (savedTheme === 'dark') {
+            return true
+        }
+
+        if (savedTheme === 'light') {
+            return false
+        }
+
+        return themeMediaQuery.matches
     }
+
     function updateTheme() {
-        if (isDarkTheme()) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
+        const darkTheme = isDarkTheme()
+
+        document.documentElement.classList.toggle('dark', darkTheme)
+        document.documentElement.classList.toggle('light', ! darkTheme)
+        document.documentElement.style.colorScheme = darkTheme ? 'dark' : 'light'
+
+        if (themeColorMeta) {
+            themeColorMeta.setAttribute('content', darkTheme ? '#060c18' : '#f1f5f9')
         }
     }
+
+    themeMediaQuery.addEventListener('change', () => {
+        if (! localStorage.getItem('theme')) {
+            updateTheme()
+        }
+    })
+
+    document.addEventListener('livewire:navigated', updateTheme)
+
     updateTheme();
 </script>
 

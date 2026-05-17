@@ -1,16 +1,22 @@
-<div @if (auth()->user()?->is($user)) x-data="{
+<div class="space-y-4" @if (auth()->user()?->is($user)) x-data="{
     showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
     gradient: '{{ $user->gradient }}',
     link_shape: '{{ $user->link_shape }}',
 }" @endif>
-    <div class="relative bg-gradient-to-r p-5 text-center dark:text-white text-black">
-        <div class="absolute left-0 top-6 flex">
+    @if (auth()->user()?->is($user))
+        <x-modal-qr-code />
+    @endif
+
+    <div class="relative overflow-hidden rounded-md border border-slate-200/70 bg-white/85 p-4 text-center text-slate-950 shadow-xl shadow-slate-900/5 dark:border-slate-800/30 dark:bg-[#07101f]/95 dark:text-white dark:shadow-black/20 sm:p-5">
+        <div class="pointer-events-none absolute inset-x-0 top-0 hidden h-32 bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.12),_transparent_55%)] dark:block"></div>
+
+        <div class="absolute left-4 top-4 z-10 flex">
             <x-dropdown-link-profile>
                 <x-slot name="trigger">
                     <button
                         x-bind:class="{ 'bg-pink-500 hover:bg-pink-500 text-white hover:text-white': open,
-                                        'dark:bg-slate-900 bg-slate-50 dark:hover:bg-slate-800 hover:bg-slate-100 border dark:border-transparent border-slate-200': !open }"
-                                    class="mr-2 flex size-10 items-center justify-center rounded-lg dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out "
+                                        'dark:bg-slate-900 bg-white dark:hover:bg-slate-800 hover:bg-slate-100 border dark:border-slate-800 border-slate-200': !open }"
+                                    class="mr-2 flex size-11 items-center justify-center rounded-md text-slate-600 transition duration-150 ease-in-out dark:text-slate-300"
                     >
                         <x-heroicon-o-share class="size-5" />
                     </button>
@@ -22,7 +28,7 @@
                         x-show="isVisible"
                         x-on:click="share({ url: '{{ route('profile.show', ['username' => $user->username]) }}' })"
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
+                        class="mr-2 flex size-10 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         <x-heroicon-o-link class="size-5" />
                     </button>
@@ -35,7 +41,7 @@
                             )
                         "
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
+                        class="mr-2 flex size-10 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         <x-heroicon-o-link class="size-5" />
                     </button>
@@ -48,7 +54,7 @@
                             })
                         "
                         type="button"
-                        class="mr-2 flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
+                        class="mr-2 flex size-10 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     >
                         <x-icons.twitter-x class="size-5" />
                     </button>
@@ -56,24 +62,23 @@
             </x-dropdown-link-profile>
             @if (auth()->user()?->is($user))
                 <button
-                    class="flex size-10 items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
+                    class="flex size-11 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     x-on:click.prevent="$dispatch('open-modal', 'show-qr-code')"
                 >
                     <span class="sr-only">See QR Code</span>
 
                     <x-icons.qr-code class="size-5" />
                 </button>
-                <x-modal-qr-code />
             @endif
         </div>
 
         @if (! $user->is(auth()->user()))
-            <div class="absolute right-0 top-6 flex">
+            <div class="absolute right-4 top-4 z-10 flex">
                 @if ($user->followers()->where('follower_id', auth()->id())->exists())
                     <button
                         type="button"
                         wire:click="unfollow({{ $user->id }})"
-                        class="flex items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-2 py-1 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-200 dark:hover:text-white hover:text-black"
+                        class="flex items-center justify-center rounded-full border border-pink-500 bg-pink-500 px-4 py-2 text-sm font-medium text-white transition duration-150 ease-in-out hover:bg-pink-400"
                     >
                         Following
                     </button>
@@ -81,7 +86,7 @@
                     <button
                         type="button"
                         wire:click="follow({{ $user->id }})"
-                        class="flex items-center justify-center rounded-lg border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 px-2 py-1 dark:text-slate-300 text-slate-600 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-200 dark:hover:text-white hover:text-black"
+                        class="flex items-center justify-center rounded-full border border-pink-500 bg-pink-500 px-4 py-2 text-sm font-medium text-white transition duration-150 ease-in-out hover:bg-pink-400"
                     >
                         Follow
                     </button>
@@ -89,11 +94,11 @@
             </div>
         @endif
 
-        <div class="relative mx-auto h-24 w-24" x-data="{ showAvatar: false }">
+        <div class="relative z-10 mx-auto h-20 w-20 sm:h-24 sm:w-24" x-data="{ showAvatar: false }">
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
-                class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} mx-auto mb-3 size-24 cursor-pointer"
+                class="{{ $user->is_company_verified ? 'rounded-[1.5rem]' : 'rounded-full' }} mx-auto mb-3 size-20 cursor-pointer border-4 border-white/80 shadow-xl shadow-slate-900/10 dark:border-slate-900/80 dark:shadow-black/30 sm:size-24"
                 x-on:click="showAvatar = true"
             />
 
@@ -101,30 +106,30 @@
                 x-show="showAvatar"
                 x-cloak
                 x-on:click="showAvatar = false"
-                class="fixed inset-0 flex items-center justify-center dark:bg-slate-900 bg-slate-50 bg-opacity-75 z-50"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-slate-50/75 dark:bg-slate-900/75"
             >
                 <img
                     src="{{ $user->avatar_url }}"
                     alt="{{ $user->username }}"
-                    class="rounded-lg size-48 md:size-80 sm:size-64"
+                    class="rounded-3xl size-48 sm:size-64 md:size-80"
                 />
             </div>
 
 
             @if (auth()->user()?->is($user))
                 <button
-                    class="absolute right-0 top-0 p-0.5 m-0.5 rounded-md border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50 dark:text-slate-300 text-slate-500 transition duration-150 ease-in-out dark:hover:bg-slate-800 hover:bg-slate-100 dark:hover:text-white hover:text-black"
+                    class="absolute right-0 top-0 m-1 rounded-md border border-slate-200 bg-white p-1 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     href="{{ route('profile.edit') }}"
                     wire:navigate
                     title="Upload Avatar"
                 >
-                    <x-heroicon-o-camera class="size-5" />
+                    <x-heroicon-o-camera class="size-4" />
                 </button>
             @endif
         </div>
 
-        <div class="items center flex items-center justify-center mt-2">
-            <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
+        <div class="relative z-10 mt-4 flex items-center justify-center">
+            <h2 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">{{ $user->name }}</h2>
 
             @if ($user->is_verified && $user->is_company_verified)
                 <x-icons.verified-company
@@ -140,19 +145,19 @@
         </div>
 
         <a
-            class="dark:text-slate-400 text-slate-600"
+            class="relative z-10 mt-2 inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-sm text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
             href="{{ route('profile.show', ['username' => $user->username]) }}"
             wire:navigate
         >
-            <p class="text-sm">{{ '@'.$user->username }}</p>
+            <p>{{ '@'.$user->username }}</p>
         </a>
 
         @if ($user->bio)
-            <p class="text-sm">{{ $user->parsed_bio }}</p>
+            <div class="relative z-10 mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">{{ $user->parsed_bio }}</div>
         @elseif (auth()->user()?->is($user))
             <a
                 href="{{ route('profile.edit') }}"
-                class="text-sm text-slate-500 hover:underline"
+                class="relative z-10 mt-3 inline-flex text-sm text-slate-500 hover:underline"
                 wire:navigate
                 >Tell people about yourself</a
             >
@@ -161,61 +166,62 @@
         <livewire:followers.index :userId="$user->id" />
         <livewire:following.index :userId="$user->id" />
 
-        <div class="mt-2 text-sm">
-            <p class="dark:text-slate-400 text-slate-600">
-                @if ($user->followers_count > 0)
-                    <button x-on:click.prevent="$dispatch('open-modal', 'followers')">
-                        <span
-                            class="cursor-help"
-                            title="{{ Number::format($user->followers_count) }} {{ str('Follower')->plural($user->followers_count) }}"
-                        >
-                            {{ Number::abbreviate($user->followers_count) }}
-                            {{ str('Follower')->plural($user->followers_count) }}
-                        </span>
-                    </button>
-
-                    <span class="mx-1">•</span>
-                @endif
-
-                @if ($user->following_count > 0)
-                    <button x-on:click.prevent="$dispatch('open-modal', 'following')">
-                        <span
-                            class="cursor-help"
-                            title="{{ Number::format($user->following_count) }} Following"
-                        >
-                            {{ Number::abbreviate($user->following_count) }}
-                            Following
-                        </span>
-                    </button>
-
-                    <span class="mx-1">•</span>
-                @endif
-
-                @if ($questionsReceivedCount > 0)
+        <div class="relative z-10 mt-4 flex flex-wrap justify-center gap-2 text-sm">
+            @if ($user->followers_count > 0)
+                <button
+                    x-on:click.prevent="$dispatch('open-modal', 'followers')"
+                    class="inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+                >
                     <span
                         class="cursor-help"
-                        title="{{ Number::format($questionsReceivedCount) }} {{ str('Post')->plural($questionsReceivedCount) }}"
+                        title="{{ Number::format($user->followers_count) }} {{ str('Follower')->plural($user->followers_count) }}"
                     >
-                        {{ Number::abbreviate($questionsReceivedCount) }}
-                        {{ str('Post')->plural($questionsReceivedCount) }}
+                        {{ Number::abbreviate($user->followers_count) }}
+                        {{ str('Follower')->plural($user->followers_count) }}
                     </span>
+                </button>
+            @endif
 
-                    <span class="mx-1">•</span>
-                @endif
-
-                <span
-                    class="cursor-help"
-                    title="{{ Number::format($user->views) }} {{ str('View')->plural($user->views) }}"
+            @if ($user->following_count > 0)
+                <button
+                    x-on:click.prevent="$dispatch('open-modal', 'following')"
+                    class="inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
                 >
-                    {{ Number::abbreviate($user->views) }} {{ str('View')->plural($user->views) }}
+                    <span
+                        class="cursor-help"
+                        title="{{ Number::format($user->following_count) }} Following"
+                    >
+                        {{ Number::abbreviate($user->following_count) }}
+                        Following
+                    </span>
+                </button>
+            @endif
+
+            @if ($questionsReceivedCount > 0)
+                <span
+                    class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+                    title="{{ Number::format($questionsReceivedCount) }} {{ str('Post')->plural($questionsReceivedCount) }}"
+                >
+                    {{ Number::abbreviate($questionsReceivedCount) }}
+                    {{ str('Post')->plural($questionsReceivedCount) }}
                 </span>
-            </p>
+            @endif
+
+            <span
+                class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
+                title="{{ Number::format($user->views) }} {{ str('View')->plural($user->views) }}"
+            >
+                {{ Number::abbreviate($user->views) }} {{ str('View')->plural($user->views) }}
+            </span>
         </div>
     </div>
-    <div class="py-5">
+    <div class="border-t border-slate-200/70 pt-4 dark:border-slate-800/70">
         @if ($links->isEmpty())
             @if (auth()->user()?->is($user))
-                <p class="mx-2 text-center text-slate-500">No links yet. Add your first link!</p>
+                <div class="rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 p-5 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
+                    <p class="text-lg font-medium text-slate-950 dark:text-white">No links yet.</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Add your first link to complete the profile card.</p>
+                </div>
             @endif
         @else
             @if (auth()->user()?->is($user))
@@ -225,11 +231,11 @@
                     x-on:choose.stop="isDragging = true"
                     x-on:unchoose.stop="isDragging = false"
                     wire:end.stop="storeSort($event.target.sortable.toArray())"
-                    class="space-y-3"
+                    class="space-y-2"
                 >
                     @foreach ($links as $link)
                         <li
-                            class="relative h-12 hover:darken-gradient group flex {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }} overflow-hidden shadow-md"
+                            class="relative flex h-12 overflow-hidden rounded-[1.75rem] shadow-lg shadow-slate-900/10 hover:darken-gradient group {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }}"
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
@@ -325,10 +331,10 @@
                     </div>
                 </x-modal>
             @else
-                <div class="space-y-3">
+                <div class="space-y-2">
                     @foreach ($links as $link)
                         <div
-                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 hover:darken-gradient flex justify-center bg-gradient-to-r shadow-md"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 rounded-[1.75rem] hover:darken-gradient flex justify-center bg-gradient-to-r shadow-lg shadow-slate-900/10"
                             wire:click="click({{ $link->id }})"
                         >
                             <x-links.list-item
@@ -347,7 +353,7 @@
             x-data="{
                 showLinksForm: {{ $errors->links->isEmpty() ? 'false' : 'true' }},
             }"
-            class="py-4"
+            class="py-2"
         >
             <div>
                 <div class="flex gap-2">

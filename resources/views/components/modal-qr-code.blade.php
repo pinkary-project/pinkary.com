@@ -3,7 +3,7 @@
     maxWidth="lg"
     showCloseButton="false"
 >
-    <div class="p-6"
+    <div class="p-4 sm:p-6"
         x-data="{
             link: '{{ route('qr-code.image') }}',
             update(){
@@ -16,10 +16,10 @@
         <img
             loading="lazy"
             :src="link"
-            class="mx-auto w-full max-w-lg"
+            class="mx-auto aspect-square w-full max-w-lg rounded-md bg-[#050d1b] object-contain"
         />
 
-        <div class="mt-6 flex justify-end gap-4">
+        <div class="mt-6 flex justify-end gap-4 border-t border-slate-800/50 pt-4">
             <x-secondary-button x-on:click="$dispatch('close')">Close</x-secondary-button>
             <x-primary-button
                 as="a"

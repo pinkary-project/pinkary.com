@@ -1,13 +1,18 @@
-<div class="mb-20 space-y-10">
+<div class="mb-20">
     @forelse ($bookmarks as $bookmark)
-        <livewire:questions.show
-            :questionId="$bookmark->question->id"
-            :key="'question-' . $bookmark->question->id"
-            :inIndex="true"
-        />
+        <div class="border-b border-slate-200 dark:border-slate-700/50 px-0 py-6 first:pt-0">
+            <livewire:questions.show
+                :questionId="$bookmark->question->id"
+                :key="'question-' . $bookmark->question->id"
+                :inIndex="true"
+            />
+        </div>
     @empty
-        <div class="rounded-lg">
-            <p class="text-slate-400">No bookmarks.</p>
+        <div class="flex min-h-[24rem] items-center justify-center rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 px-6 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
+            <div>
+                <p class="text-lg font-medium text-slate-950 dark:text-white">No bookmarks yet.</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Posts you save for later will show up here.</p>
+            </div>
         </div>
     @endforelse
 

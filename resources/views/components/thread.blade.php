@@ -39,7 +39,7 @@
 
     <livewire:questions.show
         :questionId="$questionId"
-        :in-thread="$rootId !== null || $parentId !== null"
+        :in-thread="false"
         :key="'question-'.$questionId"
     />
 </div>

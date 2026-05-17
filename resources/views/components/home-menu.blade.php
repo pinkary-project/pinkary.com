@@ -1,54 +1,24 @@
-<div class="mb-8 flex justify-between space-x-2">
-    <a
-        data-pan="home-tabs-feed"
-        href="{{ route('home.feed') }}"
-        class="{{ request()->routeIs('home.feed') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
-        title="{{ __('Feed') }}"
-        wire:navigate
-        wire:transition
-    >
-        <x-heroicon-o-home
-            class="h-6 w-6 xsm:mr-2" />
-        <span class="hidden xsm:inline">{{ __('Feed') }}</span>
-    </a>
+@php
+    $tabs = [
+        ['label' => __('Recent'), 'route' => 'home.feed', 'active' => request()->routeIs('home.feed') || request()->routeIs('hashtag.show')],
+        ['label' => __('Following'), 'route' => 'home.following', 'active' => request()->routeIs('home.following')],
+        ['label' => __('Trending'), 'route' => 'home.trending', 'active' => request()->routeIs('home.trending')],
+    ];
+@endphp
 
-    <a
-        data-pan="home-tabs-following"
-        href="{{ route('home.following') }}"
-        class="{{ request()->routeIs('home.following') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
-        title="{{ __('Following') }}"
-        wire:navigate
-        wire:transition
-    >
-        <x-heroicon-o-heart
-            class="h-6 w-6 xsm:mr-2" />
-        <span class="hidden xsm:inline">{{ __('Following') }}</span>
-    </a>
-
-    <a
-        data-pan="home-tabs-trending"
-        href="{{ route('home.trending') }}"
-        class="{{ request()->routeIs('home.trending') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
-        title="{{ __('Trending') }}"
-        wire:navigate
-        wire:transition
-    >
-        <x-heroicon-m-fire
-            color="currentColor"
-            class="h-6 w-6 xsm:mr-2"
-        />
-        <span class="hidden xsm:inline">{{ __('Trending') }}</span>
-    </a>
-
-    <a
-        data-pan="home-tabs-search"
-        href="{{ route('home.users') }}"
-        class="{{ request()->routeIs('home.users') ? 'bg-pink-600 text-slate-100' : 'dark:text-slate-500 text-slate-400 dark:hover:text-slate-100 hover:text-slate-800 dark:bg-slate-900 bg-slate-50 ' }} inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-md border dark:border-transparent border-slate-200 px-3 py-2 text-sm font-medium leading-4 transition duration-150 ease-in-out focus:outline-none"
-        title="{{ __('Search') }}"
-        wire:navigate
-        wire:transition
-    >
-        <x-heroicon-o-magnifying-glass class="h-6 w-6 xsm:mr-2" />
-        <span class="hidden xsm:inline">{{ __('Search') }}</span>
-    </a>
+<div class="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div class="inline-flex min-w-full items-center gap-1 sm:min-w-0">
+        @foreach ($tabs as $tab)
+            <a
+                data-pan="home-tabs-{{ str($tab['label'])->lower() }}"
+                href="{{ route($tab['route']) }}"
+                class="{{ $tab['active'] ? 'bg-slate-950 px-3.5 py-1.5 text-white dark:bg-[#1a2438]' : 'px-2 py-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white' }} inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold leading-4 transition duration-150 ease-in-out focus:outline-none"
+                title="{{ $tab['label'] }}"
+                wire:navigate
+                wire:transition
+            >
+                <span>{{ $tab['label'] }}</span>
+            </a>
+        @endforeach
+    </div>
 </div>

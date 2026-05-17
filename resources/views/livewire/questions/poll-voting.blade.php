@@ -26,15 +26,15 @@
                     ])
                     @disabled($isDisabled)
                 >
-                    <div class="flex justify-between items-center">
+                    <div class="flex items-start justify-between gap-3">
                         <span @class([
-                            'font-medium',
+                            'min-w-0 flex-1 break-all font-medium',
                             'text-pink-700 dark:text-pink-300' => $isSelected,
                             'dark:text-slate-200 text-slate-800' => !$isSelected,
                         ])>
                             {{ $option->text }}
                         </span>
-                        <div class="flex gap-2 items-center">
+                        <div class="flex shrink-0 items-center gap-2 pt-0.5">
                             @if ($totalVotes > 0)
                                 <span @class([
                                     'text-sm',

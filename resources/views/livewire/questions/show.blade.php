@@ -1,100 +1,156 @@
-<article class="block" id="q-{{ $questionId }}" x-data="copyCode">
-    <div>
-        <div class="flex {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between' }}">
+<article class="block space-y-3" id="q-{{ $questionId }}" x-data="copyCode">
+    @php
+        $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
+        $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
+        $menuButtonClasses = 'inline-flex items-center rounded-full p-2 text-sm text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:bg-[#16203a] dark:hover:text-white';
+        $shareMenuContentClasses = 'flex flex-col space-y-1 rounded-2xl border border-slate-200/80 bg-white/95 p-2 text-slate-500 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-white/10 dark:bg-gray-900/95 dark:text-slate-300 dark:shadow-black/30';
+        $shareMenuItemClasses = 'rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:bg-gray-800 dark:hover:text-white';
+    @endphp
+    <div class="space-y-2.5">
+        <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
-                    <div class="flex items-center gap-3 px-4 text-sm text-slate-500">
-                        <div class="border-1 flex h-10 w-10 items-center justify-center rounded-full border border-dashed dark:border-slate-400 border-slate-600">
+                    <div class="inline-flex items-center gap-3 border border-dashed border-slate-300/80 bg-slate-50 px-3 py-2 text-sm text-slate-500 dark:border-slate-800/30 dark:bg-[#0b1324] dark:text-slate-400">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-300 dark:border-slate-700">
                             <span>?</span>
                         </div>
 
                         <p class="font-medium">Anonymously</p>
                     </div>
                 @else
-                    <x-avatar-with-name :user="$question->from" />
+                    <div class="min-w-0">
+                        <x-avatar-with-name :user="$question->from" />
+                    </div>
                 @endif
-                <a
-                    class="text-xs text-pink-500 flex items-end gap-1.5"
-                    href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
-                    target="_blank"
-                    data-navigate-ignore="true"
-                >
-                    <x-heroicon-o-language class="h-4 w-4"/>
-                </a>
-            @endunless
-            @if ($question->pinned && $pinnable)
-                <div class="mb-2 flex items-center space-x-1 px-4 text-sm focus:outline-none">
-                    <x-icons.pin class="h-4 w-4 dark:text-slate-400 text-slate-600" />
-                    <span class="dark:text-slate-400 text-slate-600">Pinned</span>
+
+                <div class="flex items-center gap-2 self-start">
+                    <a
+                        class="{{ $interactiveChipClasses }}"
+                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
+                        target="_blank"
+                        data-navigate-ignore="true"
+                    >
+                        <x-heroicon-o-language class="h-4 w-4"/>
+                        <span class="hidden sm:inline">Translate</span>
+                    </a>
+
+                    @if ($question->pinned && $pinnable)
+                        <div class="{{ $chipClasses }}">
+                            <x-icons.pin class="h-4 w-4" />
+                            <span>Pinned</span>
+                        </div>
+                    @endif
                 </div>
-            @endif
+            @else
+                @if ($question->pinned && $pinnable)
+                    <div class="{{ $chipClasses }}">
+                        <x-icons.pin class="h-4 w-4" />
+                        <span>Pinned</span>
+                    </div>
+                @endif
+            @endunless
         </div>
 
         @unless ($question->isSharedUpdate())
-        <p class="mt-3 px-4 dark:text-slate-200 text-slate-800">
-            {!! $question->content !!}
-        </p>
+            <div class="px-0 py-0.5">
+                <p class="text-sm leading-7 text-slate-700 dark:text-slate-200 sm:text-[0.95rem]">
+                    {!! $question->content !!}
+                </p>
+            </div>
         @endunless
     </div>
 
     @if ($question->answer)
+        @php
+            $actionMetricClasses = 'inline-flex items-center gap-1.5 text-[0.82rem] text-slate-500 transition-colors';
+            $actionMetricHoverClasses = 'hover:text-slate-700 dark:hover:text-slate-200';
+            $actionSeparatorClasses = 'h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-700/80';
+            $timestamp = $question->answer_updated_at ?: $question->answer_created_at;
+        @endphp
         <div
             data-parent=true
             x-intersect.once.full="$dispatch('post-viewed', { postId: '{{ $questionId }}' })"
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
-            class="group p-4 mt-3 rounded-2xl {{ $previousQuestionId === $questionId ? 'dark:bg-slate-700/60 bg-slate-200/60' : 'border dark:border-transparent border-slate-200 dark:bg-slate-900 bg-slate-50' }}
-            {{ $commenting ?: "cursor-pointer transition-colors duration-100 ease-in-out dark:hover:bg-slate-700/60 hover:bg-slate-100/60" }}"
+            @class([
+                'group',
+                'border-b border-slate-200 dark:border-slate-700/50' => $showBorder,
+                'bg-pink-50/70 dark:bg-[#151225]' => $previousQuestionId === $questionId,
+                'cursor-pointer transition-colors duration-100 ease-in-out' => ! $commenting,
+            ])
         >
-            <div class="flex justify-between">
-                <a
-                    href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                    class="group/profile flex items-center gap-3"
-                    data-navigate-ignore="true"
-                    wire:navigate
-                >
-                    <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-100 transition-opacity group-hover/profile:opacity-90">
-                        <img
-                            src="{{ $question->to->avatar_url }}"
-                            alt="{{ $question->to->username }}"
-                            class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
-                        />
-                    </figure>
-                    <div class="overflow-hidden text-sm">
-                        <div class="items flex">
-                            <p class="truncate font-medium dark:text-slate-50 text-slate-950">
+            <div class="flex items-stretch gap-3">
+                <div class="flex flex-col items-center self-stretch flex-shrink-0">
+                    <a
+                        href="{{ route('profile.show', ['username' => $question->to->username]) }}"
+                        class="group/profile block"
+                        data-navigate-ignore="true"
+                        wire:navigate
+                    >
+                        <figure class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-10 w-10 sm:h-12 sm:w-12 overflow-hidden border border-slate-200/70 bg-slate-100 transition-opacity group-hover/profile:opacity-90 dark:border-slate-800/30 dark:bg-[#10182b]">
+                            <img
+                                src="{{ $question->to->avatar_url }}"
+                                alt="{{ $question->to->username }}"
+                                class="{{ $question->to->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-10 w-10 sm:h-12 sm:w-12"
+                            />
+                        </figure>
+                    </a>
+                    @if($inThread)
+                        <div class="min-h-4 w-0.5 flex-1 bg-slate-300 dark:bg-slate-600" aria-hidden="true"></div>
+                    @endif
+                </div>
+                <div class="min-w-0 flex-1 py-1">
+                    <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+                        <a
+                            href="{{ route('profile.show', ['username' => $question->to->username]) }}"
+                            class="group/profile min-w-0 flex flex-1 flex-wrap items-center gap-x-2 gap-y-1 text-sm"
+                            data-navigate-ignore="true"
+                            wire:navigate
+                        >
+                            <p class="truncate font-medium text-slate-950 dark:text-white">
                                 {{ $question->to->name }}
                             </p>
 
                             @if ($question->to->is_verified && $question->to->is_company_verified)
                                 <x-icons.verified-company
                                     :color="$question->to->right_color"
-                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
+                                    class="h-3.5 w-3.5"
                                 />
                             @elseif ($question->to->is_verified)
                                 <x-icons.verified
                                     :color="$question->to->right_color"
-                                    class="ml-1 mt-0.5 h-3.5 w-3.5"
+                                    class="h-3.5 w-3.5"
                                 />
                             @endif
-                        </div>
 
-                        <p class="truncate text-slate-500 transition-colors dark:group-hover/profile:text-slate-400 group-hover/profile:text-slate-600">
-                            {{ '@'.$question->to->username }}
-                        </p>
-                    </div>
-                </a>
+                            <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
+                                {{ '@'.$question->to->username }}
+                            </p>
+                        </a>
 
-                @if (auth()->check() && auth()->user()->can('update', $question))
-                    <x-dropdown
-                        align="right"
-                        width="48"
-                    >
+                        <div class="flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
+                            <time
+                                class="inline-flex cursor-help items-center whitespace-nowrap"
+                                title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
+                                datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
+                            >
+                                {{ $question->answer_updated_at ? 'Edited: ' : null }}
+                                {{
+                                    $timestamp->timezone(session()->get('timezone', 'UTC'))
+                                        ->diffForHumans(short: true)
+                                }}
+                            </time>
+
+                            @if (auth()->check() && auth()->user()->can('update', $question))
+                                <x-dropdown
+                                    align="right"
+                                    width="48"
+                                >
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                class="inline-flex items-center rounded-md border border-transparent py-1 text-sm dark:text-slate-400 text-slate-600 transition duration-150 ease-in-out dark:hover:text-slate-50 hover:text-slate-950 focus:outline-none">
-                                <x-heroicon-o-ellipsis-horizontal class="h-6 w-6" />
+                                class="{{ $menuButtonClasses }}">
+                                <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
                             </button>
                         </x-slot>
 
@@ -149,29 +205,14 @@
                                 </x-dropdown-button>
                             @endif
                         </x-slot>
-                    </x-dropdown>
-                @endif
-            </div>
+                                </x-dropdown>
+                            @endif
+                        </div>
+                    </div>
 
-            @if((! $inThread || $commenting) && $question->parent)
-                <a href="{{
-                        route('questions.show', [
-                            'username' => $question->parent->to->username,
-                            'question' => $question->parent,
-                            'previousQuestionId' => $questionId,
-                        ])
-                    }}"
-                   data-navigate-ignore="true"
-                   wire:navigate
-                   class="truncate text-xs text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600"
-                >
-                    In response to {{ '@'.$question->parent->to->username }}
-                </a>
-            @endif
-
-            <div x-data="showMore">
+                    <div x-data="showMore">
                 <div
-                    class="mt-3 break-words dark:text-slate-200 text-slate-800 overflow-hidden answer"
+                        class="mt-3 overflow-hidden break-words text-slate-700 dark:text-slate-200 answer"
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
@@ -180,11 +221,11 @@
                     </p>
                 </div>
 
-                <div x-show="showMore === true" class="mt-1 answer">
+                <div x-show="showMore === true" class="mt-2 answer">
                     <button
                         data-navigate-ignore="true"
                         @click="showButtonAction"
-                        class="text-sm text-pink-500 flex ml-auto"
+                        class="ml-auto flex text-sm font-medium text-pink-500"
                         x-text="showMoreButtonText"
                     ></button>
                 </div>
@@ -194,8 +235,8 @@
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 
-            <div class="mt-3 flex items-center justify-between text-sm text-slate-500">
-                <div class="flex items-center gap-1">
+            <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
+                <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
                     <a
                         @if (! $commenting)
                             x-ref="parentLink"
@@ -207,19 +248,19 @@
                         @endif
                         title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
                         @class([
-                            "flex items-center transition-colors group-hover:text-pink-500 dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none",
+                            "$actionMetricClasses $actionMetricHoverClasses focus:outline-none",
                             "cursor-pointer" => ! $commenting,
                         ])
                     >
                         <x-heroicon-o-chat-bubble-left-right class="size-4" />
                         @if ($question->children_count > 0)
-                            <span class="ml-1">
+                            <span>
                                 {{ Number::abbreviate($question->children_count) }}
                             </span>
                         @endif
                     </a>
 
-                    <span>•</span>
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
 
                     @php
                         $likeExists = $question->is_liked;
@@ -234,56 +275,40 @@
                         data-navigate-ignore="true"
                         x-on:click="toggleLike"
                         :title="likeButtonTitle"
-                        class="flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
                     >
                         <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
                         <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
-                        <span class="ml-1" x-show="count" x-text="likeButtonText"></span>
+                        <span x-show="count" x-text="likeButtonText"></span>
                     </button>
-                    <span>•</span>
+
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
                     <p
-                        class="inline-flex cursor-help items-center"
+                        class="{{ $actionMetricClasses }} cursor-help"
                         title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
                     >
                         <x-icons.chart class="h-4 w-4"/>
                         @if ($question->views > 0)
-                            <span class="mx-1">
+                            <span>
                                 {{ Number::abbreviate($question->views) }}
                             </span>
                         @endif
                     </p>
 
-                    <span>•</span>
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
 
                     <a
-                        class="flex items-center transition-colors group-hover:text-pink-500 dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
-                        title="Translate"
-                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
                         data-navigate-ignore="true"
+                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
                         target="_blank"
+                        title="Translate"
+                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
                     >
-                        <x-heroicon-o-language class="h-4 w-4"/>
+                        <x-heroicon-o-language class="h-4 w-4" />
                     </a>
-                </div>
 
-                <div class="flex items-center text-slate-500 ">
-                    @php
-                        $timestamp = $question->answer_updated_at ?: $question->answer_created_at
-                    @endphp
-
-                    <time
-                        class="cursor-help"
-                        title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
-                        datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
-                    >
-                        {{  $question->answer_updated_at ? 'Edited:' : null }}
-                        {{
-                            $timestamp->timezone(session()->get('timezone', 'UTC'))
-                                ->diffForHumans(short: true)
-                        }}
-                    </time>
-
-                    <span class="mx-1">•</span>
+                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
 
                     <button
                         data-navigate-ignore="true"
@@ -293,24 +318,28 @@
                         x-cloak
                         x-on:click="toggleBookmark"
                         :title="bookmarkButtonTitle"
-                        class="mr-1 flex items-center transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
                     >
                         <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
                         <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
-                        <span class="ml-1" x-show="count" x-text="bookmarkButtonText"></span>
+                        <span x-show="count" x-text="bookmarkButtonText"></span>
                     </button>
+
+                </div>
+
+                <div class="ml-auto flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500 sm:ml-0">
                     <x-dropdown align="left"
                                 width=""
-                                dropdown-classes="top-[-3.4rem] shadow-none"
-                                content-classes="flex flex-col space-y-1"
+                                dropdown-classes="top-[-3.8rem] shadow-none"
+                                :content-classes="$shareMenuContentClasses"
                     >
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
-                                x-bind:class="{ 'text-pink-500 hover:text-pink-600': open,
-                                                'text-slate-500 dark:hover:text-slate-400 hover:text-slate-600': !open }"
+                                x-bind:class="{ 'text-pink-500': open,
+                                                'text-slate-500 hover:text-slate-700 dark:hover:text-slate-200': !open }"
                                 title="Share"
-                                class="flex items-center transition-colors duration-150 ease-in-out focus:outline-none"
+                                class="inline-flex items-center text-[0.82rem] transition-colors duration-150 ease-in-out focus:outline-none"
                             >
                                 <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
@@ -333,7 +362,7 @@
                                     )
                                 "
                                 type="button"
-                                class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                                class="{{ $shareMenuItemClasses }}"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -352,7 +381,7 @@
                                         }}',
                                     })
                                 "
-                                class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                                class="{{ $shareMenuItemClasses }}"
                             >
                                 <x-heroicon-o-link class="size-4" />
                             </button>
@@ -368,12 +397,15 @@
                                     })
                                 "
                                 type="button"
-                                class="text-slate-500 transition-colors dark:hover:text-slate-400 hover:text-slate-600 focus:outline-none"
+                                class="{{ $shareMenuItemClasses }}"
                             >
                                 <x-icons.twitter-x class="size-4" />
                             </button>
                         </x-slot>
                     </x-dropdown>
+
+                </div>
+            </div>
                 </div>
             </div>
         </div>
@@ -430,7 +462,7 @@
         />
     @endif
 
-    @if($commenting && $inThread && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
+    @if($commenting && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
     @endif
 </article>

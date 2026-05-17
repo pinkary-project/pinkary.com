@@ -1,11 +1,18 @@
 <x-app-layout>
-    <x-slot name="title">Recent posts with <span class="text-blue-500">#{{ $hashtag }}</span></x-slot>
+    <section class="overflow-hidden border border-slate-800/30 lg:border-t-0 bg-[#07101f]/95">
+        <div class="flex flex-col gap-2 border-b border-slate-800/30 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+            <div>
+                <p class="text-sm font-medium text-slate-400">Hashtag</p>
+                <h2 class="mt-1 text-[2rem] font-semibold tracking-tight text-white">
+                    #{{ $hashtag }}
+                </h2>
+            </div>
 
-    <div class="flex flex-col items-center justify-center">
-        <div class="w-full max-w-md overflow-hidden rounded-lg px-2 dark:shadow-md sm:px-0">
             <x-home-menu></x-home-menu>
+        </div>
 
+        <div class="pb-1.5 pt-1.5 sm:pb-2 sm:pt-2">
             <livewire:home.feed :hashtag="$hashtag" />
         </div>
-    </div>
+    </section>
 </x-app-layout>

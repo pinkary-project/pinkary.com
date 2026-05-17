@@ -1,11 +1,21 @@
 <x-app-layout>
-    <div class="flex flex-col items-center justify-center py-10">
-        <div class="min-h-screen w-full max-w-md overflow-hidden rounded-lg px-4 md:px-0">
+    <div class="space-y-0 border-x border-slate-200 py-0 dark:border-slate-700/50">
+        <section class="border-b border-slate-200 bg-white/80 p-4 dark:border-slate-700/50 dark:bg-[#07101f]/95 sm:p-5">
             <livewire:links.index :userId="$user->id" />
-            <livewire:questions.create :toId="$user->id" />
-            <livewire:questions.index
-                :userId="$user->id"
-            />
-        </div>
+        </section>
+
+        <section class="border-b border-slate-200 bg-white/80 dark:border-slate-700/50 dark:bg-[#07101f]/95">
+            <div class="border-b border-slate-200 px-4 py-4 dark:border-slate-700/50">
+                <div class="border border-slate-200/70 bg-slate-50/80 p-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
+                    <livewire:questions.create :toId="$user->id" />
+                </div>
+            </div>
+
+            <div>
+                <livewire:questions.index
+                    :userId="$user->id"
+                />
+            </div>
+        </section>
     </div>
 </x-app-layout>

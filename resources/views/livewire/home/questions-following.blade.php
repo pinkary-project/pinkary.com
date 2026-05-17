@@ -1,20 +1,22 @@
-<div class="mb-12 w-full dark:text-slate-200 text-slate-800">
+<div class="w-full text-slate-700 dark:text-slate-200">
     @if ($followingQuestions->isEmpty())
-        <section class="rounded-lg">
-            <p class="my-8 text-center text-lg text-slate-500">
+        <section>
+            <p class="my-8 text-center text-lg text-slate-500 dark:text-slate-400">
                 We haven't found any questions that may interest you based on the activity you've done on Pinkary.
             </p>
         </section>
     @else
-        <section class="mb-12 min-h-screen space-y-10">
+        <section class="min-h-screen">
             @foreach ($followingQuestions as $question)
-                <x-thread
-                    :rootId="$question->showRoot ? $question->root_id : null"
-                    :grandParentId="$question->parent?->parent_id"
-                    :parentId="$question->showParent ? $question->parent_id : null"
-                    :questionId="$question->id"
-                    :username="$question->root?->to->username"
-                />
+                <div class="border-b border-slate-200 dark:border-slate-700/50 px-4 py-4 transition hover:bg-slate-50 dark:hover:bg-[#0a1325]">
+                    <x-thread
+                        :rootId="$question->showRoot ? $question->root_id : null"
+                        :grandParentId="$question->parent?->parent_id"
+                        :parentId="$question->showParent ? $question->parent_id : null"
+                        :questionId="$question->id"
+                        :username="$question->root?->to->username"
+                    />
+                </div>
             @endforeach
 
             <x-load-more-button

@@ -9,6 +9,19 @@
     padding-right: 1rem;
 }
 
+.answer img,
+.answer figure,
+.answer p > a:has(img) {
+    display: block;
+    margin-top: 0.35rem;
+}
+
+.answer img:first-child,
+.answer figure:first-child,
+.answer p > a:has(img):first-child {
+    margin-top: 0;
+}
+
 .hover\:darken-gradient:hover {
     filter: saturate(2.5);
 }
