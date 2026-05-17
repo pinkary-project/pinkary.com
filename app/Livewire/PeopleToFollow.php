@@ -17,6 +17,8 @@ final class PeopleToFollow extends Component
      */
     public function render(): View
     {
+        $authenticatedUserId = auth()->id();
+
         $famousUsers = Cache::remember('top-50-users', now()->endOfDay(), fn (): array => User::query()
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
@@ -33,6 +35,12 @@ final class PeopleToFollow extends Component
         return view('livewire.people-to-follow', [
             'users' => User::query()
                 ->whereIn('id', $famousUsers)
+                ->when($authenticatedUserId !== null, function (Builder $query) use ($authenticatedUserId): void {
+                    $query->where('id', '!=', $authenticatedUserId)
+                        ->whereDoesntHave('followers', function (Builder $query) use ($authenticatedUserId): void {
+                            $query->whereKey($authenticatedUserId);
+                        });
+                })
                 ->inRandomOrder()
                 ->limit(5)
                 ->get(),

@@ -7,7 +7,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
-test('it renders the people to follow list', function () {
+beforeEach(function () {
+    Cache::forget('top-50-users');
+});
+
+it('renders the people to follow list', function () {
     User::factory(50)
         ->hasLinks(1, function (array $attributes, User $user): array {
             return ['url' => "https://twitter.com/{$user->username}"];
@@ -30,15 +34,35 @@ test('it renders the people to follow list', function () {
     expect($component->viewData('users'))->toHaveCount(5);
 });
 
-test('it caches the top 50 users', function () {
-    User::factory(50)
+it('excludes users already followed by the authenticated user', function () {
+    $user = User::factory()->create();
+
+    $discoveryPool = User::factory(50)
         ->hasLinks(1, function (array $attributes, User $user): array {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
         ->hasQuestionsReceived(2, ['answer' => 'answer'])
         ->create();
 
-    Cache::forget('top-50-users');
+    $followedUser = $discoveryPool->first();
+
+    $user->following()->attach($followedUser);
+
+    $component = Livewire::actingAs($user)->test(PeopleToFollow::class);
+
+    expect($component->viewData('users')->contains(fn (User $suggestedUser): bool => $suggestedUser->is($followedUser)))
+        ->toBeFalse()
+        ->and($component->viewData('users'))
+        ->toHaveCount(5);
+});
+
+it('caches the top 50 users', function () {
+    User::factory(50)
+        ->hasLinks(1, function (array $attributes, User $user): array {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(2, ['answer' => 'answer'])
+        ->create();
 
     Livewire::test(PeopleToFollow::class);
 
