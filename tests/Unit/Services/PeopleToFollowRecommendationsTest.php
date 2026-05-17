@@ -277,6 +277,24 @@ it('returns empty results when helper inputs collapse to no user ids', function 
         ->toBe([]);
 });
 
+it('returns only available users when fewer qualify than the requested limit', function () {
+    // Only two users exist in the discovery pool — fewer than the default limit of
+    // five — so the post-fetch count check fires but finds nothing extra to top up.
+    User::factory(2)
+        ->hasLinks(1, function (array $attributes, User $user): array {
+            return ['url' => "https://twitter.com/{$user->username}"];
+        })
+        ->hasQuestionsReceived(2, ['answer' => 'answer'])
+        ->create();
+
+    $users = (new PeopleToFollowRecommendations())->forContext(
+        authenticatedUserId: null,
+        limit: 5,
+    );
+
+    expect($users)->toHaveCount(2);
+});
+
 it('caches the top 50 users', function () {
     User::factory(50)
         ->hasLinks(1, function (array $attributes, User $user): array {

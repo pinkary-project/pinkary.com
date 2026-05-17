@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 final readonly class PeopleToFollowRecommendations
 {
@@ -19,6 +20,8 @@ final readonly class PeopleToFollowRecommendations
     private const int FAMOUS_LIMIT = 50;
 
     private const int EXTENDED_FAMOUS_LIMIT = 200;
+
+    private const int THREAD_DEPTH_CAP = 20;
 
     /**
      * @return EloquentCollection<int, User>
@@ -57,7 +60,21 @@ final readonly class PeopleToFollowRecommendations
             ];
         }
 
-        return $this->usersForIds(array_slice($selectedIds, 0, $limit));
+        $users = $this->usersForIds(array_slice($selectedIds, 0, $limit));
+
+        if ($users->count() < $limit) {
+            $topUpIds = $this->genericFallbackUserIds(
+                authenticatedUserId: $authenticatedUserId,
+                excludeIds: $selectedIds,
+                limit: $limit - $users->count(),
+            );
+
+            if ($topUpIds !== []) {
+                $users = $users->merge($this->usersForIds($topUpIds));
+            }
+        }
+
+        return $users;
     }
 
     /**
@@ -75,18 +92,23 @@ final readonly class PeopleToFollowRecommendations
 
         $selectedIds = $this->availableUserIds([$question->to_id], $authenticatedUserId, [], 1);
 
+        // Load the full ancestor chain in a single recursive CTE (depth-capped at THREAD_DEPTH_CAP).
+        $threadRows = DB::select(
+            'WITH RECURSIVE thread (id, from_id, to_id, parent_id, depth) AS (
+                SELECT id, from_id, to_id, parent_id, 0 FROM questions WHERE id = ?
+                UNION ALL
+                SELECT q.id, q.from_id, q.to_id, q.parent_id, t.depth + 1
+                FROM questions q INNER JOIN thread t ON q.id = t.parent_id
+                WHERE t.depth < ?
+            )
+            SELECT from_id, to_id FROM thread',
+            [$questionId, self::THREAD_DEPTH_CAP]
+        );
+
         $threadParticipantIds = [];
-        $threadQuestion = $question;
-
-        while ($threadQuestion !== null) {
-            $threadParticipantIds[] = $threadQuestion->from_id;
-            $threadParticipantIds[] = $threadQuestion->to_id;
-
-            $threadQuestion = $threadQuestion->parent_id === null
-                ? null
-                : Question::query()
-                    ->select('id', 'from_id', 'to_id', 'parent_id')
-                    ->find($threadQuestion->parent_id);
+        foreach ($threadRows as $row) {
+            $threadParticipantIds[] = (int) $row->from_id;
+            $threadParticipantIds[] = (int) $row->to_id;
         }
 
         if (count($selectedIds) < $limit) {
