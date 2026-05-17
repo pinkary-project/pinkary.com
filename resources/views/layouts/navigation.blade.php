@@ -180,7 +180,7 @@
                                 {{ __('About') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link href="https://github.com/pinkary-project/pinkary.com" target="_blank">
+                            <x-dropdown-link :navigate="false" href="https://github.com/pinkary-project/pinkary.com" target="_blank">
                                 {{ __('Source code') }}
                             </x-dropdown-link>
 
@@ -305,7 +305,7 @@
                     {{ __('About') }}
                 </x-dropdown-link>
 
-                <x-dropdown-link href="https://github.com/pinkary-project/pinkary.com" target="_blank">
+                <x-dropdown-link :navigate="false" href="https://github.com/pinkary-project/pinkary.com" target="_blank">
                     {{ __('Source code') }}
                 </x-dropdown-link>
 
