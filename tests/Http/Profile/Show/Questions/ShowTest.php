@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Livewire\PeopleToFollow;
 use App\Livewire\Questions\Create;
 use App\Livewire\Questions\Show;
 use App\Models\Question;
@@ -140,4 +141,32 @@ test('it shows the parent questions', function () {
                 && $parentQuestions[1]->id === $parent2->id
                 && $parentQuestions[2]->id === $parent1->id;
         });
+});
+
+test('it shows question-context suggestions in the people to follow rail', function () {
+    $postUser = User::factory()->create();
+    $currentParticipant = User::factory()->create();
+    $recentInteractionUser = User::factory()->create(['name' => 'Question Rail Interaction']);
+
+    Question::factory()->create([
+        'from_id' => $recentInteractionUser->id,
+        'to_id' => $postUser->id,
+        'answer' => 'Question answer',
+        'updated_at' => now()->subMinutes(5),
+    ]);
+
+    $question = Question::factory()->create([
+        'from_id' => $currentParticipant->id,
+        'to_id' => $postUser->id,
+        'updated_at' => now(),
+    ]);
+
+    $response = $this->get(route('questions.show', [
+        'username' => $postUser->username,
+        'question' => $question->id,
+    ]));
+
+    $response->assertOk()
+        ->assertSeeLivewire(PeopleToFollow::class)
+        ->assertSee('Question Rail Interaction');
 });

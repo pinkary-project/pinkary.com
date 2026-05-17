@@ -3,68 +3,51 @@
 declare(strict_types=1);
 
 use App\Livewire\PeopleToFollow;
+use App\Models\Question;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
-beforeEach(function () {
-    Cache::forget('top-50-users');
-});
-
-it('renders the people to follow list', function () {
-    User::factory(50)
+it('renders the people to follow widget', function () {
+    User::factory(5)
         ->hasLinks(1, function (array $attributes, User $user): array {
             return ['url' => "https://twitter.com/{$user->username}"];
         })
         ->hasQuestionsReceived(2, ['answer' => 'answer'])
         ->create();
 
-    $outsideDiscoveryPool = User::factory()
-        ->hasLinks(1, function (array $attributes, User $user): array {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
-        ->hasQuestionsReceived(1, ['answer' => 'answer'])
-        ->create(['name' => 'Outside Discovery Pool']);
-
-    $component = Livewire::test(PeopleToFollow::class);
-
-    $component->assertSee('People to follow')
-        ->assertDontSee($outsideDiscoveryPool->name);
-
-    expect($component->viewData('users'))->toHaveCount(5);
+    Livewire::test(PeopleToFollow::class)
+        ->assertStatus(200)
+        ->assertSee('People to follow')
+        ->assertSee('View all');
 });
 
-it('excludes users already followed by the authenticated user', function () {
-    $user = User::factory()->create();
+it('uses the current context and authenticated user when rendering recommendations', function () {
+    $viewer = User::factory()->create();
+    $profileUser = User::factory()->create();
+    $followedInteractedUser = User::factory()->create();
+    $visibleInteractedUser = User::factory()->create();
 
-    $discoveryPool = User::factory(50)
-        ->hasLinks(1, function (array $attributes, User $user): array {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
-        ->hasQuestionsReceived(2, ['answer' => 'answer'])
-        ->create();
+    $viewer->following()->attach($followedInteractedUser);
 
-    $followedUser = $discoveryPool->first();
+    Question::factory()->create([
+        'from_id' => $followedInteractedUser->id,
+        'to_id' => $profileUser->id,
+        'answer' => 'Followed answer',
+        'updated_at' => now()->subMinutes(2),
+    ]);
 
-    $user->following()->attach($followedUser);
+    Question::factory()->create([
+        'from_id' => $visibleInteractedUser->id,
+        'to_id' => $profileUser->id,
+        'answer' => 'Visible answer',
+        'updated_at' => now()->subMinute(),
+    ]);
 
-    $component = Livewire::actingAs($user)->test(PeopleToFollow::class);
-
-    expect($component->viewData('users')->contains(fn (User $suggestedUser): bool => $suggestedUser->is($followedUser)))
-        ->toBeFalse()
-        ->and($component->viewData('users'))
-        ->toHaveCount(5);
-});
-
-it('caches the top 50 users', function () {
-    User::factory(50)
-        ->hasLinks(1, function (array $attributes, User $user): array {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
-        ->hasQuestionsReceived(2, ['answer' => 'answer'])
-        ->create();
-
-    Livewire::test(PeopleToFollow::class);
-
-    expect(Cache::has('top-50-users'))->toBeTrue();
+    Livewire::actingAs($viewer)->test(PeopleToFollow::class, [
+        'context' => 'profile',
+        'contextUserId' => $profileUser->id,
+    ])
+        ->assertStatus(200)
+        ->assertSee($visibleInteractedUser->name)
+        ->assertDontSee($followedInteractedUser->name);
 });

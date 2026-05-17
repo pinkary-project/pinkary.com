@@ -1,4 +1,8 @@
-<x-app-layout>
+<x-app-layout
+    people-to-follow-context="question"
+    :people-to-follow-user-id="$question->to_id"
+    :people-to-follow-question-id="$question->id"
+>
     <div class="py-0"
          x-data
          x-init="document.getElementById('q-{{ $question->id }}').scrollIntoView();">

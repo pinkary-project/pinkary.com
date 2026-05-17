@@ -5,45 +5,45 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
+use App\Services\PeopleToFollowRecommendations;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 final class PeopleToFollow extends Component
 {
     /**
+     * The current page context for the widget.
+     */
+    #[Locked]
+    public string $context = 'generic';
+
+    /**
+     * The contextual user ID.
+     */
+    #[Locked]
+    public ?int $contextUserId = null;
+
+    /**
+     * The contextual question ID.
+     */
+    #[Locked]
+    public ?string $contextQuestionId = null;
+
+    /**
      * Render the component.
      */
-    public function render(): View
+    public function render(PeopleToFollowRecommendations $recommendations): View
     {
-        $authenticatedUserId = auth()->id();
-
-        $famousUsers = Cache::remember('top-50-users', now()->endOfDay(), fn (): array => User::query()
-            ->whereHas('links', function (Builder $query): void {
-                $query->where('url', 'like', '%twitter.com%')
-                    ->orWhere('url', 'like', '%github.com%')
-                    ->orWhere('url', 'like', '://x.com%');
-            })
-            ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
-                $query->whereNotNull('answer');
-            }])
-            ->orderBy('answered_questions_count', 'desc')
-            ->limit(50)->pluck('id')->toArray()
-        );
+        $authenticatedUser = auth()->user();
 
         return view('livewire.people-to-follow', [
-            'users' => User::query()
-                ->whereIn('id', $famousUsers)
-                ->when($authenticatedUserId !== null, function (Builder $query) use ($authenticatedUserId): void {
-                    $query->where('id', '!=', $authenticatedUserId)
-                        ->whereDoesntHave('followers', function (Builder $query) use ($authenticatedUserId): void {
-                            $query->whereKey($authenticatedUserId);
-                        });
-                })
-                ->inRandomOrder()
-                ->limit(5)
-                ->get(),
+            'users' => $recommendations->forContext(
+                authenticatedUserId: $authenticatedUser instanceof User ? $authenticatedUser->id : null,
+                context: $this->context,
+                contextUserId: $this->contextUserId,
+                contextQuestionId: $this->contextQuestionId,
+            ),
         ]);
     }
 }
