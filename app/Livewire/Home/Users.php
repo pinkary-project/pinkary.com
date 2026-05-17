@@ -105,7 +105,7 @@ final class Users extends Component
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%')
-                    ->orWhere('url', 'like', '://x.com%');
+                    ->orWhere('url', 'like', '%://x.com%');
             })
             ->whereNotIn('id', $except->pluck('id'))
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
