@@ -1,6 +1,6 @@
 <section class="mb-12">
     @if ($pinnedQuestion)
-        <div class="border-b border-slate-200 px-4 py-4 dark:border-slate-700/50">
+        <div class="border-b border-slate-200 px-2 py-2 dark:border-slate-700/50">
             <livewire:questions.show
                 :questionId="$pinnedQuestion->id"
                 :key="'pinned-question-' . $pinnedQuestion->id"
@@ -11,7 +11,7 @@
     @endif
 
     @foreach ($questions as $question)
-        <div class="border-b border-slate-200 px-4 py-4 last:border-b-0 dark:border-slate-700/50">
+        <div class="border-b border-slate-200 px-2 py-2 last:border-b-0 dark:border-slate-700/50">
             <x-thread
                 :rootId="$question->showRoot ? $question->root_id : null"
                 :grandParentId="$question->parent?->parent_id"
