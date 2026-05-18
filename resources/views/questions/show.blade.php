@@ -38,9 +38,12 @@
 
             <livewire:questions.show :questionId="$question->id" :in-thread="false" :commenting="true" />
 
-            <div class="mt-6 border border-slate-200/80 bg-slate-50/70 p-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
-                <x-comments :question="$question" />
-            </div>
+            @php $question->loadMissing('children.children'); @endphp
+            @if ($question->children->isNotEmpty())
+                <div class="mt-6 border border-slate-200/80 bg-slate-50/70 p-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
+                    <x-comments :question="$question" />
+                </div>
+            @endif
         </section>
     </div>
 </x-app-layout>
