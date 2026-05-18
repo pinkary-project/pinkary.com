@@ -28,7 +28,7 @@
                     @include('layouts.navigation')
                 </aside>
 
-                <div class="min-w-0 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-4' : '' }}">
+                <div class="min-w-0 flex-1 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-4' : '' }}">
                     @if ($showDiscoverLayout)
                         <form
                             x-data="{ query: @js($globalSearchQuery) }"
@@ -96,7 +96,7 @@
                     @endif
 
                     @if (isset($title))
-                        <div class="{{ $showDiscoverLayout ? 'mb-6 w-full pt-2 lg:pt-0' : 'mx-auto mb-6 w-full max-w-[44rem] pt-2 lg:pt-4' }}">
+                        <div class="{{ $showDiscoverLayout ? 'mb-6 w-full pt-2 lg:pt-0' : 'mx-auto mb-6 w-full max-w-[44rem] px-4 pt-2 lg:px-4 lg:pt-4' }}">
                             <h1 class="font-mona text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
                                 {{ $title }}
                             </h1>

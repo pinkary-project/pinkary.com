@@ -2,19 +2,21 @@
     @php
         $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
         $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
-        $menuButtonClasses = 'inline-flex items-center rounded-full p-2 text-sm text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:bg-[#16203a] dark:hover:text-white';
+        $menuButtonClasses = 'flex items-center justify-center leading-none text-sm text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:bg-[#16203a] dark:hover:text-white';
         $shareMenuContentClasses = 'flex flex-col space-y-1 rounded-2xl border border-slate-200/80 bg-white/95 p-2 text-slate-500 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-white/10 dark:bg-gray-900/95 dark:text-slate-300 dark:shadow-black/30';
-        $shareMenuItemClasses = 'rounded-xl px-3 py-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:bg-gray-800 dark:hover:text-white';
+        $shareMenuItemClasses = 'rounded-xl p-1 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:bg-gray-800 dark:hover:text-white';
     @endphp
-    <div class="space-y-2.5">
+    <div @class([
+        'space-y-2 rounded-md border border-slate-200/70 bg-slate-50/70 px-3 py-2.5 dark:border-slate-800/40 dark:bg-[#0b1324]/80' => $question->answer && ! $question->isSharedUpdate(),
+        'space-y-1' => ! $question->answer || $question->isSharedUpdate(),
+    ])>
         <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
             @unless ($question->isSharedUpdate())
                 @if ($question->anonymously)
-                    <div class="inline-flex items-center gap-3 border border-dashed border-slate-300/80 bg-slate-50 px-3 py-2 text-sm text-slate-500 dark:border-slate-800/30 dark:bg-[#0b1324] dark:text-slate-400">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-slate-300 dark:border-slate-700">
-                            <span>?</span>
+                    <div class="inline-flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-slate-300 dark:border-slate-700">
+                            <span class="text-xs">?</span>
                         </div>
-
                         <p class="font-medium">Anonymously</p>
                     </div>
                 @else
@@ -52,11 +54,9 @@
         </div>
 
         @unless ($question->isSharedUpdate())
-            <div class="px-0 py-0.5">
-                <p class="text-sm leading-7 text-slate-700 dark:text-slate-200 sm:text-[0.95rem]">
-                    {!! $question->content !!}
-                </p>
-            </div>
+            <p class="text-sm leading-7 text-slate-700 dark:text-slate-200 sm:text-[0.95rem]">
+                {!! $question->content !!}
+            </p>
         @endunless
     </div>
 
@@ -99,8 +99,8 @@
                         <div class="min-h-4 w-0.5 flex-1 bg-slate-300 dark:bg-slate-600" aria-hidden="true"></div>
                     @endif
                 </div>
-                <div class="min-w-0 flex-1 py-1">
-                    <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+                <div class="min-w-0 flex-1 py-0.5">
+                    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                         <a
                             href="{{ route('profile.show', ['username' => $question->to->username]) }}"
                             class="group/profile min-w-0 flex flex-1 flex-wrap items-center gap-x-2 gap-y-1 text-sm"
@@ -212,7 +212,7 @@
 
                     <div x-data="showMore">
                 <div
-                        class="mt-3 overflow-hidden break-words text-slate-700 dark:text-slate-200 answer"
+                    class="mt-1 overflow-hidden break-words text-slate-700 dark:text-slate-200 answer"
                     wire:ignore.self
                     x-ref="parentDiv"
                 >
@@ -235,7 +235,7 @@
                 <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
             @endif
 
-            <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
+            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
                 <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
                     <a
                         @if (! $commenting)

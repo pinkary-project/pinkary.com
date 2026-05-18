@@ -70,5 +70,9 @@ particleEffect {
 @tailwind utilities;
 
 #link-preview-card iframe {
+    display: block;
     width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 446 / 251;
 }

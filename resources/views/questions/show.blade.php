@@ -30,7 +30,7 @@
             </div>
         </section>
 
-        <section class="border-x border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700/50 dark:bg-[#07101f]/95">
+        <section class="border-x border-b border-slate-200 bg-white px-2 py-2 dark:border-slate-700/50 dark:bg-[#07101f]/95">
             @foreach($parentQuestions as $parentQuestion)
                 <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="true" :key="$parentQuestion->id" />
                 <x-post-divider />
@@ -38,9 +38,12 @@
 
             <livewire:questions.show :questionId="$question->id" :in-thread="false" :commenting="true" />
 
-            <div class="mt-6 border border-slate-200/80 bg-slate-50/70 p-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
-                <x-comments :question="$question" />
-            </div>
+            @php $question->loadMissing('children.children'); @endphp
+            @if ($question->children->isNotEmpty())
+                <div class="mt-6 border border-slate-200/80 bg-slate-50/70 p-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
+                    <x-comments :question="$question" />
+                </div>
+            @endif
         </section>
     </div>
 </x-app-layout>
