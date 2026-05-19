@@ -305,20 +305,19 @@
                                     />
                                 </button>
 
-                                <form wire:submit="destroy({{ $link->id }})">
-                                    <button
-                                        onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
-                                        type="submit"
-                                        class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
-                                    >
-                                        <x-heroicon-o-trash
-                                            class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
-                                            x-bind:class="{ 'invisible': isDragging }"
-                                        />
-                                    </button>
-                                </form>
+                                <button
+                                    x-on:click="$dispatch('open-modal', 'delete-link-{{ $link->id }}');"
+                                    type="button"
+                                    class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
+                                >
+                                    <x-heroicon-o-trash
+                                        class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                        x-bind:class="{ 'invisible': isDragging }"
+                                    />
+                                </button>
                             </div>
                         </li>
+                        <x-links.delete-modal :linkId="$link->id" />
                     @endforeach
                 </ul>
 
