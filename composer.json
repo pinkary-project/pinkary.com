@@ -4,7 +4,8 @@
     "require": {
         "php": "^8.4",
         "ext-imagick": "^3.7.0",
-        "filament/filament": "^3.3.50",
+        "bacon/bacon-qr-code": "^3.1.1",
+        "filament/filament": "^5.6",
         "intervention/image": "^3.11.8",
         "laravel/fortify": "^1.37.0",
         "laravel/framework": "^12.58.0",
@@ -12,13 +13,12 @@
         "laravel/pennant": "^1.23.0",
         "laravel/socialite": "^5.27.0",
         "laravel/tinker": "^2.11.1",
-        "livewire/livewire": "^3.8.0",
+        "livewire/livewire": "^4.3",
         "matomo/device-detector": "^6.5.0",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
         "panphp/pan": "^0.1.10",
         "ryangjchandler/laravel-cloudflare-turnstile": "^2.1.0",
         "scrivo/highlight.php": "^9.18.1.10",
-        "bacon/bacon-qr-code": "^3.1.1",
         "spatie/laravel-mailcoach-mailer": "^1.6.0"
     },
     "require-dev": {
@@ -31,7 +31,7 @@
         "laravel/sail": "^1.58.0",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.9.4",
-        "pestphp/pest": "dev-feat/tia as 4.99.0",
+        "pestphp/pest": "^4.7.0",
         "pestphp/pest-plugin-laravel": "^4.1.0",
         "pestphp/pest-plugin-type-coverage": "^4.0.4",
         "rector/rector": "^2.4.2"

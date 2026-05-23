@@ -6,6 +6,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -21,7 +23,7 @@ final class UserResource extends Resource
     /**
      * The navigation icon for the resource.
      */
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
 
     /**
      * Configures the table for the resource.
@@ -36,14 +38,14 @@ final class UserResource extends Resource
                     ->searchable(),
             ])
             ->actions([
-                Tables\Actions\Action::make('visit_question')
+                Action::make('visit_question')
                     ->label('Visit Profile')
                     ->url(fn (User $record): string => route('profile.show', [
                         'username' => $record->username,
                     ]))
                     ->openUrlInNewTab(),
 
-                Tables\Actions\Action::make('delete')
+                Action::make('delete')
                     ->requiresConfirmation()
                     ->color(Color::Red)
                     ->action(function (User $record): void {

@@ -972,7 +972,7 @@ test('max size & ratio validation', function () {
     ]);
 
     $component->set('images', [
-        UploadedFile::fake()->image('test.jpg', '4005', '4005'),
+        UploadedFile::fake()->image('test.jpg', 4005, 4005),
     ]);
     $component->call('runImageValidation');
 
@@ -980,8 +980,13 @@ test('max size & ratio validation', function () {
         'images.0' => 'The image must be less than 4000 x 4000 pixels.',
     ]);
 
+    // after livewire v4 settings image again merge the array
+    // instead of replacing the array with old array therefore
+    // we need to set it with empty array to reset the images
+    $component->set('images', []);
+
     $component->set('images', [
-        UploadedFile::fake()->image('test.jpg', '429', '1100'),
+        UploadedFile::fake()->image('test.jpg', 429, 1100),
     ]);
     $component->call('runImageValidation');
 

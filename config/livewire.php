@@ -42,6 +42,8 @@ return [
 
     'layout' => 'components.layouts.app',
 
+    'component_layout' => 'layouts::app',
+
     /*
     |---------------------------------------------------------------------------
     | Lazy Loading Placeholder
@@ -53,6 +55,8 @@ return [
     */
 
     'lazy_placeholder' => null,
+
+    'component_placeholder' => null,
 
     /*
     |---------------------------------------------------------------------------
@@ -78,6 +82,25 @@ return [
         'max_upload_time' => 5, // Max duration (in minutes) before an upload is invalidated...
         'cleanup' => true, // Should cleanup temporary uploads older than 24 hrs...
     ],
+
+    'smart_wire_keys' => true,
+
+    'component_locations' => [
+        resource_path('views/components'),
+        resource_path('views/livewire'),
+    ],
+
+    'component_namespaces' => [
+        'layouts' => resource_path('views/layouts'),
+        'pages' => resource_path('views/pages'),
+    ],
+
+    'make_command' => [
+        'type' => 'sfc',
+        'emoji' => true,
+    ],
+
+    'csp_safe' => false,
 
     /*
     |---------------------------------------------------------------------------

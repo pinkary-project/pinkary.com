@@ -93,6 +93,9 @@ final readonly class PeopleToFollowRecommendations
         $selectedIds = $this->availableUserIds([$question->to_id], $authenticatedUserId, [], 1);
 
         // Load the full ancestor chain in a single recursive CTE (depth-capped at THREAD_DEPTH_CAP).
+        /**
+         * @var array<array-key, object{id: int, from_id: int, to_id: int, parent_id: int, depth: int}>
+         */
         $threadRows = DB::select(
             'WITH RECURSIVE thread (id, from_id, to_id, parent_id, depth) AS (
                 SELECT id, from_id, to_id, parent_id, 0 FROM questions WHERE id = ?

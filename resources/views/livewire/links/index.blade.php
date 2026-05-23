@@ -163,8 +163,8 @@
             >
         @endif
 
-        <livewire:followers.index :userId="$user->id" />
-        <livewire:following.index :userId="$user->id" />
+        <livewire:followers :userId="$user->id" />
+        <livewire:following :userId="$user->id" />
 
         <div class="relative z-10 mt-4 flex flex-wrap justify-center gap-2 text-sm">
             @if ($user->followers_count > 0)
