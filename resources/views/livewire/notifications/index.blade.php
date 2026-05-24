@@ -84,7 +84,7 @@
                 @elseif ($question->parent !== null)
                     <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">You have been mentioned in a comment by <span class="font-medium text-slate-950 dark:text-white">{{ '@' . $question->to->username }}</span></p>
                 @else
-                    <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">You have been mentioned in a {{ $question->isSharedUpdate() ? 'update by ' : 'question by ' }}<span class="font-medium text-slate-950 dark:text-white">@{{ $question->to->username }}</span></p>
+                    <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">You have been mentioned in a {{ $question->isSharedUpdate() ? 'update by ' : 'question by ' }}<span class="font-medium text-slate-950 dark:text-white">{{ '@' . $question->to->username }}</span></p>
                 @endif
                 @if(!$question->isSharedUpdate())
                     <p class="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-200">
