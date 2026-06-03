@@ -7,7 +7,7 @@
         <livewire:flash-messages.show />
 
         <div class="flex min-h-screen flex-col">
-            <main class="flex-grow">
+            <main class="grow">
                 <div class="mx-auto grid min-h-[calc(100vh-9rem)] w-full max-w-7xl xl:grid-cols-[18rem_minmax(0,1fr)_18rem]">
                     <aside class="hidden border-x border-slate-200/70 bg-white/85 px-6 dark:border-slate-800/30 dark:bg-[#07101f]/80 xl:flex xl:flex-col">
                         <a

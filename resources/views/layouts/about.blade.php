@@ -10,7 +10,7 @@
         <livewire:flash-messages.show />
 
         <div class="flex min-h-screen flex-col">
-            <main class="flex-grow">
+            <main class="grow">
                 <div class="flex min-h-screen flex-col justify-center overflow-hidden">
                     {{ $slot }}
                 </div>

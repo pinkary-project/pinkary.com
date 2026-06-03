@@ -17,9 +17,9 @@
         @endpersist
         <div class="pointer-events-none fixed inset-0 -z-10 hidden overflow-hidden dark:block">
             <div class="absolute inset-0 bg-[linear-gradient(180deg,#040915_0%,#081223_100%)]"></div>
-            <div class="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.12),_transparent_60%)]"></div>
+            <div class="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.12),transparent_60%)]"></div>
             <div class="absolute left-[28%] top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-pink-500/8 blur-3xl"></div>
-            <div class="absolute right-[-5rem] top-24 h-72 w-72 rounded-full bg-sky-500/6 blur-3xl"></div>
+            <div class="absolute -right-20 top-24 h-72 w-72 rounded-full bg-sky-500/6 blur-3xl"></div>
         </div>
 
         <div class="relative flex min-h-screen flex-col">
@@ -96,7 +96,7 @@
                     @endif
 
                     @if (isset($title))
-                        <div class="{{ $showDiscoverLayout ? 'mb-6 w-full pt-2 lg:pt-0' : 'mx-auto mb-6 w-full max-w-[44rem] px-4 pt-2 lg:px-4 lg:pt-4' }}">
+                        <div class="{{ $showDiscoverLayout ? 'mb-6 w-full pt-2 lg:pt-0' : 'mx-auto mb-6 w-full max-w-176 px-4 pt-2 lg:px-4 lg:pt-4' }}">
                             <h1 class="font-mona text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
                                 {{ $title }}
                             </h1>

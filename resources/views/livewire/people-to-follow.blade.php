@@ -22,7 +22,7 @@
                     <img
                         src="{{ $user->avatar_url }}"
                         alt="{{ $user->username }}"
-                        class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-9 w-9 flex-shrink-0"
+                        class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-9 w-9 shrink-0"
                     />
 
                     <div class="min-w-0 flex-1">
@@ -35,7 +35,7 @@
                         </p>
                     </div>
 
-                    <span class="flex-shrink-0 text-xs text-slate-500">
+                    <span class="shrink-0 text-xs text-slate-500">
                         {{ $user->created_at->diffForHumans(short: true) }}
                     </span>
                 </a>

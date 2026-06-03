@@ -34,7 +34,7 @@
                                 x-autosize
                                 x-ref="content"
                                 autocomplete
-                                class="!min-h-[5rem] !rounded-none !border-slate-200/70 !bg-white !px-3.5 !py-3 !text-[0.95rem] !leading-7 !text-slate-950 shadow-sm placeholder:!text-slate-400 dark:!border-slate-800/30 dark:!bg-[#10182b] dark:!text-white dark:placeholder:!text-slate-500"
+                                class="min-h-20! rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
                             />
 
                             <p class="mt-2 text-right text-sm text-slate-500 dark:text-slate-400"><span x-text="$wire.content.length"></span> / {{ $this->maxContentLength}}</p>
@@ -114,7 +114,7 @@
                 <h4 class="text-sm font-medium dark:text-slate-300 text-slate-700">Poll Options</h4>
                 <template x-for="(option, index) in pollOptions" :key="index">
                     <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 flex-shrink-0"></div>
+                        <div class="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 shrink-0"></div>
                         <x-text-input
                             x-model="pollOptions[index]"
                             ::placeholder="`Option ${index + 1}`"

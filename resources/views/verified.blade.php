@@ -1,7 +1,7 @@
 <x-about-layout>
     <div class="relative flex justify-center">
         <div
-            class="absolute -top-48 -z-10 size-[400px] -rotate-45 rounded-full bg-gradient-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl lg:size-[500px]"></div>
+            class="absolute -top-48 -z-10 size-[400px] -rotate-45 rounded-full bg-linear-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl lg:size-[500px]"></div>
     </div>
 
     <nav

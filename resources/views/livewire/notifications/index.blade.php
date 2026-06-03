@@ -40,7 +40,7 @@
                 @if (! $isMention)
                     @if ($question->parent_id !== null)
                         <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
-                            <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
+                            <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
                                 <img
                                     src="{{ $question->from->avatar_url }}"
                                     alt="{{ $question->from->username }}"
@@ -51,7 +51,7 @@
                         </div>
                     @elseif ($question->from->is(auth()->user()) && $question->answer !== null)
                         <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
-                            <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
+                            <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
                                 <img
                                     src="{{ $question->to->avatar_url }}"
                                     alt="{{ $question->to->username }}"
@@ -63,14 +63,14 @@
                     @else
                         @if ($question->anonymously)
                             <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
-                                <div class="border-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-dashed border-slate-400">
+                                <div class="border flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-slate-400">
                                     <span>?</span>
                                 </div>
                                 <p>Someone asked you anonymously:</p>
                             </div>
                         @else
                             <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
-                                <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
+                                <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
                                     <img
                                         src="{{ $question->from->avatar_url }}"
                                         alt="{{ $question->from->username }}"
@@ -96,7 +96,7 @@
     @endforeach
 
     @if ($notifications->isEmpty())
-        <div class="flex min-h-[24rem] items-center justify-center rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 px-6 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
+        <div class="flex min-h-96 items-center justify-center rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 px-6 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
             <div>
                 <p class="text-lg font-medium text-slate-950 dark:text-white">No pending notifications.</p>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">New replies, mentions, and questions will show up here.</p>

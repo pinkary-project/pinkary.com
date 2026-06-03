@@ -131,12 +131,12 @@
         <div class="space-y-4">
 
             @if (App::environment(['production', 'testing']))
-                <div class="flex justify-center rounded-[1.5rem] border border-slate-200/80 bg-slate-50 px-4 py-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
+                <div class="flex justify-center rounded-3xl border border-slate-200/80 bg-slate-50 px-4 py-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
                     <x-turnstile data-theme="auto"/>
                 </div>
             @endif
 
-            <div class="rounded-[1.5rem] border border-slate-200/80 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
+            <div class="rounded-3xl border border-slate-200/80 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
                 <label for="terms" class="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400">
                     <x-checkbox
                     id="terms"

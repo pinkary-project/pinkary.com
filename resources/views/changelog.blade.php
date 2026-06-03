@@ -40,9 +40,9 @@
                                         </ul>
                                     @endif
                                 </div>
-                                <div class="absolute -right-[200px] -top-[200px] z-10 transform-gpu opacity-20 blur-3xl">
+                                <div class="absolute right-[-200px] top-[-200px] z-10 transform-gpu opacity-20 blur-3xl">
                                     <div
-                                        class="size-[600px] bg-gradient-to-r dark:from-pink-900 from-pink-50 dark:to-pink-500 to-pink-200"
+                                        class="size-[600px] bg-linear-to-r dark:from-pink-900 from-pink-50 dark:to-pink-500 to-pink-200"
                                         style="
                                             clip-path: polygon(
                                                 50% 0%,
@@ -62,7 +62,7 @@
 
                                 <div class="absolute inset-x-0 -bottom-2 flex h-2 justify-center overflow-hidden">
                                     <div class="absolute right-5 -mt-px flex h-[2px] w-2/3">
-                                        <div class="w-full flex-none bg-gradient-to-r from-slate-950 via-pink-400 to-slate-950 blur-sm"></div>
+                                        <div class="w-full flex-none bg-linear-to-r from-slate-950 via-pink-400 to-slate-950 blur-sm"></div>
                                     </div>
                                 </div>
                             </div>

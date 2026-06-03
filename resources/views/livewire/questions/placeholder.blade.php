@@ -2,7 +2,7 @@
     <div class="animate-pulse group p-4 mt-3 rounded-2xl bg-gray-200 dark:bg-slate-900">
         <div class="flex items-center justify-between">
             <div class="flex items-center w-full">
-                <div class="flex-shrink-0 mr-3">
+                <div class="shrink-0 mr-3">
                     <div class="w-10 h-10 bg-gray-300 dark:bg-slate-700 rounded-full"></div>
                 </div>
                 <div class="flex flex-col">

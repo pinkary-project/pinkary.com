@@ -6,7 +6,7 @@
         class="flex items-center gap-3"
     >
         <figure
-            class="{{ $result->payload['isCompanyVerified'] ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 dark:bg-slate-800 bg-slate-50">
+            class="{{ $result->payload['isCompanyVerified'] ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 dark:bg-slate-800 bg-slate-50">
             <img
                 src="{{ $result->payload['avatarSrc'] }}"
                 alt="{{ $result->payload['username'] }}"

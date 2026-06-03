@@ -1,6 +1,6 @@
 <x-about-layout>
     <div class="relative flex justify-center">
-        <div class="absolute -top-48 -z-10 size-[400px] -rotate-45 rounded-full bg-gradient-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl lg:size-[500px]"></div>
+        <div class="absolute -top-48 -z-10 size-[400px] -rotate-45 rounded-full bg-linear-to-br from-indigo-300 via-rose-200 to-green-600 opacity-70 blur-3xl lg:size-[500px]"></div>
     </div>
     <nav class="fixed top-0 z-20 flex w-full justify-end gap-2 border-b dark:border-slate-200/10 border-slate-900/10 dark:bg-slate-950/20 bg-slate-100/20 p-4 shadow-2xl backdrop-blur-md">
         <a
@@ -101,7 +101,7 @@
         </section>
 
         <section class="relative mt-20 grid w-full max-w-2xl grid-cols-1 place-items-center gap-2 md:grid-cols-2">
-            <div class="absolute -left-20 top-0 h-56 w-56 rounded-full bg-gradient-to-r from-teal-500 via-transparent to-emerald-300 blur-3xl"></div>
+            <div class="absolute -left-20 top-0 h-56 w-56 rounded-full bg-linear-to-r from-teal-500 via-transparent to-emerald-300 blur-3xl"></div>
 
             <div class="z-10 order-2 mt-10 w-full max-w-sm md:order-1 md:mt-0">
                 <livewire:home.users />
@@ -130,7 +130,7 @@
         </section>
 
         <section class="relative mt-20 flex w-full max-w-3xl flex-col place-items-center gap-2 md:flex-row">
-            <div class="absolute -right-20 top-0 -z-10 h-56 w-56 rotate-180 rounded-full bg-gradient-to-r from-teal-500 via-transparent to-emerald-300 blur-3xl"></div>
+            <div class="absolute -right-20 top-0 -z-10 h-56 w-56 rotate-180 rounded-full bg-linear-to-r from-teal-500 via-transparent to-emerald-300 blur-3xl"></div>
 
             <div class="flex cursor-pointer flex-col items-center justify-center text-left transition-transform duration-700 sm:max-w-md md:-translate-x-10 md:-translate-y-10 md:items-end md:text-right md:hover:-translate-x-5 md:hover:-translate-y-5">
                 <h2 class="mb-2 w-full font-semibold">Any questions or thanks?</h2>
