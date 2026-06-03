@@ -20,7 +20,7 @@
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
-                class="w-full !rounded-none !border-slate-200/70 !bg-white !py-3 !pl-12 !text-slate-950 shadow-none placeholder:!text-slate-400 dark:!border-slate-800/30 dark:!bg-[#050d1b] dark:!text-white dark:placeholder:!text-slate-500"
+                class="w-full rounded-none! border-slate-200/70! bg-white! py-3! pl-12! text-slate-950! shadow-none placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#050d1b]! dark:text-white! dark:placeholder:text-slate-500!"
             />
         </div>
     </div>
@@ -41,7 +41,7 @@
                         wire:key="user-{{ $user->id }}"
                     >
                         <div class="group flex items-center gap-3 px-6 py-4 transition-colors hover:bg-slate-50 dark:hover:bg-[#0a1325]">
-                            <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0 overflow-hidden bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
+                            <figure class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 overflow-hidden bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
                                 <img
                                     class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10"
                                     src="{{ $user->avatar_url }}"

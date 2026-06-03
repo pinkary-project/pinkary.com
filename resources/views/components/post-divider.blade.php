@@ -4,15 +4,19 @@
 ])
 
 @if ($link !== null && $text !== null)
-    <div class="relative -my-3 flex min-h-12 items-center">
-        <span class="absolute inset-y-0 left-5 w-0 -translate-x-1/2 border-l border-dotted border-slate-300 dark:border-slate-600 sm:left-6" aria-hidden="true"></span>
-        <a href="{{ $link }}" class="ml-10 inline-flex items-center text-sm font-medium text-pink-500 transition-colors hover:text-pink-400 sm:ml-12">
+    <div class="-my-3 flex min-h-12 items-stretch gap-3">
+        <div class="flex w-10 shrink-0 flex-col items-center sm:w-12">
+            <div class="w-0 flex-1 border-l border-dotted border-slate-300 dark:border-slate-600" aria-hidden="true"></div>
+        </div>
+        <a href="{{ $link }}" class="flex items-center text-sm font-medium text-pink-500 transition-colors hover:text-pink-400">
             {{ $text }}
         </a>
     </div>
 @else
-    <div class="relative -my-3 h-100">
-        <span class="absolute inset-y-0 left-5 w-0.5 -translate-x-1/2 bg-slate-300 dark:bg-slate-600 sm:left-6" aria-hidden="true"></span>
+    <div class="-my-3 flex h-8 shrink-0 items-stretch gap-3">
+        <div class="flex w-10 shrink-0 flex-col items-center sm:w-12">
+            <div class="w-0.5 flex-1 bg-slate-300 dark:bg-slate-600" aria-hidden="true"></div>
+        </div>
     </div>
 @endif
 

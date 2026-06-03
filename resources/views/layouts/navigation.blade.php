@@ -132,7 +132,7 @@
                         <img
                             src="{{ auth()->user()->avatar_url }}"
                             alt="{{ auth()->user()->username }}"
-                            class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 flex-shrink-0"
+                            class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0"
                         />
 
                         <div class="min-w-0">
@@ -202,7 +202,7 @@
         @endif
     </div>
 
-    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-200/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:shadow-black/30 lg:hidden">
+    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-60 mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-200/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:shadow-black/30 lg:hidden">
         @auth
             <a
                 title="Home"
@@ -280,7 +280,7 @@
             <x-slot name="trigger">
                 <button
                     title="Menu"
-                    class="{{ $mobileItemClasses }} {{ $mobileIdleClasses }} max-w-[3rem]"
+                    class="{{ $mobileItemClasses }} {{ $mobileIdleClasses }} max-w-12"
                 >
                     <x-icons.bars class="size-5" />
                 </button>

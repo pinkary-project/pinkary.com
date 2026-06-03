@@ -25,7 +25,7 @@
     </header>
     <div class="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
         <div class="flex items-center justify-center">
-            <figure class="h-20 w-20 flex-shrink-0">
+            <figure class="h-20 w-20 shrink-0">
                 <img
                     alt="{{ auth()->user()->name }}"
                     :src="avatar ? URL.createObjectURL(avatar) : '{{ auth()->user()->avatar_url }}'"
@@ -85,7 +85,7 @@
     <div class="relative">
         <form
             method="post"
-            class="absolute -top-[34px] left-[100px]"
+            class="absolute top-[-34px] left-[100px]"
             action="{{ route('profile.avatar.destroy') }}"
         >
             @csrf

@@ -32,6 +32,7 @@ final class CitadelPanelProvider extends PanelProvider
             ->default()
             ->id('citadel')
             ->path('citadel')
+            ->viteTheme('resources/css/filament/citadel/theme.css')
             ->homeUrl(fn (): string => route('home.feed'))
             ->spa()
             ->pages([

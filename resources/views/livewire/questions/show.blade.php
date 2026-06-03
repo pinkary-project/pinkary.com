@@ -80,7 +80,7 @@
             ])
         >
             <div class="flex items-stretch gap-3">
-                <div class="flex flex-col items-center self-stretch flex-shrink-0">
+                <div class="flex flex-col items-center self-stretch shrink-0">
                     <a
                         href="{{ route('profile.show', ['username' => $question->to->username]) }}"
                         class="group/profile block"
@@ -128,7 +128,7 @@
                             </p>
                         </a>
 
-                        <div class="flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
+                        <div class="flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
                             <time
                                 class="inline-flex cursor-help items-center whitespace-nowrap"
                                 title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
@@ -141,72 +141,6 @@
                                 }}
                             </time>
 
-                            @if (auth()->check() && auth()->user()->can('update', $question))
-                                <x-dropdown
-                                    align="right"
-                                    width="48"
-                                >
-                        <x-slot name="trigger">
-                            <button
-                                data-navigate-ignore="true"
-                                class="{{ $menuButtonClasses }}">
-                                <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            @if (! $question->pinned && auth()->user()->can('pin', $question))
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    wire:click="pin"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-icons.pin class="h-4 w-4" />
-                                    <span>Pin</span>
-                                </x-dropdown-button>
-                            @elseif ($question->pinned)
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    wire:click="unpin"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-icons.pin class="h-4 w-4" />
-                                    <span>Unpin</span>
-                                </x-dropdown-button>
-                            @endif
-                            @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-heroicon-m-pencil class="h-4 w-4"/>
-                                    <span>Edit</span>
-                                </x-dropdown-button>
-                            @endif
-                            @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    x-on:click="$dispatch('open-modal', 'question.delete.{{ $questionId }}.confirmation')"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-heroicon-o-trash class="h-4 w-4" />
-                                    <span>Delete</span>
-                                </x-dropdown-button>
-                            @endif
-                            @if (auth()->user()->can('viewLikes', $question) && $question->likes_count > 0)
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-heroicon-s-heart class="h-4 w-4" />
-                                    <span>View likes</span>
-                                </x-dropdown-button>
-                            @endif
-                        </x-slot>
-                                </x-dropdown>
-                            @endif
                         </div>
                     </div>
 
@@ -327,7 +261,7 @@
 
                 </div>
 
-                <div class="ml-auto flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500 sm:ml-0">
+                <div class="ml-auto flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500 sm:ml-0">
                     <x-dropdown align="left"
                                 width=""
                                 dropdown-classes="top-[-3.8rem] shadow-none"
@@ -404,6 +338,72 @@
                         </x-slot>
                     </x-dropdown>
 
+                    @if (auth()->check() && auth()->user()->can('update', $question))
+                        <x-dropdown
+                            align="right"
+                            width="48"
+                        >
+                            <x-slot name="trigger">
+                                <button
+                                    data-navigate-ignore="true"
+                                    class="{{ $menuButtonClasses }}">
+                                    <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                @if (! $question->pinned && auth()->user()->can('pin', $question))
+                                    <x-dropdown-button
+                                        data-navigate-ignore="true"
+                                        wire:click="pin"
+                                        class="flex items-center gap-1.5"
+                                    >
+                                        <x-icons.pin class="h-4 w-4" />
+                                        <span>Pin</span>
+                                    </x-dropdown-button>
+                                @elseif ($question->pinned)
+                                    <x-dropdown-button
+                                        data-navigate-ignore="true"
+                                        wire:click="unpin"
+                                        class="flex items-center gap-1.5"
+                                    >
+                                        <x-icons.pin class="h-4 w-4" />
+                                        <span>Unpin</span>
+                                    </x-dropdown-button>
+                                @endif
+                                @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
+                                    <x-dropdown-button
+                                        data-navigate-ignore="true"
+                                        x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
+                                        class="flex items-center gap-1.5"
+                                    >
+                                        <x-heroicon-m-pencil class="h-4 w-4"/>
+                                        <span>Edit</span>
+                                    </x-dropdown-button>
+                                @endif
+                                @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
+                                    <x-dropdown-button
+                                        data-navigate-ignore="true"
+                                        x-on:click="$dispatch('open-modal', 'question.delete.{{ $questionId }}.confirmation')"
+                                        class="flex items-center gap-1.5"
+                                    >
+                                        <x-heroicon-o-trash class="h-4 w-4" />
+                                        <span>Delete</span>
+                                    </x-dropdown-button>
+                                @endif
+                                @if (auth()->user()->can('viewLikes', $question) && $question->likes_count > 0)
+                                    <x-dropdown-button
+                                        data-navigate-ignore="true"
+                                        x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
+                                        class="flex items-center gap-1.5"
+                                    >
+                                        <x-heroicon-s-heart class="h-4 w-4" />
+                                        <span>View likes</span>
+                                    </x-dropdown-button>
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
+                    @endif
                 </div>
             </div>
                 </div>

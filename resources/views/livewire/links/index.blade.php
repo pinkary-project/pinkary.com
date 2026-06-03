@@ -8,7 +8,7 @@
     @endif
 
     <div class="relative overflow-hidden rounded-md border border-slate-200/70 bg-white/85 p-4 text-center text-slate-950 shadow-xl shadow-slate-900/5 dark:border-slate-800/30 dark:bg-[#07101f]/95 dark:text-white dark:shadow-black/20 sm:p-5">
-        <div class="pointer-events-none absolute inset-x-0 top-0 hidden h-32 bg-[radial-gradient(circle_at_top,_rgba(244,114,182,0.12),_transparent_55%)] dark:block"></div>
+        <div class="pointer-events-none absolute inset-x-0 top-0 hidden h-32 bg-[radial-gradient(circle_at_top,rgba(244,114,182,0.12),transparent_55%)] dark:block"></div>
 
         <div class="absolute left-4 top-4 z-10 flex">
             <x-dropdown-link-profile>
@@ -98,7 +98,7 @@
             <img
                 src="{{ $user->avatar_url }}"
                 alt="{{ $user->username }}"
-                class="{{ $user->is_company_verified ? 'rounded-[1.5rem]' : 'rounded-full' }} mx-auto mb-3 size-20 cursor-pointer border-4 border-white/80 shadow-xl shadow-slate-900/10 dark:border-slate-900/80 dark:shadow-black/30 sm:size-24"
+                class="{{ $user->is_company_verified ? 'rounded-3xl' : 'rounded-full' }} mx-auto mb-3 size-20 cursor-pointer border-4 border-white/80 shadow-xl shadow-slate-900/10 dark:border-slate-900/80 dark:shadow-black/30 sm:size-24"
                 x-on:click="showAvatar = true"
             />
 
@@ -235,7 +235,7 @@
                 >
                     @foreach ($links as $link)
                         <li
-                            class="relative flex h-12 overflow-hidden rounded-[1.75rem] shadow-lg shadow-slate-900/10 hover:darken-gradient group {{ $link->is_visible ? 'bg-gradient-to-r' : 'bg-gray-500' }}"
+                            class="relative flex h-12 overflow-hidden rounded-[1.75rem] shadow-lg shadow-slate-900/10 hover:darken-gradient group {{ $link->is_visible ? 'bg-linear-to-r' : 'bg-gray-500' }}"
                             :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                             x-sortable-item="{{ $link->id }}"
                             wire:key="link-{{ $link->id }}"
@@ -249,7 +249,7 @@
                                 <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
-                            <div class="flex-grow flex items-center justify-center transition-all duration-500"
+                            <div class="grow flex items-center justify-center transition-all duration-500"
                                 x-bind:class="{ 'group-hover:-translate-x-full' : showActions }"
                             >
                                 <x-links.list-item :$user :$link />
@@ -334,7 +334,7 @@
                 <div class="space-y-2">
                     @foreach ($links as $link)
                         <div
-                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 rounded-[1.75rem] hover:darken-gradient flex justify-center bg-gradient-to-r shadow-lg shadow-slate-900/10"
+                            class="{{ $user->link_shape }} {{ $user->gradient }} h-12 rounded-[1.75rem] hover:darken-gradient flex justify-center bg-linear-to-r shadow-lg shadow-slate-900/10"
                             wire:click="click({{ $link->id }})"
                         >
                             <x-links.list-item
@@ -359,7 +359,7 @@
                 <div class="flex gap-2">
                     <button
                         x-on:click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
-                        class="hover:darken-gradient flex w-full basis-4/5 items-center justify-center bg-gradient-to-r px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
+                        class="hover:darken-gradient flex w-full basis-4/5 items-center justify-center bg-linear-to-r px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
                         :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                     >
                         <x-icons.plus class="mr-1.5 size-5" />
