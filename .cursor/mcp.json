@@ -1,0 +1,19 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "php",
+            "args": [
+                "artisan",
+                "boost:mcp"
+            ]
+        },
+        "nightwatch": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "mcp-remote",
+                "https://nightwatch.laravel.com/mcp"
+            ]
+        }
+    }
+}

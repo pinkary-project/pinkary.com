@@ -1,0 +1,27 @@
+{
+    "agents": [
+        "claude_code",
+        "opencode",
+        "junie",
+        "copilot",
+        "cursor",
+        "codex"
+    ],
+    "cloud": false,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": true,
+    "packages": [
+        "filament/filament"
+    ],
+    "sail": false,
+    "skills": [
+        "fortify-development",
+        "laravel-best-practices",
+        "configure-nightwatch",
+        "pennant-development",
+        "socialite-development",
+        "livewire-development",
+        "tailwindcss-development"
+    ]
+}
