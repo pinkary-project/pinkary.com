@@ -456,7 +456,7 @@
     @endif
 
     @if (auth()->user()?->can('viewLikes', $question))
-        <livewire:likes.index
+        <livewire:likes
             :questionId="$question->id"
             :key="'likes-'.$question->id"
         />

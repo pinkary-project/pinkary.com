@@ -38,11 +38,13 @@ const imageUpload = () => ({
             this.removeErrors();
         });
 
-        Livewire.hook('morph.updated', ({el, component}) => {
-            if (this.$el === el) {
-                const errors = component.snapshot.memo.errors;
-                this.addErrors(errors);
-            }
+        Livewire.interceptMessage(({ component, message, onMorph }) => {
+            onMorph(({ el: morphEl, snapshot }) => {
+                if (this.$el === morphEl) {
+                    const errors = snapshot && snapshot.memo && snapshot.memo.errors ? snapshot.memo.errors : [];
+                    this.addErrors(errors);
+                }
+            });
         });
     },
 

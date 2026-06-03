@@ -137,13 +137,13 @@
                     axios.post('{{ route('profile.timezone.update') }}', { timezone })
                 }
 
-                Livewire.hook('request', ({ uri, options, payload, respond, succeed, fail }) => {
-                    fail(({ status, content, preventDefault }) => {
-                        if (status === 419) {
-                            preventDefault()
+                Livewire.interceptRequest(({ request, onResponse, onSuccess, onError, onFailure }) => {
+                    onError(({ response, responseBody, preventDefault }) => {
+                        if (response && response.status === 419) {
+                            preventDefault();
                         }
-                    })
-                })
+                    });
+                });
             }
         </script>
     </body>
