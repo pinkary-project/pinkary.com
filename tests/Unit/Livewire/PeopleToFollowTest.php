@@ -73,4 +73,3 @@ it('allows unfollowing a user', function () {
 
     expect($viewer->following()->where('user_id', $target->id)->exists())->toBeFalse();
 });
-
