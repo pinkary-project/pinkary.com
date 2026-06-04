@@ -1,6 +1,6 @@
 <x-guest-layout>
     @section('head')
-        @turnstileScripts()
+        <x-turnstile.scripts />
     @endsection
 
     <div class="mb-8">
