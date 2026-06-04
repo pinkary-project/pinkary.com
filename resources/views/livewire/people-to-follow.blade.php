@@ -13,32 +13,42 @@
 
     <ul class="divide-y divide-slate-200/70 dark:divide-slate-800/30">
         @foreach ($users as $user)
-            <li>
-                <a
-                    href="{{ route('profile.show', ['username' => $user->username]) }}"
-                    class="flex items-center gap-3 px-6 py-4 transition hover:bg-slate-100 dark:hover:bg-slate-900/60"
-                    wire:navigate
-                >
+            <li
+                data-parent=true
+                x-data="clickHandler"
+                x-on:click="handleNavigation($event)"
+                class="cursor-pointer transition hover:bg-slate-100 dark:hover:bg-slate-900/60"
+            >
+                <div class="flex items-center gap-3 px-6 py-4">
                     <img
                         src="{{ $user->avatar_url }}"
                         alt="{{ $user->username }}"
                         class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-9 w-9 shrink-0"
                     />
 
-                    <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-slate-950 dark:text-white">
+                    <div class="min-w-0 flex-1 flex flex-col">
+                        <a
+                            href="{{ route('profile.show', ['username' => $user->username]) }}"
+                            class="truncate text-sm font-medium text-slate-950 dark:text-white"
+                            wire:navigate
+                            x-ref="parentLink"
+                        >
                             {{ $user->name }}
-                        </p>
+                        </a>
 
                         <p class="truncate text-sm text-slate-400">
                             {{ '@'.$user->username }}
                         </p>
                     </div>
 
-                    <span class="shrink-0 text-xs text-slate-500">
-                        {{ $user->created_at->diffForHumans(short: true) }}
-                    </span>
-                </a>
+                    <x-follow-button
+                        :id="$user->id"
+                        :isFollower="auth()->check() && $user->is_follower"
+                        :isFollowing="auth()->check() && $user->is_following"
+                        class="ml-auto shrink-0"
+                        wire:key="follow-button-{{ $user->id }}"
+                    />
+                </div>
             </li>
         @endforeach
     </ul>

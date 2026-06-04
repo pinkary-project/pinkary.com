@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\Followable;
 use App\Models\User;
 use App\Services\PeopleToFollowRecommendations;
 use Illuminate\View\View;
@@ -12,6 +13,8 @@ use Livewire\Component;
 
 final class PeopleToFollow extends Component
 {
+    use Followable;
+
     /**
      * The current page context for the widget.
      */
