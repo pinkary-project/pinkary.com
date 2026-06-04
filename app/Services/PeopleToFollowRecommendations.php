@@ -74,6 +74,17 @@ final readonly class PeopleToFollowRecommendations
             }
         }
 
+        if ($authenticatedUserId !== null) {
+            $users->loadExists([ // @phpstan-ignore-line
+                'following as is_follower' => function (Builder $query) use ($authenticatedUserId): void {
+                    $query->where('user_id', $authenticatedUserId);
+                },
+                'followers as is_following' => function (Builder $query) use ($authenticatedUserId): void {
+                    $query->where('follower_id', $authenticatedUserId);
+                },
+            ]);
+        }
+
         return $users;
     }
 
