@@ -211,7 +211,7 @@
                         :title="likeButtonTitle"
                         class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
                     >
-                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
+                        <x-heroicon-s-heart class="h-4 w-4 text-pink-500" x-show="isLiked" />
                         <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
                         <span x-show="count" x-text="likeButtonText"></span>
                     </button>
