@@ -1,4 +1,4 @@
-<article class="block space-y-3" id="q-{{ $questionId }}" x-data="copyCode">
+<article class="block space-y-1" id="q-{{ $questionId }}" x-data="copyCode">
     @php
         $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
         $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
@@ -211,7 +211,7 @@
                         :title="likeButtonTitle"
                         class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
                     >
-                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
+                        <x-heroicon-s-heart class="h-4 w-4 text-pink-500" x-show="isLiked" />
                         <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
                         <span x-show="count" x-text="likeButtonText"></span>
                     </button>
@@ -262,18 +262,18 @@
                 </div>
 
                 <div class="ml-auto flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500 sm:ml-0">
-                    <x-dropdown align="left"
+                    <x-dropdown align="right"
                                 width=""
-                                dropdown-classes="top-[-3.8rem] shadow-none"
+                                dropdown-classes="top-[-5.2rem] shadow-none"
                                 :content-classes="$shareMenuContentClasses"
                     >
                         <x-slot name="trigger">
                             <button
                                 data-navigate-ignore="true"
                                 x-bind:class="{ 'text-pink-500': open,
-                                                'text-slate-500 hover:text-slate-700 dark:hover:text-slate-200': !open }"
+                                                'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200': !open }"
                                 title="Share"
-                                class="inline-flex items-center text-[0.82rem] transition-colors duration-150 ease-in-out focus:outline-none"
+                                class="flex items-center justify-center leading-none text-sm transition duration-150 ease-in-out hover:bg-slate-100 focus:outline-none dark:hover:bg-[#16203a]"
                             >
                                 <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
