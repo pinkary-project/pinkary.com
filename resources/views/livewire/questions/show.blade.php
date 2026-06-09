@@ -262,7 +262,7 @@
                 </div>
 
                 <div class="ml-auto flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500 sm:ml-0">
-                    <x-dropdown align="left"
+                    <x-dropdown align="right"
                                 width=""
                                 dropdown-classes="top-[-3.8rem] shadow-none"
                                 :content-classes="$shareMenuContentClasses"
