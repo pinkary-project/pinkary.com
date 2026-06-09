@@ -271,9 +271,9 @@
                             <button
                                 data-navigate-ignore="true"
                                 x-bind:class="{ 'text-pink-500': open,
-                                                'text-slate-500 hover:text-slate-700 dark:hover:text-slate-200': !open }"
+                                                'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200': !open }"
                                 title="Share"
-                                class="inline-flex items-center text-[0.82rem] transition-colors duration-150 ease-in-out focus:outline-none"
+                                class="flex items-center justify-center leading-none text-sm transition duration-150 ease-in-out hover:bg-slate-100 focus:outline-none dark:hover:bg-[#16203a]"
                             >
                                 <x-heroicon-o-paper-airplane class="h-4 w-4" />
                             </button>
