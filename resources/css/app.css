@@ -95,3 +95,13 @@ particleEffect {
     height: auto;
     aspect-ratio: 446 / 251;
 }
+
+#link-preview-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 280px;
+    object-fit: cover;
+    object-position: center;
+    margin-top: 0;
+}

@@ -12,16 +12,15 @@
     <a href="{{ $url }}" target="_blank" rel="noopener noreferrer">
         <div
             title="Click to visit: {{ $shortUrl }}"
-            class="relative w-full bg-slate-100/90 border border-slate-300
+             class="relative w-full bg-slate-100/90 border border-slate-300
             dark:border-0 rounded-lg dark:group-hover/preview:border-0 overflow-hidden">
-                    <img
-                        src="{{ $data->get('image') }}"
-                        alt="{{ $data->get('title') ?? $url }}"
-                        class="object-cover object-center w-full h-56"
-                    />
+                        <img
+                            src="{{ $data->get('image') }}"
+                            alt="{{ $data->get('title') ?? $url }}"
+                        />
                 <div
-                    class="absolute right-0 bottom-0 left-0 w-full rounded-b-lg border-0 bg-pink-100 bg-opacity-75 p-2 backdrop-blur-sm backdrop-filter dark:bg-opacity-45 dark:bg-pink-800">
-                    <h3 class="text-sm font-semibold truncate text-slate-500/90 dark:text-white/90
+                    class="absolute right-0 bottom-0 left-0 w-full rounded-b-lg border-0 bg-pink-100 bg-opacity-75 px-2 py-0.5 backdrop-blur-sm backdrop-filter dark:bg-opacity-45 dark:bg-pink-800">
+                    <h3 class="text-xs font-semibold truncate text-slate-500/90 dark:text-white/90
                     ">
                         {{ $data->get('title') ?? $data->get('site_name') ?? $url }}</h3>
                 </div>
