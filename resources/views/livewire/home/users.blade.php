@@ -2,12 +2,11 @@
     <div class="border-b border-r border-slate-200/70 bg-white/80 p-6 dark:border-slate-800/30 dark:bg-[#071121]/95">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p class="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">People</p>
-                <h3 class="mt-1 text-xl font-semibold text-slate-950 dark:text-white">Find the next profile to follow.</h3>
+                <h3 class="text-xl font-semibold text-slate-950 dark:text-white">People</h3>
             </div>
 
             <p class="max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
-                Search by name or username, or browse the current discovery list powered by existing user data.
+                Discover new profiles to follow.
             </p>
         </div>
 
