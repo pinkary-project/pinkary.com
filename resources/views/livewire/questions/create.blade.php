@@ -109,7 +109,7 @@
                 </div>
         </div>
 
-        <div x-show="isPoll" class="mt-4 space-y-4">
+        <div x-show="isPoll" class="mt-4 space-y-4" style="display: none;">
             <div class="space-y-2">
                 <h4 class="text-sm font-medium dark:text-slate-300 text-slate-700">Poll Options</h4>
                 <template x-for="(option, index) in pollOptions" :key="index">
