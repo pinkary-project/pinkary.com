@@ -1,4 +1,4 @@
-<article class="block space-y-3" id="q-{{ $questionId }}" x-data="copyCode">
+<article class="block space-y-1" id="q-{{ $questionId }}" x-data="copyCode">
     @php
         $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
         $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
