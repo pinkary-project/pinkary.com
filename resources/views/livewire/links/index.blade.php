@@ -250,7 +250,7 @@
                             </div>
 
                             <div class="grow flex items-center justify-center transition-all duration-500"
-                                x-bind:class="{ 'group-hover:-translate-x-full' : showActions }"
+                                x-bind:class="{ '-translate-x-full': showActions }"
                             >
                                 <x-links.list-item :$user :$link />
                             </div>
@@ -266,8 +266,8 @@
                                 />
                             </div>
 
-                            <div class="absolute -right-56 top-0 bottom-0 flex items-center justify-center transition-all duration-500 z-5"
-                                x-bind:class="{ 'group-hover:inset-0' : showActions }"
+                            <div class="absolute top-0 bottom-0 flex items-center justify-center transition-all duration-500 z-5"
+                                x-bind:class="showActions ? 'inset-0' : '-right-56'"
                             >
                                 <div
                                     class="text-white min-w-fit cursor-help items-center gap-1 text-xs"
