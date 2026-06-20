@@ -14,7 +14,7 @@ x-data="{
 >
     <div
         id="flashMessageWrapper"
-        class="fixed right-4 top-4 z-50 w-64 space-y-2"
+        class="fixed left-4 bottom-4 z-50 w-64 space-y-2"
     ></div>
 
     <template id="flashMessageTemplate">
