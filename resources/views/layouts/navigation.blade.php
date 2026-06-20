@@ -184,6 +184,15 @@
                                 {{ __('Source code') }}
                             </x-dropdown-link>
 
+                            <livewire:profile.switch-account />
+
+                            <x-dropdown-link
+                                :href="route('login')"
+                                :class="request()->routeIs('login') ? 'dark:bg-slate-800 bg-slate-200' : ''"
+                            >
+                                {{ __('Add Account') }}
+                            </x-dropdown-link>
+
                             <form
                                 method="POST"
                                 action="{{ route('logout') }}"
