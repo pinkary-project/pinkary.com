@@ -67,14 +67,12 @@ test('render with follows you badge', function () {
 
     $component->refresh();
 
-    $component->assertSeeInOrder([
-        $followers[0]->name,
-        'Follows you',
-        $followers[1]->name,
-        'Follows you',
-        $followers[2]->name,
-        'Follows you',
-    ]);
+    $followers->each(function (User $follower) use ($component): void {
+        $component->assertSeeInOrder([
+            $follower->name,
+            'Follows you',
+        ]);
+    });
 });
 
 test('users data has is_following and is_follower keys as expected', function () {

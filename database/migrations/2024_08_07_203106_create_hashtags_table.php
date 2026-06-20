@@ -17,7 +17,7 @@ return new class extends Migration
     {
         Schema::create('hashtags', function (Blueprint $table): void {
             $table->id();
-            $table->string('name')->unique()->collation('utf8mb4_0900_bin');
+            $table->string('name')->unique()->collation('utf8mb4_bin');
 
             $table->timestamps();
         });

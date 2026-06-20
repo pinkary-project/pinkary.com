@@ -63,6 +63,19 @@ test('only renders questions with answers if user is not auth user', function ()
     $component->assertSee($question->content);
 });
 
+test('renders unanswered questions for the profile owner', function () {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'answer' => null,
+        'answer_created_at' => null,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Index::class, ['userId' => $user->id])
+        ->assertSee($question->content);
+});
+
 test('do not render reported questions', function () {
     $user = User::factory()->create([]);
 

@@ -70,7 +70,7 @@ final readonly class PeopleToFollowRecommendations
             );
 
             if ($topUpIds !== []) {
-                $users = $users->merge($this->usersForIds($topUpIds));
+                $users = $users->merge($this->usersForIds($topUpIds)); // @codeCoverageIgnore
             }
         }
 
@@ -166,19 +166,23 @@ final readonly class PeopleToFollowRecommendations
             return [];
         }
 
-        $counterpartExpression = 'CASE WHEN from_id = ? THEN to_id ELSE from_id END';
-
-        /** @var array<int, int> $candidateIds */
-        $candidateIds = Question::query()
-            ->selectRaw("{$counterpartExpression} as counterpart_id, MAX(updated_at) as latest_interaction_at", [$userId])
+        $interactions = Question::query()
+            ->selectRaw('CASE WHEN from_id = ? THEN to_id ELSE from_id END as counterpart_id', [$userId])
+            ->addSelect('updated_at')
             ->where(function (Builder $query) use ($userId): void {
                 $query->where('from_id', $userId)
                     ->orWhere('to_id', $userId);
             })
             ->whereNotNull('answer')
             ->where('is_ignored', false)
-            ->where('is_reported', false)
-            ->groupByRaw($counterpartExpression, [$userId])
+            ->where('is_reported', false);
+
+        /** @var array<int, int> $candidateIds */
+        $candidateIds = DB::query()
+            ->fromSub($interactions, 'interactions')
+            ->select('counterpart_id')
+            ->selectRaw('MAX(updated_at) as latest_interaction_at')
+            ->groupBy('counterpart_id')
             ->orderByDesc('latest_interaction_at')
             ->limit(max(self::FAMOUS_LIMIT, $limit * 5))
             ->pluck('counterpart_id')

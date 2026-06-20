@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Collection;
@@ -60,13 +59,14 @@ final class MigrateSqliteToMysqlCommand extends Command
      * @var string
      */
     protected $signature = 'migrate:sqlite-to-mysql
-        {--force : Run without confirmation}
-        {--fresh : Drop all MySQL tables and re-run migrations before importing}';
+        {--source=sqlite : Source database connection}
+        {--target=migration_mysql : Target database connection}
+        {--skip-migrations : Do not run pending migrations on the target}
+        {--fresh : Rebuild the target schema before importing}
+        {--force : Run without confirmation}';
 
-    /**
-     * @var string
-     */
-    protected $description = 'Migrate data from the local SQLite database to the MySQL database on Laravel Cloud.';
+    /** @var string */
+    protected $description = 'Copy application data from SQLite to an empty MySQL database.';
 
     /**
      * Execute the console command.
@@ -137,196 +137,241 @@ final class MigrateSqliteToMysqlCommand extends Command
     }
 
     /**
-     * Configures the MySQL connection at runtime from migration config.
+     * Configure the dedicated target MySQL connection.
      */
-    private function configureTargetConnection(): void
+    private function configureMigrationConnection(): bool
     {
-        /** @var array{host: string, port: string, database: string, username: string, password: string} $target */
+        /** @var array<string, mixed> $mysql */
+        $mysql = config('database.connections.mysql', []);
+        /** @var array{url: ?string, host: ?string, port: ?string, database: ?string, username: ?string, password: ?string} $target */
         $target = config('migration.target_db');
 
-        config()->set('database.connections.mysql', [
-            'driver' => 'mysql',
+        if (! $target['url'] && (! $target['host'] || ! $target['database'] || ! $target['username'])) {
+            $this->error('Configure TARGET_DB_URL or the TARGET_DB_HOST, TARGET_DB_DATABASE, and TARGET_DB_USERNAME values.');
+
+            return false;
+        }
+
+        config()->set('database.connections.migration_mysql', array_replace($mysql, [
+            'url' => $target['url'],
             'host' => $target['host'],
             'port' => $target['port'],
             'database' => $target['database'],
             'username' => $target['username'],
             'password' => $target['password'],
-            'unix_socket' => '',
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-        ]);
+        ]));
 
-        DB::purge('mysql');
-    }
-
-    /**
-     * Validates that both database connections are accessible.
-     */
-    private function validateConnections(): bool
-    {
-        try {
-            DB::connection('sqlite')->getPdo();
-        } catch (Exception $e) {
-            $this->error('Cannot connect to SQLite: '.$e->getMessage());
-
-            return false;
-        }
-
-        try {
-            DB::connection('mysql')->getPdo();
-        } catch (Exception $e) {
-            $this->error('Cannot connect to MySQL: '.$e->getMessage());
-
-            return false;
-        }
-
-        $this->info('Both database connections verified.');
+        DB::purge('migration_mysql');
 
         return true;
     }
 
     /**
-     * Migrates a single table from SQLite to MySQL.
+     * Verify that the source and target connections are accessible.
      */
-    private function migrateTable(string $table): bool
+    private function validateConnections(string $sourceName, string $targetName): bool
     {
-        if (! Schema::connection('sqlite')->hasTable($table)) {
-            $this->warn("  Skipping [{$table}] — not found in SQLite.");
+        foreach ([$sourceName, $targetName] as $connection) {
+            try {
+                DB::connection($connection)->getPdo();
+            } catch (Throwable $throwable) {
+                $this->error("Cannot connect to [{$connection}]: {$throwable->getMessage()}");
 
-            return true;
+                return false;
+            }
         }
 
-        $totalRows = DB::connection('sqlite')->table($table)->count();
-
-        if ($totalRows === 0) {
-            $this->info("  [{$table}] — empty, skipping.");
-
-            return true;
-        }
-
-        $this->info("  Migrating [{$table}] — {$totalRows} rows...");
-        $bar = $this->output->createProgressBar($totalRows);
-        $bar->start();
-
-        DB::connection('mysql')->table($table)->truncate();
-
-        $chunkSize = $this->getChunkSize($table);
-        $hasErrors = false;
-
-        try {
-            DB::connection('sqlite')->table($table)
-                ->orderBy($this->getPrimaryKey())
-                ->chunk($chunkSize, function ($rows) use ($table, $bar): void {
-                    $data = collect($rows)->map(fn ($row): array => (array) $row)->all();
-                    DB::connection('mysql')->table($table)->insert($data);
-                    $bar->advance(count($data));
-                });
-        } catch (Exception $e) {
-            $hasErrors = true;
-            $bar->finish();
-            $this->newLine();
-            $this->error("  Error migrating [{$table}]: ".$e->getMessage());
-
-            return false;
-        }
-
-        $bar->finish();
-        $this->newLine();
-
-        $this->resetAutoIncrement($table);
-
-        $mysqlCount = DB::connection('mysql')->table($table)->count();
-        if ($mysqlCount !== $totalRows) {
-            $this->error("  Row count mismatch for [{$table}]: SQLite={$totalRows}, MySQL={$mysqlCount}");
-
-            return false;
-        }
-
-        $this->info("  [{$table}] ✓ {$mysqlCount} rows migrated.");
+        $this->info('Source and target database connections verified.');
 
         return true;
     }
 
     /**
-     * Returns the primary key column for the given table.
+     * Run the requested migrations on the target database.
      */
-    private function getPrimaryKey(): string
+    private function prepareTarget(string $targetName): bool
     {
-        return 'id';
+        if ($this->option('skip-migrations')) {
+            return true;
+        }
+
+        $command = $this->option('fresh') ? 'migrate:fresh' : 'migrate';
+        $arguments = ['--database' => $targetName, '--force' => true, '--no-interaction' => true];
+
+        $this->info(($this->option('fresh') ? 'Rebuilding' : 'Migrating').' the target schema...');
+
+        if ($this->call($command, $arguments) === self::SUCCESS) {
+            return true;
+        }
+
+        $this->error('Target migrations failed; no data was imported.');
+
+        return false;
     }
 
     /**
-     * Determines the chunk size based on table characteristics.
+     * Ensure source and target application tables have matching columns.
      */
-    private function getChunkSize(string $table): int
+    private function validateSchemas(string $sourceName, string $targetName): bool
     {
-        return match ($table) {
-            'questions', 'notifications' => 200,
-            default => 500,
-        };
+        foreach (self::TABLES as $table) {
+            if (! Schema::connection($sourceName)->hasTable($table)) {
+                continue;
+            }
+
+            if (! Schema::connection($targetName)->hasTable($table)) {
+                $this->error("Target table [{$table}] does not exist.");
+
+                return false;
+            }
+
+            $sourceColumns = Schema::connection($sourceName)->getColumnListing($table);
+            $targetColumns = Schema::connection($targetName)->getColumnListing($table);
+            sort($sourceColumns);
+            sort($targetColumns);
+
+            if ($sourceColumns !== $targetColumns) {
+                $this->error("Column mismatch for [{$table}]. Run the same application migrations on both schemas.");
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
-     * Resets auto-increment counter after bulk insert.
+     * Determine whether all target application tables are empty.
      */
-    private function resetAutoIncrement(string $table): void
+    private function targetIsEmpty(string $targetName): bool
     {
-        if (! in_array($table, self::AUTO_INCREMENT_TABLES, true)) {
+        return array_all(self::TABLES, fn (string $table): bool => ! (Schema::connection($targetName)->hasTable($table) && DB::connection($targetName)->table($table)->exists()));
+    }
+
+    /**
+     * Copy one application table to the target database.
+     */
+    private function migrateTable(string $sourceName, string $targetName, string $table): void
+    {
+        if (! Schema::connection($sourceName)->hasTable($table)) {
+            $this->warn("  Skipping [{$table}] because it is absent from the source.");
+
             return;
         }
 
-        $maxId = DB::connection('mysql')->table($table)->max('id');
+        $source = DB::connection($sourceName)->table($table);
+        $totalRows = $source->count();
 
-        if ($maxId !== null) {
-            $next = ((int) $maxId) + 1; // @phpstan-ignore-line
-            DB::connection('mysql')->statement("ALTER TABLE `{$table}` AUTO_INCREMENT = {$next}");
+        if ($totalRows === 0) {
+            $this->info("  [{$table}] is empty.");
+
+            return;
         }
-    }
 
-    /**
-     * Disables foreign key checks on the MySQL connection.
-     */
-    private function disableForeignKeyChecks(): void
-    {
-        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=0');
-        $this->info('Foreign key checks disabled.');
-    }
+        $this->info("  Migrating [{$table}] ({$totalRows} rows)...");
+        $bar = $this->output->createProgressBar($totalRows);
+        $bar->start();
 
-    /**
-     * Re-enables foreign key checks on the MySQL connection.
-     */
-    private function enableForeignKeyChecks(): void
-    {
-        DB::connection('mysql')->statement('SET FOREIGN_KEY_CHECKS=1');
-        $this->info('Foreign key checks re-enabled.');
-    }
+        $source->orderBy('id')->chunk($this->chunkSize($table), function (Collection $rows) use ($targetName, $table, $bar): void {
+            $data = collect($rows)->map(static fn (object $row): array => (array) $row)->all();
+            DB::connection($targetName)->table($table)->insert($data);
+            $bar->advance(count($data));
+        });
 
-    /**
-     * Prints a summary table comparing row counts between SQLite and MySQL.
-     */
-    private function printSummary(): void
-    {
+        $bar->finish();
         $this->newLine();
-        $this->info('=== Migration Summary ===');
+    }
 
-        $rows = [];
-        foreach (self::TABLES as $table) {
-            $sqliteCount = Schema::connection('sqlite')->hasTable($table)
-                ? DB::connection('sqlite')->table($table)->count()
-                : 0;
-            $mysqlCount = Schema::connection('mysql')->hasTable($table)
-                ? DB::connection('mysql')->table($table)->count()
-                : 0;
+    /**
+     * Get the import chunk size for a table.
+     */
+    private function chunkSize(string $table): int
+    {
+        return in_array($table, ['questions', 'notifications'], true) ? 200 : 500;
+    }
 
-            $status = $sqliteCount === $mysqlCount ? '✓' : '✗ MISMATCH';
-
-            $rows[] = [$table, $sqliteCount, $mysqlCount, $status];
+    /**
+     * Advance a MySQL table's auto-increment sequence after importing IDs.
+     */
+    private function resetAutoIncrement(Connection $target, string $table): void
+    {
+        if ($target->getDriverName() !== 'mysql' || ! $target->getSchemaBuilder()->hasTable($table)) {
+            return;
         }
 
-        $this->table(['Table', 'SQLite', 'MySQL', 'Status'], $rows);
+        $maxId = $target->table($table)->max('id');
+        $validatedMaxId = filter_var($maxId, FILTER_VALIDATE_INT);
+
+        if (is_int($validatedMaxId)) {
+            $nextId = $validatedMaxId + 1;
+            $target->statement("ALTER TABLE `{$table}` AUTO_INCREMENT = {$nextId}");
+        }
+    }
+
+    /**
+     * Reject imports containing orphaned foreign-key values.
+     */
+    private function verifyRelationships(string $targetName): void
+    {
+        /** @var list<array{string, string, string}> $relationships */
+        $relationships = [
+            ['links', 'user_id', 'users'],
+            ['questions', 'from_id', 'users'],
+            ['questions', 'to_id', 'users'],
+            ['questions', 'parent_id', 'questions'],
+            ['questions', 'root_id', 'questions'],
+            ['likes', 'user_id', 'users'],
+            ['likes', 'question_id', 'questions'],
+            ['bookmarks', 'user_id', 'users'],
+            ['bookmarks', 'question_id', 'questions'],
+            ['followers', 'user_id', 'users'],
+            ['followers', 'follower_id', 'users'],
+            ['hashtag_question', 'hashtag_id', 'hashtags'],
+            ['hashtag_question', 'question_id', 'questions'],
+            ['poll_options', 'question_id', 'questions'],
+            ['poll_votes', 'user_id', 'users'],
+            ['poll_votes', 'poll_option_id', 'poll_options'],
+        ];
+
+        $target = DB::connection($targetName);
+
+        foreach ($relationships as [$childTable, $foreignKey, $parentTable]) {
+            if (! $target->getSchemaBuilder()->hasTable($childTable)) {
+                continue;
+            }
+            if (! $target->getSchemaBuilder()->hasTable($parentTable)) {
+                continue;
+            }
+            $hasOrphans = $target->table("{$childTable} as child")
+                ->leftJoin("{$parentTable} as parent", "child.{$foreignKey}", '=', 'parent.id')
+                ->whereNotNull("child.{$foreignKey}")
+                ->whereNull('parent.id')
+                ->exists();
+
+            if ($hasOrphans) {
+                throw new RuntimeException("Orphaned values found in [{$childTable}.{$foreignKey}].");
+            }
+        }
+    }
+
+    /**
+     * Print source and target row counts for each application table.
+     */
+    private function printSummary(string $sourceName, string $targetName): void
+    {
+        $rows = [];
+
+        foreach (self::TABLES as $table) {
+            $sourceCount = Schema::connection($sourceName)->hasTable($table)
+                ? DB::connection($sourceName)->table($table)->count()
+                : 0;
+            $targetCount = Schema::connection($targetName)->hasTable($table)
+                ? DB::connection($targetName)->table($table)->count()
+                : 0;
+
+            $rows[] = [$table, $sourceCount, $targetCount, $sourceCount === $targetCount ? 'OK' : 'MISMATCH'];
+        }
+
+        $this->table(['Table', 'Source', 'Target', 'Status'], $rows);
     }
 }

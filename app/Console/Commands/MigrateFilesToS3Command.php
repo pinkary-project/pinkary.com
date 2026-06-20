@@ -46,12 +46,19 @@ final class MigrateFilesToS3Command extends Command
     public function handle(): int
     {
         $targetDisk = (string) $this->option('disk');
+        $sourceDisk = (string) $this->option('source');
         $overwrite = (bool) $this->option('overwrite');
 
-        $local = Storage::disk('local');
+        if ($sourceDisk === $targetDisk) {
+            $this->error('The source and target disks must be different.');
+
+            return self::FAILURE;
+        }
+
+        $local = Storage::disk($sourceDisk);
         $remote = Storage::disk($targetDisk);
 
-        if (! $this->validateDisks($local, $remote, $targetDisk)) {
+        if (! $this->validateDisks($local, $remote, $sourceDisk, $targetDisk)) {
             return self::FAILURE;
         }
 
@@ -78,16 +85,17 @@ final class MigrateFilesToS3Command extends Command
 
     /**
      * Validates that both storage disks are accessible.
-     *
-     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
-     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $remote
      */
-    private function validateDisks($local, $remote, string $targetDisk): bool
-    {
+    private function validateDisks(
+        Filesystem $local,
+        Filesystem $remote,
+        string $sourceDisk,
+        string $targetDisk,
+    ): bool {
         try {
             $local->directories('/');
         } catch (Exception $e) {
-            $this->error('Cannot access local disk: '.$e->getMessage());
+            $this->error('Cannot access "'.$sourceDisk.'" disk: '.$e->getMessage());
 
             return false;
         }
@@ -108,10 +116,9 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Collects all files from the configured directories.
      *
-     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
      * @return array<array-key, string>
      */
-    private function collectFiles($local): array
+    private function collectFiles(Filesystem $local): array
     {
         $allFiles = [];
 
@@ -133,12 +140,10 @@ final class MigrateFilesToS3Command extends Command
     /**
      * Uploads files from local to remote disk.
      *
-     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $local
-     * @param  \Illuminate\Contracts\Filesystem\Filesystem  $remote
      * @param  array<array-key, string>  $files
      * @return array{uploaded: int, skipped: int, failed: int, errors: array<int, string>}
      */
-    private function uploadFiles($local, $remote, array $files, bool $overwrite): array
+    private function uploadFiles(Filesystem $local, Filesystem $remote, array $files, bool $overwrite): array
     {
         $bar = $this->output->createProgressBar(count($files));
         $bar->start();
@@ -146,10 +151,15 @@ final class MigrateFilesToS3Command extends Command
         $results = ['uploaded' => 0, 'skipped' => 0, 'failed' => 0, 'errors' => []];
 
         foreach ($files as $path) {
+            $stream = null;
+
             try {
                 if (! $overwrite && $remote->exists($path)) {
+                    if ($local->size($path) !== $remote->size($path)) {
+                        throw new Exception('Remote file exists with a different size; rerun with --overwrite.');
+                    }
+
                     $results['skipped']++;
-                    $bar->advance();
 
                     continue;
                 }
@@ -159,24 +169,29 @@ final class MigrateFilesToS3Command extends Command
                 if ($stream === null) {
                     $results['failed']++;
                     $results['errors'][] = "Failed to read: {$path}";
-                    $bar->advance();
 
                     continue;
                 }
 
-                $remote->writeStream($path, $stream);
+                if (! $remote->writeStream($path, $stream, ['visibility' => 'public'])) {
+                    throw new Exception('The target disk rejected the upload.');
+                }
 
-                if (is_resource($stream)) {
-                    fclose($stream);
+                if ($local->size($path) !== $remote->size($path)) {
+                    throw new Exception('Uploaded file size does not match the source.');
                 }
 
                 $results['uploaded']++;
             } catch (Exception $e) {
                 $results['failed']++;
                 $results['errors'][] = "{$path}: {$e->getMessage()}";
-            }
+            } finally {
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
 
-            $bar->advance();
+                $bar->advance();
+            }
         }
 
         $bar->finish();

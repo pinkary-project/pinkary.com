@@ -420,6 +420,7 @@ final class Create extends Component
             return $image->store(
                 $imagePath, [
                     'disk' => self::IMAGE_DISK,
+                    'visibility' => 'public',
                 ]
             );
         }
@@ -434,7 +435,8 @@ final class Create extends Component
             $resizer->encodeByExtension(
                 $image->getClientOriginalExtension(),
                 quality: 80
-            )->toFilePointer()
+            )->toFilePointer(),
+            ['visibility' => 'public'],
         ) ? $imagePath : false;
     }
 

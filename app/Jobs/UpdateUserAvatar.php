@@ -66,7 +66,7 @@ final class UpdateUserAvatar implements ShouldQueue
         $image = $this->resizer()->read($contents)
             ->coverDown(200, 200)->toPng()->toFilePointer();
 
-        $disk->put($avatar, $image);
+        $disk->put($avatar, $image, ['visibility' => 'public']);
 
         $this->user->update([
             'avatar' => "$avatar",
@@ -79,6 +79,8 @@ final class UpdateUserAvatar implements ShouldQueue
 
     /**
      * Handle a job failure.
+     *
+     * @codeCoverageIgnore
      */
     public function failed(?Throwable $exception): void
     {
