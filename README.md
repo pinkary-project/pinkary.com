@@ -16,11 +16,11 @@ Over time, we've managed to add more features, such as feed, explore, questions,
 
 ## Installation
 
-Pinkary is a regular Laravel application; it's build on top of Laravel 11 and uses Livewire / Tailwind CSS for the frontend. If you are familiar with Laravel, you should feel right at home.
+Pinkary is a regular Laravel application built on Laravel 13 and uses Livewire v4 / Tailwind CSS v4 for the frontend. If you are familiar with Laravel, you should feel right at home.
 
 In terms of local development, you can use the following requirements:
 
-- PHP 8.4 - with SQLite, GD, and other common extensions.
+- PHP 8.4 - with MySQL, GD, and other common extensions.
 - Node.js 22 or more recent.
 
 If you have these requirements, you can start by cloning the repository and installing the dependencies:
@@ -51,11 +51,9 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Prepare your database and run the migrations:
+Prepare your MySQL database connection and run the migrations:
 
 ```bash
-touch database/database.sqlite
-
 php artisan migrate
 ```
 
@@ -132,11 +130,9 @@ Pull requests that don't pass the test suite will not be merged. So, as suggeste
 
 ## Production
 
-Pinkary is hosted on [DigitalOcean](https://www.digitalocean.com) and uses [Laravel Forge](https://forge.laravel.com) to manage the server and deployments. The server is running on Ubuntu 22.04 (LTS) x64 and is a 2 vCPUs 2GB / 25GB Disk droplet.
+Pinkary is Hosted on Laravel Cloud with MySQL as the primary database and S3-compatible object storage for uploaded files.
 
-The only service we use is [Mailcoach](https://mailcoach.app) to manage the send emails. Besides that, SQLite is used as database driver, sessions driver, queue driver, cache driver, etc.
-
-Server backups are done daily by Digital Ocean.
+The only service we use is [Mailcoach](https://mailcoach.app) to manage the send emails. Besides that, MySQL is used as database driver, sessions driver, queue driver, cache driver, etc.
 
 ---
 
