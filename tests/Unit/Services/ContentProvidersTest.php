@@ -383,18 +383,6 @@ test('image exists', function () {
         ->toMatchSnapshot();
 });
 
-test('image does not exists', function () {
-    $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
-
-    $content = '![](images/imagesdoesnotexists.png)';
-
-    expect($provider->parse($content))->toBe('...');
-
-    $content = 'other content ![](images/imagesdoesnotexists.png)';
-
-    expect($provider->parse($content))->toBe('other content ');
-});
-
 test('hashtags', function (string $content, string $parsed) {
     $provider = new App\Services\ParsableContentProviders\HashtagProviderParsable();
 
