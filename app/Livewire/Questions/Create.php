@@ -426,7 +426,7 @@ final class Create extends Component
         }
 
         $resizer = $this->resizer()->read($image)
-            ->resizeDown(1000, 1000);
+            ->scaleDown(750, 750);
 
         $imagePath .= '/'.$image->hashName();
 
