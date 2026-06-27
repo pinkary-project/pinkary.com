@@ -17,20 +17,9 @@ final readonly class ImageProviderParsable implements ParsableContentProvider
         return (string) preg_replace_callback(
             '/!\[(.*?)\]\((.*?)\)/',
             static function (array $match) use ($content): string {
-                $disk = Storage::disk();
+                $url = Storage::disk()->url($match[2]);
 
-                if (! $disk->exists($match[2])) {
-                    $tag = "![{$match[1]}]({$match[2]})";
-                    if ($tag === $content) {
-                        return '...';
-                    }
-
-                    return '';
-                }
-
-                $url = $disk->url($match[2]);
-
-                return "<img class='object-contain mx-auto w-full rounded-lg' src=\"{$url}\" alt=\"image\">";
+                return "<img class='object-contain mx-auto w-full rounded-lg' src=\"{$url}\" alt=\"image\" onerror=\"this.outerHTML='<span>...</span>'\">";
             },
             $content
         );
