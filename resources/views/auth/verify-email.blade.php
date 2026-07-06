@@ -34,10 +34,7 @@
             </div>
         </form>
 
-        <form
-            method="POST"
-            action="{{ route('logout') }}"
-        >
+        <form method="POST" action="{{ route('logout') }}">
             @csrf
 
             <button

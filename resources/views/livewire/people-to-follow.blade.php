@@ -14,7 +14,7 @@
     <ul class="divide-y divide-slate-200/70 dark:divide-slate-800/30">
         @foreach ($users as $user)
             <li
-                data-parent=true
+                data-parent="true"
                 x-data="clickHandler"
                 x-on:click="handleNavigation($event)"
                 class="cursor-pointer transition hover:bg-slate-100 dark:hover:bg-slate-900/60"
@@ -26,7 +26,7 @@
                         class="{{ $user->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-9 w-9 shrink-0"
                     />
 
-                    <div class="min-w-0 flex-1 flex flex-col">
+                    <div class="flex min-w-0 flex-1 flex-col">
                         <a
                             href="{{ route('profile.show', ['username' => $user->username]) }}"
                             class="truncate text-sm font-medium text-slate-950 dark:text-white"
@@ -36,9 +36,7 @@
                             {{ $user->name }}
                         </a>
 
-                        <p class="truncate text-sm text-slate-400">
-                            {{ '@'.$user->username }}
-                        </p>
+                        <p class="truncate text-sm text-slate-400">{{ '@'.$user->username }}</p>
                     </div>
 
                     <x-follow-button

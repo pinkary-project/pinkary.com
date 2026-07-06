@@ -12,20 +12,11 @@
         </p>
     </div>
 
-    <form
-        method="POST"
-        action="{{ route('register') }}"
-        onsubmit="event.submitter.disabled = true"
-        class="space-y-5"
-    >
+    <form method="POST" action="{{ route('register') }}" onsubmit="event.submitter.disabled = true" class="space-y-5">
         @csrf
 
         <div>
-            <x-input-label
-                for="name"
-                :value="__('Name')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="name" :value="__('Name')" class="text-slate-600 dark:text-slate-400" />
             <x-text-input
                 id="name"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
@@ -36,18 +27,11 @@
                 autofocus
                 autocomplete="name"
             />
-            <x-input-error
-                :messages="$errors->get('name')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label
-                for="username"
-                :value="__('Username')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="username" :value="__('Username')" class="text-slate-600 dark:text-slate-400" />
             <x-text-input
                 id="username"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
@@ -57,18 +41,11 @@
                 required
                 autocomplete="username"
             />
-            <x-input-error
-                :messages="$errors->get('username')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('username')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label
-                for="email"
-                :value="__('Email')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="email" :value="__('Email')" class="text-slate-600 dark:text-slate-400" />
             <x-text-input
                 id="email"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
@@ -78,18 +55,11 @@
                 required
                 autocomplete="email"
             />
-            <x-input-error
-                :messages="$errors->get('email')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label
-                for="password"
-                :value="__('Password')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="password" :value="__('Password')" class="text-slate-600 dark:text-slate-400" />
 
             <x-text-input
                 id="password"
@@ -100,10 +70,7 @@
                 autocomplete="new-password"
             />
 
-            <x-input-error
-                :messages="$errors->get('password')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div>
@@ -122,55 +89,46 @@
                 autocomplete="new-password"
             />
 
-            <x-input-error
-                :messages="$errors->get('password_confirmation')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="space-y-4">
-
             @if (App::environment(['production', 'testing']))
                 <div class="flex justify-center rounded-3xl border border-slate-200/80 bg-slate-50 px-4 py-4 dark:border-slate-800/30 dark:bg-[#0b1324]">
-                    <x-turnstile data-theme="auto"/>
+                    <x-turnstile data-theme="auto" />
                 </div>
             @endif
 
             <div class="rounded-3xl border border-slate-200/80 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
                 <label for="terms" class="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400">
                     <x-checkbox
-                    id="terms"
-                    name="terms"
-                    class="mt-0.5 rounded border-slate-200/80 bg-white text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0 dark:border-white/10 dark:bg-white/5"
+                        id="terms"
+                        name="terms"
+                        class="mt-0.5 rounded border-slate-200/80 bg-white text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0 dark:border-white/10 dark:bg-white/5"
                     />
                     <span>
                         {{ __('By signing up, I confirm that I am at least 18 years old and accept the') }}
-                    <a
-                        target="_blank"
-                        href="{{ route('terms') }}"
-                        class="text-pink-500 transition hover:text-pink-400"
-                    >{{ __('Terms of Service') }}</a>
-                    {{ __('and') }}
-                    <a
-                        target="_blank"
-                        href="{{ route('privacy') }}"
-                        class="text-pink-500 transition hover:text-pink-400"
-                    >{{ __('Privacy Policy') }}</a>{{ __('.') }}
+                        <a
+                            target="_blank"
+                            href="{{ route('terms') }}"
+                            class="text-pink-500 transition hover:text-pink-400"
+                        >{{ __('Terms of Service') }}</a>
+                        {{ __('and') }}
+                        <a
+                            target="_blank"
+                            href="{{ route('privacy') }}"
+                            class="text-pink-500 transition hover:text-pink-400"
+                            >{{ __('Privacy Policy') }}</a
+                        >{{ __('.') }}
                     </span>
                 </label>
             </div>
 
-            <x-input-error
-                :messages="$errors->get('terms')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('terms')" class="mt-2" />
         </div>
 
-    @if ($errors->has('cf-turnstile-response'))
-            <x-input-error
-                :messages="'The reCAPTCHA is required.'"
-                class="mt-2"
-            />
+        @if ($errors->has('cf-turnstile-response'))
+            <x-input-error :messages="'The reCAPTCHA is required.'" class="mt-2" />
         @endif
 
         <div>
@@ -186,11 +144,7 @@
 
     <div class="text-center text-sm text-slate-500 dark:text-slate-400">
         {{ __('Already have an account?') }}
-        <a
-            class="font-medium text-pink-500 transition hover:text-pink-400"
-            href="{{ route('login') }}"
-            wire:navigate
-        >
+        <a class="font-medium text-pink-500 transition hover:text-pink-400" href="{{ route('login') }}" wire:navigate>
             {{ __('Sign in here') }}
         </a>
     </div>

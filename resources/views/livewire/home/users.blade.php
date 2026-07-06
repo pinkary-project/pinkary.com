@@ -1,5 +1,5 @@
 <div class="w-full text-slate-700 dark:text-slate-200">
-    <div class="border-b border-r border-slate-200/70 bg-white/80 p-6 dark:border-slate-800/30 dark:bg-[#071121]/95">
+    <div class="border-r border-b border-slate-200/70 bg-white/80 p-6 dark:border-slate-800/30 dark:bg-[#071121]/95">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <h3 class="text-xl font-semibold text-slate-950 dark:text-white">People</h3>
@@ -11,11 +11,11 @@
         </div>
 
         <div class="relative mt-4 flex items-center">
-            <x-heroicon-o-magnifying-glass class="absolute left-4 z-10 size-5 text-slate-400 dark:text-slate-500"/>
+            <x-heroicon-o-magnifying-glass class="absolute left-4 z-10 size-5 text-slate-400 dark:text-slate-500" />
 
             <x-text-input
                 x-ref="searchInput"
-                x-init="if ($wire.focusInput) $refs.searchInput.focus()"
+                x-init="if ($wire.focusInput) $refs.searchInput.focus();"
                 wire:model.live.debounce.500ms="query"
                 name="q"
                 placeholder="Search for users..."
@@ -25,16 +25,18 @@
     </div>
 
     @if ($users->isEmpty())
-        <section class="border-b border-r border-dashed border-slate-300/80 bg-slate-50/70 p-6 text-center dark:border-slate-800/50 dark:bg-[#071121]/95">
+        <section class="border-r border-b border-dashed border-slate-300/80 bg-slate-50/70 p-6 text-center dark:border-slate-800/50 dark:bg-[#071121]/95">
             <p class="text-lg font-medium text-slate-950 dark:text-white">No users found.</p>
-            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Try another search or clear the query to return to the discovery list.</p>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                Try another search or clear the query to return to the discovery list.
+            </p>
         </section>
     @else
         <section>
             <ul class="divide-y divide-slate-200/70 border-r border-slate-200/70 bg-white/70 dark:divide-slate-800/30 dark:border-slate-800/30 dark:bg-[#071121]/60">
                 @foreach ($users as $user)
                     <li
-                        data-parent=true
+                        data-parent="true"
                         x-data="clickHandler"
                         x-on:click="handleNavigation($event)"
                         wire:key="user-{{ $user->id }}"
@@ -47,27 +49,19 @@
                                     alt="{{ $user->username }}"
                                 />
                             </figure>
-                            <div class="min-w-0 flex flex-1 flex-col overflow-hidden text-left text-sm">
+                            <div class="flex min-w-0 flex-1 flex-col overflow-hidden text-left text-sm">
                                 <a
                                     class="flex items-center gap-2"
                                     href="{{ route('profile.show', ['username' => $user->username]) }}"
                                     wire:navigate
                                     x-ref="parentLink"
                                 >
-                                    <p class="truncate font-medium text-slate-950 dark:text-white">
-                                        {{ $user->name }}
-                                    </p>
+                                    <p class="truncate font-medium text-slate-950 dark:text-white">{{ $user->name }}</p>
 
                                     @if ($user->is_verified && $user->is_company_verified)
-                                        <x-icons.verified-company
-                                            :color="$user->right_color"
-                                            class="size-4"
-                                        />
+                                        <x-icons.verified-company :color="$user->right_color" class="size-4" />
                                     @elseif ($user->is_verified)
-                                        <x-icons.verified
-                                            :color="$user->right_color"
-                                            class="size-4"
-                                        />
+                                        <x-icons.verified :color="$user->right_color" class="size-4" />
                                     @endif
                                 </a>
                                 <p class="truncate text-slate-500 transition-colors group-hover:text-slate-600 dark:text-slate-400 dark:group-hover:text-slate-300">

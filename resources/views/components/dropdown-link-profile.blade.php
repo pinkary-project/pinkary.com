@@ -1,7 +1,5 @@
 <div class="relative" x-data="{ open: false }" x-on:click.outside="open = false" @close.stop="open = false">
-    <div x-on:click="open = ! open">
-        {{ $trigger }}
-    </div>
+    <div x-on:click="open = ! open">{{ $trigger }}</div>
 
     <div
         x-show="open"
@@ -15,8 +13,6 @@
         style="display: none"
         x-on:click="open = false"
     >
-        <div class="flex flex-col space-y-2">
-            {{ $content }}
-        </div>
+        <div class="flex flex-col space-y-2">{{ $content }}</div>
     </div>
 </div>

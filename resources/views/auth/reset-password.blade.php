@@ -16,18 +16,10 @@
     >
         @csrf
 
-        <input
-            type="hidden"
-            name="token"
-            value="{{ $request->route('token') }}"
-        />
+        <input type="hidden" name="token" value="{{ $request->route('token') }}" />
 
         <div>
-            <x-input-label
-                for="email"
-                :value="__('Email')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="email" :value="__('Email')" class="text-slate-600 dark:text-slate-400" />
             <x-text-input
                 id="email"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
@@ -38,18 +30,11 @@
                 autofocus
                 autocomplete="username"
             />
-            <x-input-error
-                :messages="$errors->get('email')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div>
-            <x-input-label
-                for="password"
-                :value="__('Password')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="password" :value="__('Password')" class="text-slate-600 dark:text-slate-400" />
             <x-text-input
                 id="password"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
@@ -58,10 +43,7 @@
                 required
                 autocomplete="new-password"
             />
-            <x-input-error
-                :messages="$errors->get('password')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div>
@@ -80,10 +62,7 @@
                 autocomplete="new-password"
             />
 
-            <x-input-error
-                :messages="$errors->get('password_confirmation')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div>

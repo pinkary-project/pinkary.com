@@ -1,10 +1,10 @@
 <x-app-layout>
-    <div class="border-b border-r border-slate-200/70 bg-white/80 px-4 py-4 dark:border-slate-800/30 dark:bg-[#07101f]/95">
+    <div class="border-r border-b border-slate-200/70 bg-white/80 px-4 py-4 dark:border-slate-800/30 dark:bg-[#07101f]/95">
         <div class="mx-auto max-w-2xl space-y-6">
             <div>
                 <a
                     href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                    class="flex items-center space-x-1 dark:text-slate-400 text-slate-600 hover:underline"
+                    class="flex items-center space-x-1 text-slate-600 hover:underline dark:text-slate-400"
                     wire:navigate
                 >
                     <x-icons.chevron-left class="size-5" />

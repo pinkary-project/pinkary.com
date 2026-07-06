@@ -6,10 +6,7 @@
             <p class="mt-2 text-xs text-slate-500">&copy; {{ date('Y') }} {{ config('app.name') }}. {{ $version }}</p>
         </div>
 
-        <nav
-            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm"
-            aria-label="Footer"
-        >
+        <nav class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" aria-label="Footer">
             <a
                 href="{{ route('changelog') }}"
                 class="text-slate-500 transition hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"

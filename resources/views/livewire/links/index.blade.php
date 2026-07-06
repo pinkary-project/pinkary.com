@@ -1,22 +1,30 @@
-<div class="space-y-4" @if (auth()->user()?->is($user)) x-data="{
+<div
+    class="space-y-4"
+    @if (auth()->user()?->is($user))
+        x-data="{
     showSettingsForm: {{ $errors->settings->isEmpty() ? 'false' : 'true' }},
     gradient: '{{ $user->gradient }}',
     link_shape: '{{ $user->link_shape }}',
-}" @endif>
+}"
+    @endif
+>
     @if (auth()->user()?->is($user))
         <x-modal-qr-code />
     @endif
 
-    <div class="relative overflow-hidden rounded-md border border-slate-200/70 bg-white/85 p-4 text-center text-slate-950 shadow-xl shadow-slate-900/5 dark:border-slate-800/30 dark:bg-[#07101f]/95 dark:text-white dark:shadow-black/20 sm:p-5">
+    <div class="relative overflow-hidden rounded-md border border-slate-200/70 bg-white/85 p-4 text-center text-slate-950 shadow-xl shadow-slate-900/5 sm:p-5 dark:border-slate-800/30 dark:bg-[#07101f]/95 dark:text-white dark:shadow-black/20">
         <div class="pointer-events-none absolute inset-x-0 top-0 hidden h-32 bg-[radial-gradient(circle_at_top,rgba(244,114,182,0.12),transparent_55%)] dark:block"></div>
 
-        <div class="absolute left-4 top-4 z-10 flex">
+        <div class="absolute top-4 left-4 z-10 flex">
             <x-dropdown-link-profile>
                 <x-slot name="trigger">
                     <button
-                        x-bind:class="{ 'bg-pink-500 hover:bg-pink-500 text-white hover:text-white': open,
-                                        'dark:bg-slate-900 bg-white dark:hover:bg-slate-800 hover:bg-slate-100 border dark:border-slate-800 border-slate-200': !open }"
-                                    class="mr-2 flex size-11 items-center justify-center rounded-md text-slate-600 transition duration-150 ease-in-out dark:text-slate-300"
+                        x-bind:class="{
+                            'bg-pink-500 hover:bg-pink-500 text-white hover:text-white': open,
+                            'dark:bg-slate-900 bg-white dark:hover:bg-slate-800 hover:bg-slate-100 border dark:border-slate-800 border-slate-200':
+                                ! open,
+                        }"
+                        class="mr-2 flex size-11 items-center justify-center rounded-md text-slate-600 transition duration-150 ease-in-out dark:text-slate-300"
                     >
                         <x-heroicon-o-share class="size-5" />
                     </button>
@@ -73,7 +81,7 @@
         </div>
 
         @if (! $user->is(auth()->user()))
-            <div class="absolute right-4 top-4 z-10 flex">
+            <div class="absolute top-4 right-4 z-10 flex">
                 @if ($user->followers()->where('follower_id', auth()->id())->exists())
                     <button
                         type="button"
@@ -111,14 +119,13 @@
                 <img
                     src="{{ $user->avatar_url }}"
                     alt="{{ $user->username }}"
-                    class="rounded-3xl size-48 sm:size-64 md:size-80"
+                    class="size-48 rounded-3xl sm:size-64 md:size-80"
                 />
             </div>
 
-
             @if (auth()->user()?->is($user))
                 <button
-                    class="absolute right-0 top-0 m-1 rounded-md border border-slate-200 bg-white p-1 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+                    class="absolute top-0 right-0 m-1 rounded-md border border-slate-200 bg-white p-1 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-black dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                     href="{{ route('profile.edit') }}"
                     wire:navigate
                     title="Upload Avatar"
@@ -129,18 +136,14 @@
         </div>
 
         <div class="relative z-10 mt-4 flex items-center justify-center">
-            <h2 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">{{ $user->name }}</h2>
+            <h2 class="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl dark:text-white">
+                {{ $user->name }}
+            </h2>
 
             @if ($user->is_verified && $user->is_company_verified)
-                <x-icons.verified-company
-                    :color="$user->right_color"
-                    class="ml-1.5 size-6"
-                />
+                <x-icons.verified-company :color="$user->right_color" class="ml-1.5 size-6" />
             @elseif ($user->is_verified)
-                <x-icons.verified
-                    :color="$user->right_color"
-                    class="ml-1.5 size-6"
-                />
+                <x-icons.verified :color="$user->right_color" class="ml-1.5 size-6" />
             @endif
         </div>
 
@@ -153,14 +156,15 @@
         </a>
 
         @if ($user->bio)
-            <div class="relative z-10 mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">{{ $user->parsed_bio }}</div>
+            <div class="relative z-10 mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
+                {{ $user->parsed_bio }}
+            </div>
         @elseif (auth()->user()?->is($user))
             <a
                 href="{{ route('profile.edit') }}"
                 class="relative z-10 mt-3 inline-flex text-sm text-slate-500 hover:underline"
                 wire:navigate
-                >Tell people about yourself</a
-            >
+            >Tell people about yourself</a>
         @endif
 
         <livewire:followers :userId="$user->id" />
@@ -176,8 +180,7 @@
                         class="cursor-help"
                         title="{{ Number::format($user->followers_count) }} {{ str('Follower')->plural($user->followers_count) }}"
                     >
-                        {{ Number::abbreviate($user->followers_count) }}
-                        {{ str('Follower')->plural($user->followers_count) }}
+                        {{ Number::abbreviate($user->followers_count) }} {{ str('Follower')->plural($user->followers_count) }}
                     </span>
                 </button>
             @endif
@@ -187,12 +190,8 @@
                     x-on:click.prevent="$dispatch('open-modal', 'following')"
                     class="inline-flex items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
                 >
-                    <span
-                        class="cursor-help"
-                        title="{{ Number::format($user->following_count) }} Following"
-                    >
-                        {{ Number::abbreviate($user->following_count) }}
-                        Following
+                    <span class="cursor-help" title="{{ Number::format($user->following_count) }} Following">
+                        {{ Number::abbreviate($user->following_count) }} Following
                     </span>
                 </button>
             @endif
@@ -202,8 +201,7 @@
                     class="inline-flex cursor-help items-center rounded-full border border-slate-200/70 bg-white/80 px-3 py-1 text-slate-600 dark:border-slate-800/70 dark:bg-slate-900/70 dark:text-slate-400"
                     title="{{ Number::format($questionsReceivedCount) }} {{ str('Post')->plural($questionsReceivedCount) }}"
                 >
-                    {{ Number::abbreviate($questionsReceivedCount) }}
-                    {{ str('Post')->plural($questionsReceivedCount) }}
+                    {{ Number::abbreviate($questionsReceivedCount) }} {{ str('Post')->plural($questionsReceivedCount) }}
                 </span>
             @endif
 
@@ -220,7 +218,9 @@
             @if (auth()->user()?->is($user))
                 <div class="rounded-md border border-dashed border-slate-300/80 bg-slate-50/70 p-5 text-center dark:border-slate-700/80 dark:bg-slate-900/50">
                     <p class="text-lg font-medium text-slate-950 dark:text-white">No links yet.</p>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Add your first link to complete the profile card.</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                        Add your first link to complete the profile card.
+                    </p>
                 </div>
             @endif
         @else
@@ -244,38 +244,42 @@
                         >
                             <div
                                 x-sortable-handle
-                                class="absolute left-0 sm:-left-10 top-0 bottom-0 flex w-11 cursor-move items-center justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none group-hover:left-0 transition-all duration-500 z-10"
+                                class="absolute top-0 bottom-0 left-0 z-10 flex w-11 cursor-move items-center justify-center text-slate-50 opacity-50 transition-all duration-500 group-hover:left-0 hover:opacity-100 focus:outline-none sm:-left-10"
                             >
                                 <x-heroicon-o-bars-3 class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0" />
                             </div>
 
-                            <div class="grow flex items-center justify-center transition-all duration-500"
-                                x-bind:class="showActions ? 'max-sm:-translate-x-full sm:group-hover:-translate-x-full' : ''"
+                            <div
+                                class="flex grow items-center justify-center transition-all duration-500"
+                                x-bind:class="
+                                    showActions ? 'max-sm:-translate-x-full sm:group-hover:-translate-x-full' : ''
+                                "
                             >
                                 <x-links.list-item :$user :$link />
                             </div>
 
                             <div
-                                x-on:click="showActions = !showActions"
-                                x-bind:class="{ 'invisible': isDragging }"
-                                class="absolute right-0 sm:-right-10 top-0 bottom-0 flex w-11 cursor-pointer items-center justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none transition-all duration-500 z-10 group-hover:right-0"
+                                x-on:click="showActions = ! showActions"
+                                x-bind:class="{ invisible: isDragging }"
+                                class="absolute top-0 right-0 bottom-0 z-10 flex w-11 cursor-pointer items-center justify-center text-slate-50 opacity-50 transition-all duration-500 group-hover:right-0 hover:opacity-100 focus:outline-none sm:-right-10"
                             >
-                                <x-heroicon-o-chevron-double-left class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
+                                <x-heroicon-o-chevron-double-left
+                                    class="size-6 opacity-100 group-hover:opacity-100 sm:opacity-0"
                                     x-bind:class="{ 'rotate-180': showActions }"
                                     x-cloak
                                 />
                             </div>
 
-                            <div class="absolute -right-56 top-0 bottom-0 flex items-center justify-center transition-all duration-500 z-5"
+                            <div
+                                class="absolute top-0 -right-56 bottom-0 z-5 flex items-center justify-center transition-all duration-500"
                                 x-bind:class="showActions ? 'max-sm:inset-0 sm:group-hover:inset-0' : ''"
                             >
                                 <div
-                                    class="text-white min-w-fit cursor-help items-center gap-1 text-xs"
+                                    class="min-w-fit cursor-help items-center gap-1 text-xs text-white"
                                     title="Clicked {{ Number::format($link->click_count) }} times"
-                                    x-bind:class="{ 'invisible': isDragging }"
+                                    x-bind:class="{ invisible: isDragging }"
                                 >
-                                    {{ Number::abbreviate($link->click_count) }}
-                                    {{ str('click')->plural($link->click_count) }}
+                                    {{ Number::abbreviate($link->click_count) }} {{ str('click')->plural($link->click_count) }}
                                 </div>
 
                                 <button
@@ -284,12 +288,11 @@
                                     class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
                                     @if ($link->is_visible)
-                                        <x-heroicon-o-eye class="size-5"
-                                            x-bind:class="{ 'invisible': isDragging }"
-                                        />
+                                        <x-heroicon-o-eye class="size-5" x-bind:class="{ invisible: isDragging }" />
                                     @else
-                                        <x-heroicon-o-eye-slash class="size-5"
-                                            x-bind:class="{ 'invisible': isDragging }"
+                                        <x-heroicon-o-eye-slash
+                                            class="size-5"
+                                            x-bind:class="{ invisible: isDragging }"
                                         />
                                     @endif
                                 </button>
@@ -299,21 +302,22 @@
                                     type="button"
                                     class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
-                                    <x-heroicon-o-pencil
-                                        class="size-5"
-                                        x-bind:class="{ 'invisible': isDragging }"
-                                    />
+                                    <x-heroicon-o-pencil class="size-5" x-bind:class="{ invisible: isDragging }" />
                                 </button>
 
                                 <form wire:submit="destroy({{ $link->id }})">
                                     <button
-                                        onclick="if (!confirm('Are you sure you want to delete this link?')) { return false; }"
+                                        onclick="
+                                            if (!confirm('Are you sure you want to delete this link?')) {
+                                                return false;
+                                            }
+                                        "
                                         type="submit"
                                         class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
                                     >
                                         <x-heroicon-o-trash
                                             class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
-                                            x-bind:class="{ 'invisible': isDragging }"
+                                            x-bind:class="{ invisible: isDragging }"
                                         />
                                     </button>
                                 </form>
@@ -322,10 +326,7 @@
                     @endforeach
                 </ul>
 
-                <x-modal
-                    name="link-edit-modal"
-                    maxWidth="2xl"
-                >
+                <x-modal name="link-edit-modal" maxWidth="2xl">
                     <div class="p-10">
                         <livewire:links.edit />
                     </div>
@@ -337,10 +338,7 @@
                             class="{{ $user->link_shape }} {{ $user->gradient }} h-12 rounded-[1.75rem] hover:darken-gradient flex justify-center bg-linear-to-r shadow-lg shadow-slate-900/10"
                             wire:click="click({{ $link->id }})"
                         >
-                            <x-links.list-item
-                                :$user
-                                :$link
-                            />
+                            <x-links.list-item :$user :$link />
                         </div>
                     @endforeach
                 </div>
@@ -358,7 +356,10 @@
             <div>
                 <div class="flex gap-2">
                     <button
-                        x-on:click="showLinksForm = ! showLinksForm ; showSettingsForm = false"
+                        x-on:click="
+                            showLinksForm = ! showLinksForm;
+                            showSettingsForm = false;
+                        "
                         class="hover:darken-gradient flex w-full basis-4/5 items-center justify-center bg-linear-to-r px-4 py-2 text-sm font-bold text-white transition duration-300 ease-in-out"
                         :class="showSettingsForm ? gradient + ' ' + link_shape : '{{ $user->gradient }} {{ $user->link_shape }}'"
                     >
@@ -366,7 +367,10 @@
                         Add New Link
                     </button>
                     <button
-                        x-on:click="showSettingsForm = ! showSettingsForm ; showLinksForm = false"
+                        x-on:click="
+                            showSettingsForm = ! showSettingsForm;
+                            showLinksForm = false;
+                        "
                         class="hover:darken-gradient flex w-full basis-1/5 items-center justify-center px-4 py-2 font-bold text-white transition duration-300 ease-in-out"
                         :class="showSettingsForm ? 'bg-' + gradient.split(' ')[1].replace('to-', '') + ' ' + link_shape : 'bg-{{ $user->right_color }} {{ $user->link_shape }}'"
                     >

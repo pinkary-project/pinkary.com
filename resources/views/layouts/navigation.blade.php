@@ -15,13 +15,9 @@
 @endphp
 
 <nav class="w-full lg:h-screen">
-    <div class="hidden border-x border-slate-200/70 bg-white/80 px-6 dark:border-slate-800/30 dark:bg-[#07101f]/80 lg:flex lg:h-screen lg:min-h-screen lg:flex-col lg:justify-between">
+    <div class="hidden border-x border-slate-200/70 bg-white/80 px-6 lg:flex lg:h-screen lg:min-h-screen lg:flex-col lg:justify-between dark:border-slate-800/30 dark:bg-[#07101f]/80">
         <div class="flex flex-col">
-            <a
-                href="{{ route('home.feed') }}"
-                class="mt-6 inline-flex items-center"
-                wire:navigate
-            >
+            <a href="{{ route('home.feed') }}" class="mt-6 inline-flex items-center" wire:navigate>
                 <x-pinkary-logo class="h-12 w-auto" />
             </a>
 
@@ -140,9 +136,7 @@
                                 {{ auth()->user()->name }}
                             </p>
 
-                            <p class="truncate text-xs text-slate-400">
-                                {{ '@'.auth()->user()->username }}
-                            </p>
+                            <p class="truncate text-xs text-slate-400">{{ '@'.auth()->user()->username }}</p>
                         </div>
                     </a>
 
@@ -164,34 +158,64 @@
                         <x-slot name="content">
                             <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
                                 <div class="flex w-full flex-row justify-between gap-2">
-                                    <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'light' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('light')">
+                                    <button
+                                        type="button"
+                                        class="{{ $themeSwitchButtonClasses }}"
+                                        x-bind:class="
+                                            theme == 'light'
+                                                ? 'border-pink-500 bg-pink-500 text-white'
+                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                                        "
+                                        @click="setTheme('light')"
+                                    >
                                         <x-heroicon-o-sun class="h-4 w-4" />
                                     </button>
-                                    <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'dark' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('dark')">
+                                    <button
+                                        type="button"
+                                        class="{{ $themeSwitchButtonClasses }}"
+                                        x-bind:class="
+                                            theme == 'dark'
+                                                ? 'border-pink-500 bg-pink-500 text-white'
+                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                                        "
+                                        @click="setTheme('dark')"
+                                    >
                                         <x-heroicon-o-moon class="h-4 w-4" />
                                     </button>
-                                    <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'system' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('system')">
+                                    <button
+                                        type="button"
+                                        class="{{ $themeSwitchButtonClasses }}"
+                                        x-bind:class="
+                                            theme == 'system'
+                                                ? 'border-pink-500 bg-pink-500 text-white'
+                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                                        "
+                                        @click="setTheme('system')"
+                                    >
                                         <x-heroicon-o-computer-desktop class="h-4 w-4" />
                                     </button>
                                 </div>
                             </div>
 
-                            <x-dropdown-link :href="route('about')">
-                                {{ __('About') }}
-                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
 
-                            <x-dropdown-link :navigate="false" href="https://github.com/pinkary-project/pinkary.com" target="_blank">
+                            <x-dropdown-link
+                                :navigate="false"
+                                href="https://github.com/pinkary-project/pinkary.com"
+                                target="_blank"
+                            >
                                 {{ __('Source code') }}
                             </x-dropdown-link>
 
-                            <form
-                                method="POST"
-                                action="{{ route('logout') }}"
-                                x-data
-                            >
+                            <form method="POST" action="{{ route('logout') }}" x-data>
                                 @csrf
 
-                                <x-dropdown-button onclick="event.preventDefault();this.closest('form').submit();">
+                                <x-dropdown-button
+                                    onclick="
+                                        event.preventDefault();
+                                        this.closest('form').submit();
+                                    "
+                                >
                                     {{ __('Log Out') }}
                                 </x-dropdown-button>
                             </form>
@@ -202,7 +226,7 @@
         @endif
     </div>
 
-    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-60 mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-200/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:shadow-black/30 lg:hidden">
+    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-60 mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-200/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur lg:hidden dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:shadow-black/30">
         @auth
             <a
                 title="Home"
@@ -238,7 +262,7 @@
                 wire:navigate
             >
                 <x-heroicon-o-bell class="h-5 w-5" />
-                <span class="absolute right-2 top-2 text-[10px] leading-none">
+                <span class="absolute top-2 right-2 text-[10px] leading-none">
                     <livewire:navigation.notifications-count.show />
                 </span>
             </a>
@@ -271,17 +295,9 @@
             </a>
         @endauth
 
-        <x-dropdown
-            align="right"
-            width="60"
-            dropdown-classes="bottom-full"
-            :content-classes="$menuContentClasses"
-        >
+        <x-dropdown align="right" width="60" dropdown-classes="bottom-full" :content-classes="$menuContentClasses">
             <x-slot name="trigger">
-                <button
-                    title="Menu"
-                    class="{{ $mobileItemClasses }} {{ $mobileIdleClasses }} max-w-12"
-                >
+                <button title="Menu" class="{{ $mobileItemClasses }} {{ $mobileIdleClasses }} max-w-12">
                     <x-icons.bars class="size-5" />
                 </button>
             </x-slot>
@@ -289,39 +305,67 @@
             <x-slot name="content">
                 <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
                     <div class="flex w-full flex-row justify-between gap-2">
-                        <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'light' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('light')">
+                        <button
+                            type="button"
+                            class="{{ $themeSwitchButtonClasses }}"
+                            x-bind:class="
+                                theme == 'light'
+                                    ? 'border-pink-500 bg-pink-500 text-white'
+                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                            "
+                            @click="setTheme('light')"
+                        >
                             <x-heroicon-o-sun class="h-4 w-4" />
                         </button>
-                        <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'dark' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('dark')">
+                        <button
+                            type="button"
+                            class="{{ $themeSwitchButtonClasses }}"
+                            x-bind:class="
+                                theme == 'dark'
+                                    ? 'border-pink-500 bg-pink-500 text-white'
+                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                            "
+                            @click="setTheme('dark')"
+                        >
                             <x-heroicon-o-moon class="h-4 w-4" />
                         </button>
-                        <button type="button" class="{{ $themeSwitchButtonClasses }}" x-bind:class="theme == 'system' ? 'border-pink-500 bg-pink-500 text-white' : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'" @click="setTheme('system')">
+                        <button
+                            type="button"
+                            class="{{ $themeSwitchButtonClasses }}"
+                            x-bind:class="
+                                theme == 'system'
+                                    ? 'border-pink-500 bg-pink-500 text-white'
+                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                            "
+                            @click="setTheme('system')"
+                        >
                             <x-heroicon-o-computer-desktop class="h-4 w-4" />
                         </button>
                     </div>
                 </div>
 
-                <x-dropdown-link :href="route('about')">
-                    {{ __('About') }}
-                </x-dropdown-link>
+                <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
 
-                <x-dropdown-link :navigate="false" href="https://github.com/pinkary-project/pinkary.com" target="_blank">
+                <x-dropdown-link
+                    :navigate="false"
+                    href="https://github.com/pinkary-project/pinkary.com"
+                    target="_blank"
+                >
                     {{ __('Source code') }}
                 </x-dropdown-link>
 
                 @auth
-                    <x-dropdown-link :href="route('profile.edit')">
-                        {{ __('Settings') }}
-                    </x-dropdown-link>
+                    <x-dropdown-link :href="route('profile.edit')"> {{ __('Settings') }} </x-dropdown-link>
 
-                    <form
-                        method="POST"
-                        action="{{ route('logout') }}"
-                        x-data
-                    >
+                    <form method="POST" action="{{ route('logout') }}" x-data>
                         @csrf
 
-                        <x-dropdown-button onclick="event.preventDefault();this.closest('form').submit();">
+                        <x-dropdown-button
+                            onclick="
+                                event.preventDefault();
+                                this.closest('form').submit();
+                            "
+                        >
                             {{ __('Log Out') }}
                         </x-dropdown-button>
                     </form>
