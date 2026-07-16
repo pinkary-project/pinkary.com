@@ -272,7 +272,7 @@ final class MigrateSqliteToMysqlCommand extends Command
         $bar = $this->output->createProgressBar($totalRows);
         $bar->start();
 
-        $source->orderBy('id')->chunk($this->chunkSize($table), function (Collection $rows) use ($targetName, $table, $bar): void {
+        $source->orderBy($this->orderingColumn($table))->chunk($this->chunkSize($table), function (Collection $rows) use ($targetName, $table, $bar): void {
             $data = collect($rows)->map(static fn (object $row): array => (array) $row)->all();
             DB::connection($targetName)->table($table)->insert($data);
             $bar->advance(count($data));
@@ -288,6 +288,14 @@ final class MigrateSqliteToMysqlCommand extends Command
     private function chunkSize(string $table): int
     {
         return in_array($table, ['questions', 'notifications'], true) ? 200 : 500;
+    }
+
+    /**
+     * Get the column used to iterate through a table consistently.
+     */
+    private function orderingColumn(string $table): string
+    {
+        return self::ORDER_COLUMNS[$table] ?? 'id';
     }
 
     /**
@@ -316,6 +324,7 @@ final class MigrateSqliteToMysqlCommand extends Command
         /** @var list<array{string, string, string}> $relationships */
         $relationships = [
             ['links', 'user_id', 'users'],
+            ['sessions', 'user_id', 'users'],
             ['questions', 'from_id', 'users'],
             ['questions', 'to_id', 'users'],
             ['questions', 'parent_id', 'questions'],
