@@ -88,7 +88,7 @@ final readonly class MetaData
         $min_width = self::CARD_WIDTH / 0.66;
         $min_height = self::CARD_HEIGHT / 0.66;
 
-        return ! ($dimensions && ($dimensions[0] < $min_width || $dimensions[1] < $min_height));
+        return ! $dimensions || $dimensions[0] >= $min_width && $dimensions[1] >= $min_height;
     }
 
     /**
