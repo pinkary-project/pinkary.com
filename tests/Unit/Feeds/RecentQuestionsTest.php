@@ -92,6 +92,22 @@ it('render roots of latest comments or roots without comments', function () {
         ->toBe([$root->id, $rootWithoutComments->id]);
 });
 
+it('returns one row per thread when updates have identical timestamps', function () {
+    $updatedAt = now();
+    $root = Question::factory()->create(['updated_at' => $updatedAt]);
+
+    Question::factory()->create([
+        'root_id' => $root->id,
+        'parent_id' => $root->id,
+        'updated_at' => $updatedAt,
+    ]);
+
+    $questions = (new RecentQuestionsFeed())->builder()->get();
+
+    expect($questions)->toHaveCount(1)
+        ->and($questions->first()->root_id ?? $questions->first()->id)->toBe($root->id);
+});
+
 it('render roots in correct order', function () {
 
     // create 5 roots

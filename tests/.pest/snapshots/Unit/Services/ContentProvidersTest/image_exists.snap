@@ -1,1 +1,1 @@
-<img class='object-contain mx-auto w-full rounded-lg' src="/storage/images/pathtoimage.png" alt="image">
+<img class='object-contain mx-auto w-full rounded-lg' src="/storage/images/pathtoimage.png" alt="image" onerror="this.outerHTML='<span>...</span>'">

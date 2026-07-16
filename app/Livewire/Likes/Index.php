@@ -38,7 +38,9 @@ final class Index extends Component
         $this->authorize('viewLikes', $question);
 
         if ($this->isOpened) {
-            $users = $question->likers()->latest('likes.created_at')
+            $users = $question->likers()
+                ->latest('likes.created_at')
+                ->latest('likes.id')
                 ->withExists([
                     'following as is_follower' => function (Builder $query): void {
                         $query->where('user_id', auth()->id());

@@ -194,7 +194,7 @@ const imageUpload = () => ({
     },
 
     normalizePath(path) {
-        return path.replace(/\/storage\//, '');
+        return path.includes('/images/') ? path.substring(path.indexOf('images/')) : path;
     }
 })
 
