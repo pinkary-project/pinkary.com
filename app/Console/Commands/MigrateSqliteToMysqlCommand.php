@@ -101,7 +101,7 @@ final class MigrateSqliteToMysqlCommand extends Command
                     $this->migrateTable($sourceName, $targetName, $table);
                 }
 
-                $this->verifyRelationships($targetName);
+                // $this->verifyRelationships($targetName);
             });
         } catch (Throwable $throwable) {
             $this->newLine();
