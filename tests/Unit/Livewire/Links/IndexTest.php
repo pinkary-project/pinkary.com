@@ -69,7 +69,8 @@ test('destroy link', function () {
         'userId' => $user->id,
     ]);
 
-    $component->call('destroy', $link->id);
+    $component->call('destroy', $link->id)
+        ->assertDispatched('close-modal', 'delete-link');
 
     $user->refresh();
 
