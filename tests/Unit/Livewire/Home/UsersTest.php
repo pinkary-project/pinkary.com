@@ -173,7 +173,7 @@ test('famous users are cached for a day', function () {
 
     $CachedFamousUsers = Cache::get('top-50-users');
 
-    $this->assertEquals($famousUsers->pluck('id')->toArray(), $CachedFamousUsers);
+    $this->assertEquals($famousUsers->pluck('id')->all(), $CachedFamousUsers);
 });
 
 test('cached famous users are refreshed after a day', function () {

@@ -54,6 +54,7 @@ final class Users extends Component
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
+            ->orderBy('id')
             ->when(auth()->check(), function (Builder $query): void {
                 $query->withExists([
                     'following as is_follower' => function (Builder $query): void {
@@ -112,6 +113,7 @@ final class Users extends Component
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
+            ->orderBy('id')
             ->limit(50)->pluck('id')->toArray()
         );
 
