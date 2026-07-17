@@ -7,13 +7,12 @@
     $question->loadMissing('children.children');
 @endphp
 
-@if($question->children->isNotEmpty())
+@if ($question->children->isNotEmpty())
     <div @class([
         'divide-y divide-slate-200/70 dark:divide-slate-800/30' => $depth === 0,
     ])>
-        @foreach($question->children as $comment)
+        @foreach ($question->children as $comment)
             @break($loop->depth > 5)
-
             @php
                 $showThreadContinuation = ! $loop->last || $comment->children->isNotEmpty();
             @endphp

@@ -17,11 +17,7 @@
         @csrf
 
         <div>
-            <x-input-label
-                for="password"
-                :value="__('Password')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="password" :value="__('Password')" class="text-slate-600 dark:text-slate-400" />
 
             <x-text-input
                 id="password"
@@ -32,10 +28,7 @@
                 autocomplete="current-password"
             />
 
-            <x-input-error
-                :messages="$errors->get('password')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <div>

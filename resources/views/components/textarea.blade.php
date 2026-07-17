@@ -13,5 +13,5 @@
 </textarea>
 
 @if ($autocomplete === true)
-<livewire:autocomplete :componentId="$componentId"></livewire:autocomplete>
+    <livewire:autocomplete :componentId="$componentId"></livewire:autocomplete>
 @endif

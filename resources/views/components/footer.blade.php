@@ -1,15 +1,12 @@
 <footer class="border-t border-slate-200/70 bg-white/75 backdrop-blur dark:border-white/5 dark:bg-black/20">
-    <div class="mx-auto flex w-full max-w-[82rem] flex-col gap-6 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+    <div class="mx-auto flex w-full max-w-328 flex-col gap-6 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
             <p class="font-mona text-lg font-semibold text-slate-950 dark:text-white">{{ config('app.name') }}</p>
             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">One link. All your socials.</p>
             <p class="mt-2 text-xs text-slate-500">&copy; {{ date('Y') }} {{ config('app.name') }}. {{ $version }}</p>
         </div>
 
-        <nav
-            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm"
-            aria-label="Footer"
-        >
+        <nav class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" aria-label="Footer">
             <a
                 href="{{ route('changelog') }}"
                 class="text-slate-500 transition hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"

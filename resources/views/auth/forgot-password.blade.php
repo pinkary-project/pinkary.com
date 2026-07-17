@@ -17,11 +17,7 @@
         @csrf
 
         <div>
-            <x-input-label
-                for="email"
-                :value="__('Email')"
-                class="text-slate-600 dark:text-slate-400"
-            />
+            <x-input-label for="email" :value="__('Email')" class="text-slate-600 dark:text-slate-400" />
             <x-text-input
                 id="email"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
@@ -31,10 +27,7 @@
                 required
                 autofocus
             />
-            <x-input-error
-                :messages="$errors->get('email')"
-                class="mt-2"
-            />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div>
@@ -50,11 +43,7 @@
 
     <div class="text-center text-sm text-slate-500 dark:text-slate-400">
         {{ __('Remembered it?') }}
-        <a
-            href="{{ route('login') }}"
-            class="font-medium text-pink-500 transition hover:text-pink-400"
-            wire:navigate
-        >
+        <a href="{{ route('login') }}" class="font-medium text-pink-500 transition hover:text-pink-400" wire:navigate>
             {{ __('Back to sign in') }}
         </a>
     </div>

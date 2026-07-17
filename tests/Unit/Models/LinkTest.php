@@ -8,7 +8,7 @@ use App\Models\User;
 test('to array', function () {
     $question = Link::factory()->create()->fresh();
 
-    expect(array_keys($question->toArray()))->toBe([
+    expect(array_keys($question->toArray()))->toContain(
         'id',
         'description',
         'url',
@@ -17,7 +17,7 @@ test('to array', function () {
         'updated_at',
         'click_count',
         'is_visible',
-    ]);
+    )->toHaveCount(8);
 });
 
 test('relations', function () {

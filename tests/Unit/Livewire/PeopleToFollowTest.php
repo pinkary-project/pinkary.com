@@ -51,3 +51,25 @@ it('uses the current context and authenticated user when rendering recommendatio
         ->assertSee($visibleInteractedUser->name)
         ->assertDontSee($followedInteractedUser->name);
 });
+
+it('allows following a user', function () {
+    $viewer = User::factory()->create();
+    $target = User::factory()->create();
+
+    Livewire::actingAs($viewer)->test(PeopleToFollow::class)
+        ->call('follow', $target->id);
+
+    expect($viewer->following()->where('user_id', $target->id)->exists())->toBeTrue();
+});
+
+it('allows unfollowing a user', function () {
+    $viewer = User::factory()->create();
+    $target = User::factory()->create();
+
+    $viewer->following()->attach($target);
+
+    Livewire::actingAs($viewer)->test(PeopleToFollow::class)
+        ->call('unfollow', $target->id);
+
+    expect($viewer->following()->where('user_id', $target->id)->exists())->toBeFalse();
+});

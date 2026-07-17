@@ -2,7 +2,7 @@
     <div class="mx-auto my-16 max-w-7xl px-6 lg:px-8">
         <a
             href="{{ url()->previous() === request()->url() ? '/' : url()->previous() }}"
-            class="-mt-10 mb-12 flex items-center dark:text-slate-400 text-slate-600 hover:underline z-50 relative"
+            class="relative z-50 -mt-10 mb-12 flex items-center text-slate-600 hover:underline dark:text-slate-400"
             wire:navigate
         >
             <x-icons.chevron-left class="size-4" />
@@ -15,7 +15,8 @@
                 <p><strong>Last Updated: 02 March 2024</strong></p>
 
                 <p>
-                    If you have any questions or need help, please feel free to contact us at <a href="mailto:team@pinkary.com">team@pinkary.com</a> .
+                    If you have any questions or need help, please feel free to contact us at
+                    <a href="mailto:team@pinkary.com">team@pinkary.com</a> .
                 </p>
             </div>
         </div>

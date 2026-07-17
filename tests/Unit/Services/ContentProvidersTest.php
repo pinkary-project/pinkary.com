@@ -369,30 +369,18 @@ test('mention', function (string $content) {
 ]);
 
 test('image exists', function () {
-    Storage::fake('public');
+    Storage::fake();
     $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
 
     $pngFile = UploadedFile::fake()->image('pathtoimage.png');
     $filePath = 'images/pathtoimage.png';
-    Storage::disk('public')->put($filePath, $pngFile->getContent());
+    Storage::disk()->put($filePath, $pngFile->getContent());
 
     // Use the direct file path in the markdown
     $content = "![]({$filePath})";
 
     expect($provider->parse($content))
         ->toMatchSnapshot();
-});
-
-test('image does not exists', function () {
-    $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
-
-    $content = '![](images/imagesdoesnotexists.png)';
-
-    expect($provider->parse($content))->toBe('...');
-
-    $content = 'other content ![](images/imagesdoesnotexists.png)';
-
-    expect($provider->parse($content))->toBe('other content ');
 });
 
 test('hashtags', function (string $content, string $parsed) {

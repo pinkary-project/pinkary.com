@@ -3,14 +3,14 @@
 @php
     switch ($align) {
         case 'left':
-            $alignmentClasses = 'start-0 ltr:origin-top-left rtl:origin-top-right';
+            $alignmentClasses = 'inset-s-0 ltr:origin-top-left rtl:origin-top-right';
             break;
         case 'top':
             $alignmentClasses = 'origin-top';
             break;
         case 'right':
         default:
-            $alignmentClasses = 'end-0 ltr:origin-top-right rtl:origin-top-left';
+            $alignmentClasses = 'inset-e-0 ltr:origin-top-right rtl:origin-top-left';
             break;
     }
 
@@ -24,15 +24,8 @@
     }
 @endphp
 
-<div
-    class="relative"
-    x-data="{ open: false }"
-    x-on:click.outside="open = false"
-    @close.stop="open = false"
->
-    <div x-on:click="open = ! open">
-        {{ $trigger }}
-    </div>
+<div class="relative" x-data="{ open: false }" x-on:click.outside="open = false" @close.stop="open = false">
+    <div x-on:click="open = ! open">{{ $trigger }}</div>
 
     <div
         x-show="open"
@@ -46,8 +39,6 @@
         style="display: none"
         x-on:click="open = false"
     >
-        <div class="{{ $contentClasses }} rounded-2xl ring-1 ring-slate-900/5 dark:ring-white/5">
-            {{ $content }}
-        </div>
+        <div class="{{ $contentClasses }} rounded-2xl ring-1 ring-slate-900/5 dark:ring-white/5">{{ $content }}</div>
     </div>
 </div>

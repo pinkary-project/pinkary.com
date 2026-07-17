@@ -1,6 +1,7 @@
 {
     "preset": "laravel",
     "rules": {
+        "Pint/laravel_blade": true,
         "array_push": true,
         "backtick_to_shell_exec": true,
         "date_time_immutable": true,
