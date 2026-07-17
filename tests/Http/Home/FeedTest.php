@@ -61,6 +61,17 @@ it('shows recent feed to guest regardless of default feed setting', function () 
         ->assertSeeLivewire(Feed::class);
 });
 
+it('shows recent feed on subsequent visits after initial redirect', function () {
+    $user = User::factory()->create(['default_feed' => UserDefaultFeed::Following]);
+
+    $this->actingAs($user)->get(route('home.feed'))->assertSessionHas('_home_redirected', true);
+
+    $response = $this->actingAs($user)->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertSeeLivewire(Feed::class);
+});
+
 it('can filter questions to those with a particular hashtag', function () {
     $questionWithHashtag = Question::factory()->create(['answer' => 'question 1 with a #hashtag']);
 

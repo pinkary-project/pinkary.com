@@ -23,8 +23,15 @@ final readonly class HomeFeedResponse
         if ($user instanceof User
             && $user->default_feed !== UserDefaultFeed::Recent
             && ! $request->hasHeader('X-Livewire-Navigate')
+            && ! session('_home_redirected')
         ) {
+            session(['_home_redirected' => true]);
+
             return redirect()->route($user->default_feed->toRouteName());
+        }
+
+        if ($user instanceof User) {
+            session(['_home_redirected' => true]);
         }
 
         return view('home/feed');
