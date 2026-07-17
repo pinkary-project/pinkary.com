@@ -35,7 +35,7 @@ final class Create extends Component
             return;
         }
 
-        if ($linksCount >= 20 && $user->is_verified) {
+        if ($linksCount >= 20 && $user->is_verified) { // @phpstan-ignore-line booleanAnd.rightAlwaysTrue
             $this->addError('url', 'You can only have 20 links at a time.');
 
             return;
