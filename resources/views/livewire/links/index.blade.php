@@ -312,7 +312,7 @@
                                 >
                                     <x-heroicon-o-trash
                                         class="size-5 opacity-100 group-hover:opacity-100 sm:opacity-0"
-                                        x-bind:class="{ 'invisible': isDragging }"
+                                        x-bind:class="{ invisible: isDragging }"
                                     />
                                 </button>
                             </div>
@@ -324,10 +324,7 @@
 
                 <x-links.delete-modal />
 
-                <x-modal
-                    name="link-edit-modal"
-                    maxWidth="2xl"
-                >
+                <x-modal name="link-edit-modal" maxWidth="2xl">
                     <div class="p-10">
                         <livewire:links.edit />
                     </div>
