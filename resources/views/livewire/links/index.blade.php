@@ -306,7 +306,7 @@
                                 </button>
 
                                 <button
-                                    x-on:click="$dispatch('open-modal', 'delete-link-{{ $link->id }}');"
+                                    x-on:click="$dispatch('open-modal', 'delete-link'); $dispatch('set-link-id', { id: {{ $link->id }} })"
                                     type="button"
                                     class="flex w-10 justify-center text-slate-50 opacity-50 hover:opacity-100 focus:outline-none"
                                 >
@@ -317,9 +317,10 @@
                                 </button>
                             </div>
                         </li>
-                        <x-links.delete-modal :linkId="$link->id" />
                     @endforeach
                 </ul>
+
+                <x-links.delete-modal />
 
                 <x-modal
                     name="link-edit-modal"

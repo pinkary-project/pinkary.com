@@ -84,6 +84,7 @@ final class Index extends Component
             UpdateUserAvatar::dispatch($user);
         }
 
+        $this->dispatch('close-modal', 'delete-link');
         $this->dispatch('notification.created', message: 'Link deleted.');
     }
 
