@@ -21,28 +21,38 @@ jobs:
 
     name: TIA Baseline
 
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
 
       - name: Cache Composer Dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-composer-${{ hashFiles('composer.lock') }}
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '8.4'
-          extensions: json, dom, curl, libxml, mbstring, zip, imagick, intl, bcmath, pdo, pdo_sqlite, sqlite3
+          extensions: json, dom, curl, libxml, mbstring, zip, imagick, intl, bcmath, pdo, pdo_mysql, mysql
           tools: composer:v2
           coverage: xdebug
 
       - name: Set up Node & NPM
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '22.x'
 
@@ -55,7 +65,7 @@ jobs:
         run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -84,7 +94,7 @@ jobs:
         run: echo "path=$(vendor/bin/pest --baseline)" >> "$GITHUB_OUTPUT"
 
       - name: Upload TIA baseline
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: pest-tia-baseline
           path: ${{ steps.baseline.outputs.path }}

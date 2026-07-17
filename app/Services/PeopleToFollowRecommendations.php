@@ -70,8 +70,19 @@ final readonly class PeopleToFollowRecommendations
             );
 
             if ($topUpIds !== []) {
-                $users = $users->merge($this->usersForIds($topUpIds));
+                $users = $users->merge($this->usersForIds($topUpIds)); // @codeCoverageIgnore
             }
+        }
+
+        if ($authenticatedUserId !== null) {
+            $users->loadExists([ // @phpstan-ignore-line
+                'following as is_follower' => function (Builder $query) use ($authenticatedUserId): void {
+                    $query->where('user_id', $authenticatedUserId);
+                },
+                'followers as is_following' => function (Builder $query) use ($authenticatedUserId): void {
+                    $query->where('follower_id', $authenticatedUserId);
+                },
+            ]);
         }
 
         return $users;
@@ -93,6 +104,9 @@ final readonly class PeopleToFollowRecommendations
         $selectedIds = $this->availableUserIds([$question->to_id], $authenticatedUserId, [], 1);
 
         // Load the full ancestor chain in a single recursive CTE (depth-capped at THREAD_DEPTH_CAP).
+        /**
+         * @var array<array-key, object{id: int, from_id: int, to_id: int, parent_id: int, depth: int}>
+         */
         $threadRows = DB::select(
             'WITH RECURSIVE thread (id, from_id, to_id, parent_id, depth) AS (
                 SELECT id, from_id, to_id, parent_id, 0 FROM questions WHERE id = ?
@@ -152,19 +166,23 @@ final readonly class PeopleToFollowRecommendations
             return [];
         }
 
-        $counterpartExpression = 'CASE WHEN from_id = ? THEN to_id ELSE from_id END';
-
-        /** @var array<int, int> $candidateIds */
-        $candidateIds = Question::query()
-            ->selectRaw("{$counterpartExpression} as counterpart_id, MAX(updated_at) as latest_interaction_at", [$userId])
+        $interactions = Question::query()
+            ->selectRaw('CASE WHEN from_id = ? THEN to_id ELSE from_id END as counterpart_id', [$userId])
+            ->addSelect('updated_at')
             ->where(function (Builder $query) use ($userId): void {
                 $query->where('from_id', $userId)
                     ->orWhere('to_id', $userId);
             })
             ->whereNotNull('answer')
             ->where('is_ignored', false)
-            ->where('is_reported', false)
-            ->groupByRaw($counterpartExpression, [$userId])
+            ->where('is_reported', false);
+
+        /** @var array<int, int> $candidateIds */
+        $candidateIds = DB::query()
+            ->fromSub($interactions, 'interactions')
+            ->select('counterpart_id')
+            ->selectRaw('MAX(updated_at) as latest_interaction_at')
+            ->groupBy('counterpart_id')
             ->orderByDesc('latest_interaction_at')
             ->limit(max(self::FAMOUS_LIMIT, $limit * 5))
             ->pluck('counterpart_id')

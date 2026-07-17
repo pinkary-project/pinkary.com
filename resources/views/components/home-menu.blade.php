@@ -6,7 +6,7 @@
     ];
 @endphp
 
-<div class="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+<div class="[&::-webkit-scrollbar]:hidden scrollbar-none overflow-x-auto [-ms-overflow-style:none]">
     <div class="inline-flex min-w-full items-center gap-1 sm:min-w-0">
         @foreach ($tabs as $tab)
             <a

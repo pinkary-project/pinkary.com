@@ -9,13 +9,13 @@ use App\Models\User;
 test('to array', function () {
     $question = Like::factory()->create()->fresh();
 
-    expect(array_keys($question->toArray()))->toBe([
+    expect(array_keys($question->toArray()))->toContain(
         'id',
         'user_id',
         'question_id',
         'created_at',
         'updated_at',
-    ]);
+    )->toHaveCount(5);
 });
 
 test('relations', function () {

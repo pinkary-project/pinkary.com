@@ -1,4 +1,4 @@
-<article class="block space-y-3" id="q-{{ $questionId }}" x-data="copyCode">
+<article class="block space-y-1" id="q-{{ $questionId }}" x-data="copyCode">
     @php
         $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
         $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
@@ -32,7 +32,7 @@
                         target="_blank"
                         data-navigate-ignore="true"
                     >
-                        <x-heroicon-o-language class="h-4 w-4"/>
+                        <x-heroicon-o-language class="h-4 w-4" />
                         <span class="hidden sm:inline">Translate</span>
                     </a>
 
@@ -54,7 +54,7 @@
         </div>
 
         @unless ($question->isSharedUpdate())
-            <p class="text-sm leading-7 text-slate-700 dark:text-slate-200 sm:text-[0.95rem]">
+            <p class="text-sm leading-7 text-slate-700 sm:text-[0.95rem] dark:text-slate-200">
                 {!! $question->content !!}
             </p>
         @endunless
@@ -68,7 +68,7 @@
             $timestamp = $question->answer_updated_at ?: $question->answer_created_at;
         @endphp
         <div
-            data-parent=true
+            data-parent="true"
             x-intersect.once.full="$dispatch('post-viewed', { postId: '{{ $questionId }}' })"
             x-data="clickHandler"
             x-on:click="handleNavigation($event)"
@@ -80,7 +80,7 @@
             ])
         >
             <div class="flex items-stretch gap-3">
-                <div class="flex flex-col items-center self-stretch flex-shrink-0">
+                <div class="flex shrink-0 flex-col items-center self-stretch">
                     <a
                         href="{{ route('profile.show', ['username' => $question->to->username]) }}"
                         class="group/profile block"
@@ -95,7 +95,7 @@
                             />
                         </figure>
                     </a>
-                    @if($inThread)
+                    @if ($inThread)
                         <div class="min-h-4 w-0.5 flex-1 bg-slate-300 dark:bg-slate-600" aria-hidden="true"></div>
                     @endif
                 </div>
@@ -103,24 +103,16 @@
                     <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                         <a
                             href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                            class="group/profile min-w-0 flex flex-1 flex-wrap items-center gap-x-2 gap-y-1 text-sm"
+                            class="group/profile flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 text-sm"
                             data-navigate-ignore="true"
                             wire:navigate
                         >
-                            <p class="truncate font-medium text-slate-950 dark:text-white">
-                                {{ $question->to->name }}
-                            </p>
+                            <p class="truncate font-medium text-slate-950 dark:text-white">{{ $question->to->name }}</p>
 
                             @if ($question->to->is_verified && $question->to->is_company_verified)
-                                <x-icons.verified-company
-                                    :color="$question->to->right_color"
-                                    class="h-3.5 w-3.5"
-                                />
+                                <x-icons.verified-company :color="$question->to->right_color" class="h-3.5 w-3.5" />
                             @elseif ($question->to->is_verified)
-                                <x-icons.verified
-                                    :color="$question->to->right_color"
-                                    class="h-3.5 w-3.5"
-                                />
+                                <x-icons.verified :color="$question->to->right_color" class="h-3.5 w-3.5" />
                             @endif
 
                             <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
@@ -128,230 +120,161 @@
                             </p>
                         </a>
 
-                        <div class="flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
+                        <div class="flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
                             <time
                                 class="inline-flex cursor-help items-center whitespace-nowrap"
                                 title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
                                 datetime="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->toIso8601String() }}"
                             >
-                                {{ $question->answer_updated_at ? 'Edited: ' : null }}
-                                {{
+                                {{ $question->answer_updated_at ? 'Edited: ' : null }} {{
                                     $timestamp->timezone(session()->get('timezone', 'UTC'))
                                         ->diffForHumans(short: true)
                                 }}
                             </time>
-
-                            @if (auth()->check() && auth()->user()->can('update', $question))
-                                <x-dropdown
-                                    align="right"
-                                    width="48"
-                                >
-                        <x-slot name="trigger">
-                            <button
-                                data-navigate-ignore="true"
-                                class="{{ $menuButtonClasses }}">
-                                <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            @if (! $question->pinned && auth()->user()->can('pin', $question))
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    wire:click="pin"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-icons.pin class="h-4 w-4" />
-                                    <span>Pin</span>
-                                </x-dropdown-button>
-                            @elseif ($question->pinned)
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    wire:click="unpin"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-icons.pin class="h-4 w-4" />
-                                    <span>Unpin</span>
-                                </x-dropdown-button>
-                            @endif
-                            @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-heroicon-m-pencil class="h-4 w-4"/>
-                                    <span>Edit</span>
-                                </x-dropdown-button>
-                            @endif
-                            @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    x-on:click="$dispatch('open-modal', 'question.delete.{{ $questionId }}.confirmation')"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-heroicon-o-trash class="h-4 w-4" />
-                                    <span>Delete</span>
-                                </x-dropdown-button>
-                            @endif
-                            @if (auth()->user()->can('viewLikes', $question) && $question->likes_count > 0)
-                                <x-dropdown-button
-                                    data-navigate-ignore="true"
-                                    x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
-                                    class="flex items-center gap-1.5"
-                                >
-                                    <x-heroicon-s-heart class="h-4 w-4" />
-                                    <span>View likes</span>
-                                </x-dropdown-button>
-                            @endif
-                        </x-slot>
-                                </x-dropdown>
-                            @endif
                         </div>
                     </div>
 
                     <div x-data="showMore">
-                <div
-                    class="mt-1 overflow-hidden break-words text-slate-700 dark:text-slate-200 answer"
-                    wire:ignore.self
-                    x-ref="parentDiv"
-                >
-                    <p x-data="hasLightBoxImages">
-                        {!! $question->answer !!}
-                    </p>
-                </div>
+                        <div
+                            class="answer mt-1 overflow-hidden break-words text-slate-700 dark:text-slate-200"
+                            wire:ignore.self
+                            x-ref="parentDiv"
+                        >
+                            <p x-data="hasLightBoxImages">{!! $question->answer !!}</p>
+                        </div>
 
-                <div x-show="showMore === true" class="mt-2 answer">
-                    <button
-                        data-navigate-ignore="true"
-                        @click="showButtonAction"
-                        class="ml-auto flex text-sm font-medium text-pink-500"
-                        x-text="showMoreButtonText"
-                    ></button>
-                </div>
-            </div>
-
-            @if ($question->isPoll())
-                <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
-            @endif
-
-            <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
-                <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
-                    <a
-                        @if (! $commenting)
-                            x-ref="parentLink"
-                            href="{{Route('questions.show', [
-                                'question' => $question->id,
-                                'username' => $question->to->username,
-                            ])}}"
-                            wire:navigate
-                        @endif
-                        title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
-                        @class([
-                            "$actionMetricClasses $actionMetricHoverClasses focus:outline-none",
-                            "cursor-pointer" => ! $commenting,
-                        ])
-                    >
-                        <x-heroicon-o-chat-bubble-left-right class="size-4" />
-                        @if ($question->children_count > 0)
-                            <span>
-                                {{ Number::abbreviate($question->children_count) }}
-                            </span>
-                        @endif
-                    </a>
-
-                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
-
-                    @php
-                        $likeExists = $question->is_liked;
-                        $likesCount = $question->likes_count;
-                    @endphp
-
-                    <button
-                        x-data="likeButton('{{ $question->id }}', @js(auth()->check()))"
-                        x-cloak
-                        data-is-liked="@js($likeExists)"
-                        data-likes-count="{{ $likesCount }}"
-                        data-navigate-ignore="true"
-                        x-on:click="toggleLike"
-                        :title="likeButtonTitle"
-                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
-                    >
-                        <x-heroicon-s-heart class="h-4 w-4" x-show="isLiked" />
-                        <x-heroicon-o-heart class="h-4 w-4" x-show="!isLiked" />
-                        <span x-show="count" x-text="likeButtonText"></span>
-                    </button>
-
-                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
-
-                    <p
-                        class="{{ $actionMetricClasses }} cursor-help"
-                        title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
-                    >
-                        <x-icons.chart class="h-4 w-4"/>
-                        @if ($question->views > 0)
-                            <span>
-                                {{ Number::abbreviate($question->views) }}
-                            </span>
-                        @endif
-                    </p>
-
-                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
-
-                    <a
-                        data-navigate-ignore="true"
-                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
-                        target="_blank"
-                        title="Translate"
-                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
-                    >
-                        <x-heroicon-o-language class="h-4 w-4" />
-                    </a>
-
-                    <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
-
-                    <button
-                        data-navigate-ignore="true"
-                        x-data="bookmarkButton('{{ $question->id }}', @js(auth()->check()))"
-                        data-is-bookmarked="@js($question->is_bookmarked)"
-                        data-bookmarks-count="{{ $question->bookmarks_count }}"
-                        x-cloak
-                        x-on:click="toggleBookmark"
-                        :title="bookmarkButtonTitle"
-                        class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
-                    >
-                        <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
-                        <x-heroicon-o-bookmark class="h-4 w-4" x-show="!isBookmarked" />
-                        <span x-show="count" x-text="bookmarkButtonText"></span>
-                    </button>
-
-                </div>
-
-                <div class="ml-auto flex flex-shrink-0 items-center gap-2 text-[0.82rem] text-slate-500 sm:ml-0">
-                    <x-dropdown align="left"
-                                width=""
-                                dropdown-classes="top-[-3.8rem] shadow-none"
-                                :content-classes="$shareMenuContentClasses"
-                    >
-                        <x-slot name="trigger">
+                        <div x-show="showMore === true" class="answer mt-2">
                             <button
                                 data-navigate-ignore="true"
-                                x-bind:class="{ 'text-pink-500': open,
-                                                'text-slate-500 hover:text-slate-700 dark:hover:text-slate-200': !open }"
-                                title="Share"
-                                class="inline-flex items-center text-[0.82rem] transition-colors duration-150 ease-in-out focus:outline-none"
+                                @click="showButtonAction"
+                                class="ml-auto flex text-sm font-medium text-pink-500"
+                                x-text="showMoreButtonText"
+                            ></button>
+                        </div>
+                    </div>
+
+                    @if ($question->isPoll())
+                        <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
+                    @endif
+
+                    <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
+                        <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
+                            <a
+                                @if (! $commenting)
+                                    x-ref="parentLink"
+                                    href="{{
+                                        Route('questions.show', [
+                                            'question' => $question->id,
+                                            'username' => $question->to->username,
+                                        ])
+                                    }}"
+                                    wire:navigate
+                                @endif
+                                title="{{ Number::format($question->children_count) }} {{ str('Comment')->plural($question->children_count) }}"
+                                @class([
+                                    "$actionMetricClasses $actionMetricHoverClasses focus:outline-none",
+                                    'cursor-pointer' => ! $commenting,
+                                ])
                             >
-                                <x-heroicon-o-paper-airplane class="h-4 w-4" />
-                            </button>
-                        </x-slot>
+                                <x-heroicon-o-chat-bubble-left-right class="size-4" />
+                                @if ($question->children_count > 0)
+                                    <span> {{ Number::abbreviate($question->children_count) }} </span>
+                                @endif
+                            </a>
 
-                        <x-slot name="content">
+                            <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
+                            @php
+                                $likeExists = $question->is_liked;
+                                $likesCount = $question->likes_count;
+                            @endphp
+
+                            <button
+                                x-data="likeButton('{{ $question->id }}', @js(auth()->check()))"
+                                x-cloak
+                                data-is-liked="@js($likeExists)"
+                                data-likes-count="{{ $likesCount }}"
+                                data-navigate-ignore="true"
+                                x-on:click="toggleLike"
+                                :title="likeButtonTitle"
+                                class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
+                            >
+                                <x-heroicon-s-heart class="h-4 w-4 text-pink-500" x-show="isLiked" />
+                                <x-heroicon-o-heart class="h-4 w-4" x-show="! isLiked" />
+                                <span x-show="count" x-text="likeButtonText"></span>
+                            </button>
+
+                            <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
+                            <p
+                                class="{{ $actionMetricClasses }} cursor-help"
+                                title="{{ Number::format($question->views) }} {{ str('View')->plural($question->views) }}"
+                            >
+                                <x-icons.chart class="h-4 w-4" />
+                                @if ($question->views > 0)
+                                    <span> {{ Number::abbreviate($question->views) }} </span>
+                                @endif
+                            </p>
+
+                            <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
+                            <a
+                                data-navigate-ignore="true"
+                                href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer) }}"
+                                target="_blank"
+                                title="Translate"
+                                class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
+                            >
+                                <x-heroicon-o-language class="h-4 w-4" />
+                            </a>
+
+                            <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
                             <button
                                 data-navigate-ignore="true"
+                                x-data="bookmarkButton('{{ $question->id }}', @js(auth()->check()))"
+                                data-is-bookmarked="@js($question->is_bookmarked)"
+                                data-bookmarks-count="{{ $question->bookmarks_count }}"
                                 x-cloak
-                                x-data="copyUrl"
-                                x-show="isVisible"
-                                x-on:click="
+                                x-on:click="toggleBookmark"
+                                :title="bookmarkButtonTitle"
+                                class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
+                            >
+                                <x-heroicon-s-bookmark class="h-4 w-4" x-show="isBookmarked" />
+                                <x-heroicon-o-bookmark class="h-4 w-4" x-show="! isBookmarked" />
+                                <span x-show="count" x-text="bookmarkButtonText"></span>
+                            </button>
+                        </div>
+
+                        <div class="ml-auto flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500 sm:ml-0">
+                            <x-dropdown
+                                align="right"
+                                width=""
+                                dropdown-classes="top-[-5.2rem] shadow-none"
+                                :content-classes="$shareMenuContentClasses"
+                            >
+                                <x-slot name="trigger">
+                                    <button
+                                        data-navigate-ignore="true"
+                                        x-bind:class="{
+                                            'text-pink-500': open,
+                                            'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200':
+                                                ! open,
+                                        }"
+                                        title="Share"
+                                        class="flex items-center justify-center text-sm leading-none transition duration-150 ease-in-out hover:bg-slate-100 focus:outline-none dark:hover:bg-[#16203a]"
+                                    >
+                                        <x-heroicon-o-paper-airplane class="h-4 w-4" />
+                                    </button>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <button
+                                        data-navigate-ignore="true"
+                                        x-cloak
+                                        x-data="copyUrl"
+                                        x-show="isVisible"
+                                        x-on:click="
                                     copyToClipboard(
                                         '{{
                                             route('questions.show', [
@@ -361,17 +284,17 @@
                                         }}',
                                     )
                                 "
-                                type="button"
-                                class="{{ $shareMenuItemClasses }}"
-                            >
-                                <x-heroicon-o-link class="size-4" />
-                            </button>
-                            <button
-                                data-navigate-ignore="true"
-                                x-cloak
-                                x-data="shareProfile"
-                                x-show="isVisible"
-                                x-on:click="
+                                        type="button"
+                                        class="{{ $shareMenuItemClasses }}"
+                                    >
+                                        <x-heroicon-o-link class="size-4" />
+                                    </button>
+                                    <button
+                                        data-navigate-ignore="true"
+                                        x-cloak
+                                        x-data="shareProfile"
+                                        x-show="isVisible"
+                                        x-on:click="
                                     share({
                                         url: '{{
                                             route('questions.show', [
@@ -381,88 +304,128 @@
                                         }}',
                                     })
                                 "
-                                class="{{ $shareMenuItemClasses }}"
-                            >
-                                <x-heroicon-o-link class="size-4" />
-                            </button>
-                            <button
-                                data-navigate-ignore="true"
-                                x-cloak
-                                x-data="shareProfile"
-                                x-on:click="
+                                        class="{{ $shareMenuItemClasses }}"
+                                    >
+                                        <x-heroicon-o-link class="size-4" />
+                                    </button>
+                                    <button
+                                        data-navigate-ignore="true"
+                                        x-cloak
+                                        x-data="shareProfile"
+                                        x-on:click="
                                     twitter({
                                         url: '{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}',
                                         question: '{{ $question->isSharedUpdate() ? $question->sharable_answer : $question->sharable_content }}',
                                         message: '{{ $question->isSharedUpdate() ? 'See it on Pinkary' : 'See response on Pinkary' }}',
                                     })
                                 "
-                                type="button"
-                                class="{{ $shareMenuItemClasses }}"
-                            >
-                                <x-icons.twitter-x class="size-4" />
-                            </button>
-                        </x-slot>
-                    </x-dropdown>
+                                        type="button"
+                                        class="{{ $shareMenuItemClasses }}"
+                                    >
+                                        <x-icons.twitter-x class="size-4" />
+                                    </button>
+                                </x-slot>
+                            </x-dropdown>
 
-                </div>
-            </div>
+                            @if (auth()->check() && auth()->user()->can('update', $question))
+                                <x-dropdown align="right" width="48">
+                                    <x-slot name="trigger">
+                                        <button data-navigate-ignore="true" class="{{ $menuButtonClasses }}">
+                                            <x-heroicon-o-ellipsis-horizontal class="h-5 w-5" />
+                                        </button>
+                                    </x-slot>
+
+                                    <x-slot name="content">
+                                        @if (! $question->pinned && auth()->user()->can('pin', $question))
+                                            <x-dropdown-button
+                                                data-navigate-ignore="true"
+                                                wire:click="pin"
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <x-icons.pin class="h-4 w-4" />
+                                                <span>Pin</span>
+                                            </x-dropdown-button>
+                                        @elseif ($question->pinned)
+                                            <x-dropdown-button
+                                                data-navigate-ignore="true"
+                                                wire:click="unpin"
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <x-icons.pin class="h-4 w-4" />
+                                                <span>Unpin</span>
+                                            </x-dropdown-button>
+                                        @endif
+                                        @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()->can('update', $question))
+                                            <x-dropdown-button
+                                                data-navigate-ignore="true"
+                                                x-on:click="$dispatch('open-modal', 'question.edit.answer.{{ $questionId }}')"
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <x-heroicon-m-pencil class="h-4 w-4" />
+                                                <span>Edit</span>
+                                            </x-dropdown-button>
+                                        @endif
+                                        @if (! $question->is_ignored && auth()->user()->can('ignore', $question))
+                                            <x-dropdown-button
+                                                data-navigate-ignore="true"
+                                                x-on:click="$dispatch('open-modal', 'question.delete.{{ $questionId }}.confirmation')"
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <x-heroicon-o-trash class="h-4 w-4" />
+                                                <span>Delete</span>
+                                            </x-dropdown-button>
+                                        @endif
+                                        @if (auth()->user()->can('viewLikes', $question) && $question->likes_count > 0)
+                                            <x-dropdown-button
+                                                data-navigate-ignore="true"
+                                                x-on:click="$dispatch('open-modal', 'likes-{{ $question->id }}')"
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <x-heroicon-s-heart class="h-4 w-4" />
+                                                <span>View likes</span>
+                                            </x-dropdown-button>
+                                        @endif
+                                    </x-slot>
+                                </x-dropdown>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()?->can('update', $question))
-            <x-modal
-                max-width="md"
-                name="question.edit.answer.{{ $questionId }}"
-            >
+            <x-modal max-width="md" name="question.edit.answer.{{ $questionId }}">
                 <div class="p-8">
-                    <h2 class="text-lg font-medium dark:text-slate-50 text-slate-950">Edit Answer</h2>
-                    <livewire:questions.edit
-                        :questionId="$question->id"
-                        :key="'edit-answer-'.$question->id"
-                    />
+                    <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">Edit Answer</h2>
+                    <livewire:questions.edit :questionId="$question->id" :key="'edit-answer-'.$question->id" />
                 </div>
             </x-modal>
         @endif
 
-        <x-modal
-            max-width="md"
-            name="question.delete.{{ $questionId }}.confirmation"
-        >
+        <x-modal max-width="md" name="question.delete.{{ $questionId }}.confirmation">
             <div class="p-8">
-                <h2 class="text-lg font-medium dark:text-slate-50 text-slate-950">Delete Question</h2>
+                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">Delete Question</h2>
                 <div class="mt-4 text-slate-500 dark:text-slate-400">
                     <p>Are you sure you want to delete this question?</p>
                 </div>
                 <div class="mt-4 flex items-center justify-between">
-                    <x-secondary-button
-                        x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')"
-                    >
+                    <x-secondary-button x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')">
                         Cancel
                     </x-secondary-button>
-                    <x-primary-button
-                        wire:click="ignore"
-                    >
-                        Delete
-                    </x-primary-button>
+                    <x-primary-button wire:click="ignore"> Delete </x-primary-button>
                 </div>
             </div>
         </x-modal>
 
     @elseif (auth()->user()?->is($user))
-        <livewire:questions.edit
-            :questionId="$question->id"
-            :key="'edit-'.$question->id"
-        />
+        <livewire:questions.edit :questionId="$question->id" :key="'edit-'.$question->id" />
     @endif
 
     @if (auth()->user()?->can('viewLikes', $question))
-        <livewire:likes.index
-            :questionId="$question->id"
-            :key="'likes-'.$question->id"
-        />
+        <livewire:likes :questionId="$question->id" :key="'likes-'.$question->id" />
     @endif
 
-    @if($commenting && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
+    @if ($commenting && (auth()->id() !== $question->to_id || ! is_null($question->answer)))
         <livewire:questions.create :parent-id="$questionId" :to-id="auth()->id()" />
     @endif
 </article>

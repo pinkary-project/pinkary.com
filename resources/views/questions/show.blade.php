@@ -3,14 +3,12 @@
     :people-to-follow-user-id="$question->to_id"
     :people-to-follow-question-id="$question->id"
 >
-    <div class="py-0"
-         x-data
-         x-init="document.getElementById('q-{{ $question->id }}').scrollIntoView();">
+    <div class="py-0" x-data x-init="document.getElementById('q-{{ $question->id }}').scrollIntoView();">
         <section class="overflow-hidden border-x border-b border-slate-200 bg-white dark:border-slate-700/50 dark:bg-[#07101f]/95">
             <div class="flex px-6 py-5">
                 <a
                     x-data="{
-                     fallback: '{{ session('_previous.url', route('profile.show', ['username' => $question->to->username]))  }}',
+                     fallback: '{{ session('_previous.url', route('profile.show', ['username' => $question->to->username])) }}',
 
                      back: function() {
                             if (history.length > 1) {
@@ -26,13 +24,16 @@
                     <x-icons.chevron-left class="h-5 w-5" />
                     <span>Back</span>
                 </a>
-
             </div>
         </section>
 
         <section class="border-x border-b border-slate-200 bg-white px-2 py-2 dark:border-slate-700/50 dark:bg-[#07101f]/95">
-            @foreach($parentQuestions as $parentQuestion)
-                <livewire:questions.show :questionId="$parentQuestion->id" :in-thread="true" :key="$parentQuestion->id" />
+            @foreach ($parentQuestions as $parentQuestion)
+                <livewire:questions.show
+                    :questionId="$parentQuestion->id"
+                    :in-thread="true"
+                    :key="$parentQuestion->id"
+                />
                 <x-post-divider />
             @endforeach
 

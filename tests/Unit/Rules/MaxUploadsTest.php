@@ -12,7 +12,7 @@ test('accepts an upload limit', function () {
 });
 
 test('passes when the number of uploads is less than the limit', function () {
-    Storage::fake('public');
+    Storage::fake();
     $rule = new MaxUploads(1);
 
     $image = UploadedFile::fake()->image('image.jpg');
@@ -25,7 +25,7 @@ test('passes when the number of uploads is less than the limit', function () {
 });
 
 test('fails when the number of uploads is greater than the limit', function () {
-    Storage::fake('public');
+    Storage::fake();
     $rule = new MaxUploads(1);
 
     $image1 = UploadedFile::fake()->image('image1.jpg');

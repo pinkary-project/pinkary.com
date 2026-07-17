@@ -3791,7 +3791,7 @@ final readonly class UnauthorizedEmailProviders implements ValidationRule
     {
         $value = is_scalar($value) ? (string) $value : '';
 
-        if (mb_strpos($value, '@') !== false) {
+        if (str_contains($value, '@')) {
             [$emailAccount, $emailProvider] = explode('@', $value);
 
             if (in_array($emailProvider, $this->unauthorizedEmailProviders, true)) {

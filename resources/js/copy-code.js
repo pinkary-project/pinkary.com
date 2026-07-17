@@ -2,9 +2,9 @@ const copyCode = () => ({
 
     init() {
         this.addCopyButtons();
-        Livewire.hook('commit', (event) => {
-            event.succeed((e) => {
-                if (event.component.el.getAttribute('id') === this.$el.getAttribute('id')) {
+        Livewire.interceptMessage(({ component, message, onSuccess }) => {
+            onSuccess(({ payload }) => {
+                if (component && component.el && component.el.getAttribute('id') === this.$el.getAttribute('id')) {
                     requestAnimationFrame(() => {
                         this.addCopyButtons();
                     });

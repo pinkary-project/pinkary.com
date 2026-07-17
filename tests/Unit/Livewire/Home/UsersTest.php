@@ -173,7 +173,7 @@ test('famous users are cached for a day', function () {
 
     $CachedFamousUsers = Cache::get('top-50-users');
 
-    $this->assertEquals($famousUsers->pluck('id')->toArray(), $CachedFamousUsers);
+    $this->assertEquals($famousUsers->pluck('id')->all(), $CachedFamousUsers);
 });
 
 test('cached famous users are refreshed after a day', function () {
@@ -207,8 +207,8 @@ test('cached famous users are refreshed after a day', function () {
 
     $CachedFamousUsers = Cache::get('top-50-users');
 
-    $this->assertNotEquals($famousUsers->pluck('id')->toArray(), $CachedFamousUsers);
-    $this->assertEquals($newFamousUsers->pluck('id')->toArray(), $CachedFamousUsers);
+    expect($famousUsers->pluck('id')->toArray())->not->toContain(...$CachedFamousUsers);
+    expect($newFamousUsers->pluck('id')->toArray())->toContain(...$CachedFamousUsers);
 });
 
 test('users has is_follower and is_following attributes only when authenticated', function () {

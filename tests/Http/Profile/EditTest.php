@@ -240,9 +240,9 @@ test('avatar is deleted when account is deleted', function () {
         'avatar' => 'avatars/default.png',
     ]);
 
-    Storage::disk('public')->put('avatars/default.png', '...');
+    Storage::disk()->put('avatars/default.png', '...');
 
-    Storage::disk('public')->assertExists('avatars/default.png');
+    Storage::disk()->assertExists('avatars/default.png');
 
     $response = $this
         ->actingAs($user)
@@ -250,7 +250,7 @@ test('avatar is deleted when account is deleted', function () {
             'password' => 'password',
         ]);
 
-    Storage::disk('public')->assertMissing('avatars/default.png');
+    Storage::disk()->assertMissing('avatars/default.png');
 
     $response->assertSessionHasNoErrors();
 
@@ -374,7 +374,7 @@ test('default_feed can be updated', function () {
 });
 
 test('user can upload an avatar', function () {
-    Storage::fake('public');
+    Storage::fake();
 
     $user = User::factory()->create();
 
@@ -395,7 +395,7 @@ test('user can upload an avatar', function () {
 });
 
 test('user can delete custom avatar and update using Gravatar', function () {
-    Storage::fake('public');
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
@@ -403,14 +403,14 @@ test('user can delete custom avatar and update using Gravatar', function () {
         'email' => 'jitewaboh@lagify.com', // test Gravatar email
     ]);
 
-    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+    Storage::disk()->put('avatars/avatar.jpg', '...');
 
     $this->actingAs($user)
         ->delete('/profile/avatar')
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+    Storage::disk()->assertMissing('avatars/avatar.jpg');
 
     $user->refresh();
 
@@ -421,7 +421,7 @@ test('user can delete custom avatar and update using Gravatar', function () {
 });
 
 test('user can delete custom avatar and update using GitHub', function () {
-    Storage::fake('public');
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
@@ -429,14 +429,14 @@ test('user can delete custom avatar and update using GitHub', function () {
         'github_username' => 'testuser',
     ]);
 
-    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+    Storage::disk()->put('avatars/avatar.jpg', '...');
 
     $this->actingAs($user)
         ->delete('/profile/avatar')
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+    Storage::disk()->assertMissing('avatars/avatar.jpg');
 
     $user->refresh();
 
@@ -447,7 +447,7 @@ test('user can delete custom avatar and update using GitHub', function () {
 });
 
 test('user can re-fetch avatar from Gravatar', function () {
-    Storage::fake('public');
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
@@ -469,7 +469,7 @@ test('user can re-fetch avatar from Gravatar', function () {
 });
 
 test('user can re-fetch avatar from GitHub', function () {
-    Storage::fake('public');
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',

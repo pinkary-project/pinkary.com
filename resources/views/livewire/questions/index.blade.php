@@ -3,7 +3,7 @@
         <div class="border-b border-slate-200 px-2 py-2 dark:border-slate-700/50">
             <livewire:questions.show
                 :questionId="$pinnedQuestion->id"
-                :key="'pinned-question-' . $pinnedQuestion->id"
+                :key="'pinned-question-'.$pinnedQuestion->id"
                 :inIndex="true"
                 :pinnable="true"
             />
