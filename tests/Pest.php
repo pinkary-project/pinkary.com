@@ -6,6 +6,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
+pest()->tia()->baselined();
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
