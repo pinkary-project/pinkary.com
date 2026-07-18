@@ -319,14 +319,14 @@ test('code', function (string $content) {
     expect($provider->parse($content))->toMatchSnapshot();
 })->with([
     [
-        'content' => <<<'EOL'
+        <<<'EOL'
             ```php
             echo "Hello, World!";
             ```
             EOL,
     ],
     [
-        'content' => <<<'EOL'
+        <<<'EOL'
             Check this:
             ```
             echo "Hello, World!";
@@ -344,7 +344,7 @@ test('code', function (string $content) {
         so we need to use a str_replace to add a space after the language programatically.
     */
     [
-        'content' => str_replace('```php', '```php ', <<<'EOL'
+        str_replace('```php', '```php ', <<<'EOL'
             ```php
             echo "Hello, World!";
             ```
@@ -358,14 +358,14 @@ test('mention', function (string $content) {
 
     expect($provider->parse($content))->toMatchSnapshot();
 })->with([
-    ['content' => 'Hi @nunomaduro'],
-    ['content' => '@nunomaduro hi'],
-    ['content' => '@w31r4_'],
-    ['content' => '@nunomaduro.'],
-    ['content' => '@nunomaduro,'],
-    ['content' => '@nunomaduro!'],
-    ['content' => '@nunomaduro?'],
-    ['content' => '@nunomaduro/'],
+    ['Hi @nunomaduro'],
+    ['@nunomaduro hi'],
+    ['@w31r4_'],
+    ['@nunomaduro.'],
+    ['@nunomaduro,'],
+    ['@nunomaduro!'],
+    ['@nunomaduro?'],
+    ['@nunomaduro/'],
 ]);
 
 test('image exists', function () {
