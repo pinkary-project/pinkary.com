@@ -87,7 +87,7 @@ jobs:
           php artisan key:generate
 
       - name: Record TIA baseline
-        run: ./vendor/bin/pest --parallel --tia --coverage
+        run: ./vendor/bin/pest --parallel --tia --coverage --fresh
 
       - name: Resolve TIA baseline path
         id: baseline
