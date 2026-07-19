@@ -9,7 +9,7 @@ use App\Models\User;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-test('displays bookmarks', function () {
+test('displays bookmarks', function (): void {
     $user = User::factory()->create();
 
     Question::factory()
@@ -42,7 +42,7 @@ test('displays bookmarks', function () {
         ]);
 });
 
-test('refresh', function () {
+test('refresh', function (): void {
     $user = User::factory()->create();
 
     Question::factory()
@@ -61,7 +61,7 @@ test('refresh', function () {
     $component->assertDontSee('Some Question');
 });
 
-test('load more', function () {
+test('load more', function (): void {
     $user = User::factory()->create();
 
     Question::factory(120)->create();

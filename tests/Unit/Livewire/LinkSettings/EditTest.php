@@ -7,7 +7,7 @@ use App\Models\User;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-test('pre selects user link shape and gradient', function () {
+test('pre selects user link shape and gradient', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -30,7 +30,7 @@ test('pre selects user link shape and gradient', function () {
     $component->assertSet('gradient', 'from-red-500 to-orange-600');
 });
 
-it('allows user to update link settings', function () {
+it('allows user to update link settings', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Edit::class);
@@ -45,6 +45,6 @@ it('allows user to update link settings', function () {
 
     $user->refresh();
 
-    expect($user->settings)->toHaveKey('link_shape', 'rounded-none');
-    expect($user->settings)->toHaveKey('gradient', 'from-red-500 to-orange-600');
+    expect($user->settings)->toHaveKey('link_shape', 'rounded-none')
+        ->toHaveKey('gradient', 'from-red-500 to-orange-600');
 });

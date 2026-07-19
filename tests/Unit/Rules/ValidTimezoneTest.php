@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Rules\ValidTimezone;
 
-test('valid timezone', function (string $timezone) {
+test('valid timezone', function (string $timezone): void {
     $rule = new ValidTimezone();
 
     $fail = fn (string $errorMessage) => $this->fail($errorMessage);
@@ -19,7 +19,7 @@ test('valid timezone', function (string $timezone) {
     'Asia/Tokyo',
 ]);
 
-test('invalid timezone', function (string $timezone) {
+test('invalid timezone', function (string $timezone): void {
     $rule = new ValidTimezone();
 
     $fail = fn (string $errorMessage) => $this->fail($errorMessage);

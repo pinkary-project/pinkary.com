@@ -7,7 +7,7 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('render', function () {
+test('render', function (): void {
     $question = Question::factory()->create([
         'content' => 'Hello World',
         'answer' => 'Hello World Answer',
@@ -23,7 +23,7 @@ test('render', function () {
     ]);
 });
 
-test('refresh', function () {
+test('refresh', function (): void {
     $question = Question::factory()->create([
         'content' => 'Hello World',
     ]);
@@ -43,7 +43,7 @@ test('refresh', function () {
     $component->assertSee('Hello World Answer Updated');
 });
 
-test('listeners', function () {
+test('listeners', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -63,7 +63,7 @@ test('listeners', function () {
     expect($component->instance()->getListeners())->toBe([]);
 });
 
-test('redirect to profile', function () {
+test('redirect to profile', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -75,7 +75,7 @@ test('redirect to profile', function () {
     $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
 });
 
-test('ignore', function () {
+test('ignore', function (): void {
     $question = Question::factory()->create();
 
     $user = User::find($question->to_id);
@@ -104,7 +104,7 @@ test('ignore', function () {
     $component->assertDispatched('question.ignore');
 });
 
-test('ignore auth', function () {
+test('ignore auth', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -116,7 +116,7 @@ test('ignore auth', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('ignore unverified user', function () {
+test('ignore unverified user', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->unverified()->create();
@@ -132,7 +132,7 @@ test('ignore unverified user', function () {
     expect($question->fresh()->is_ignored)->toBeFalse();
 });
 
-test('bookmark', function () {
+test('bookmark', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->create();
@@ -149,7 +149,7 @@ test('bookmark', function () {
     expect($question->bookmarks()->count())->toBe(1);
 });
 
-test('bookmark auth', function () {
+test('bookmark auth', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -161,7 +161,7 @@ test('bookmark auth', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('bookmark unverified user', function () {
+test('bookmark unverified user', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->unverified()->create();
@@ -177,7 +177,7 @@ test('bookmark unverified user', function () {
     expect($question->bookmarks()->count())->toBe(0);
 });
 
-test('unbookmark', function () {
+test('unbookmark', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->create();
@@ -197,7 +197,7 @@ test('unbookmark', function () {
     expect($question->bookmarks()->count())->toBe(0);
 });
 
-test('unbookmark auth', function () {
+test('unbookmark auth', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -209,7 +209,7 @@ test('unbookmark auth', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('unbookmark unverified user', function () {
+test('unbookmark unverified user', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->unverified()->create();
@@ -225,7 +225,7 @@ test('unbookmark unverified user', function () {
     expect($question->bookmarks()->count())->toBe(0);
 });
 
-test('like', function () {
+test('like', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->create();
@@ -241,7 +241,7 @@ test('like', function () {
     expect($question->likes()->count())->toBe(1);
 });
 
-test('like auth', function () {
+test('like auth', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -253,7 +253,7 @@ test('like auth', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('like unverified user', function () {
+test('like unverified user', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->unverified()->create();
@@ -269,7 +269,7 @@ test('like unverified user', function () {
     expect($question->likes()->count())->toBe(0);
 });
 
-test('unlike', function () {
+test('unlike', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->create();
@@ -287,7 +287,7 @@ test('unlike', function () {
     expect($question->likes()->count())->toBe(0);
 });
 
-test('unlike auth', function () {
+test('unlike auth', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -299,7 +299,7 @@ test('unlike auth', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('unlike unverified user', function () {
+test('unlike unverified user', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->unverified()->create();
@@ -315,7 +315,7 @@ test('unlike unverified user', function () {
     expect($question->likes()->count())->toBe(0);
 });
 
-test('pin', function () {
+test('pin', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -330,10 +330,10 @@ test('pin', function () {
 
     $component->call('pin');
 
-    expect($question->refresh()->pinned)->toBe(true);
+    expect($question->refresh()->pinned)->toBeTrue();
 });
 
-test('pin auth', function () {
+test('pin auth', function (): void {
     $question = Question::factory()->create();
 
     $component = Livewire::test(Show::class, [
@@ -347,7 +347,7 @@ test('pin auth', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('pin unverified user', function () {
+test('pin unverified user', function (): void {
     $question = Question::factory()->create();
 
     $user = User::factory()->unverified()->create();
@@ -360,10 +360,10 @@ test('pin unverified user', function () {
 
     $component->assertRedirect(route('verification.notice'));
 
-    expect($question->refresh()->pinned)->toBe(false);
+    expect($question->refresh()->pinned)->toBeFalse();
 });
 
-test('pin no answer', function () {
+test('pin no answer', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -383,7 +383,7 @@ test('pin no answer', function () {
     $component->assertForbidden();
 });
 
-test('unpin', function () {
+test('unpin', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -399,10 +399,10 @@ test('unpin', function () {
 
     $component->call('unpin');
 
-    expect($question->refresh()->pinned)->toBe(false);
+    expect($question->refresh()->pinned)->toBeFalse();
 });
 
-test('unpin auth', function () {
+test('unpin auth', function (): void {
     $question = Question::factory()->create([
         'pinned' => true,
     ]);
@@ -418,7 +418,7 @@ test('unpin auth', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('unpin unverified user', function () {
+test('unpin unverified user', function (): void {
     $question = Question::factory()->create([
         'pinned' => true,
     ]);
@@ -433,10 +433,10 @@ test('unpin unverified user', function () {
 
     $component->assertRedirect(route('verification.notice'));
 
-    expect($question->refresh()->pinned)->toBe(true);
+    expect($question->refresh()->pinned)->toBeTrue();
 });
 
-test('unpin visitor', function () {
+test('unpin visitor', function (): void {
     $user = User::factory()->create();
     $visitor = User::factory()->create();
 
@@ -456,7 +456,7 @@ test('unpin visitor', function () {
     $component->assertForbidden();
 });
 
-test('display pinned label only on profile.show route', function () {
+test('display pinned label only on profile.show route', function (): void {
     $user = User::factory()->create();
 
     Question::factory()->create([
@@ -475,7 +475,7 @@ test('display pinned label only on profile.show route', function () {
     $response->assertDontSee('Pinned');
 });
 
-test('pinnable', function () {
+test('pinnable', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -498,7 +498,7 @@ test('pinnable', function () {
     $component->assertSee('Pinned');
 });
 
-test('it has a likes component', function () {
+test('it has a likes component', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
         'to_id' => $user->id,

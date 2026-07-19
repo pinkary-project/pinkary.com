@@ -7,7 +7,7 @@ use App\Models\User;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-test('deletes non-verified users', function () {
+test('deletes non-verified users', function (): void {
     $users = User::factory()->count(3)->create();
 
     $users->get(1)->update([
@@ -26,7 +26,7 @@ test('deletes non-verified users', function () {
     expect(User::count())->toBe(2);
 });
 
-test('does not delete users with old links', function () {
+test('does not delete users with old links', function (): void {
     User::factory()->count(3)->create([
         'email_verified_at' => null,
     ]);
@@ -44,7 +44,7 @@ test('does not delete users with old links', function () {
     assertDatabaseHas('users', ['name' => 'Punyapal Shah']);
 });
 
-test('does not delete users with old send questions', function () {
+test('does not delete users with old send questions', function (): void {
     User::factory()->count(3)->create([
         'email_verified_at' => null,
     ]);
@@ -62,7 +62,7 @@ test('does not delete users with old send questions', function () {
     assertDatabaseHas('users', ['name' => 'Punyapal Shah']);
 });
 
-test('does not delete users with old received questions', function () {
+test('does not delete users with old received questions', function (): void {
     User::factory()->count(3)->create([
         'email_verified_at' => null,
     ]);

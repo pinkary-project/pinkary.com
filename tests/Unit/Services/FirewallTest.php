@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Services\Firewall;
 
-it('detects bots', function () {
+it('detects bots', function (): void {
     $firewall = new Firewall();
 
     $request = request();

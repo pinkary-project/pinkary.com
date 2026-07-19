@@ -7,4 +7,4 @@ arch('jobs')
     ->toHaveMethod('handle')
     ->toHaveConstructor()
     ->toExtendNothing()
-    ->toImplement('Illuminate\Contracts\Queue\ShouldQueue');
+    ->toImplement(Illuminate\Contracts\Queue\ShouldQueue::class);

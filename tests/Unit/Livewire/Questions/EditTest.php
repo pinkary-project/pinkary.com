@@ -8,7 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->question = Question::factory()->create([
         'answer' => null,
         'answer_created_at' => null,
@@ -17,7 +17,7 @@ beforeEach(function () {
     $this->actingAs($this->question->to);
 });
 
-test('render', function () {
+test('render', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -25,7 +25,7 @@ test('render', function () {
     $component->assertSee('Write your answer...');
 });
 
-test('update', function () {
+test('update', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -37,7 +37,7 @@ test('update', function () {
     expect($this->question->fresh()->answer)->toBe('Hello World');
 });
 
-test('update auth', function () {
+test('update auth', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -53,7 +53,7 @@ test('update auth', function () {
     $component->assertStatus(403);
 });
 
-test('update unverified user', function () {
+test('update unverified user', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -71,7 +71,7 @@ test('update unverified user', function () {
     expect($this->question->fresh()->answer)->toBeNull();
 });
 
-test('report', function () {
+test('report', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -81,7 +81,7 @@ test('report', function () {
     expect($this->question->fresh()->is_reported)->toBeTrue();
 });
 
-test('report auth', function () {
+test('report auth', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -95,7 +95,7 @@ test('report auth', function () {
     $component->assertStatus(403);
 });
 
-test('ignore', function () {
+test('ignore', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -106,7 +106,7 @@ test('ignore', function () {
     $component->assertDispatched('question.ignore', questionId: $this->question->id);
 });
 
-test('cannot update with blank characters', function () {
+test('cannot update with blank characters', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,
     ]);
@@ -122,7 +122,7 @@ test('cannot update with blank characters', function () {
     ]);
 });
 
-test('can edit a question that has an answer', function () {
+test('can edit a question that has an answer', function (): void {
     $this->question->update([
         'answer' => 'foo',
         'answer_created_at' => now(),
@@ -137,8 +137,8 @@ test('can edit a question that has an answer', function () {
         ->assertDispatched('close-modal', "question.edit.answer.{$this->question->id}")
         ->assertDispatched('question.updated');
 
-    expect($this->question->fresh()->answer)->toBe('Hello World');
-    expect($this->question->fresh()->answer_updated_at)->not->toBeNull();
+    expect($this->question->fresh()->answer)->toBe('Hello World')
+        ->and($this->question->fresh()->answer_updated_at)->not->toBeNull();
 
     Livewire::test(Show::class, [
         'questionId' => $this->question->id,
@@ -147,7 +147,7 @@ test('can edit a question that has an answer', function () {
         ->assertSee('Edited');
 });
 
-test('edited questions display raw answers in the form', function () {
+test('edited questions display raw answers in the form', function (): void {
     $this->question->update([
         'answer' => "Hello @{$this->question->from->username} - How are you doing?",
         'answer_created_at' => now(),
@@ -160,7 +160,7 @@ test('edited questions display raw answers in the form', function () {
         ->assertSet('answer', "Hello @{$this->question->from->username} - How are you doing?");
 });
 
-test('likes are reset when an answer is updated', function () {
+test('likes are reset when an answer is updated', function (): void {
     $this->question->update([
         'answer' => 'foo',
         'answer_created_at' => now(),
@@ -181,7 +181,7 @@ test('likes are reset when an answer is updated', function () {
     expect($this->question->likes()->count())->toBe(0);
 });
 
-test('cannot edit an answer after 24 hours', function () {
+test('cannot edit an answer after 24 hours', function (): void {
     $this->question->update([
         'answer' => 'foo',
         'answer_created_at' => now()->subHours(25),
@@ -195,7 +195,7 @@ test('cannot edit an answer after 24 hours', function () {
         ->assertDispatched('notification.created', message: 'Answer cannot be edited after 24 hours.');
 });
 
-test('cannot answer a question that has been reported or ignored', function () {
+test('cannot answer a question that has been reported or ignored', function (): void {
     $this->question->update([
         'is_reported' => true,
     ]);

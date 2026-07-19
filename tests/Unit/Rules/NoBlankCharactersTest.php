@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use App\Rules\NoBlankCharacters;
 
-test('validation fails for strings containing blank characters', function (string $name) {
+test('validation fails for strings containing blank characters', function (string $name): void {
     $rule = new NoBlankCharacters;
 
-    $fail = function (string $errorMessage) {
+    $fail = function (string $errorMessage): void {
         // Capture the error message
         $this->errorMessage = $errorMessage;
     };
@@ -15,7 +15,7 @@ test('validation fails for strings containing blank characters', function (strin
     // Validate the input
     $rule->validate('name', $name, $fail);
 
-    expect(isset($this->errorMessage))->toBeTrue();
+    expect(property_exists($this, 'errorMessage') && $this->errorMessage !== null)->toBeTrue();
 })->with([
     "\u{200E}",
     "\u{200E}\u{200E}",
@@ -39,7 +39,7 @@ test('validation fails for strings containing blank characters', function (strin
     "\u{2007}\u{2008}\u{2009}",
 ]);
 
-test('without blank characters', function (string $name) {
+test('without blank characters', function (string $name): void {
     $rule = new NoBlankCharacters;
 
     $fail = fn (string $errorMessage) => $this->fail($errorMessage);

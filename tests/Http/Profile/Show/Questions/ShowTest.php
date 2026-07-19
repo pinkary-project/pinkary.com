@@ -8,7 +8,7 @@ use App\Livewire\Questions\Show;
 use App\Models\Question;
 use App\Models\User;
 
-test('guest', function () {
+test('guest', function (): void {
     $question = Question::factory()->create([
         'answer' => 'This is the answer',
     ]);
@@ -26,7 +26,7 @@ test('guest', function () {
     $response->assertSeeLivewire(Show::class);
 });
 
-test('auth', function () {
+test('auth', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -47,7 +47,7 @@ test('auth', function () {
     $response->assertSeeLivewire(Create::class);
 });
 
-test('answer translate action is visible before bookmarks', function () {
+test('answer translate action is visible before bookmarks', function (): void {
     $question = Question::factory()->create([
         'content' => 'Question content',
         'answer' => 'Answer content',
@@ -58,7 +58,7 @@ test('answer translate action is visible before bookmarks', function () {
         'question' => $question->id,
     ]));
 
-    $answerTranslateUrl = e('https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_answer));
+    $answerTranslateUrl = e('https://translate.google.com/?sl=auto&tl=en&text='.urlencode((string) $question->sharable_answer));
 
     $response->assertOk()
         ->assertSeeInOrder([
@@ -67,7 +67,7 @@ test('answer translate action is visible before bookmarks', function () {
         ], false);
 });
 
-test('reported question is not visible', function () {
+test('reported question is not visible', function (): void {
     $question = Question::factory()->create([
         'is_reported' => true,
     ]);
@@ -80,7 +80,7 @@ test('reported question is not visible', function () {
     $response->assertStatus(403);
 });
 
-test('question without answer is not visible for other users', function () {
+test('question without answer is not visible for other users', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -103,7 +103,7 @@ test('question without answer is not visible for other users', function () {
         ->assertSee($question->content);
 });
 
-test('question is not visible for other usernames on the url', function () {
+test('question is not visible for other usernames on the url', function (): void {
     $question = Question::factory()->create([
         'answer' => 'This is the answer',
     ]);
@@ -116,7 +116,7 @@ test('question is not visible for other usernames on the url', function () {
     $response->assertStatus(404);
 });
 
-test('it shows the parent questions', function () {
+test('it shows the parent questions', function (): void {
     $user = User::factory()->create();
 
     $parent1 = Question::factory()->create();
@@ -136,14 +136,12 @@ test('it shows the parent questions', function () {
     ]));
 
     $response->assertOk()
-        ->assertViewHas('parentQuestions', function (array $parentQuestions) use ($parent1, $parent2, $parent3) {
-            return $parentQuestions[0]->id === $parent3->id
-                && $parentQuestions[1]->id === $parent2->id
-                && $parentQuestions[2]->id === $parent1->id;
-        });
+        ->assertViewHas('parentQuestions', fn (array $parentQuestions): bool => $parentQuestions[0]->id === $parent3->id
+            && $parentQuestions[1]->id === $parent2->id
+            && $parentQuestions[2]->id === $parent1->id);
 });
 
-test('it shows question-context suggestions in the people to follow rail', function () {
+test('it shows question-context suggestions in the people to follow rail', function (): void {
     $postUser = User::factory()->create();
     $currentParticipant = User::factory()->create();
     $recentInteractionUser = User::factory()->create(['name' => 'Question Rail Interaction']);

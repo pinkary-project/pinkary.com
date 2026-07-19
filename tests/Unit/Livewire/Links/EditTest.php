@@ -7,7 +7,7 @@ use App\Models\Link;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('renders the edit link form with property values', function () {
+test('renders the edit link form with property values', function (): void {
     $user = User::factory()->create();
 
     $link = Link::factory()->create([
@@ -22,7 +22,7 @@ test('renders the edit link form with property values', function () {
     $component->assertSet('description', $link->description);
 });
 
-test('updates link', function () {
+test('updates link', function (): void {
     $user = User::factory()->create();
 
     $link = Link::factory()->create([
@@ -53,7 +53,7 @@ test('updates link', function () {
         ->toBe('Example');
 });
 
-it('prefixes with http or https if missing', function () {
+it('prefixes with http or https if missing', function (): void {
     $user = User::factory()->create();
 
     $link = Link::factory()->create([
@@ -84,7 +84,7 @@ it('prefixes with http or https if missing', function () {
         ->toBe('Example');
 });
 
-test('link click count reset on url update', function () {
+test('link click count reset on url update', function (): void {
     $user = User::factory()->create();
 
     $link = Link::factory()->create([
@@ -108,7 +108,7 @@ test('link click count reset on url update', function () {
 
 });
 
-test('link click count does not reset on only description update', function () {
+test('link click count does not reset on only description update', function (): void {
     $user = User::factory()->create();
 
     $link = Link::factory()->create([

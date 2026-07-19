@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
-test('renders a list of links', function () {
+test('renders a list of links', function (): void {
     $user = User::factory()->create();
 
     $links = Link::factory(3)->create([
@@ -26,7 +26,7 @@ test('renders a list of links', function () {
     }
 });
 
-test('stores links order', function () {
+test('stores links order', function (): void {
     $user = User::factory()->create();
 
     $links = Link::factory(3)->create([
@@ -56,7 +56,7 @@ test('stores links order', function () {
     ]);
 });
 
-test('destroy link', function () {
+test('destroy link', function (): void {
     Queue::fake();
 
     $user = User::factory()->create();
@@ -78,7 +78,7 @@ test('destroy link', function () {
         ->and($link->fresh())->toBeNull();
 });
 
-test('is refreshable', function () {
+test('is refreshable', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::test(Index::class, [
@@ -90,7 +90,7 @@ test('is refreshable', function () {
     $this->expectNotToPerformAssertions();
 });
 
-test('user can see qr download link', function () {
+test('user can see qr download link', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Index::class, [
@@ -100,7 +100,7 @@ test('user can see qr download link', function () {
     $component->assertSee(route('qr-code.image'));
 });
 
-test('guest or random user cannot see qr download link', function () {
+test('guest or random user cannot see qr download link', function (): void {
     $qrUser = User::factory()->create();
 
     $randomUser = User::factory()->create();
@@ -112,7 +112,7 @@ test('guest or random user cannot see qr download link', function () {
     $component->assertDontSee(route('qr-code.image'));
 });
 
-test('user can share to twitter link', function () {
+test('user can share to twitter link', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Index::class, [
@@ -123,7 +123,7 @@ test('user can share to twitter link', function () {
     $component->assertSee('Follow me on Pinkary');
 });
 
-test('guest or random user can share another user twitter link', function () {
+test('guest or random user can share another user twitter link', function (): void {
     $user = User::factory()->create();
 
     $randomUser = User::factory()->create();
@@ -136,7 +136,7 @@ test('guest or random user can share another user twitter link', function () {
     $component->assertSee("Follow {$user->name} on Pinkary");
 });
 
-test('when user click his own links the clicks counter is not incremented', function () {
+test('when user click his own links the clicks counter is not incremented', function (): void {
     $user = User::factory()->create();
 
     $link = Link::factory()->create([
@@ -152,7 +152,7 @@ test('when user click his own links the clicks counter is not incremented', func
     expect($link->refresh()->click_count)->toBe(0);
 });
 
-test('when user click another user link the clicks counter is incremented', function () {
+test('when user click another user link the clicks counter is incremented', function (): void {
     $user = User::factory()->create();
 
     $anotherUser = User::factory()->create();
@@ -170,7 +170,7 @@ test('when user click another user link the clicks counter is incremented', func
     expect($link->refresh()->click_count)->toBe(1);
 });
 
-test('click counter is not incremented if user already clicked the link during the day', function () {
+test('click counter is not incremented if user already clicked the link during the day', function (): void {
     $user = User::factory()->create();
 
     $anotherUser = User::factory()->create();
@@ -193,7 +193,7 @@ test('click counter is not incremented if user already clicked the link during t
     expect($link->refresh()->click_count)->toBe(30);
 });
 
-test('count to be abbreviated', function () {
+test('count to be abbreviated', function (): void {
     $user = User::factory()
         ->hasLinks(5, new Sequence(
             ['click_count' => 125],
@@ -215,7 +215,7 @@ test('count to be abbreviated', function () {
         ->assertSee('1M');
 });
 
-test('follow is idempotent', function () {
+test('follow is idempotent', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -229,7 +229,7 @@ test('follow is idempotent', function () {
     expect($user->following->count())->toBe(1);
 });
 
-test('unfollow is idempotent', function () {
+test('unfollow is idempotent', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -244,7 +244,7 @@ test('unfollow is idempotent', function () {
     expect($user->following->count())->toBe(0);
 });
 
-test('guest cannot follow', function () {
+test('guest cannot follow', function (): void {
     $user = User::factory()->create();
     $component = Livewire::test(Index::class, [
         'userId' => $user->id,
@@ -255,7 +255,7 @@ test('guest cannot follow', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('guest cannot unfollow', function () {
+test('guest cannot unfollow', function (): void {
     $user = User::factory()->create();
     $component = Livewire::test(Index::class, [
         'userId' => $user->id,
@@ -266,7 +266,7 @@ test('guest cannot unfollow', function () {
     $component->assertRedirect(route('login'));
 });
 
-test('set visible', function () {
+test('set visible', function (): void {
     $user = User::factory()->create();
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
@@ -282,7 +282,7 @@ test('set visible', function () {
     expect($link->refresh()->is_visible)->toBeTrue();
 });
 
-test('set invisible', function () {
+test('set invisible', function (): void {
     $user = User::factory()->create();
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
@@ -298,7 +298,7 @@ test('set invisible', function () {
     expect($link->refresh()->is_visible)->toBeFalse();
 });
 
-test('only owner can set visibility', function () {
+test('only owner can set visibility', function (): void {
     $user = User::factory()->create();
     $anotherUser = User::factory()->create();
 

@@ -7,7 +7,7 @@ use App\Models\User;
 use Livewire\Livewire;
 use PragmaRX\Google2FA\Google2FA;
 
-it('renders', function () {
+it('renders', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(TwoFactorAuthenticationForm::class);
@@ -15,7 +15,7 @@ it('renders', function () {
     $component->assertOk();
 });
 
-it('can enable two factor authentication', function () {
+it('can enable two factor authentication', function (): void {
     $user = User::factory()->create();
     session()->put('auth.password_confirmed_at', time());
 
@@ -41,7 +41,7 @@ it('can enable two factor authentication', function () {
     $component->assertSet('code', null);
 });
 
-it('can not enable two factor authentication with invalid code', function () {
+it('can not enable two factor authentication with invalid code', function (): void {
     $user = User::factory()->create();
     session()->put('auth.password_confirmed_at', time());
     $component = Livewire::actingAs($user)
@@ -68,7 +68,7 @@ it('can not enable two factor authentication with invalid code', function () {
     $newComponent->assertSet('enabled', false);
 });
 
-it('can disable two factor authentication', function () {
+it('can disable two factor authentication', function (): void {
     $user = User::factory()->create([
         'two_factor_secret' => 'secret',
         'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
@@ -88,7 +88,7 @@ it('can disable two factor authentication', function () {
     $component->assertSet('code', null);
 });
 
-it('can regenerate recovery codes', function () {
+it('can regenerate recovery codes', function (): void {
     $user = User::factory()->create([
         'two_factor_secret' => 'secret',
         'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
@@ -104,7 +104,7 @@ it('can regenerate recovery codes', function () {
     $component->assertSet('showingRecoveryCodes', true);
 });
 
-it('can show recovery codes', function () {
+it('can show recovery codes', function (): void {
     $user = User::factory()->create([
         'two_factor_secret' => 'secret',
         'two_factor_recovery_codes' => encrypt(json_encode(['one', 'two'])),
@@ -121,7 +121,7 @@ it('can show recovery codes', function () {
     $component->assertSet('showingRecoveryCodes', true);
 });
 
-it('dispatches confirm-password event when password is not confirmed', function () {
+it('dispatches confirm-password event when password is not confirmed', function (): void {
     $user = User::factory()->create();
     session()->forget('auth.password_confirmed_at');
 
@@ -150,7 +150,7 @@ it('dispatches confirm-password event when password is not confirmed', function 
     $component->assertDispatched('confirm-password', idToConfirm: 'disable-two-factor-authentication');
 });
 
-it('can not see codes if not enabled', function () {
+it('can not see codes if not enabled', function (): void {
     $user = User::factory()->create();
     session()->put('auth.password_confirmed_at', time());
 
@@ -164,7 +164,7 @@ it('can not see codes if not enabled', function () {
     $component->assertSet('showingRecoveryCodes', false);
 });
 
-it('can not disable two factor authentication if not enabled', function () {
+it('can not disable two factor authentication if not enabled', function (): void {
     $user = User::factory()->create();
     session()->put('auth.password_confirmed_at', time());
 

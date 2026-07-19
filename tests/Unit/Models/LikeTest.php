@@ -6,7 +6,7 @@ use App\Models\Like;
 use App\Models\Question;
 use App\Models\User;
 
-test('to array', function () {
+test('to array', function (): void {
     $question = Like::factory()->create()->fresh();
 
     expect(array_keys($question->toArray()))->toContain(
@@ -18,7 +18,7 @@ test('to array', function () {
     )->toHaveCount(5);
 });
 
-test('relations', function () {
+test('relations', function (): void {
     $like = Like::factory()->create();
 
     expect($like->user)->toBeInstanceOf(User::class)

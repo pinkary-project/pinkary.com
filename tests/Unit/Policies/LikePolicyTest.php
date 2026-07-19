@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Like;
 use App\Models\User;
 
-test('delete', function () {
+test('delete', function (): void {
     $user = User::factory()->create();
     $like = Like::factory()->create(['user_id' => $user->id]);
 

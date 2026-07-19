@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Question;
 use App\Models\User;
 
-test('to array', function () {
+test('to array', function (): void {
     $user = User::factory()->create()->fresh();
 
     expect(array_keys($user->toArray()))->toContain(
@@ -35,7 +35,7 @@ test('to array', function () {
     )->toHaveCount(23);
 });
 
-test('is verified', function () {
+test('is verified', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
         'username' => 'test',
@@ -44,7 +44,7 @@ test('is verified', function () {
     expect($user->is_verified)->toBeTrue();
 });
 
-test('is verified because in list of fixed sponsors', function () {
+test('is verified because in list of fixed sponsors', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'username' => 'test',
@@ -56,7 +56,7 @@ test('is verified because in list of fixed sponsors', function () {
         ->and($user->is_company_verified)->toBeFalse();
 });
 
-test('is not verified because not in sponsors', function () {
+test('is not verified because not in sponsors', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'username' => 'test',
@@ -68,7 +68,7 @@ test('is not verified because not in sponsors', function () {
         ->and($user->is_company_verified)->toBeFalse();
 });
 
-test('is verified because in list of fixed company sponsors', function () {
+test('is verified because in list of fixed company sponsors', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'username' => 'test',
@@ -80,7 +80,7 @@ test('is verified because in list of fixed company sponsors', function () {
         ->and($user->is_company_verified)->toBeTrue();
 });
 
-test('increment views', function () {
+test('increment views', function (): void {
     $user = User::factory()->create();
 
     User::incrementViews([$user->id]);
@@ -88,14 +88,14 @@ test('increment views', function () {
     expect($user->fresh()->views)->toBe(1);
 });
 
-test('default avatar url', function () {
+test('default avatar url', function (): void {
     $user = User::factory()->create();
 
     expect($user->avatar)->toBeNull()
         ->and($user->avatar_url)->toBe(asset('img/default-avatar.png'));
 });
 
-test('custom avatar url', function () {
+test('custom avatar url', function (): void {
     $user = User::factory()->create([
         'avatar' => 'avatars/123.png',
     ]);
@@ -104,7 +104,7 @@ test('custom avatar url', function () {
         ->and($user->avatar_url)->toBe(Storage::disk()->url('avatars/123.png'));
 });
 
-test('following', function () {
+test('following', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -114,7 +114,7 @@ test('following', function () {
         ->and($user->following->first()->id)->toBe($target->id);
 });
 
-test('followers', function () {
+test('followers', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -124,7 +124,7 @@ test('followers', function () {
         ->and($user->followers->first()->id)->toBe($target->id);
 });
 
-test('purge followers with user', function () {
+test('purge followers with user', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -137,7 +137,7 @@ test('purge followers with user', function () {
     expect($target->following()->count())->toBe(1);
 });
 
-test('purge following with user', function () {
+test('purge following with user', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -150,7 +150,7 @@ test('purge following with user', function () {
     expect($target->followers()->count())->toBe(1);
 });
 
-test('purge links with user', function () {
+test('purge links with user', function (): void {
     $user = User::factory()->hasLinks(2)->create();
     $this->assertDatabaseCount('links', 2);
 
@@ -159,11 +159,11 @@ test('purge links with user', function () {
             'password' => 'password',
         ]);
 
-    $this->assertNull($user->fresh());
+    expect($user->fresh())->toBeNull();
     $this->assertDatabaseCount('links', 0);
 });
 
-test('purge notifications with user', function () {
+test('purge notifications with user', function (): void {
     $user = User::factory()->create();
     Question::factory(2)->create([
         'to_id' => $user->id,
@@ -175,11 +175,11 @@ test('purge notifications with user', function () {
             'password' => 'password',
         ]);
 
-    $this->assertNull($user->fresh());
+    expect($user->fresh())->toBeNull();
     $this->assertDatabaseCount('notifications', 0);
 });
 
-test('purge questions, comments and decendants with user', function () {
+test('purge questions, comments and decendants with user', function (): void {
     $user = User::factory()->hasQuestionsSent(2)->create();
     Question::factory()
         ->hasChildren(2)
@@ -196,11 +196,11 @@ test('purge questions, comments and decendants with user', function () {
             'password' => 'password',
         ]);
 
-    $this->assertNull($user->fresh());
+    expect($user->fresh())->toBeNull();
     $this->assertDatabaseCount('questions', 0);
 });
 
-test('parse the bio', function () {
+test('parse the bio', function (): void {
     $user = User::factory()->create([
         'bio' => 'Hello, https://example.com is my website.',
     ]);

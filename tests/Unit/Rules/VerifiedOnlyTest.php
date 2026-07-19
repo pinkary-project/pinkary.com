@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Rules\VerifiedOnly;
 
-test('verified only rule passes for verified user', function () {
+test('verified only rule passes for verified user', function (): void {
     $user = User::factory()->create(['is_verified' => true]);
 
     $this->actingAs($user);
@@ -17,7 +17,7 @@ test('verified only rule passes for verified user', function () {
     expect(true)->toBeTrue();
 });
 
-test('verified only rule passes for company verified user', function () {
+test('verified only rule passes for company verified user', function (): void {
     $user = User::factory()->create(['is_company_verified' => true]);
 
     $this->actingAs($user);
@@ -29,7 +29,7 @@ test('verified only rule passes for company verified user', function () {
     expect(true)->toBeTrue();
 });
 
-test('verified only rule fails for unverified user', function () {
+test('verified only rule fails for unverified user', function (): void {
     $user = User::factory()->create();
 
     $this->actingAs($user);
@@ -41,7 +41,7 @@ test('verified only rule fails for unverified user', function () {
     $rule->validate('verified', true, $fail);
 })->throws(InvalidArgumentException::class, 'This action is only available to verified users. Get verified in your profile settings.');
 
-test('verified fails for guest', function () {
+test('verified fails for guest', function (): void {
     $rule = new VerifiedOnly();
 
     $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);

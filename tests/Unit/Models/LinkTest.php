@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Link;
 use App\Models\User;
 
-test('to array', function () {
+test('to array', function (): void {
     $question = Link::factory()->create()->fresh();
 
     expect(array_keys($question->toArray()))->toContain(
@@ -20,7 +20,7 @@ test('to array', function () {
     )->toHaveCount(8);
 });
 
-test('relations', function () {
+test('relations', function (): void {
     $link = Link::factory()->create();
 
     expect($link->user)->toBeInstanceOf(User::class);
