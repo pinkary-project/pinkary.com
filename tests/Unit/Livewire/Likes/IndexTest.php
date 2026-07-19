@@ -8,7 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('render', function () {
+test('render', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
@@ -19,7 +19,7 @@ test('render', function () {
     $component->assertOk();
 });
 
-test('render with likes', function () {
+test('render with likes', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
     $likers = User::factory(5)->create();
@@ -44,7 +44,7 @@ test('render with likes', function () {
     });
 });
 
-test('render with follows you badge', function () {
+test('render with follows you badge', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
     $likers = User::factory(5)->create();
@@ -75,7 +75,7 @@ test('render with follows you badge', function () {
     });
 });
 
-test('users data has is_following and is_follower keys as expected', function () {
+test('users data has is_following and is_follower keys as expected', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
     $likers = User::factory(5)->create();
@@ -98,14 +98,14 @@ test('users data has is_following and is_follower keys as expected', function ()
     $users = $component->viewData('users');
 
     foreach ($users->items() as $liker) {
-        expect($liker->hasAttribute('is_follower'))->toBeTrue();
-        expect($liker->hasAttribute('is_following'))->toBeTrue();
-        expect($liker->is_follower)->toBeFalse();
-        expect($liker->is_following)->toBeFalse();
+        expect($liker->hasAttribute('is_follower'))->toBeTrue()
+            ->and($liker->hasAttribute('is_following'))->toBeTrue()
+            ->and($liker->is_follower)->toBeFalse()
+            ->and($liker->is_following)->toBeFalse();
     }
 });
 
-test('users data has is_following and is_follower keys for non-owner viewers', function () {
+test('users data has is_following and is_follower keys for non-owner viewers', function (): void {
     $owner = User::factory()->create();
     $viewer = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $owner->id]);
@@ -125,7 +125,7 @@ test('users data has is_following and is_follower keys for non-owner viewers', f
     $component->assertForbidden();
 });
 
-test('users data shows correct following relationships', function () {
+test('users data shows correct following relationships', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
     $likers = User::factory(3)->create();
@@ -154,18 +154,17 @@ test('users data shows correct following relationships', function () {
     $usersCollection = collect($users->items());
     $usersById = $usersCollection->keyBy('id');
 
-    expect($usersById[$followedLiker->id]->is_following)->toBeTrue();
-    expect($usersById[$followedLiker->id]->is_follower)->toBeFalse();
-
-    expect($usersById[$followerLiker->id]->is_follower)->toBeTrue();
-    expect($usersById[$followerLiker->id]->is_following)->toBeFalse();
+    expect($usersById[$followedLiker->id]->is_following)->toBeTrue()
+        ->and($usersById[$followedLiker->id]->is_follower)->toBeFalse()
+        ->and($usersById[$followerLiker->id]->is_follower)->toBeTrue()
+        ->and($usersById[$followerLiker->id]->is_following)->toBeFalse();
 
     $middleLiker = $likers->skip(1)->first();
-    expect($usersById[$middleLiker->id]->is_following)->toBeFalse();
-    expect($usersById[$middleLiker->id]->is_follower)->toBeFalse();
+    expect($usersById[$middleLiker->id]->is_following)->toBeFalse()
+        ->and($usersById[$middleLiker->id]->is_follower)->toBeFalse();
 });
 
-test('only post owner can view likes', function () {
+test('only post owner can view likes', function (): void {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
@@ -182,7 +181,7 @@ test('only post owner can view likes', function () {
     $component->assertForbidden();
 });
 
-test('show empty state when no likes', function () {
+test('show empty state when no likes', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
@@ -197,7 +196,7 @@ test('show empty state when no likes', function () {
     $component->assertSee('No one has liked this post yet');
 });
 
-test('show pagination when many likes', function () {
+test('show pagination when many likes', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
     $likers = User::factory(15)->create();
@@ -218,6 +217,6 @@ test('show pagination when many likes', function () {
     $component->refresh();
 
     $likedUsers = $component->viewData('users');
-    expect($likedUsers->items())->toHaveCount(10);
-    expect($likedUsers->hasPages())->toBeTrue();
+    expect($likedUsers->items())->toHaveCount(10)
+        ->and($likedUsers->hasPages())->toBeTrue();
 });

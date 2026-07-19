@@ -6,7 +6,7 @@ arch('models')
     ->expect('App\Models')
     ->toHaveMethod('casts')
     ->ignoring('App\Models\Concerns')
-    ->toExtend('Illuminate\Database\Eloquent\Model')
+    ->toExtend(Illuminate\Database\Eloquent\Model::class)
     ->ignoring('App\Models\Concerns')
     ->toOnlyBeUsedIn([
         'App\Concerns',
@@ -28,7 +28,7 @@ arch('models')
         'Database\Factories',
     ])->ignoring('App\Models\Concerns');
 
-arch('ensure factories', function () {
+arch('ensure factories', function (): void {
     expect($models = getModels())->toHaveCount(9);
 
     foreach ($models as $model) {
@@ -38,7 +38,7 @@ arch('ensure factories', function () {
     }
 });
 
-arch('ensure datetime casts', function () {
+arch('ensure datetime casts', function (): void {
     expect($models = getModels())->toHaveCount(9);
 
     foreach ($models as $model) {
@@ -46,8 +46,8 @@ arch('ensure datetime casts', function () {
         $instance = $model::factory()->create();
 
         $dates = collect($instance->getAttributes())
-            ->filter(fn ($_, $key) => str_ends_with($key, '_at'))
-            ->reject(fn ($_, $key) => in_array($key, ['created_at', 'updated_at']));
+            ->filter(fn ($_, $key): bool => str_ends_with((string) $key, '_at'))
+            ->reject(fn ($_, $key): bool => in_array($key, ['created_at', 'updated_at']));
 
         foreach ($dates as $key => $value) {
             expect($instance->getCasts())->toHaveKey(
@@ -73,7 +73,5 @@ function getModels(): array
     $models = glob(__DIR__.'/../../app/Models/*.php');
 
     return collect($models)
-        ->map(function ($file) {
-            return 'App\Models\\'.basename($file, '.php');
-        })->toArray();
+        ->map(fn ($file): string => 'App\Models\\'.basename((string) $file, '.php'))->toArray();
 }

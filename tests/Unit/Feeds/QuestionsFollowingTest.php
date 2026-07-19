@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Queries\Feeds\QuestionsFollowingFeed;
 use Illuminate\Database\Eloquent\Builder;
 
-it('render questions with right conditions', function () {
+it('render questions with right conditions', function (): void {
     $followerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
@@ -28,12 +28,12 @@ it('render questions with right conditions', function () {
         'is_reported' => false,
     ]);
 
-    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
+    $builder = new QuestionsFollowingFeed($followerUser)->builder();
 
     expect($builder->pluck('id')->all())->toEqual([$question2->id, $question1->id]);
 });
 
-it('do not render questions without answer', function () {
+it('do not render questions without answer', function (): void {
     $followerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
@@ -54,12 +54,12 @@ it('do not render questions without answer', function () {
         'answer' => null,
     ]);
 
-    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
+    $builder = new QuestionsFollowingFeed($followerUser)->builder();
 
     expect($builder->where('answer', $answer)->count())->toBe(1);
 });
 
-it('includes questions made to users i follow', function () {
+it('includes questions made to users i follow', function (): void {
     $user = User::factory()->create();
 
     $follower = User::factory()->create();
@@ -71,12 +71,12 @@ it('includes questions made to users i follow', function () {
         'answer' => 'Answer',
     ]);
 
-    $builder = (new QuestionsFollowingFeed($follower))->builder();
+    $builder = new QuestionsFollowingFeed($follower)->builder();
 
     expect($builder->count())->toBe(1);
 });
 
-it('do not render reported questions', function () {
+it('do not render reported questions', function (): void {
     $followerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
@@ -95,12 +95,12 @@ it('do not render reported questions', function () {
         'is_reported' => true,
     ]);
 
-    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
+    $builder = new QuestionsFollowingFeed($followerUser)->builder();
 
     expect($builder->where('is_reported', false)->count())->toBe(1);
 });
 
-it('does not show the comments if it\'s on non following user\'s post', function () {
+it('does not show the comments if it\'s on non following user\'s post', function (): void {
     $followerUser = User::factory()->create();
 
     $userTo = User::factory()->create();
@@ -118,13 +118,13 @@ it('does not show the comments if it\'s on non following user\'s post', function
         'to_id' => $userTo->id,
     ]);
 
-    $builder = (new QuestionsFollowingFeed($followerUser))->builder();
+    $builder = new QuestionsFollowingFeed($followerUser)->builder();
 
     expect($builder->count())->toBe(0);
 });
 
-it('builder returns Eloquent\Builder instance', function () {
-    $builder = (new QuestionsFollowingFeed(User::factory()->create()))->builder();
+it('builder returns Eloquent\Builder instance', function (): void {
+    $builder = new QuestionsFollowingFeed(User::factory()->create())->builder();
 
     expect($builder)->toBeInstanceOf(Builder::class);
 });

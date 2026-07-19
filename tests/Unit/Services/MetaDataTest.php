@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 
 mutates(MetaData::class);
 
-it('returns the cached meta data if it exists', function () {
+it('returns the cached meta data if it exists', function (): void {
     $url = 'https://laravel.com';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
     $cachedData = collect([
@@ -49,7 +49,7 @@ it('returns the cached meta data if it exists', function () {
         ->and($data->toArray())->toBe($cachedData->toArray());
 });
 
-it('gets the youtube oembed data', function () {
+it('gets the youtube oembed data', function (): void {
     $url = 'https://youtu.be/emMYyeBfYlM';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
 
@@ -91,7 +91,7 @@ it('gets the youtube oembed data', function () {
         ->and($data->has('html'))->toBeTrue();
 });
 
-it('shows preview card if the tweet has an image or video', function () {
+it('shows preview card if the tweet has an image or video', function (): void {
     $url = 'https://x.com/enunomaduro/status/1845794776886493291';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
 
@@ -116,7 +116,7 @@ it('shows preview card if the tweet has an image or video', function () {
         ->and($data->get('image'))->toBe('https://pbs.twimg.com/ext_tw_video_thumb/1845793244287836166/pu/img/sjrrSlxl64LNIwdY.jpg:large');
 });
 
-it('gets the vimdeo oembed data', function () {
+it('gets the vimdeo oembed data', function (): void {
     $url = 'https://vimeo.com/76979871';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
 
@@ -157,7 +157,7 @@ it('gets the vimdeo oembed data', function () {
         ->and($data->has('html'))->toBeTrue();
 });
 
-it('returns an empty collection if the HTTP request fails', function () {
+it('returns an empty collection if the HTTP request fails', function (): void {
     $url = 'https://aurlthatdoesnotexist.com';
 
     Http::fake([
@@ -170,11 +170,11 @@ it('returns an empty collection if the HTTP request fails', function () {
     expect($data->isEmpty())->toBeTrue();
 });
 
-it('returns an empty collection if a ConnectionException is thrown', function () {
+it('returns an empty collection if a ConnectionException is thrown', function (): void {
     $url = 'https://aurlthatdoesnotexist.com';
 
     Http::fake([
-        $url => fn ($request) => new RejectedPromise(new ConnectionException('Connection error')),
+        $url => fn ($request): RejectedPromise => new RejectedPromise(new ConnectionException('Connection error')),
     ]);
 
     $service = new MetaData($url);
@@ -196,7 +196,7 @@ it('returns an empty collection if a ConnectionException is thrown', function ()
                 </head>
             </html>
         ', 200),
-        'www.youtube.com/oembed?url=*' => fn ($request) => new RejectedPromise(new ConnectionException('Connection error')),
+        'www.youtube.com/oembed?url=*' => fn ($request): RejectedPromise => new RejectedPromise(new ConnectionException('Connection error')),
     ]);
 
     $service = new MetaData($url);
@@ -205,7 +205,7 @@ it('returns an empty collection if a ConnectionException is thrown', function ()
     expect($data->has('html'))->toBeFalse();
 });
 
-it('removes the image from meta data if the image is too small', function () {
+it('removes the image from meta data if the image is too small', function (): void {
     $url = 'https://laravel.com';
     $imagePath = UploadedFile::fake()->image('image.jpg', 100, 100)->store('images');
 
@@ -230,7 +230,7 @@ it('removes the image from meta data if the image is too small', function () {
     expect($data->has('image'))->toBeFalse();
 });
 
-it('removes the image from meta data if the image file does not exist', function () {
+it('removes the image from meta data if the image file does not exist', function (): void {
     $url = 'https://laravel.com';
     $imagePath = 'images/image.jpg';
 
@@ -255,21 +255,21 @@ it('removes the image from meta data if the image file does not exist', function
     expect($data->has('image'))->toBeFalse();
 });
 
-it('has constants for the preview card dimensions', function () {
+it('has constants for the preview card dimensions', function (): void {
     expect(MetaData::CARD_WIDTH)->toBe(446)
         ->and(MetaData::CARD_HEIGHT)->toBe(251);
 });
 
-it('dimensions are 16:9', function () {
+it('dimensions are 16:9', function (): void {
     expect(round(MetaData::CARD_WIDTH / MetaData::CARD_HEIGHT, 2))
         ->toBe(round(16 / 9, 2));
 });
 
-it('handles all exceptions', function (Exception $exception) {
+it('handles all exceptions', function (Exception $exception): void {
     $url = 'https://laravel.com';
 
     Http::fake([
-        $url => fn ($request) => new RejectedPromise($exception),
+        $url => fn ($request): RejectedPromise => new RejectedPromise($exception),
     ]);
 
     $service = new MetaData($url);
@@ -283,7 +283,7 @@ it('handles all exceptions', function (Exception $exception) {
     new TransferException('Transfer error'),
 ]);
 
-it('handles empty content', function () {
+it('handles empty content', function (): void {
     $url = 'https://laravel.com';
 
     Http::fake([

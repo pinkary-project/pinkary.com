@@ -7,7 +7,7 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('renders questions with follow of authenticated user', function () {
+test('renders questions with follow of authenticated user', function (): void {
     $user = User::factory()->create();
 
     $questionContent = 'This is a question with a follow from the authenticated user';
@@ -30,7 +30,7 @@ test('renders questions with follow of authenticated user', function () {
         ->assertSee($questionContent);
 });
 
-test('do not renders questions without follow of authenticated user', function () {
+test('do not renders questions without follow of authenticated user', function (): void {
     $user = User::factory()->create();
 
     $questionContent = 'This is a question with a follow from the authenticated user';
@@ -51,7 +51,7 @@ test('do not renders questions without follow of authenticated user', function (
         ->assertDontSee($questionContent);
 });
 
-test('load more', function () {
+test('load more', function (): void {
     $user = User::factory()->create();
 
     Question::factory(120)->create();
@@ -71,7 +71,7 @@ test('load more', function () {
     $component->assertSet('perPage', 100);
 });
 
-it('renders the threads in the right order', function () {
+it('renders the threads in the right order', function (): void {
 
     $user = User::factory()->create();
     $anotherUser = User::factory()->create();
@@ -94,7 +94,7 @@ it('renders the threads in the right order', function () {
         )->create();
 
     // create a child for each following user's question
-    $questions->each(function (Question $question) use ($answerForNonFollowingUser) {
+    $questions->each(function (Question $question) use ($answerForNonFollowingUser): void {
 
         $this->travel(1)->seconds();
 
@@ -113,8 +113,8 @@ it('renders the threads in the right order', function () {
     Question::factory()->sharedUpdate()->create(['answer' => 'root without descendants', 'to_id' => $user->id]); // by following user
 
     // create a child for each child of even roots
-    $questions->filter(fn (Question $question, int $key) => ($key + 1) % 2 === 0) // evens
-        ->each(function (Question $question) use ($answerForNonFollowingUser) {
+    $questions->filter(fn (Question $question, int $key): bool => ($key + 1) % 2 === 0) // evens
+        ->each(function (Question $question) use ($answerForNonFollowingUser): void {
             $this->travel(1)->seconds();
 
             Question::factory()->sharedUpdate()->create([

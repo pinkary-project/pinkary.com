@@ -6,7 +6,7 @@ use App\Livewire\Followers\Index;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('render', function () {
+test('render', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Index::class, [
@@ -16,7 +16,7 @@ test('render', function () {
     $component->assertOk();
 });
 
-test('render with followers', function () {
+test('render with followers', function (): void {
     $user = User::factory()->create();
     $followers = User::factory(10)->create();
 
@@ -35,7 +35,7 @@ test('render with followers', function () {
     });
 });
 
-test('render with follows you badge', function () {
+test('render with follows you badge', function (): void {
     $user = User::factory()->create();
     $viewer = User::factory()->create();
     $followers = User::factory(10)->create();
@@ -67,7 +67,7 @@ test('render with follows you badge', function () {
     $component->assertSeeInOrder($orderedText);
 });
 
-test('do not see follows you badge if user is view his profile', function () {
+test('do not see follows you badge if user is view his profile', function (): void {
     $user = User::factory()->create();
     $followers = User::factory(10)->create();
 
@@ -84,7 +84,7 @@ test('do not see follows you badge if user is view his profile', function () {
     $component->assertDontSee('Follows you');
 });
 
-test('users data has is_following and is_follower keys as expected', function () {
+test('users data has is_following and is_follower keys as expected', function (): void {
     $user = User::factory()->create();
     $following = User::factory(10)->create();
 
@@ -99,8 +99,7 @@ test('users data has is_following and is_follower keys as expected', function ()
     $component->refresh();
 
     $component->viewData('followers')->each(function (User $user): void {
-        expect($user)->toHaveKey('is_following');
-        expect($user)->not->toHaveKey('is_follower');
+        expect($user)->toHaveKey('is_following')->not->toHaveKey('is_follower');
     });
 
     $anotherUser = User::factory()->create();
@@ -114,12 +113,12 @@ test('users data has is_following and is_follower keys as expected', function ()
     $component->refresh();
 
     $component->viewData('followers')->each(function (User $user): void {
-        expect($user)->toHaveKey('is_following');
-        expect($user)->toHaveKey('is_follower');
+        expect($user)->toHaveKey('is_following')
+            ->toHaveKey('is_follower');
     });
 });
 
-test('shouldHandleFollowingCount returns true when the user is viewing his profile', function () {
+test('shouldHandleFollowingCount returns true when the user is viewing his profile', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Index::class, [

@@ -6,7 +6,7 @@ use App\Filament\Widgets\Analytics;
 use App\Models\PanAnalytic;
 use Livewire\Livewire;
 
-test('displays the analytics', function () {
+test('displays the analytics', function (): void {
     PanAnalytic::factory(3)->create();
 
     Livewire::test(Analytics::class)
@@ -14,7 +14,7 @@ test('displays the analytics', function () {
         ->assertCountTableRecords(3);
 });
 
-test('displays if impressions is zero', function () {
+test('displays if impressions is zero', function (): void {
     PanAnalytic::factory()->create(['hovers' => 0]);
     PanAnalytic::factory()->create(['clicks' => 0]);
     PanAnalytic::factory()->create(['impressions' => 0]);
@@ -24,7 +24,7 @@ test('displays if impressions is zero', function () {
         ->assertCountTableRecords(3);
 });
 
-test('displays the percentage', function () {
+test('displays the percentage', function (): void {
     PanAnalytic::factory()->create(['impressions' => 100, 'hovers' => 50, 'clicks' => 25]);
 
     Livewire::test(Analytics::class)
@@ -33,7 +33,7 @@ test('displays the percentage', function () {
         ->assertSee('25 (25.0%)');
 });
 
-test('sorts by impressions by default', function () {
+test('sorts by impressions by default', function (): void {
     PanAnalytic::factory()->create(['impressions' => 100]);
     PanAnalytic::factory()->create(['impressions' => 200]);
     PanAnalytic::factory()->create(['impressions' => 300]);
@@ -43,7 +43,7 @@ test('sorts by impressions by default', function () {
         ->assertCanSeeTableRecords(PanAnalytic::orderBy('impressions', 'desc')->get(), inOrder: true);
 });
 
-test('searches by name', function () {
+test('searches by name', function (): void {
     $analytics = PanAnalytic::factory(3)->create();
 
     $name = $analytics->first()->name;
@@ -56,7 +56,7 @@ test('searches by name', function () {
         ->assertCanNotSeeTableRecords($analytics->where('name', '!=', $name));
 });
 
-test('sorts by name', function () {
+test('sorts by name', function (): void {
     $analytics = PanAnalytic::factory(3)->create();
 
     Livewire::test(Analytics::class)

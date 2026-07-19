@@ -8,28 +8,26 @@ use App\Services\Autocomplete\Result;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
 
-test('component can be rendered', function () {
+test('component can be rendered', function (): void {
     Livewire::test(Autocomplete::class)->assertStatus(200);
 });
 
-test('the render method returns the correct view', function () {
+test('the render method returns the correct view', function (): void {
     $view = Livewire::test(Autocomplete::class)->instance()->render();
 
     expect($view->name())->toBe('livewire.autocomplete');
 });
 
-test('autocompleteTypes computed property returns correct data', function () {
+test('autocompleteTypes computed property returns correct data', function (): void {
     $result = Livewire::test(Autocomplete::class)->instance()->autocompleteTypes;
     $expected = collect(AutocompleteService::types())
-        ->map(function (string $type) {
-            return (new $type)->toArray();
-        })
+        ->map(fn (string $type) => (new $type)->toArray())
         ->all();
 
     expect($result)->toBe($expected);
 });
 
-test('setAutocompleteSearchParams sets matchedTypes and query when not empty', function () {
+test('setAutocompleteSearchParams sets matchedTypes and query when not empty', function (): void {
     $component = Livewire::test(Autocomplete::class);
     $component->call('setAutocompleteSearchParams', ['mentions'], 'username');
 
@@ -37,7 +35,7 @@ test('setAutocompleteSearchParams sets matchedTypes and query when not empty', f
         ->assertSet('query', 'username');
 });
 
-test('setAutocompleteSearchParams does not set values when matchedTypes is empty', function () {
+test('setAutocompleteSearchParams does not set values when matchedTypes is empty', function (): void {
     $component = Livewire::test(Autocomplete::class);
 
     $component->call('setAutocompleteSearchParams', [], 'username');
@@ -46,7 +44,7 @@ test('setAutocompleteSearchParams does not set values when matchedTypes is empty
         ->assertSet('query', '');
 });
 
-test('setAutocompleteSearchParams resets values when matchedTypes is empty', function () {
+test('setAutocompleteSearchParams resets values when matchedTypes is empty', function (): void {
     $component = Livewire::test(Autocomplete::class);
 
     $component->set('matchedTypes', ['mentions']);
@@ -58,7 +56,7 @@ test('setAutocompleteSearchParams resets values when matchedTypes is empty', fun
         ->assertSet('query', '');
 });
 
-test('setAutocompleteSearchParams only uses matchedTypes that exist as an Autocomplete Type alias', function () {
+test('setAutocompleteSearchParams only uses matchedTypes that exist as an Autocomplete Type alias', function (): void {
     $component = Livewire::test(Autocomplete::class);
 
     $component->call('setAutocompleteSearchParams', ['mentions', 'foobar'], 'username');
@@ -67,7 +65,7 @@ test('setAutocompleteSearchParams only uses matchedTypes that exist as an Autoco
         ->assertSet('query', 'username');
 });
 
-test('autocompleteResults computed property returns correct data', function () {
+test('autocompleteResults computed property returns correct data', function (): void {
     $user = App\Models\User::factory()->create(['username' => 'bazz']);
     App\Models\User::factory()->create(['username' => 'fellow']);
 
@@ -84,7 +82,7 @@ test('autocompleteResults computed property returns correct data', function () {
         ->and($result->first()->id)->toBe($user->id);
 });
 
-test('autocompleteResults returns empty collection when no matched types are set', function () {
+test('autocompleteResults returns empty collection when no matched types are set', function (): void {
     $component = Livewire::test(Autocomplete::class);
 
     $component->set('matchedTypes', []);
@@ -97,7 +95,7 @@ test('autocompleteResults returns empty collection when no matched types are set
         ->and($result->isEmpty())->toBeTrue();
 });
 
-test('component properties are initialized correctly', function () {
+test('component properties are initialized correctly', function (): void {
     $component = Livewire::test(Autocomplete::class);
 
     expect($component->instance()->matchedTypes)->toBe([])

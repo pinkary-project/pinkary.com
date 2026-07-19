@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Question;
 use App\Models\User;
 
-test('view', function () {
+test('view', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
@@ -21,7 +21,7 @@ test('view', function () {
     expect($user->can('view', $question))->toBeFalse();
 });
 
-test('update', function () {
+test('update', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
@@ -32,7 +32,7 @@ test('update', function () {
     expect($user->can('update', $question))->toBeFalse();
 });
 
-test('ignore', function () {
+test('ignore', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
@@ -43,7 +43,7 @@ test('ignore', function () {
     expect($user->can('ignore', $question))->toBeFalse();
 });
 
-test('view likes', function () {
+test('view likes', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 

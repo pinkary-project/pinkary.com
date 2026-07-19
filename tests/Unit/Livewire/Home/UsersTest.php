@@ -8,13 +8,13 @@ use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
-test('lists no users when there are no users', function () {
+test('lists no users when there are no users', function (): void {
     $component = Livewire::test(Users::class);
 
     $component->assertSee('No users found.');
 });
 
-test('lists by default users with GitHub or Twitter links', function () {
+test('lists by default users with GitHub or Twitter links', function (): void {
     Link::factory(3)->create([
         'url' => 'twitter.com/nunomaduro',
     ]);
@@ -32,7 +32,7 @@ test('lists by default users with GitHub or Twitter links', function () {
     }
 });
 
-test('search by name', function () {
+test('search by name', function (): void {
     User::factory()->create([
         'name' => 'Nuno Maduro',
         'email_verified_at' => now(),
@@ -54,7 +54,7 @@ test('search by name', function () {
         ->assertDontSee('Taylor Otwell');
 });
 
-test('order by the number of answered questions', function () {
+test('order by the number of answered questions', function (): void {
     $punyapal = User::factory()->create([
         'name' => 'Artisan Punyapal Shah',
         'email_verified_at' => now(),
@@ -101,7 +101,7 @@ test('order by the number of answered questions', function () {
     ]);
 });
 
-test('default users should have 2 verified users', function () {
+test('default users should have 2 verified users', function (): void {
     config(['sponsors.github_company_usernames' => ['MrPunyapal']]);
 
     User::factory(2)
@@ -113,16 +113,12 @@ test('default users should have 2 verified users', function () {
             'name' => 'Punyapal Shah',
             'username' => 'MrPunyapal',
         ])
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create();
 
     User::factory(10)
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create();
 
@@ -133,19 +129,15 @@ test('default users should have 2 verified users', function () {
 
 });
 
-test('default users should be from top 50 famous users', function () {
+test('default users should be from top 50 famous users', function (): void {
 
     User::factory(50)
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
         ->create();
 
     User::factory()
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(1, ['answer' => 'this is an answer'])
         ->create(['name' => 'Adam Lee']);
 
@@ -157,11 +149,9 @@ test('default users should be from top 50 famous users', function () {
     }
 });
 
-test('famous users are cached for a day', function () {
+test('famous users are cached for a day', function (): void {
     $famousUsers = User::factory(50)
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
         ->create();
 
@@ -169,18 +159,16 @@ test('famous users are cached for a day', function () {
 
     Livewire::test(Users::class);
 
-    $this->assertTrue(Cache::has('top-50-users'));
+    expect(Cache::has('top-50-users'))->toBeTrue();
 
     $CachedFamousUsers = Cache::get('top-50-users');
 
-    $this->assertEquals($famousUsers->pluck('id')->all(), $CachedFamousUsers);
+    expect($CachedFamousUsers)->toEqual($famousUsers->pluck('id')->all());
 });
 
-test('cached famous users are refreshed after a day', function () {
+test('cached famous users are refreshed after a day', function (): void {
     $famousUsers = User::factory(50)
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
         ->create();
 
@@ -188,42 +176,36 @@ test('cached famous users are refreshed after a day', function () {
 
     $component = Livewire::test(Users::class);
 
-    $this->assertTrue(Cache::has('top-50-users'));
+    expect(Cache::has('top-50-users'))->toBeTrue();
 
     $this->travel(1)->days();
 
     $newFamousUsers = User::factory(50)
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(3, ['answer' => 'this is an answer'])
         ->create();
 
-    $this->assertFalse(Cache::has('top-50-users'));
+    expect(Cache::has('top-50-users'))->toBeFalse();
 
     $component->refresh();
 
-    $this->assertTrue(Cache::has('top-50-users'));
+    expect(Cache::has('top-50-users'))->toBeTrue();
 
     $CachedFamousUsers = Cache::get('top-50-users');
 
-    expect($famousUsers->pluck('id')->toArray())->not->toContain(...$CachedFamousUsers);
-    expect($newFamousUsers->pluck('id')->toArray())->toContain(...$CachedFamousUsers);
+    expect($famousUsers->pluck('id')->toArray())->not->toContain(...$CachedFamousUsers)
+        ->and($newFamousUsers->pluck('id')->toArray())->toContain(...$CachedFamousUsers);
 });
 
-test('users has is_follower and is_following attributes only when authenticated', function () {
+test('users has is_follower and is_following attributes only when authenticated', function (): void {
 
     User::factory(10)
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(2, ['answer' => 'this is an answer'])
         ->create();
 
     User::factory()
-        ->hasLinks(1, function (array $attributes, User $user) {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->sequence([
             'name' => 'Nuno Maduro',
         ], [
@@ -234,15 +216,13 @@ test('users has is_follower and is_following attributes only when authenticated'
     $component = Livewire::test(Users::class);
 
     $component->viewData('users')->each(function (User $user): void {
-        expect($user)->not->toHaveKey('is_follower');
-        expect($user)->not->toHaveKey('is_following');
+        expect($user)->not->toHaveKey('is_follower')->not->toHaveKey('is_following');
     });
 
     $component->set('query', 'un');
 
     $component->viewData('users')->each(function (User $user): void {
-        expect($user)->not->toHaveKey('is_follower');
-        expect($user)->not->toHaveKey('is_following');
+        expect($user)->not->toHaveKey('is_follower')->not->toHaveKey('is_following');
     });
 
     $component->actingAs(User::factory()->create());
@@ -250,14 +230,14 @@ test('users has is_follower and is_following attributes only when authenticated'
     $component->set('query', '');
 
     $component->viewData('users')->each(function (User $user): void {
-        expect($user->is_follower)->toBeBool();
-        expect($user->is_following)->toBeBool();
+        expect($user->is_follower)->toBeBool()
+            ->and($user->is_following)->toBeBool();
     });
 
     $component->set('query', 'un');
 
     $component->viewData('users')->each(function (User $user): void {
-        expect($user->is_follower)->toBeBool();
-        expect($user->is_following)->toBeBool();
+        expect($user->is_follower)->toBeBool()
+            ->and($user->is_following)->toBeBool();
     });
 });

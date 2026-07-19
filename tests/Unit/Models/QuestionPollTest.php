@@ -15,8 +15,8 @@ test('question can have poll expiration date', function (): void {
         'poll_expires_at' => $expirationDate,
     ]);
 
-    expect($question->poll_expires_at)->toBeInstanceOf(Carbon\CarbonInterface::class);
-    expect($question->poll_expires_at->format('Y-m-d H:i:s'))->toBe($expirationDate->format('Y-m-d H:i:s'));
+    expect($question->poll_expires_at)->toBeInstanceOf(Carbon\CarbonInterface::class)
+        ->and($question->poll_expires_at->format('Y-m-d H:i:s'))->toBe($expirationDate->format('Y-m-d H:i:s'));
 });
 
 test('isPoll returns true when poll_expires_at is set', function (): void {
@@ -79,9 +79,9 @@ test('question can determine if poll is expired', function (): void {
         'poll_expires_at' => null,
     ]);
 
-    expect($expiredQuestion->poll_expires_at->isPast())->toBeTrue();
-    expect($activeQuestion->poll_expires_at->isFuture())->toBeTrue();
-    expect($nonPollQuestion->poll_expires_at)->toBeNull();
+    expect($expiredQuestion->poll_expires_at->isPast())->toBeTrue()
+        ->and($activeQuestion->poll_expires_at->isFuture())->toBeTrue()
+        ->and($nonPollQuestion->poll_expires_at)->toBeNull();
 });
 
 test('question poll expiration date is cast to datetime', function (): void {
@@ -93,8 +93,8 @@ test('question poll expiration date is cast to datetime', function (): void {
         'poll_expires_at' => '2025-07-25 12:00:00',
     ]);
 
-    expect($question->poll_expires_at)->toBeInstanceOf(Carbon\CarbonInterface::class);
-    expect($question->poll_expires_at->format('Y-m-d H:i:s'))->toBe('2025-07-25 12:00:00');
+    expect($question->poll_expires_at)->toBeInstanceOf(Carbon\CarbonInterface::class)
+        ->and($question->poll_expires_at->format('Y-m-d H:i:s'))->toBe('2025-07-25 12:00:00');
 });
 
 test('isPollExpired returns true for expired polls', function (): void {
@@ -192,7 +192,7 @@ test('getPollTimeRemaining returns time remaining for active polls', function ()
 
     $timeRemaining = $activeQuestion->getPollTimeRemaining();
 
-    expect($timeRemaining)->toBeString();
-    expect($timeRemaining)->toContain('day');
-    expect($timeRemaining)->toMatch('/\d+\s+day/');
+    expect($timeRemaining)->toBeString()
+        ->toContain('day')
+        ->toMatch('/\d+\s+day/');
 });

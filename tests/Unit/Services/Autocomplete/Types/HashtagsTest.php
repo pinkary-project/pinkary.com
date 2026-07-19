@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 use App\Services\Autocomplete\Types\Hashtags;
 
-it('has the correct delimiter', function () {
-    expect((new Hashtags())->delimiter())->toBe('#');
+it('has the correct delimiter', function (): void {
+    expect(new Hashtags()->delimiter())->toBe('#');
 });
 
-it('has the correct match expression', function () {
-    expect((new Hashtags())->matchExpression())->toBe('[a-zA-Z0-9]+');
+it('has the correct match expression', function (): void {
+    expect(new Hashtags()->matchExpression())->toBe('[a-zA-Z0-9]+');
 });
 
-it('returns the correct search results', function () {
+it('returns the correct search results', function (): void {
     App\Models\Question::factory()
         ->sharedUpdate()
         ->count(7)
@@ -27,13 +27,12 @@ it('returns the correct search results', function () {
         )
         ->create();
 
-    $results = (new Hashtags())->search('f');
+    $results = new Hashtags()->search('f');
 
     expect($results->pluck('replacement')->all())
         ->toBe([
             '#fooz',
             '#Foo',
-        ]);
-
-    expect((new Hashtags())->search('doesnt_exist'))->toHaveCount(0);
+        ])
+        ->and(new Hashtags()->search('doesnt_exist'))->toBeEmpty();
 });

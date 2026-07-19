@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aaf06ad3d3f544b5ac8352e701ec58d4",
+    "content-hash": "2e3d9e530467c89a77dec152e62cc2d5",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -12515,12 +12515,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "f8c4c061f84b06b7f544f2fdc24bcf6c5c3605bd"
+                "reference": "fa91fcf74478d56fb2ac03e62aa8861357129485"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/f8c4c061f84b06b7f544f2fdc24bcf6c5c3605bd",
-                "reference": "f8c4c061f84b06b7f544f2fdc24bcf6c5c3605bd",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/fa91fcf74478d56fb2ac03e62aa8861357129485",
+                "reference": "fa91fcf74478d56fb2ac03e62aa8861357129485",
                 "shasum": ""
             },
             "require": {
@@ -12628,7 +12628,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-18T02:12:47+00:00"
+            "time": "2026-07-19T15:45:06+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -12980,6 +12980,88 @@
                 "source": "https://github.com/pestphp/pest-plugin-profanity/tree/5.x"
             },
             "time": "2026-07-18T16:32:09+00:00"
+        },
+        {
+            "name": "pestphp/pest-plugin-rector",
+            "version": "5.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pestphp/pest-plugin-rector.git",
+                "reference": "a7d890c2d2e8664e89f8f2451b989c78f7e5e640"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pestphp/pest-plugin-rector/zipball/a7d890c2d2e8664e89f8f2451b989c78f7e5e640",
+                "reference": "a7d890c2d2e8664e89f8f2451b989c78f7e5e640",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.4",
+                "rector/rector": "^2.5.7",
+                "symplify/rule-doc-generator-contracts": "^11.2"
+            },
+            "require-dev": {
+                "laravel/pao": "^1.1.2",
+                "laravel/pint": "^1.29.3",
+                "pestphp/pest": "^5.0.0",
+                "pestphp/pest-plugin-phpstan": "^5.0",
+                "phpstan/phpstan": "^2.2.5",
+                "symplify/rule-doc-generator": "^12.2.5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Pest\\Rector\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Punyapal Shah",
+                    "email": "mrpunyapal@gmail.com"
+                },
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "Rector plugin for Pest",
+            "keywords": [
+                "framework",
+                "pest",
+                "php",
+                "plugin",
+                "rector",
+                "test",
+                "testing",
+                "unit"
+            ],
+            "support": {
+                "source": "https://github.com/pestphp/pest-plugin-rector/tree/5.x"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/mrpunyapal",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/nunomaduro",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2026-07-19T18:26:27+00:00"
         },
         {
             "name": "pestphp/pest-plugin-type-coverage",
@@ -15172,6 +15254,65 @@
             "time": "2026-06-09T11:06:24+00:00"
         },
         {
+            "name": "symplify/rule-doc-generator-contracts",
+            "version": "11.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symplify/rule-doc-generator-contracts.git",
+                "reference": "479cfcfd46047f80624aba931d9789e50475b5c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symplify/rule-doc-generator-contracts/zipball/479cfcfd46047f80624aba931d9789e50475b5c6",
+                "reference": "479cfcfd46047f80624aba931d9789e50475b5c6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "^1.3",
+                "phpstan/extension-installer": "^1.2",
+                "rector/rector": "^0.15.10",
+                "symplify/easy-ci": "^11.1",
+                "symplify/easy-coding-standard": "^11.1",
+                "symplify/easy-testing": "^11.1",
+                "symplify/phpstan-extensions": "^11.1",
+                "symplify/phpstan-rules": "11.2.3.72",
+                "tomasvotruba/unused-public": "^0.0.34"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "11.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symplify\\RuleDocGenerator\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Contracts for production code of RuleDocGenerator",
+            "support": {
+                "source": "https://github.com/symplify/rule-doc-generator-contracts/tree/11.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.me/rectorphp",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/tomasvotruba",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-18T22:02:54+00:00"
+        },
+        {
             "name": "ta-tikoma/phpunit-architecture-test",
             "version": "0.8.7",
             "source": {
@@ -15350,7 +15491,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "laravel/pint": 20
+        "laravel/pint": 20,
+        "pestphp/pest-plugin-rector": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

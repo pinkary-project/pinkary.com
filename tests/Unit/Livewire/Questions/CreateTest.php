@@ -11,11 +11,11 @@ use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Storage::fake();
 });
 
-test('render', function () {
+test('render', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -26,7 +26,7 @@ test('render', function () {
     $component->assertOk()->assertSee('Ask a question...');
 });
 
-test('refreshes when link settings changes', function () {
+test('refreshes when link settings changes', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -47,7 +47,7 @@ test('refreshes when link settings changes', function () {
     $component->assertSeeHtml('text-red-500');
 });
 
-test('store', function () {
+test('store', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -77,7 +77,7 @@ test('store', function () {
         ->and($question->root_id)->toBeNull();
 });
 
-test('store auth', function () {
+test('store auth', function (): void {
     $user = User::factory()->create();
 
     expect(Question::count())->toBe(0);
@@ -95,7 +95,7 @@ test('store auth', function () {
     expect(Question::count())->toBe(0);
 });
 
-test('store rate limit', function () {
+test('store rate limit', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -136,7 +136,7 @@ test('store rate limit', function () {
     ]);
 });
 
-test('store comment', function () {
+test('store comment', function (): void {
     $userA = User::factory()->create();
 
     $question = Question::factory()->create();
@@ -165,7 +165,7 @@ test('store comment', function () {
         ->and($comment->root_id)->toBe($question->id);
 });
 
-test('store comment on a comment', function () {
+test('store comment on a comment', function (): void {
     $userA = User::factory()->create();
 
     $question = Question::factory()->create();
@@ -202,7 +202,7 @@ test('store comment on a comment', function () {
         ->and($comment->root_id)->toBe($question->id);
 });
 
-test('max 30 questions per day', function () {
+test('max 30 questions per day', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -225,7 +225,7 @@ test('max 30 questions per day', function () {
     ]);
 });
 
-test('cannot store with blank characters', function () {
+test('cannot store with blank characters', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -244,7 +244,7 @@ test('cannot store with blank characters', function () {
     ]);
 });
 
-test('poll should have at least 2 options', function () {
+test('poll should have at least 2 options', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -264,7 +264,7 @@ test('poll should have at least 2 options', function () {
     ]);
 });
 
-test('poll should have at most 4 options', function () {
+test('poll should have at most 4 options', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -324,11 +324,11 @@ test('can create a poll with valid options', function (): void {
         ->whereNotNull('poll_expires_at')
         ->first();
 
-    expect($question)->not->toBeNull();
-    expect($question->pollOptions)->toHaveCount(3);
-    expect($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue', 'Green']);
-    expect($question->poll_expires_at)->not->toBeNull();
-    expect((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(3);
+    expect($question)->not->toBeNull()
+        ->and($question->pollOptions)->toHaveCount(3)
+        ->and($question->pollOptions->pluck('text')->toArray())->toBe(['Red', 'Blue', 'Green'])
+        ->and($question->poll_expires_at)->not->toBeNull()
+        ->and((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(3);
 });
 
 test('validates poll requires at least 2 options', function (): void {
@@ -394,8 +394,8 @@ test('creates regular question when poll is disabled', function (): void {
         ->whereNull('poll_expires_at')
         ->first();
 
-    expect($question)->not->toBeNull();
-    expect($question->pollOptions)->toHaveCount(0);
+    expect($question)->not->toBeNull()
+        ->and($question->pollOptions)->toBeEmpty();
 });
 
 test('resets poll state after successful submission', function (): void {
@@ -470,8 +470,8 @@ test('stores poll expiration date correctly', function (): void {
         ->whereNotNull('poll_expires_at')
         ->first();
 
-    expect($question->poll_expires_at)->not->toBeNull();
-    expect((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(5);
+    expect($question->poll_expires_at)->not->toBeNull()
+        ->and((int) $question->created_at->diffInDays($question->poll_expires_at, false))->toBe(5);
 });
 
 test('does not set poll expiration for non-poll questions', function (): void {
@@ -490,7 +490,7 @@ test('does not set poll expiration for non-poll questions', function (): void {
     expect($question->poll_expires_at)->toBeNull();
 });
 
-test('store with user questions_preference set to public', function () {
+test('store with user questions_preference set to public', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -520,7 +520,7 @@ test('store with user questions_preference set to public', function () {
         ->and($question->anonymously)->toBeFalse();
 });
 
-test('store with user questions_preference set to anonymously', function () {
+test('store with user questions_preference set to anonymously', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -550,7 +550,7 @@ test('store with user questions_preference set to anonymously', function () {
         ->and($question->anonymously)->toBeTrue();
 });
 
-test('anonymous set back to user\'s preference after sending a question', function () {
+test('anonymous set back to user\'s preference after sending a question', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -581,7 +581,7 @@ test('anonymous set back to user\'s preference after sending a question', functi
         ->and($question->anonymously)->toBeTrue();
 });
 
-test('show "Share an update..." if user is viewing his own profile', function () {
+test('show "Share an update..." if user is viewing his own profile', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -599,7 +599,7 @@ test('show "Share an update..." if user is viewing his own profile', function ()
     $component->assertSee('Ask a question...');
 });
 
-test('user don\'t see the anonymous checkbox if the user is viewing his own profile', function () {
+test('user don\'t see the anonymous checkbox if the user is viewing his own profile', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -609,7 +609,7 @@ test('user don\'t see the anonymous checkbox if the user is viewing his own prof
     $component->assertDontSeeHtml('for="anonymously"');
 });
 
-test('user cannot share update anonymously', function () {
+test('user cannot share update anonymously', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -630,7 +630,7 @@ test('user cannot share update anonymously', function () {
     ]);
 });
 
-it('has a property for storing the images', function () {
+it('has a property for storing the images', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)
@@ -641,7 +641,7 @@ it('has a property for storing the images', function () {
     expect($component->images)->toBeArray();
 });
 
-test('updated lifecycle method', function () {
+test('updated lifecycle method', function (): void {
     $user = User::factory()->create(['is_verified' => true]);
 
     $component = Livewire::actingAs($user)
@@ -651,7 +651,7 @@ test('updated lifecycle method', function () {
     expect($component->invade()->updated('images'))->toBeNull();
 });
 
-test('updated method invokes handleUploads', function () {
+test('updated method invokes handleUploads', function (): void {
     $user = User::factory()->create(['is_verified' => true]);
     $file = UploadedFile::fake()->image('photo1.jpg');
     $date = now()->format('Y-m-d');
@@ -662,7 +662,6 @@ test('updated method invokes handleUploads', function () {
     $component->set('images', [$file]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->setAccessible(true);
     $method->invoke($component->instance());
 
     expect(session('images'))->toBeArray()
@@ -673,7 +672,7 @@ test('updated method invokes handleUploads', function () {
     $component->assertSet('images', []);
 });
 
-test('unused image cleanup when store is called', function () {
+test('unused image cleanup when store is called', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $date = now()->format('Y-m-d');
@@ -685,7 +684,6 @@ test('unused image cleanup when store is called', function () {
     $component->set('images', [$file]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->setAccessible(true);
     $method->invoke($component->instance());
 
     Storage::disk()->assertExists($path);
@@ -700,7 +698,7 @@ test('unused image cleanup when store is called', function () {
     expect(session('images'))->toBeNull();
 });
 
-test('used images are NOT cleanup when store is called', function () {
+test('used images are NOT cleanup when store is called', function (): void {
     $user = User::factory()->create(['is_verified' => true]);
     $file = UploadedFile::fake()->image('photo1.jpg');
     $name = $file->hashName();
@@ -726,7 +724,7 @@ test('used images are NOT cleanup when store is called', function () {
     expect(session('images'))->toBeNull();
 });
 
-test('delete image', function () {
+test('delete image', function (): void {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('photo1.jpg');
     $path = $file->store('images', ['disk' => Create::IMAGE_DISK]);
@@ -738,7 +736,6 @@ test('delete image', function () {
     Storage::disk()->assertExists($path);
 
     $method = new ReflectionMethod(Create::class, 'deleteImage');
-    $method->setAccessible(true);
     $method->invoke($component->instance(), $path);
 
     $pathAgain = $file->store('images', ['disk' => Create::IMAGE_DISK]);
@@ -749,7 +746,7 @@ test('delete image', function () {
     Storage::disk()->assertMissing($pathAgain);
 });
 
-test('optimizeImage method resizes and saves the image', function () {
+test('optimizeImage method resizes and saves the image', function (): void {
 
     $user = User::factory()->create();
     $testImage = UploadedFile::fake()->image('test.jpg', 1200, 1200); // Larger than 1000x1000
@@ -759,7 +756,6 @@ test('optimizeImage method resizes and saves the image', function () {
     ]);
 
     $method = new ReflectionMethod(Create::class, 'optimizeImage');
-    $method->setAccessible(true);
     $path = $method->invoke($component->instance(), $testImage);
 
     Storage::disk()->assertExists($path);
@@ -778,7 +774,7 @@ test('optimizeImage method resizes and saves the image', function () {
         ->and($image->height())->toBeLessThanOrEqual(1000);
 });
 
-test('it skips the optimization for gif', function () {
+test('it skips the optimization for gif', function (): void {
 
     $user = User::factory()->create();
 
@@ -789,7 +785,6 @@ test('it skips the optimization for gif', function () {
     ]);
 
     $method = new ReflectionMethod(Create::class, 'optimizeImage');
-    $method->setAccessible(true);
     $path = $method->invoke($component->instance(), $testImage);
 
     Storage::disk()->assertExists($path);
@@ -806,7 +801,7 @@ test('it skips the optimization for gif', function () {
         ->and($image->height())->toBe(1200);
 });
 
-test('maxFileSize and maxImages', function () {
+test('maxFileSize and maxImages', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -817,7 +812,7 @@ test('maxFileSize and maxImages', function () {
         ->and($component->uploadLimit)->toBe(3);
 });
 
-test('non verified users can upload images', function () {
+test('non verified users can upload images', function (): void {
     $user = User::factory()->unverified()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -827,13 +822,12 @@ test('non verified users can upload images', function () {
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->setAccessible(true);
     $method->invoke($component->instance());
 
     $component->assertHasNoErrors();
 });
 
-test('company verified users can upload images', function () {
+test('company verified users can upload images', function (): void {
     $user = User::factory()->create([
         'is_company_verified' => true,
     ]);
@@ -845,13 +839,12 @@ test('company verified users can upload images', function () {
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->setAccessible(true);
     $method->invoke($component->instance());
 
     $component->assertHasNoErrors();
 });
 
-test('upload must be an image', function () {
+test('upload must be an image', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
     ]);
@@ -868,7 +861,7 @@ test('upload must be an image', function () {
     ]);
 });
 
-test('upload must be correct type of image', function () {
+test('upload must be correct type of image', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
     ]);
@@ -904,7 +897,7 @@ test('upload must be correct type of image', function () {
         ->and($component->errors()->get('images.0'))->toContain('The image must be a file of type: jpeg, png, gif, webp, jpg.');
 });
 
-test('max file size error', function () {
+test('max file size error', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
     ]);
@@ -930,7 +923,7 @@ test('max file size error', function () {
     ]);
 });
 
-test('max size & ratio validation', function () {
+test('max size & ratio validation', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
     ]);
@@ -963,7 +956,7 @@ test('max size & ratio validation', function () {
     ]);
 });
 
-test('only verified users can upload images', function () {
+test('only verified users can upload images', function (): void {
     $user = User::factory()->unverified()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -976,7 +969,7 @@ test('only verified users can upload images', function () {
     $component->assertRedirect(route('verification.notice'));
 });
 
-test('only verified users can create questions', function () {
+test('only verified users can create questions', function (): void {
     $user = User::factory()->unverified()->create();
 
     $component = Livewire::actingAs($user)->test(Create::class, [

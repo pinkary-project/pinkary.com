@@ -12,6 +12,6 @@ arch('http helpers')
         'App\Http',
         'App\Rules',
         'App\Livewire',
-        'App\Jobs\IncrementViews',
+        App\Jobs\IncrementViews::class,
         'App\Services\Autocomplete\Types',
     ]);

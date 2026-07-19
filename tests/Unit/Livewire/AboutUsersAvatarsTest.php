@@ -6,7 +6,7 @@ use App\Livewire\AboutUsersAvatars;
 use App\Models\User;
 use Livewire\Livewire;
 
-it('renders', function () {
+it('renders', function (): void {
     $users = User::factory(15)->create();
 
     $component = Livewire::test(AboutUsersAvatars::class);

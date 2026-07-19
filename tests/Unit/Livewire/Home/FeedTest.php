@@ -7,7 +7,7 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('renders questions with answers', function () {
+test('renders questions with answers', function (): void {
     Question::factory()->create([
         'answer' => 'This is the answer',
     ]);
@@ -18,7 +18,7 @@ test('renders questions with answers', function () {
         ->assertDontSee('There are no questions to show.');
 });
 
-test('do not renders questions without answers', function () {
+test('do not renders questions without answers', function (): void {
     $user = User::factory()->create();
 
     Question::factory()->create([
@@ -30,7 +30,7 @@ test('do not renders questions without answers', function () {
     $component->assertSee('There are no questions to show.');
 });
 
-test('do not renders ignored questions', function () {
+test('do not renders ignored questions', function (): void {
     Question::factory()->create([
         'answer' => 'This is the answer',
         'is_ignored' => true,
@@ -41,7 +41,7 @@ test('do not renders ignored questions', function () {
     $component->assertSee('There are no questions to show.');
 });
 
-test('ignore', function () {
+test('ignore', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -59,7 +59,7 @@ test('ignore', function () {
     expect($question->fresh()->is_ignored)->toBeTrue();
 });
 
-test('ignore auth', function () {
+test('ignore auth', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -74,10 +74,10 @@ test('ignore auth', function () {
 
     $component->assertStatus(403);
 
-    expect($question->fresh()->is_ignored)->not->toBeTrue();
+    expect($question->fresh()->is_ignored)->toBeFalse();
 });
 
-test('load more', function () {
+test('load more', function (): void {
     $user = User::factory()->create();
 
     $questions = Question::factory(120)->create();
@@ -97,7 +97,7 @@ test('load more', function () {
     $component->assertSet('perPage', 100);
 });
 
-it('displays questions from users I am following', function () {
+it('displays questions from users I am following', function (): void {
     $user = User::factory()->create();
     $notFollowing = User::factory()->create();
     $following = User::factory()->create();
@@ -115,7 +115,7 @@ it('displays questions from users I am following', function () {
     $component->assertSee('Do you like star wars?');
 });
 
-test('refresh', function () {
+test('refresh', function (): void {
     $component = Livewire::test(Feed::class);
 
     Question::factory()->create([
@@ -131,7 +131,7 @@ test('refresh', function () {
         ->assertDontSee('There are no questions to show.');
 });
 
-it('renders the threads in the right order', function () {
+it('renders the threads in the right order', function (): void {
 
     // create 4 roots
     $roots = Question::factory()
@@ -143,7 +143,7 @@ it('renders the threads in the right order', function () {
         )->create();
 
     // create a child for each root
-    $roots->each(function (Question $root) {
+    $roots->each(function (Question $root): void {
 
         $this->travel(1)->seconds();
 
@@ -161,8 +161,8 @@ it('renders the threads in the right order', function () {
     Question::factory()->create(['answer' => 'root without descendants']);
 
     // create a child for each child of even roots
-    $roots->filter(fn (Question $root, int $key) => ($key + 1) % 2 === 0) // evens
-        ->each(function (Question $root) {
+    $roots->filter(fn (Question $root, int $key): bool => ($key + 1) % 2 === 0) // evens
+        ->each(function (Question $root): void {
             $this->travel(1)->seconds();
 
             Question::factory()->create([

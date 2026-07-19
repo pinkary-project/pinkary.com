@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Hashtag;
 use App\Models\Question;
 
-test('to array', function () {
+test('to array', function (): void {
     $question = Hashtag::factory()->create();
 
     expect(array_keys($question->toArray()))->toContain(
@@ -16,10 +16,10 @@ test('to array', function () {
     )->toHaveCount(4);
 });
 
-test('relations', function () {
+test('relations', function (): void {
     $hashtag = Hashtag::factory()
         ->hasQuestions(1)
         ->create();
 
-    expect($hashtag->questions)->each->toBeInstanceOf(Question::class);
+    expect($hashtag->questions)->toContainOnlyInstancesOf(Question::class);
 });

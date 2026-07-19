@@ -7,7 +7,7 @@ use App\Models\User;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-test('allows to create link', function () {
+test('allows to create link', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -31,7 +31,7 @@ test('allows to create link', function () {
         ->and($link->description)->toBe('Example');
 });
 
-test('https is added to the URL', function () {
+test('https is added to the URL', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -52,7 +52,7 @@ test('https is added to the URL', function () {
     expect($link->url)->toBe('https://example.com');
 });
 
-test('only 10 links are allowed', function () {
+test('only 10 links are allowed', function (): void {
     $user = User::factory()->create();
 
     $links = $user->links()->createMany(
@@ -81,7 +81,7 @@ test('only 10 links are allowed', function () {
     expect($user->links->count())->toBe(10);
 });
 
-test('only 20 links are allowed for "is_verified" users', function () {
+test('only 20 links are allowed for "is_verified" users', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => now(),
         'is_verified' => true,

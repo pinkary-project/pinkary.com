@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\Database\Eloquent\Builder;
 
-it('render questions with right conditions', function () {
+it('render questions with right conditions', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -23,12 +23,12 @@ it('render questions with right conditions', function () {
         'question_id' => $question->id,
     ]);
 
-    $builder = (new RecentQuestionsFeed())->builder();
+    $builder = new RecentQuestionsFeed()->builder();
 
     expect($builder->count())->toBe(1);
 });
 
-it('do not render ignored questions', function () {
+it('do not render ignored questions', function (): void {
     $user = User::factory()->create();
 
     Question::factory()->create([
@@ -38,12 +38,12 @@ it('do not render ignored questions', function () {
         'is_reported' => false,
     ]);
 
-    $builder = (new RecentQuestionsFeed())->builder();
+    $builder = new RecentQuestionsFeed()->builder();
 
     expect($builder->count())->toBe(0);
 });
 
-it('do not render reported questions', function () {
+it('do not render reported questions', function (): void {
     $user = User::factory()->create();
 
     Question::factory()->create([
@@ -53,29 +53,29 @@ it('do not render reported questions', function () {
         'is_reported' => true,
     ]);
 
-    $builder = (new RecentQuestionsFeed())->builder();
+    $builder = new RecentQuestionsFeed()->builder();
 
     expect($builder->count())->toBe(0);
 });
 
-it('builder returns Eloquent\Builder instance', function () {
-    $builder = (new RecentQuestionsFeed())->builder();
+it('builder returns Eloquent\Builder instance', function (): void {
+    $builder = new RecentQuestionsFeed()->builder();
 
     expect($builder)->toBeInstanceOf(Builder::class);
 });
 
-it('can filter questions to those related to a hashtag name', function () {
+it('can filter questions to those related to a hashtag name', function (): void {
     $questionWithHashtag = Question::factory()->create(['answer' => 'question 1 with a #hashtag']);
 
     Question::factory()->create(['answer' => 'question 2 without hashtags']);
 
-    $builder = (new RecentQuestionsFeed('hashtag'))->builder();
+    $builder = new RecentQuestionsFeed('hashtag')->builder();
 
     expect($builder->get()->pluck('id')->all())
         ->toBe([$questionWithHashtag->id]);
 });
 
-it('render roots of latest comments or roots without comments', function () {
+it('render roots of latest comments or roots without comments', function (): void {
     $root = Question::factory()->create(['answer' => 'root question']);
     $rootWithoutComments = Question::factory()->create(['answer' => 'root question without comments']);
 
@@ -86,13 +86,13 @@ it('render roots of latest comments or roots without comments', function () {
         'root_id' => $root->id,
     ]);
 
-    $builder = (new RecentQuestionsFeed())->builder();
+    $builder = new RecentQuestionsFeed()->builder();
 
     expect($builder->get()->map(fn ($root) => $root->root_id ?: $root->id)->all())
         ->toBe([$root->id, $rootWithoutComments->id]);
 });
 
-it('returns one row per thread when updates have identical timestamps', function () {
+it('returns one row per thread when updates have identical timestamps', function (): void {
     $updatedAt = now();
     $root = Question::factory()->create(['updated_at' => $updatedAt]);
 
@@ -102,13 +102,13 @@ it('returns one row per thread when updates have identical timestamps', function
         'updated_at' => $updatedAt,
     ]);
 
-    $questions = (new RecentQuestionsFeed())->builder()->get();
+    $questions = new RecentQuestionsFeed()->builder()->get();
 
     expect($questions)->toHaveCount(1)
         ->and($questions->first()->root_id ?? $questions->first()->id)->toBe($root->id);
 });
 
-it('render roots in correct order', function () {
+it('render roots in correct order', function (): void {
 
     // create 5 roots
     $roots = Question::factory(5)
@@ -121,7 +121,7 @@ it('render roots in correct order', function () {
         )->create();
 
     // create a child for each root
-    $roots->each(function ($root) {
+    $roots->each(function ($root): void {
 
         $this->travel(1)->seconds();
 
@@ -139,8 +139,8 @@ it('render roots in correct order', function () {
     $rootWithoutDescendants = Question::factory()->create(['answer' => 'root without descendants']);
 
     // create a child for each child of even roots
-    $roots->filter(fn ($root, $key) => ($key + 1) % 2 === 0) // even
-        ->each(function ($root) {
+    $roots->filter(fn ($root, $key): bool => ($key + 1) % 2 === 0) // even
+        ->each(function ($root): void {
             $this->travel(1)->seconds();
 
             Question::factory()->create([
@@ -150,7 +150,7 @@ it('render roots in correct order', function () {
             ]);
         });
 
-    $builder = (new RecentQuestionsFeed())->builder();
+    $builder = new RecentQuestionsFeed()->builder();
 
     // final output needs to be root without descendants divided odds and evens in descending order
     expect($builder->get()->map(fn ($root) => $root->root_id ?: $root->id)->all())

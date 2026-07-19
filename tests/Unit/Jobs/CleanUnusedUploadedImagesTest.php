@@ -9,13 +9,13 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
-it('caches the last run time', function () {
+it('caches the last run time', function (): void {
     CleanUnusedUploadedImages::dispatchSync();
     expect(Cache::get('clean_unused_uploaded_images_last_run'))
         ->toBeInstanceOf(CarbonImmutable::class);
 });
 
-it('cleans up unused images', function () {
+it('cleans up unused images', function (): void {
     Storage::fake();
     $day = now()->format('Y-m-d');
 

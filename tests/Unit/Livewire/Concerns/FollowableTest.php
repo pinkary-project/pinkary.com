@@ -8,7 +8,7 @@ use Livewire\Component;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-it('follows the given user', function () {
+it('follows the given user', function (): void {
     $user = User::factory()->create();
     $anotherUser = User::factory()->create();
 
@@ -26,7 +26,7 @@ it('follows the given user', function () {
     );
 });
 
-it('unfollows the given user', function () {
+it('unfollows the given user', function (): void {
     $user = User::factory()->create();
     $anotherUser = User::factory()->create();
 
@@ -46,7 +46,7 @@ it('unfollows the given user', function () {
     );
 });
 
-it('redirects to the login page when the user is not authenticated', function () {
+it('redirects to the login page when the user is not authenticated', function (): void {
     $component = Livewire::test(supportsFollow()::class);
 
     $component->call('follow', 1);
@@ -58,7 +58,7 @@ it('redirects to the login page when the user is not authenticated', function ()
     $component->assertRedirect('login');
 });
 
-it('does not handle following count when the method is not implemented', function () {
+it('does not handle following count when the method is not implemented', function (): void {
     $user = User::factory()->create();
     $anotherUser = User::factory()->create();
 
@@ -78,7 +78,7 @@ function supportsFollow(): Component
     {
         use Followable;
 
-        public function render()
+        public function render(): string
         {
             return <<<'HTML'
                 <div>
@@ -100,7 +100,7 @@ function withoutFollowingHandle(): Component
     {
         use Followable;
 
-        public function render()
+        public function render(): string
         {
             return <<<'HTML'
                 <div>

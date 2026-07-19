@@ -41,9 +41,8 @@ test('user can vote on poll option', function (): void {
 
     expect(PollVote::where('user_id', $user->id)
         ->where('poll_option_id', $pollOption->id)
-        ->exists())->toBeTrue();
-
-    expect($pollOption->fresh()->votes_count)->toBe(1);
+        ->exists())->toBeTrue()
+        ->and($pollOption->fresh()->votes_count)->toBe(1);
 });
 
 test('user can change their vote', function (): void {
@@ -64,14 +63,11 @@ test('user can change their vote', function (): void {
 
     expect(PollVote::where('user_id', $user->id)
         ->where('poll_option_id', $option1->id)
-        ->exists())->toBeFalse();
-
-    expect(PollVote::where('user_id', $user->id)
-        ->where('poll_option_id', $option2->id)
-        ->exists())->toBeTrue();
-
-    expect($option1->fresh()->votes_count)->toBe(0);
-    expect($option2->fresh()->votes_count)->toBe(1);
+        ->exists())->toBeFalse()
+        ->and(PollVote::where('user_id', $user->id)
+            ->where('poll_option_id', $option2->id)->exists())->toBeTrue()
+        ->and($option1->fresh()->votes_count)->toBe(0)
+        ->and($option2->fresh()->votes_count)->toBe(1);
 });
 
 test('user can remove their vote by voting for same option', function (): void {
@@ -90,9 +86,8 @@ test('user can remove their vote by voting for same option', function (): void {
 
     expect(PollVote::where('user_id', $user->id)
         ->where('poll_option_id', $pollOption->id)
-        ->exists())->toBeFalse();
-
-    expect($pollOption->fresh()->votes_count)->toBe(0);
+        ->exists())->toBeFalse()
+        ->and($pollOption->fresh()->votes_count)->toBe(0);
 });
 
 test('guest user cannot vote', function (): void {
@@ -245,8 +240,8 @@ test('displays time remaining for active polls', function (): void {
     $component->assertSee('Ends ');
     $component->assertViewHas('timeRemaining');
     $timeRemaining = $component->viewData('timeRemaining');
-    expect($timeRemaining)->toBeString();
-    expect($timeRemaining)->toContain('day');
+    expect($timeRemaining)->toBeString()
+        ->toContain('day');
 });
 
 test('does not display time remaining for expired polls', function (): void {
@@ -261,5 +256,5 @@ test('does not display time remaining for expired polls', function (): void {
 
     $component->assertSee('Poll expired');
     $component->assertDontSee('Ends in');
-    $component->assertViewHas('timeRemaining', null);
+    $component->assertViewHas('timeRemaining');
 });

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('users can logout', function () {
+test('users can logout', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post('/logout');
@@ -14,7 +14,7 @@ test('users can logout', function () {
     $response->assertRedirect('/');
 });
 
-test('users can only logout when authenticated', function () {
+test('users can only logout when authenticated', function (): void {
     $this->assertGuest();
 
     $response = $this->post('/logout');

@@ -7,11 +7,9 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-it('renders the people to follow widget', function () {
+it('renders the people to follow widget', function (): void {
     User::factory(5)
-        ->hasLinks(1, function (array $attributes, User $user): array {
-            return ['url' => "https://twitter.com/{$user->username}"];
-        })
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
         ->hasQuestionsReceived(2, ['answer' => 'answer'])
         ->create();
 
@@ -21,7 +19,7 @@ it('renders the people to follow widget', function () {
         ->assertSee('View all');
 });
 
-it('uses the current context and authenticated user when rendering recommendations', function () {
+it('uses the current context and authenticated user when rendering recommendations', function (): void {
     $viewer = User::factory()->create();
     $profileUser = User::factory()->create();
     $followedInteractedUser = User::factory()->create();
@@ -52,7 +50,7 @@ it('uses the current context and authenticated user when rendering recommendatio
         ->assertDontSee($followedInteractedUser->name);
 });
 
-it('allows following a user', function () {
+it('allows following a user', function (): void {
     $viewer = User::factory()->create();
     $target = User::factory()->create();
 
@@ -62,7 +60,7 @@ it('allows following a user', function () {
     expect($viewer->following()->where('user_id', $target->id)->exists())->toBeTrue();
 });
 
-it('allows unfollowing a user', function () {
+it('allows unfollowing a user', function (): void {
     $viewer = User::factory()->create();
     $target = User::factory()->create();
 

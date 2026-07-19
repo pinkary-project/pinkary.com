@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
-test('guest', function () {
+test('guest', function (): void {
     Route::get('/test', fn (): Response => response(status: 200))
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
 
@@ -16,7 +16,7 @@ test('guest', function () {
     $response->assertOk();
 });
 
-test('auth with verified email', function () {
+test('auth with verified email', function (): void {
     Route::get('/test', fn (): Response => response(status: 200))
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
 
@@ -29,7 +29,7 @@ test('auth with verified email', function () {
     $response->assertOk();
 });
 
-test('auth without verified email', function () {
+test('auth without verified email', function (): void {
     Route::get('/test', fn (): Response => response(status: 200))
         ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
 

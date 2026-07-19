@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Queries\Feeds\TrendingQuestionsFeed;
 use Illuminate\Database\Eloquent\Builder;
 
-it('render questions with right conditions', function () {
+it('render questions with right conditions', function (): void {
     $user = User::factory()->create();
 
     Question::factory()
@@ -21,12 +21,12 @@ it('render questions with right conditions', function () {
             'answer_created_at' => now()->subDays(7)->addMinute(),
         ]);
 
-    $builder = (new TrendingQuestionsFeed())->builder();
+    $builder = new TrendingQuestionsFeed()->builder();
 
     expect($builder->get()->count())->toBe(1);
 });
 
-it('will render questions without likes or comments posted now', function () {
+it('will render questions without likes or comments posted now', function (): void {
     $user = User::factory()->create();
 
     Question::factory()->create([
@@ -35,12 +35,12 @@ it('will render questions without likes or comments posted now', function () {
         'answer_created_at' => now(),
     ]);
 
-    $builder = (new TrendingQuestionsFeed())->builder();
+    $builder = new TrendingQuestionsFeed()->builder();
 
     expect($builder->get()->count())->toBe(1);
 });
 
-it('do not render questions older than 7 days', function () {
+it('do not render questions older than 7 days', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -54,13 +54,13 @@ it('do not render questions older than 7 days', function () {
         'question_id' => $question->id,
     ]);
 
-    $builder = (new TrendingQuestionsFeed())->builder();
+    $builder = new TrendingQuestionsFeed()->builder();
 
     expect($builder->get()->count())->toBe(0);
 });
 
-it('builder returns Eloquent\Builder instance', function () {
-    $builder = (new TrendingQuestionsFeed())->builder();
+it('builder returns Eloquent\Builder instance', function (): void {
+    $builder = new TrendingQuestionsFeed()->builder();
 
     expect($builder)->toBeInstanceOf(Builder::class);
 });

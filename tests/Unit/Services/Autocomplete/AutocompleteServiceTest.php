@@ -7,7 +7,7 @@ use App\Services\Autocomplete\Types\Hashtags;
 use App\Services\Autocomplete\Types\Mentions;
 use Tests\Fixtures\TestType;
 
-test('types method returns registered autocomplete types', function () {
+test('types method returns registered autocomplete types', function (): void {
     $types = Autocomplete::types();
 
     expect($types)->toBe([
@@ -16,18 +16,18 @@ test('types method returns registered autocomplete types', function () {
     ]);
 });
 
-test('typeClassFor method returns the correct class for a given type', function () {
+test('typeClassFor method returns the correct class for a given type', function (): void {
     $class = Autocomplete::typeClassFor('mentions');
 
     expect($class)->toBe(Mentions::class);
 });
 
 // @phpstan-ignore-next-line
-test('typeClassFor method throws an exception for an invalid type', function () {
+test('typeClassFor method throws an exception for an invalid type', function (): void {
     Autocomplete::typeClassFor('invalid_type');
 })->throws(ErrorException::class);
 
-test('search method works when given a Type instance', function () {
+test('search method works when given a Type instance', function (): void {
     addTestTypeToService();
 
     $autocomplete = new Autocomplete();
@@ -39,7 +39,7 @@ test('search method works when given a Type instance', function () {
     resetService();
 });
 
-test('search method works when given a string type', function () {
+test('search method works when given a string type', function (): void {
     addTestTypeToService();
 
     $autocomplete = new Autocomplete();

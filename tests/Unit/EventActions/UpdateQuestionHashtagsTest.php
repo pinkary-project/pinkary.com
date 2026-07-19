@@ -6,12 +6,12 @@ use App\EventActions\UpdateQuestionHashtags;
 use App\Models\Hashtag;
 use App\Models\Question;
 
-it('attaches the newly parsed hashtags', function () {
+it('attaches the newly parsed hashtags', function (): void {
     $question = Question::factory()->create();
 
     $question->answer = '#hashtag1 #hashtag2';
 
-    $synced = (new UpdateQuestionHashtags($question))->handle();
+    $synced = new UpdateQuestionHashtags($question)->handle();
 
     $hashtag1 = Hashtag::query()->firstWhere('name', 'hashtag1');
     $hashtag2 = Hashtag::query()->firstWhere('name', 'hashtag2');
@@ -27,7 +27,7 @@ it('attaches the newly parsed hashtags', function () {
         ->and($question->hashtags->pluck('name')->all())->toBe(['hashtag1', 'hashtag2']);
 });
 
-it('detaches hashtags no longer found in the question', function () {
+it('detaches hashtags no longer found in the question', function (): void {
     $question = Question::factory()->create([
         'answer' => '#hashtag1 #hashtag2',
     ]);
@@ -36,7 +36,7 @@ it('detaches hashtags no longer found in the question', function () {
 
     $question->answer = '#hashtag3';
 
-    $synced = (new UpdateQuestionHashtags($question))->handle();
+    $synced = new UpdateQuestionHashtags($question)->handle();
 
     $hashtag1 = Hashtag::query()->firstWhere('name', 'hashtag1');
     $hashtag2 = Hashtag::query()->firstWhere('name', 'hashtag2');
@@ -55,7 +55,7 @@ it('detaches hashtags no longer found in the question', function () {
         ->and($question->refresh()->hashtags->pluck('name')->all())->toBe(['hashtag3']);
 });
 
-it('will not parse hashtags within code and links', function () {
+it('will not parse hashtags within code and links', function (): void {
     $question = Question::factory()->create();
 
     $question->answer = <<<'ANSWER'
@@ -69,7 +69,7 @@ it('will not parse hashtags within code and links', function () {
             But the #cool hashtag should be synced!
             ANSWER;
 
-    (new UpdateQuestionHashtags($question))->handle();
+    new UpdateQuestionHashtags($question)->handle();
 
     expect($question->hashtags->pluck('name')->all())->toBe(['cool']);
 });
