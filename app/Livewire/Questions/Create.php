@@ -226,7 +226,6 @@ final class Create extends Component
     #[Computed]
     public function needsCaptcha(): bool
     {
-        return true;
         return app()->isProduction() && (int) auth()->user()?->followers()->count() === 0;
     }
 
