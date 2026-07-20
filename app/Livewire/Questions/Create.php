@@ -23,10 +23,12 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 /**
  * @property-read bool $isSharingUpdate
  * @property-read int $maxContentLength
+ * @property-read int $needsCaptcha
  */
 final class Create extends Component
 {
@@ -83,6 +85,11 @@ final class Create extends Component
      * Whether this is a poll.
      */
     public bool $isPoll = false;
+
+    /**
+     * The turnstile response from the client (bound via wire:model).
+     */
+    public ?string $cfTurnstileResponse = null;
 
     /**
      * Poll options.
@@ -214,6 +221,16 @@ final class Create extends Component
     }
 
     /**
+     * Whether the current acting user should be shown a captcha.
+     */
+    #[Computed]
+    public function needsCaptcha(): bool
+    {
+        return true;
+        return app()->isProduction() && (int) auth()->user()?->followers()->count() === 0;
+    }
+
+    /**
      * Refresh the component.
      */
     #[On([
@@ -250,6 +267,15 @@ final class Create extends Component
             $this->addError('content', 'You can only send 30 questions per day.');
 
             return;
+        }
+
+        // Require captcha for users with zero followers (bot protection).
+        if ($this->needsCaptcha) {
+            $this->validate([
+                'cfTurnstileResponse' => ['required', app(Turnstile::class)],
+            ], [
+                'cfTurnstileResponse.required' => __('The reCAPTCHA is required.'),
+            ]);
         }
 
         /** @var array<string, mixed> $validated */

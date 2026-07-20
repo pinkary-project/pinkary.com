@@ -1,4 +1,7 @@
 <div class="" id="questions-create">
+    @if ($this->needsCaptcha)
+        <x-turnstile.scripts />
+    @endif
     <form
         wire:submit="store"
         wire:keydown.cmd.enter="store"
@@ -105,6 +108,19 @@
                     </div>
                 @endif
             </div>
+            @if ($this->needsCaptcha)
+                <div class="mt-3 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 dark:border-slate-800/30 dark:bg-[#0b1324]" wire.ignore>
+                    <div class="flex justify-center">
+                        <x-turnstile
+                            id="{{ $this->draftKey }}_turnstile_{{ $this->toId ?? 'global' }}"
+                            wire:model="cfTurnstileResponse"
+                            data-theme="auto"
+                        />
+                    </div>
+
+                    <x-input-error :messages="$errors->get('cfTurnstileResponse')" class="mt-3 text-center" />
+                </div>
+            @endif
         </div>
 
         <div x-show="isPoll" class="mt-4 space-y-4" style="display: none">
