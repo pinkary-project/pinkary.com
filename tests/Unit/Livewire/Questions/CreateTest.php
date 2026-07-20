@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
+use RyanChandler\LaravelCloudflareTurnstile\Facades\Turnstile;
 
 beforeEach(function (): void {
     Storage::fake();
@@ -75,6 +76,37 @@ test('store', function (): void {
         ->and($question->anonymously)->toBeTrue()
         ->and($question->parent_id)->toBeNull()
         ->and($question->root_id)->toBeNull();
+});
+
+test('users with zero followers pass captcha and can store', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    // Ensure userA has zero followers.
+    expect($userA->followers()->count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', 'Hello from zero followers');
+    $component->set('cfTurnstileResponse', Turnstile::dummy());
+
+    $component->call('store');
+
+    $component->assertSet('content', '');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
+    $component->assertDispatched('question.created');
+
+    $question = Question::first();
+
+    expect($question->from_id)->toBe($userA->id)
+        ->and($question->to_id)->toBe($userB->id)
+        ->and($question->content)->toBe('Hello from zero followers');
 });
 
 test('store auth', function (): void {
