@@ -12,9 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->encryptCookies(except: [
-            '_home_redirected',
-        ]);
+        //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
