@@ -64,9 +64,14 @@ it('shows recent feed to guest regardless of default feed setting', function ():
 it('shows recent feed on subsequent visits after initial redirect', function (): void {
     $user = User::factory()->create(['default_feed' => UserDefaultFeed::Following]);
 
-    $this->actingAs($user)->get(route('home.feed'))->assertSessionHas('_home_redirected', true);
+    $this->actingAs($user)
+        ->get(route('home.feed'))
+        ->assertRedirect(route('home.following'))
+        ->assertCookie('_home_redirected');
 
-    $response = $this->actingAs($user)->get(route('home.feed'));
+    $response = $this->actingAs($user)
+        ->withCookie('_home_redirected', '1')
+        ->get(route('home.feed'));
 
     $response->assertOk()
         ->assertSeeLivewire(Feed::class);
