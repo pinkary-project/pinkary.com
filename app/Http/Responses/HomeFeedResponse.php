@@ -23,15 +23,14 @@ final readonly class HomeFeedResponse
         if ($user instanceof User
             && $user->default_feed !== UserDefaultFeed::Recent
             && ! $request->hasHeader('X-Livewire-Navigate')
-            && ! session('_home_redirected')
+            && ! $request->cookies->has('_home_redirected')
         ) {
-            session(['_home_redirected' => true]);
-
-            return redirect()->route($user->default_feed->toRouteName());
+            return redirect()->route($user->default_feed->toRouteName())
+                ->withCookie(cookie('_home_redirected', true));
         }
 
-        if ($user instanceof User) {
-            session(['_home_redirected' => true]);
+        if ($user instanceof User && ! $request->cookies->has('_home_redirected')) {
+            cookie()->queue(cookie('_home_redirected', true));
         }
 
         return view('home/feed');
