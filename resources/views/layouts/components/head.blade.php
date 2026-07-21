@@ -136,6 +136,19 @@
     updateTheme();
 </script>
 
+@if (request()->routeIs('home.feed'))
+    @auth
+        @if (auth()->user()->default_feed !== \App\Enums\UserDefaultFeed::Recent)
+            <script>
+                if (!sessionStorage.getItem('_home_redirected')) {
+                    sessionStorage.setItem('_home_redirected', '1');
+                    location.replace('{{ route(auth()->user()->default_feed->toRouteName()) }}');
+                }
+            </script>
+        @endif
+    @endauth
+@endif
+
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
