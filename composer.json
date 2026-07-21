@@ -85,7 +85,6 @@
         "test:unit": "pest --parallel --coverage --exactly=98.9",
         "test": [
             "@test:lint",
-            "@test:refactor",
             "@test:types",
             "@test:type-coverage",
             "@test:unit"

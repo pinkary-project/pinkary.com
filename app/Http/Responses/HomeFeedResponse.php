@@ -26,11 +26,11 @@ final readonly class HomeFeedResponse
             && ! $request->cookies->has('_home_redirected')
         ) {
             return redirect()->route($user->default_feed->toRouteName())
-                ->withCookie(cookie('_home_redirected', true));
+                ->withCookie(cookie('_home_redirected', '1'));
         }
 
         if ($user instanceof User && ! $request->cookies->has('_home_redirected')) {
-            cookie()->queue(cookie('_home_redirected', true));
+            cookie()->queue(cookie('_home_redirected', '1'));
         }
 
         return view('home/feed');
