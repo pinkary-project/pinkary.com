@@ -17,37 +17,42 @@ use App\Http\Controllers\UserTimezoneController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/about', 'about')->name('about');
+Route::view('/error-access-denied', 'errors.access-denied')->name('error.access-denied');
 
-Route::get('/', HomeController::class)->name('home.feed');
-Route::redirect('/for-you', '/following')->name('home.for_you');
-Route::view('/following', 'home/following')->name('home.following');
-Route::view('/trending', 'home/trending-questions')->name('home.trending');
-Route::view('/users', 'home/users')->name('home.users');
+Route::middleware('block.bots')->group(function () {
+    Route::view('/about', 'about')->name('about');
 
-Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
+    Route::get('/', HomeController::class)->name('home.feed');
+    Route::redirect('/for-you', '/following')->name('home.for_you');
+    Route::view('/following', 'home/following')->name('home.following');
+    Route::view('/trending', 'home/trending-questions')->name('home.trending');
+    Route::view('/users', 'home/users')->name('home.users');
 
-Route::view('/terms', 'terms')->name('terms');
-Route::view('/privacy', 'privacy')->name('privacy');
-Route::view('/support', 'support')->name('support');
-Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
+    Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
 
-Route::view('/verified', 'verified')->name('verified');
+    Route::view('/terms', 'terms')->name('terms');
+    Route::view('/privacy', 'privacy')->name('privacy');
+    Route::view('/support', 'support')->name('support');
+    Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
 
-Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
+    Route::view('/verified', 'verified')->name('verified');
 
-Route::get('/changelog', [ChangelogController::class, 'show'])->name('changelog');
-Route::post('/profile/timezone', [UserTimezoneController::class, 'update'])->name('profile.timezone.update');
+    Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
-Route::prefix('/@{username}')->group(function () {
-    Route::get('/', [UserController::class, 'show'])
-        ->name('profile.show')
-        ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+    Route::get('/changelog', [ChangelogController::class, 'show'])->name('changelog');
 
-    Route::get('questions/{question}', [QuestionController::class, 'show'])
-        ->name('questions.show')
-        ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+    Route::prefix('/@{username}')->group(function () {
+        Route::get('/', [UserController::class, 'show'])
+            ->name('profile.show')
+            ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+
+        Route::get('questions/{question}', [QuestionController::class, 'show'])
+            ->name('questions.show')
+            ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+    });
 });
+
+Route::post('/profile/timezone', [UserTimezoneController::class, 'update'])->name('profile.timezone.update');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('bookmarks', [BookmarksController::class, 'index'])->name('bookmarks.index');
