@@ -81,6 +81,7 @@ final class UnblockAccount extends Page
                         ]),
                     ]),
             ])
+            ->columns(2)
             ->statePath('data');
     }
 
