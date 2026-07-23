@@ -50,6 +50,7 @@ services:
                 - 'localhost'
             retries: 3
             timeout: 5s
+            start_period: 30s
 networks:
     sail:
         driver: bridge
