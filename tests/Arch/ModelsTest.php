@@ -29,7 +29,7 @@ arch('models')
     ])->ignoring('App\Models\Concerns');
 
 arch('ensure factories', function (): void {
-    expect($models = getModels())->toHaveCount(9);
+    expect($models = getModels())->toHaveCount(10);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */
@@ -39,7 +39,7 @@ arch('ensure factories', function (): void {
 });
 
 arch('ensure datetime casts', function (): void {
-    expect($models = getModels())->toHaveCount(9);
+    expect($models = getModels())->toHaveCount(10);
 
     foreach ($models as $model) {
         /* @var \Illuminate\Database\Eloquent\Factories\HasFactory $model */

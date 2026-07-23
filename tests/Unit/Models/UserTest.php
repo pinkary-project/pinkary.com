@@ -124,6 +124,17 @@ test('followers', function (): void {
         ->and($user->followers->first()->id)->toBe($target->id);
 });
 
+test('purge does not block email from self-deletion', function (): void {
+    $user = User::factory()->create();
+
+    $email = $user->email;
+
+    $user->purge();
+
+    expect($user->fresh())->toBeNull();
+    $this->assertDatabaseMissing('blocked_accounts', ['email' => $email]);
+});
+
 test('purge followers with user', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();

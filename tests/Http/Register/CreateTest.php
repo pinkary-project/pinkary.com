@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\BlockedAccount;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
@@ -327,4 +328,24 @@ test('anonymously preference is set to true by default', function (): void {
     $this->from('/register')->post('/register', $this->basePayload);
 
     expect(User::first()->prefers_anonymous_questions)->toBeTrue();
+});
+
+test('cannot register with blocked email', function (): void {
+    $email = 'blocked@example.com';
+
+    BlockedAccount::factory()->create(['email' => $email]);
+
+    $response = $this->from('/register')->post('/register', [
+        'name' => 'Test User',
+        'username' => 'testuser',
+        'email' => $email,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'terms' => true,
+    ]);
+
+    $response->assertRedirect('/register')
+        ->assertSessionHasErrors(['email' => 'This email has been blocked.']);
+
+    $this->assertDatabaseMissing('users', ['email' => $email]);
 });

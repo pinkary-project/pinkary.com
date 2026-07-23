@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\BlockedAccount;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -12,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 
 final class UserResource extends Resource
 {
@@ -49,7 +51,13 @@ final class UserResource extends Resource
                     ->requiresConfirmation()
                     ->color(Color::Red)
                     ->action(function (User $record): void {
-                        $record->purge();
+                        DB::transaction(function () use ($record): void {
+                            BlockedAccount::firstOrCreate([
+                                'email' => $record->email,
+                            ]);
+
+                            $record->purge();
+                        });
                     }),
             ]);
     }
