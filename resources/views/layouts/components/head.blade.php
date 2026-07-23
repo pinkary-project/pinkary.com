@@ -142,7 +142,10 @@
             <script>
                 if (!sessionStorage.getItem('_home_redirected')) {
                     sessionStorage.setItem('_home_redirected', '1');
-                    location.replace('{{ route(auth()->user()->default_feed->toRouteName()) }}');
+
+                    if (@js(! request()->hasHeader('X-Livewire-Navigate'))) {
+                        location.replace('{{ route(auth()->user()->default_feed->toRouteName()) }}');
+                    }
                 }
             </script>
         @endif
