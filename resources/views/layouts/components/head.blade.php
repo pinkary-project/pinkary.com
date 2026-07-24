@@ -13,6 +13,26 @@
     data-rh="true"
 />
 <meta name="mobile-web-app-capable" content="yes" />
+
+<script>
+    (function () {
+        @auth
+        return;
+        @endauth
+
+        var isAgenticBrowser = function () {
+            if (navigator.webdriver) return true;
+            if (window.__playwright || window.__puppeteer) return true;
+            if (!navigator.languages || navigator.languages.length === 0) return true;
+
+            return false;
+        };
+
+        if (isAgenticBrowser()) {
+            window.location.href = '/error-access-denied';
+        }
+    })();
+</script>
 <meta name="apple-mobile-web-app-title" content="Pinkary" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
