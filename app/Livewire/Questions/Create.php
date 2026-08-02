@@ -29,6 +29,7 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
  * @property-read bool $isSharingUpdate
  * @property-read int $maxContentLength
  * @property-read int $needsCaptcha
+ * @property-read string $turnstileId
  */
 final class Create extends Component
 {
@@ -218,6 +219,17 @@ final class Create extends Component
         return filled($this->parentId)
             ? "reply_{$this->parentId}"
             : 'post_new';
+    }
+
+    /**
+     * Get the captcha widget ID, restricted to the characters allowed by Turnstile.
+     */
+    #[Computed]
+    public function turnstileId(): string
+    {
+        $id = $this->draftKey().'_turnstile_'.($this->toId ?? 'global');
+
+        return (string) preg_replace('/[^A-Za-z0-9_]/', '_', $id);
     }
 
     /**

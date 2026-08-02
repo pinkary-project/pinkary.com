@@ -7,6 +7,7 @@ use App\Livewire\Questions\Create;
 use App\Livewire\Questions\Show;
 use App\Models\Question;
 use App\Models\User;
+use RyanChandler\LaravelCloudflareTurnstile\Facades\Turnstile;
 
 test('guest', function (): void {
     $question = Question::factory()->create([
@@ -45,6 +46,28 @@ test('auth', function (): void {
 
     $response->assertSeeLivewire(Show::class);
     $response->assertSeeLivewire(Create::class);
+});
+
+test('auth without followers renders the captcha on the reply form', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->create();
+
+    expect($user->followers()->count())->toBe(0);
+
+    $question = Question::factory()->create([
+        'answer' => 'This is the answer',
+    ]);
+
+    $response = $this->actingAs($user)->get(route('questions.show', [
+        'username' => $question->to->username,
+        'question' => $question->id,
+    ]));
+
+    $response->assertOk();
+    $response->assertSeeLivewire(Create::class);
+    $response->assertSee('cf-turnstile', escape: false);
 });
 
 test('answer translate action is visible before bookmarks', function (): void {
