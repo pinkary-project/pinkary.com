@@ -109,6 +109,24 @@ test('users with zero followers pass captcha and can store', function (): void {
         ->and($question->content)->toBe('Hello from zero followers');
 });
 
+test('renders the captcha on replies, whose parent id contains characters turnstile rejects', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->create();
+    $parent = Question::factory()->create();
+
+    expect($parent->id)->toContain('-');
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'parentId' => $parent->id,
+    ]);
+
+    $component->assertOk()
+        ->assertSeeHtml('data-callback="reply_'.str_replace('-', '_', $parent->id).'_turnstile_globalCallback"');
+});
+
 test('store auth', function (): void {
     $user = User::factory()->create();
 

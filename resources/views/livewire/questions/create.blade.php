@@ -114,11 +114,7 @@
                     wire.ignore
                 >
                     <div class="flex justify-center">
-                        <x-turnstile
-                            id="{{ $this->draftKey }}_turnstile_{{ $this->toId ?? 'global' }}"
-                            wire:model="cfTurnstileResponse"
-                            data-theme="auto"
-                        />
+                        <x-turnstile id="{{ $this->turnstileId }}" wire:model="cfTurnstileResponse" data-theme="auto" />
                     </div>
 
                     <x-input-error :messages="$errors->get('cfTurnstileResponse')" class="mt-3 text-center" />
