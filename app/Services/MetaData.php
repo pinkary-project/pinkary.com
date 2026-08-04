@@ -62,6 +62,7 @@ final readonly class MetaData
         }
 
         $doc = new DOMDocument();
+        // @phpstan-ignore argument.type
         @$doc->loadHTML($value);
         $iframe = $doc->getElementsByTagName('iframe')->item(0);
 
@@ -180,6 +181,7 @@ final readonly class MetaData
     /**
      * Parse the response body for MetaData.
      *
+     * @param  non-empty-string  $content
      * @return Collection<string, non-empty-string>
      */
     private function parseContent(string $content): Collection
@@ -225,6 +227,7 @@ final readonly class MetaData
     /**
      * Parse the response body for MetaData.
      *
+     * @param  non-empty-string  $html
      * @return Collection<string, non-empty-string>
      *
      * @throws ConnectionException

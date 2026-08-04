@@ -6,7 +6,10 @@ namespace App\Providers;
 
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +28,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->configurePasswordValidation();
         $this->configureDates();
+        $this->configurePasswordResetUrl();
 
         Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
 
@@ -56,6 +60,23 @@ final class AppServiceProvider extends ServiceProvider
     {
         Model::shouldBeStrict(! $this->app->isProduction());
         Model::unguard();
+    }
+
+    /**
+     * Configure the password reset URL so it is always pinned to the
+     * application's configured URL, and may never be poisoned by an
+     * attacker controlled "Host" header of the incoming request.
+     */
+    private function configurePasswordResetUrl(): void
+    {
+        ResetPassword::createUrlUsing(function (mixed $notifiable, string $token): string {
+            assert($notifiable instanceof CanResetPassword);
+
+            return mb_rtrim(Config::string('app.url'), '/').route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], absolute: false);
+        });
     }
 
     /**
