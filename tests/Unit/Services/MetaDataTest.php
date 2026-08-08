@@ -93,6 +93,7 @@ it('gets the youtube oembed data', function (): void {
 
 it('shows preview card if the tweet has an image or video', function (): void {
     $url = 'https://x.com/enunomaduro/status/1845794776886493291';
+    $imagePath = storage_path('app/'.UploadedFile::fake()->image('image.jpg', 1000, 600)->store('images'));
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
 
     Http::fake([
@@ -101,10 +102,11 @@ it('shows preview card if the tweet has an image or video', function (): void {
                 <head>
                     <meta property="og:site_name" content="X (formerly Twitter)">
                     <meta property="og:url" content="https://x.com/enunomaduro/status/1853213385233502522">
-                    <meta property="og:image" content="https://pbs.twimg.com/ext_tw_video_thumb/1845793244287836166/pu/img/sjrrSlxl64LNIwdY.jpg:large">
+                    <meta property="og:image" content="'.$imagePath.'">
                 </head>
             </html>
         ', 200),
+        '*' => Http::response(null, 200),
     ]);
 
     $service = new MetaData($url);
@@ -113,7 +115,7 @@ it('shows preview card if the tweet has an image or video', function (): void {
     expect(Cache::get($cacheKey))->toBe($data)
         ->and($data->get('site_name'))->toBe('X (formerly Twitter)')
         ->and($data->get('url'))->toBe('https://x.com/enunomaduro/status/1853213385233502522')
-        ->and($data->get('image'))->toBe('https://pbs.twimg.com/ext_tw_video_thumb/1845793244287836166/pu/img/sjrrSlxl64LNIwdY.jpg:large');
+        ->and($data->get('image'))->toBe($imagePath);
 });
 
 it('gets the vimdeo oembed data', function (): void {
