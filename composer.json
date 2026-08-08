@@ -14,6 +14,7 @@
         "laravel/socialite": "^5.29.0",
         "laravel/tinker": "^3.0.2",
         "league/flysystem-aws-s3-v3": "^3.35.2",
+        "livewire/blaze": "^1.0",
         "livewire/livewire": "^4.3.5",
         "matomo/device-detector": "^6.5.1",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
