@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Livewire\Blaze\Blaze;
 use Livewire\Livewire;
 
 final class AppServiceProvider extends ServiceProvider
@@ -29,6 +30,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configurePasswordValidation();
         $this->configureDates();
         $this->configurePasswordResetUrl();
+        $this->configureBlaze();
 
         Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
 
@@ -85,5 +87,16 @@ final class AppServiceProvider extends ServiceProvider
     private function configurePasswordValidation(): void
     {
         Password::defaults(fn () => $this->app->isProduction() ? Password::min(8)->uncompromised() : null);
+    }
+
+    /**
+     * Configure Blaze optimizations for anonymous Blade components.
+     */
+    private function configureBlaze(): void
+    {
+        Blaze::optimize()
+            ->in(resource_path('views/components'))
+            ->in(resource_path('views/components/footer.blade.php'), compile: false)
+            ->in(resource_path('views/components/icons'), memo: true);
     }
 }
