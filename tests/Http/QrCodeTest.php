@@ -5,16 +5,16 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Services\QrCode;
 
-test('can QR Code be downloaded only by authenticated users', function () {
+test('can QR Code be downloaded only by authenticated users', function (): void {
     $response = $this->get(route('qr-code.image'));
 
     $response->assertRedirect(route('login'));
 });
 
-test('for dark or default theme', function () {
+test('for dark or default theme', function (): void {
     $user = User::factory()->create();
 
-    $qrCode = (new QrCode(lightMode: false))->generate(
+    $qrCode = new QrCode(lightMode: false)->generate(
         route('profile.show', [
             'username' => $user->username,
         ])
@@ -29,10 +29,10 @@ test('for dark or default theme', function () {
         ->assertDownload('pinkary_'.$user->username.'.png');
 });
 
-test('for light theme', function () {
+test('for light theme', function (): void {
     $user = User::factory()->create();
 
-    $qrCode = (new QrCode(lightMode: true))->generate(
+    $qrCode = new QrCode(lightMode: true)->generate(
         route('profile.show', [
             'username' => $user->username,
         ])

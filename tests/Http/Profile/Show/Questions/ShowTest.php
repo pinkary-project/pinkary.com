@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Livewire\PeopleToFollow;
 use App\Livewire\Questions\Create;
 use App\Livewire\Questions\Show;
 use App\Models\Question;
 use App\Models\User;
+use RyanChandler\LaravelCloudflareTurnstile\Facades\Turnstile;
 
-test('guest', function () {
+test('guest', function (): void {
     $question = Question::factory()->create([
         'answer' => 'This is the answer',
     ]);
@@ -25,7 +27,7 @@ test('guest', function () {
     $response->assertSeeLivewire(Show::class);
 });
 
-test('auth', function () {
+test('auth', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -46,7 +48,49 @@ test('auth', function () {
     $response->assertSeeLivewire(Create::class);
 });
 
-test('reported question is not visible', function () {
+test('auth without followers renders the captcha on the reply form', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->create();
+
+    expect($user->followers()->count())->toBe(0);
+
+    $question = Question::factory()->create([
+        'answer' => 'This is the answer',
+    ]);
+
+    $response = $this->actingAs($user)->get(route('questions.show', [
+        'username' => $question->to->username,
+        'question' => $question->id,
+    ]));
+
+    $response->assertOk();
+    $response->assertSeeLivewire(Create::class);
+    $response->assertSee('cf-turnstile', escape: false);
+});
+
+test('answer translate action is visible before bookmarks', function (): void {
+    $question = Question::factory()->create([
+        'content' => 'Question content',
+        'answer' => 'Answer content',
+    ]);
+
+    $response = $this->get(route('questions.show', [
+        'username' => $question->to->username,
+        'question' => $question->id,
+    ]));
+
+    $answerTranslateUrl = e('https://translate.google.com/?sl=auto&tl=en&text='.urlencode((string) $question->sharable_answer));
+
+    $response->assertOk()
+        ->assertSeeInOrder([
+            $answerTranslateUrl,
+            'data-is-bookmarked="false"',
+        ], false);
+});
+
+test('reported question is not visible', function (): void {
     $question = Question::factory()->create([
         'is_reported' => true,
     ]);
@@ -59,7 +103,7 @@ test('reported question is not visible', function () {
     $response->assertStatus(403);
 });
 
-test('question without answer is not visible for other users', function () {
+test('question without answer is not visible for other users', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -82,7 +126,7 @@ test('question without answer is not visible for other users', function () {
         ->assertSee($question->content);
 });
 
-test('question is not visible for other usernames on the url', function () {
+test('question is not visible for other usernames on the url', function (): void {
     $question = Question::factory()->create([
         'answer' => 'This is the answer',
     ]);
@@ -95,7 +139,7 @@ test('question is not visible for other usernames on the url', function () {
     $response->assertStatus(404);
 });
 
-test('it shows the parent questions', function () {
+test('it shows the parent questions', function (): void {
     $user = User::factory()->create();
 
     $parent1 = Question::factory()->create();
@@ -115,9 +159,35 @@ test('it shows the parent questions', function () {
     ]));
 
     $response->assertOk()
-        ->assertViewHas('parentQuestions', function (array $parentQuestions) use ($parent1, $parent2, $parent3) {
-            return $parentQuestions[0]->id === $parent3->id
-                && $parentQuestions[1]->id === $parent2->id
-                && $parentQuestions[2]->id === $parent1->id;
-        });
+        ->assertViewHas('parentQuestions', fn (array $parentQuestions): bool => $parentQuestions[0]->id === $parent3->id
+            && $parentQuestions[1]->id === $parent2->id
+            && $parentQuestions[2]->id === $parent1->id);
+});
+
+test('it shows question-context suggestions in the people to follow rail', function (): void {
+    $postUser = User::factory()->create();
+    $currentParticipant = User::factory()->create();
+    $recentInteractionUser = User::factory()->create(['name' => 'Question Rail Interaction']);
+
+    Question::factory()->create([
+        'from_id' => $recentInteractionUser->id,
+        'to_id' => $postUser->id,
+        'answer' => 'Question answer',
+        'updated_at' => now()->subMinutes(5),
+    ]);
+
+    $question = Question::factory()->create([
+        'from_id' => $currentParticipant->id,
+        'to_id' => $postUser->id,
+        'updated_at' => now(),
+    ]);
+
+    $response = $this->get(route('questions.show', [
+        'username' => $postUser->username,
+        'question' => $question->id,
+    ]));
+
+    $response->assertOk()
+        ->assertSeeLivewire(PeopleToFollow::class)
+        ->assertSee('Question Rail Interaction');
 });

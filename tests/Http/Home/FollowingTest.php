@@ -5,13 +5,13 @@ declare(strict_types=1);
 use App\Livewire\Home\QuestionsFollowing;
 use App\Models\User;
 
-it('/for-you redirects to /following', function () {
+it('/for-you redirects to /following', function (): void {
     $response = $this->get('/for-you');
 
     $response->assertRedirect('/following');
 });
 
-it('can see the "following" view', function () {
+it('can see the "following" view', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get(route('home.following'));
@@ -21,7 +21,7 @@ it('can see the "following" view', function () {
         ->assertSeeLivewire(QuestionsFollowing::class);
 });
 
-it('guest can see the "following" view', function () {
+it('guest can see the "following" view', function (): void {
     $response = $this->get(route('home.following'));
 
     $response->assertOk()

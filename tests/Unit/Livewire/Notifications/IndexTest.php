@@ -9,7 +9,7 @@ use App\Notifications\QuestionAnswered;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-test('displays notifications', function () {
+test('displays notifications', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -47,7 +47,7 @@ test('displays notifications', function () {
     $component->assertSee('Ignore all');
 });
 
-test('ignores all notifications', function () {
+test('ignores all notifications', function (): void {
     $user = User::factory()->create();
 
     Question::factory(2)->create([
@@ -63,13 +63,13 @@ test('ignores all notifications', function () {
     $component->assertDispatched('question.ignored');
     $component->assertDispatched('notification.created', message: 'Notifications ignored.');
 
-    expect($user->notifications()->count())->toBe(0);
-    expect($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
+    expect($user->notifications()->count())->toBe(0)
+        ->and($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
 
     $component->assertDontSee('Ignore all');
 });
 
-test('ignores all notifications viewed by user', function () {
+test('ignores all notifications viewed by user', function (): void {
     $user = User::factory()->create();
 
     Question::factory(2)->create([
@@ -95,8 +95,8 @@ test('ignores all notifications viewed by user', function () {
     $component->assertDispatched('question.ignored');
     $component->assertDispatched('notification.created', message: 'Notifications ignored.');
 
-    expect($user->notifications()->count())->toBe(2);
-    expect($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
+    expect($user->notifications()->count())->toBe(2)
+        ->and($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
 
     $component->assertSee('Ignore all');
 });

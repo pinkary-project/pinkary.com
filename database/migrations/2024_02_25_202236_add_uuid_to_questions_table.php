@@ -14,7 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::drop('questions');
+        Schema::table('likes', function (Blueprint $table): void {
+            $table->dropForeign(['question_id']);
+        });
+
+        Schema::dropIfExists('questions');
 
         Schema::create('questions', function (Blueprint $table): void {
             $table->uuid('id')->primary();
@@ -28,6 +32,11 @@ return new class extends Migration
             $table->boolean('is_reported')->default(false);
 
             $table->timestamps();
+        });
+
+        Schema::table('likes', function (Blueprint $table): void {
+            $table->uuid('question_id')->change();
+            $table->foreign('question_id')->references('id')->on('questions')->cascadeOnDelete();
         });
     }
 };

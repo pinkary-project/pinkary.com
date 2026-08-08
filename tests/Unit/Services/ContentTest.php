@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-test('link', function () {
+test('link', function (): void {
     $content = 'Sure, here is the link: https://example.com. Let me know if you have any questions.';
 
     $provider = new App\Services\ParsableContent();
@@ -15,7 +15,7 @@ test('link', function () {
         ->toMatchSnapshot();
 });
 
-test('only links with images or html oEmbeds are parsed', function () {
+test('only links with images or html oEmbeds are parsed', function (): void {
     $content = 'Sure, here is the link: https://laravel.com. Let me know if you have any questions.';
 
     $provider = new App\Services\ParsableContent();
@@ -37,7 +37,7 @@ test('only links with images or html oEmbeds are parsed', function () {
         ->toMatchSnapshot();
 });
 
-test('mention', function () {
+test('mention', function (): void {
     $content = '@nunomaduro, let me know if you have any questions. Thanks @xiCO2k.';
 
     $provider = new App\Services\ParsableContent();
@@ -46,7 +46,7 @@ test('mention', function () {
         ->toMatchSnapshot();
 });
 
-it('ignores mention inside <a>', function () {
+it('ignores mention inside <a>', function (): void {
     $content = 'https://pinkary.com/@nunomaduro';
 
     $provider = new App\Services\ParsableContent();

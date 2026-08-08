@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Link;
 use App\Models\User;
 
-test('delete', function () {
+test('delete', function (): void {
     $user = User::factory()->create();
     $link = Link::factory()->create(['user_id' => $user->id]);
 

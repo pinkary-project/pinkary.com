@@ -16,16 +16,20 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Imagick;
+use Intervention\Image\Drivers;
+use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 /**
  * @property-read bool $isSharingUpdate
  * @property-read int $maxContentLength
+ * @property-read int $needsCaptcha
+ * @property-read string $turnstileId
  */
 final class Create extends Component
 {
@@ -35,7 +39,7 @@ final class Create extends Component
     /**
      * The disk to store the images.
      */
-    private const string IMAGE_DISK = 'public';
+    public const ?string IMAGE_DISK = null;
 
     /**
      * Max number of images allowed.
@@ -82,6 +86,11 @@ final class Create extends Component
      * Whether this is a poll.
      */
     public bool $isPoll = false;
+
+    /**
+     * The turnstile response from the client (bound via wire:model).
+     */
+    public ?string $cfTurnstileResponse = null;
 
     /**
      * Poll options.
@@ -213,6 +222,26 @@ final class Create extends Component
     }
 
     /**
+     * Get the captcha widget ID, restricted to the characters allowed by Turnstile.
+     */
+    #[Computed]
+    public function turnstileId(): string
+    {
+        $id = $this->draftKey().'_turnstile_'.($this->toId ?? 'global');
+
+        return (string) preg_replace('/[^A-Za-z0-9_]/', '_', $id);
+    }
+
+    /**
+     * Whether the current acting user should be shown a captcha.
+     */
+    #[Computed]
+    public function needsCaptcha(): bool
+    {
+        return app()->isProduction() && (int) auth()->user()?->followers()->count() === 0;
+    }
+
+    /**
      * Refresh the component.
      */
     #[On([
@@ -249,6 +278,15 @@ final class Create extends Component
             $this->addError('content', 'You can only send 30 questions per day.');
 
             return;
+        }
+
+        // Require captcha for users with zero followers (bot protection).
+        if ($this->needsCaptcha) {
+            $this->validate([
+                'cfTurnstileResponse' => ['required', app(Turnstile::class)],
+            ], [
+                'cfTurnstileResponse.required' => __('The reCAPTCHA is required.'),
+            ]);
         }
 
         /** @var array<string, mixed> $validated */
@@ -409,31 +447,34 @@ final class Create extends Component
     /**
      * Optimize the images.
      */
-    private function optimizeImage(string $path): void
+    private function optimizeImage(UploadedFile $image): string|false
     {
-        $imagePath = Storage::disk(self::IMAGE_DISK)->path($path);
-        $imagick = new Imagick($imagePath);
+        $today = today()->format('Y-m-d');
 
-        if ($imagick->getNumberImages() > 1) {
-            $imagick = $imagick->coalesceImages();
+        $imagePath = 'images/'.$today;
 
-            foreach ($imagick as $frame) {
-                $frame->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-                $frame->stripImage();
-                $frame->setImageCompressionQuality(80);
-            }
-
-            $imagick = $imagick->deconstructImages();
-            $imagick->writeImages($imagePath, true);
-        } else {
-            $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-            $imagick->stripImage();
-            $imagick->setImageCompressionQuality(80);
-            $imagick->writeImage($imagePath);
+        if ($image->getMimeType() === 'image/gif') {
+            return $image->store(
+                $imagePath, [
+                    'disk' => self::IMAGE_DISK,
+                    'visibility' => 'public',
+                ]
+            );
         }
 
-        $imagick->clear();
-        $imagick->destroy();
+        $resizer = $this->resizer()->read($image)
+            ->scaleDown(750, 750);
+
+        $imagePath .= '/'.$image->hashName();
+
+        return Storage::disk(self::IMAGE_DISK)->put(
+            $imagePath,
+            $resizer->encodeByExtension(
+                $image->getClientOriginalExtension(),
+                quality: 80
+            )->toFilePointer(),
+            ['visibility' => 'public'],
+        ) ? $imagePath : false;
     }
 
     /**
@@ -455,18 +496,15 @@ final class Create extends Component
     private function uploadImages(): void
     {
         collect($this->images)->each(function (UploadedFile $image): void {
-            $today = now()->format('Y-m-d');
 
-            /** @var string $path */
-            $path = $image->store("images/{$today}", self::IMAGE_DISK);
-            $this->optimizeImage($path);
+            $path = $this->optimizeImage($image);
 
             if ($path) {
                 session()->push('images', $path);
 
                 $this->dispatch(
                     'image.uploaded',
-                    path: Storage::url($path),
+                    path: Storage::disk(self::IMAGE_DISK)->url($path),
                     originalName: $image->getClientOriginalName()
                 );
             } else { // @codeCoverageIgnoreStart
@@ -512,5 +550,16 @@ final class Create extends Component
         $images = session()->get('images', []);
 
         return $images;
+    }
+
+    /**
+     * Creates a new image resizer.
+     */
+    private function resizer(): ImageManager
+    {
+        return new ImageManager(
+            new Drivers\Imagick\Driver(),
+            strip: true,
+        );
     }
 }

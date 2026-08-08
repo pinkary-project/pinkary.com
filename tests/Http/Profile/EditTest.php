@@ -8,13 +8,13 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-test('guest', function () {
+test('guest', function (): void {
     $response = $this->get(route('profile.edit'));
 
     $response->assertRedirect('/login');
 });
 
-test('auth', function () {
+test('auth', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get(route('profile.edit'));
@@ -29,7 +29,9 @@ test('auth', function () {
     ]);
 });
 
-test('profile information can be updated', function () {
+test('profile information can be updated', function (): void {
+    Queue::fake();
+
     $user = User::factory()->create();
 
     $response = $this
@@ -39,6 +41,7 @@ test('profile information can be updated', function () {
             'username' => 'testuser',
             'email' => 'test@example.com',
             'mail_preference_time' => 'daily',
+            'default_feed' => 'recent',
             'prefers_anonymous_questions' => false,
         ]);
 
@@ -48,14 +51,14 @@ test('profile information can be updated', function () {
 
     $user->refresh();
 
-    $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
-    $this->assertSame('testuser', $user->username);
-    $this->assertNull($user->email_verified_at);
-    $this->assertFalse($user->prefers_anonymous_questions);
+    expect($user->name)->toBe('Test User')
+        ->and($user->email)->toBe('test@example.com')
+        ->and($user->username)->toBe('testuser')
+        ->and($user->email_verified_at)->toBeNull()
+        ->and($user->prefers_anonymous_questions)->toBeFalse();
 });
 
-test('email provider must be authorized', function () {
+test('email provider must be authorized', function (): void {
     $user = User::factory()->create();
 
     $response = $this
@@ -75,7 +78,7 @@ test('email provider must be authorized', function () {
         ]);
 });
 
-test('username can be updated to uppercase', function () {
+test('username can be updated to uppercase', function (): void {
     $user = User::factory()->create([
         'username' => 'testuser',
     ]);
@@ -96,7 +99,7 @@ test('username can be updated to uppercase', function () {
     $this->get('/@TESTUSER')->assertOk();
 });
 
-test('can not update to an existing username using uppercase', function () {
+test('can not update to an existing username using uppercase', function (): void {
     User::factory()->create([
         'username' => 'testuser',
     ]);
@@ -125,7 +128,7 @@ test('can not update to an existing username using uppercase', function () {
     $this->get('/@TESTUSER')->assertOk();
 });
 
-test('email verification status is unchanged when the email address is unchanged', function () {
+test('email verification status is unchanged when the email address is unchanged', function (): void {
     $user = User::factory()->create();
 
     $response = $this
@@ -142,10 +145,10 @@ test('email verification status is unchanged when the email address is unchanged
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    $this->assertNotNull($user->refresh()->email_verified_at);
+    expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
-test('email verification job sent & status reset when the email address is changed', function () {
+test('email verification job sent & status reset when the email address is changed', function (): void {
     Notification::fake();
     $user = User::factory()->create();
 
@@ -163,7 +166,7 @@ test('email verification job sent & status reset when the email address is chang
     Notification::assertSentTo($user, VerifyEmail::class);
 });
 
-test('only updates avatar if email changes & avatar not been uploaded', function () {
+test('only updates avatar if email changes & avatar not been uploaded', function (): void {
     Queue::fake();
     $user = User::factory()->create();
 
@@ -179,7 +182,7 @@ test('only updates avatar if email changes & avatar not been uploaded', function
     Queue::assertNotPushed(UpdateUserAvatar::class);
 });
 
-test('password can be updated', function () {
+test('password can be updated', function (): void {
     $user = User::factory()->create();
 
     $response = $this
@@ -195,10 +198,10 @@ test('password can be updated', function () {
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
+    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();
 });
 
-test('correct password must be provided to update password', function () {
+test('correct password must be provided to update password', function (): void {
     $user = User::factory()->create();
 
     $response = $this
@@ -215,7 +218,7 @@ test('correct password must be provided to update password', function () {
         ->assertRedirect('/profile');
 });
 
-test('user can delete their account', function () {
+test('user can delete their account', function (): void {
     $user = User::factory()->create();
 
     $response = $this
@@ -229,17 +232,17 @@ test('user can delete their account', function () {
         ->assertRedirect('/');
 
     $this->assertGuest();
-    $this->assertNull($user->fresh());
+    expect($user->fresh())->toBeNull();
 });
 
-test('avatar is deleted when account is deleted', function () {
+test('avatar is deleted when account is deleted', function (): void {
     $user = User::factory()->create([
         'avatar' => 'avatars/default.png',
     ]);
 
-    Storage::disk('public')->put('avatars/default.png', '...');
+    Storage::disk()->put('avatars/default.png', '...');
 
-    Storage::disk('public')->assertExists('avatars/default.png');
+    Storage::disk()->assertExists('avatars/default.png');
 
     $response = $this
         ->actingAs($user)
@@ -247,20 +250,20 @@ test('avatar is deleted when account is deleted', function () {
             'password' => 'password',
         ]);
 
-    Storage::disk('public')->assertMissing('avatars/default.png');
+    Storage::disk()->assertMissing('avatars/default.png');
 
     $response->assertSessionHasNoErrors();
 
-    $this->assertNull($user->fresh());
+    expect($user->fresh())->toBeNull();
     $this->assertFileDoesNotExist(storage_path('app/public/avatars/default.png'));
 });
 
-it('user can delete their account with followers', function () {
+it('user can delete their account with followers', function (): void {
     $user = User::factory()->create([
         'password' => 'password',
     ]);
 
-    User::factory()->count(3)->create()->each(function ($follower) use ($user) {
+    User::factory()->count(3)->create()->each(function ($follower) use ($user): void {
         $follower->following()->attach($user);
     });
     expect($user->followers()->count())->toBe(3);
@@ -271,15 +274,15 @@ it('user can delete their account with followers', function () {
         ]);
 
     $response->assertRedirect(url('/'));
-    $this->assertNull($user->fresh());
+    expect($user->fresh())->toBeNull();
 });
 
-it('user can delete their account with following', function () {
+it('user can delete their account with following', function (): void {
     $user = User::factory()->create([
         'password' => 'password',
     ]);
 
-    User::factory()->count(3)->create()->each(function ($following) use ($user) {
+    User::factory()->count(3)->create()->each(function ($following) use ($user): void {
         $user->following()->attach($following);
     });
     expect($user->following()->count())->toBe(3);
@@ -290,10 +293,10 @@ it('user can delete their account with following', function () {
         ]);
 
     $response->assertRedirect(url('/'));
-    $this->assertNull($user->fresh());
+    expect($user->fresh())->toBeNull();
 });
 
-test('correct password must be provided to delete account', function () {
+test('correct password must be provided to delete account', function (): void {
     $user = User::factory()->create();
 
     $response = $this
@@ -307,10 +310,10 @@ test('correct password must be provided to delete account', function () {
         ->assertSessionHasErrorsIn('userDeletion', 'password')
         ->assertRedirect('/profile');
 
-    $this->assertNotNull($user->fresh());
+    expect($user->fresh())->not->toBeNull();
 });
 
-test("can not update user's name with blank characters", function () {
+test("can not update user's name with blank characters", function (): void {
     $user = User::factory()->state(['name' => 'Test User'])->create();
 
     $response = $this
@@ -321,10 +324,10 @@ test("can not update user's name with blank characters", function () {
 
     $response->assertSessionHasErrors(['name' => 'The name field is required.']);
 
-    $this->assertSame('Test User', $user->name);
+    expect($user->name)->toBe('Test User');
 });
 
-test('prefers_anonymous_questions can be updated', function () {
+test('prefers_anonymous_questions can be updated', function (): void {
     $user = User::factory()->create([
         'prefers_anonymous_questions' => true,
     ]);
@@ -346,8 +349,32 @@ test('prefers_anonymous_questions can be updated', function () {
     expect($user->refresh()->prefers_anonymous_questions)->toBeFalse();
 });
 
-test('user can upload an avatar', function () {
-    Storage::fake('public');
+test('default_feed can be updated', function (): void {
+    $user = User::factory()->create([
+        'username' => 'testuser',
+        'default_feed' => 'following',
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'username' => 'testuser',
+            'email' => $user->email,
+            'mail_preference_time' => 'daily',
+            'default_feed' => 'trending',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect('/profile');
+
+    expect($user->refresh()->default_feed->value)->toBe('trending');
+});
+
+test('user can upload an avatar', function (): void {
+    Storage::fake();
 
     $user = User::factory()->create();
 
@@ -367,8 +394,8 @@ test('user can upload an avatar', function () {
         ->and(session('flash-message'))->toBe('Avatar updated.');
 });
 
-test('user can delete custom avatar and update using Gravatar', function () {
-    Storage::fake('public');
+test('user can delete custom avatar and update using Gravatar', function (): void {
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
@@ -376,14 +403,14 @@ test('user can delete custom avatar and update using Gravatar', function () {
         'email' => 'jitewaboh@lagify.com', // test Gravatar email
     ]);
 
-    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+    Storage::disk()->put('avatars/avatar.jpg', '...');
 
     $this->actingAs($user)
         ->delete('/profile/avatar')
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+    Storage::disk()->assertMissing('avatars/avatar.jpg');
 
     $user->refresh();
 
@@ -393,8 +420,8 @@ test('user can delete custom avatar and update using Gravatar', function () {
         ->and(session('flash-message'))->toBe('Updating avatar using Gravatar.');
 });
 
-test('user can delete custom avatar and update using GitHub', function () {
-    Storage::fake('public');
+test('user can delete custom avatar and update using GitHub', function (): void {
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
@@ -402,14 +429,14 @@ test('user can delete custom avatar and update using GitHub', function () {
         'github_username' => 'testuser',
     ]);
 
-    Storage::disk('public')->put('avatars/avatar.jpg', '...');
+    Storage::disk()->put('avatars/avatar.jpg', '...');
 
     $this->actingAs($user)
         ->delete('/profile/avatar')
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    Storage::disk('public')->assertMissing('avatars/avatar.jpg');
+    Storage::disk()->assertMissing('avatars/avatar.jpg');
 
     $user->refresh();
 
@@ -419,8 +446,8 @@ test('user can delete custom avatar and update using GitHub', function () {
         ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
 });
 
-test('user can re-fetch avatar from Gravatar', function () {
-    Storage::fake('public');
+test('user can re-fetch avatar from Gravatar', function (): void {
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',
@@ -441,8 +468,8 @@ test('user can re-fetch avatar from Gravatar', function () {
         ->and(session('flash-message'))->toBe('Updating avatar using Gravatar.');
 });
 
-test('user can re-fetch avatar from GitHub', function () {
-    Storage::fake('public');
+test('user can re-fetch avatar from GitHub', function (): void {
+    Storage::fake();
 
     $user = User::factory()->create([
         'avatar' => 'avatars/avatar.jpg',

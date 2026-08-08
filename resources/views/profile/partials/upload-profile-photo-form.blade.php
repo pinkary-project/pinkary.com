@@ -1,4 +1,5 @@
-<section x-data='{
+<section
+    x-data='{
     avatar: null,
     errors: @json($errors->get('avatar')),
     checkFileSize(target) {
@@ -13,19 +14,16 @@
             this.avatar = target.files[0];
         }
     }
-}'>
+}'
+>
     <header>
-        <h2 class="text-lg font-medium dark:text-slate-400 text-slate-600">
-            {{ __('Profile Photo') }}
-        </h2>
+        <h2 class="text-lg font-medium text-slate-600 dark:text-slate-400">{{ __('Profile Photo') }}</h2>
 
-        <p class="mb-4 mt-1 text-sm text-slate-500">
-            {{ __('Upload a profile photo to personalize your account.') }}
-        </p>
+        <p class="mt-1 mb-4 text-sm text-slate-500">{{ __('Upload a profile photo to personalize your account.') }}</p>
     </header>
     <div class="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
         <div class="flex items-center justify-center">
-            <figure class="h-20 w-20 flex-shrink-0">
+            <figure class="h-20 w-20 shrink-0">
                 <img
                     alt="{{ auth()->user()->name }}"
                     :src="avatar ? URL.createObjectURL(avatar) : '{{ auth()->user()->avatar_url }}'"
@@ -49,27 +47,19 @@
         @endif
     </div>
 
-    <form
-        method="post"
-        enctype="multipart/form-data"
-        action="{{ route('profile.avatar.update') }}"
-    >
+    <form method="post" enctype="multipart/form-data" action="{{ route('profile.avatar.update') }}">
         @csrf
         @method('patch')
 
         <div>
-            <x-input-label
-                for="avatar"
-                :value="__('Avatar')"
-                class="sr-only"
-            />
+            <x-input-label for="avatar" :value="__('Avatar')" class="sr-only" />
             <x-text-input
                 type="file"
                 accept="image/*"
                 id="avatar"
                 name="avatar"
                 x-on:change="checkFileSize($event.target)"
-                class="mt-4 block w-full border text-sm file:mr-4 file:border-0 file:bg-pink-200 file:px-4 file:py-2 file:text-xs file:font-semibold file:tracking-widest file:text-pink-700 file:transition-colors hover:file:bg-pink-100 focus:outline-none focus:ring-0"
+                class="mt-4 block w-full border text-sm file:mr-4 file:border-0 file:bg-pink-200 file:px-4 file:py-2 file:text-xs file:font-semibold file:tracking-widest file:text-pink-700 file:transition-colors hover:file:bg-pink-100 focus:ring-0 focus:outline-none"
             />
             <div x-show="errors.length > 0" class="mt-4">
                 <template x-for="(error, index) in errors" :key="index">
@@ -83,11 +73,7 @@
         </div>
     </form>
     <div class="relative">
-        <form
-            method="post"
-            class="absolute -top-[34px] left-[100px]"
-            action="{{ route('profile.avatar.destroy') }}"
-        >
+        <form method="post" class="absolute top-[-34px] left-[100px]" action="{{ route('profile.avatar.destroy') }}">
             @csrf
             @method('delete')
 

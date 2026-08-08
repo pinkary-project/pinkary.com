@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Rules\Recaptcha;
 use Illuminate\Support\Facades\Http;
 
-it('verifies the recaptcha response', function () {
+it('verifies the recaptcha response', function (): void {
     $rule = new Recaptcha('127.0.0.1');
 
     $response = Http::fake([
@@ -21,7 +21,7 @@ it('verifies the recaptcha response', function () {
     expect(true)->toBeTrue();
 });
 
-it('does not verify the recaptcha response', function () {
+it('does not verify the recaptcha response', function (): void {
     $rule = new Recaptcha('127.0.0.1');
 
     $response = Http::fake([

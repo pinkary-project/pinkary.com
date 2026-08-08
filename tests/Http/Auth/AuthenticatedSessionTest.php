@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('login page can be rendered', function () {
+test('login page can be rendered', function (): void {
     $response = $this->get('/login');
 
     $response->assertOk()
         ->assertViewIs('auth.login');
 });
 
-test('logout with multiple accounts switches to last account', function () {
+test('logout with multiple accounts switches to last account', function (): void {
     $user1 = User::factory()->create(['username' => 'john']);
     $user2 = User::factory()->create(['username' => 'jane']);
     $user3 = User::factory()->create(['username' => 'bob']);
@@ -30,7 +30,7 @@ test('logout with multiple accounts switches to last account', function () {
     $response->assertRedirect();
 });
 
-test('logout with single account performs full logout', function () {
+test('logout with single account performs full logout', function (): void {
     $user = User::factory()->create(['username' => 'john']);
 
     $this->actingAs($user);
@@ -43,7 +43,7 @@ test('logout with single account performs full logout', function () {
     $response->assertRedirect();
 });
 
-test('logout with no accounts performs full logout', function () {
+test('logout with no accounts performs full logout', function (): void {
     $user = User::factory()->create(['username' => 'john']);
 
     $this->actingAs($user);
@@ -54,7 +54,7 @@ test('logout with no accounts performs full logout', function () {
     $response->assertRedirect();
 });
 
-test('logout removes current user from accounts', function () {
+test('logout removes current user from accounts', function (): void {
     $user1 = User::factory()->create(['username' => 'john']);
     $user2 = User::factory()->create(['username' => 'jane']);
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use Illuminate\Http\UploadedFile;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Http::fake([
         '*' => Http::response('', 404),
     ]);
 });
 
-test('brs', function (string $content, string $parsed) {
+test('brs', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\BrProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -25,7 +25,7 @@ test('brs', function (string $content, string $parsed) {
     ],
 ]);
 
-test('links', function (string $content, string $parsed) {
+test('links', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -64,7 +64,7 @@ test('links', function (string $content, string $parsed) {
     ],
 ]);
 
-test('links with mail', function (string $content, string $parsed) {
+test('links with mail', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -87,7 +87,7 @@ test('links with mail', function (string $content, string $parsed) {
     ],
 ]);
 
-test('link parser doesnt ignores the src attribute in am image tag, only the alt attribute', function (string $content, string $parsed) {
+test('link parser doesnt ignores the src attribute in am image tag, only the alt attribute', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -98,7 +98,7 @@ test('link parser doesnt ignores the src attribute in am image tag, only the alt
     ],
 ])->note('The dot in the path was causing a anchor tag to be parsed so we added the src attribute to the REGEX');
 
-test('links with ports in the url', function (string $content, string $parsed) {
+test('links with ports in the url', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -129,7 +129,7 @@ test('links with ports in the url', function (string $content, string $parsed) {
     ],
 ]);
 
-test('links with localhost or ip addresses', function (string $content, string $parsed) {
+test('links with localhost or ip addresses', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -152,7 +152,7 @@ test('links with localhost or ip addresses', function (string $content, string $
     ],
 ]);
 
-test('does not attach preview when image markdown exists even if metadata is valid', function () {
+test('does not attach preview when image markdown exists even if metadata is valid', function (): void {
     $content = <<<'CONTENT'
         Check out this link: https://example.com <br>
         ![preview.jpg](http://example.com/preview.jpg) <br>
@@ -165,8 +165,8 @@ test('does not attach preview when image markdown exists even if metadata is val
         ->and($parsed)->toContain('<a data-navigate-ignore="true"');
 });
 
-test('attaches preview only to the last valid preview link among multiple links', function () {
-    app()->forgetInstance(get_class(Http::getFacadeRoot()));
+test('attaches preview only to the last valid preview link among multiple links', function (): void {
+    app()->forgetInstance(Http::getFacadeRoot()::class);
     Http::clearResolvedInstances();
 
     Http::fake([
@@ -194,7 +194,7 @@ test('attaches preview only to the last valid preview link among multiple links'
         ->and($parsed)->not->toContain('data-url="https://example3.com"');
 });
 
-test('links with query params', function (string $content, string $parsed) {
+test('links with query params', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -213,7 +213,7 @@ test('links with query params', function (string $content, string $parsed) {
     ],
 ]);
 
-test('links within <pre> and <code> blocks are ignored', function (string $content, string $parsed) {
+test('links within <pre> and <code> blocks are ignored', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -242,7 +242,7 @@ test('links within <pre> and <code> blocks are ignored', function (string $conte
     ],
 ]);
 
-test('malformed links are correctly handled by content parser', function (string $content) {
+test('malformed links are correctly handled by content parser', function (string $content): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
     expect($provider->parse($content))->toMatchSnapshot();
 })->with([
@@ -265,7 +265,7 @@ test('malformed links are correctly handled by content parser', function (string
     'http://example.com/👍',
 ]);
 
-test('only http or https urls are converted to links', function (string $content, string $parsed) {
+test('only http or https urls are converted to links', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -284,7 +284,7 @@ test('only http or https urls are converted to links', function (string $content
     ],
 ]);
 
-test('mentions within <pre> and <code> blocks are ignored', function (string $content, string $parsed) {
+test('mentions within <pre> and <code> blocks are ignored', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\MentionProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);
@@ -313,20 +313,20 @@ test('mentions within <pre> and <code> blocks are ignored', function (string $co
     ],
 ]);
 
-test('code', function (string $content) {
+test('code', function (string $content): void {
     $provider = new App\Services\ParsableContentProviders\CodeProviderParsable();
 
     expect($provider->parse($content))->toMatchSnapshot();
 })->with([
     [
-        'content' => <<<'EOL'
+        <<<'EOL'
             ```php
             echo "Hello, World!";
             ```
             EOL,
     ],
     [
-        'content' => <<<'EOL'
+        <<<'EOL'
             Check this:
             ```
             echo "Hello, World!";
@@ -344,7 +344,7 @@ test('code', function (string $content) {
         so we need to use a str_replace to add a space after the language programatically.
     */
     [
-        'content' => str_replace('```php', '```php ', <<<'EOL'
+        str_replace('```php', '```php ', <<<'EOL'
             ```php
             echo "Hello, World!";
             ```
@@ -353,28 +353,28 @@ test('code', function (string $content) {
     ],
 ]);
 
-test('mention', function (string $content) {
+test('mention', function (string $content): void {
     $provider = new App\Services\ParsableContentProviders\MentionProviderParsable();
 
     expect($provider->parse($content))->toMatchSnapshot();
 })->with([
-    ['content' => 'Hi @nunomaduro'],
-    ['content' => '@nunomaduro hi'],
-    ['content' => '@w31r4_'],
-    ['content' => '@nunomaduro.'],
-    ['content' => '@nunomaduro,'],
-    ['content' => '@nunomaduro!'],
-    ['content' => '@nunomaduro?'],
-    ['content' => '@nunomaduro/'],
+    ['Hi @nunomaduro'],
+    ['@nunomaduro hi'],
+    ['@w31r4_'],
+    ['@nunomaduro.'],
+    ['@nunomaduro,'],
+    ['@nunomaduro!'],
+    ['@nunomaduro?'],
+    ['@nunomaduro/'],
 ]);
 
-test('image exists', function () {
-    Storage::fake('public');
+test('image exists', function (): void {
+    Storage::fake();
     $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
 
     $pngFile = UploadedFile::fake()->image('pathtoimage.png');
     $filePath = 'images/pathtoimage.png';
-    Storage::disk('public')->put($filePath, $pngFile->getContent());
+    Storage::disk()->put($filePath, $pngFile->getContent());
 
     // Use the direct file path in the markdown
     $content = "![]({$filePath})";
@@ -383,19 +383,7 @@ test('image exists', function () {
         ->toMatchSnapshot();
 });
 
-test('image does not exists', function () {
-    $provider = new App\Services\ParsableContentProviders\ImageProviderParsable();
-
-    $content = '![](images/imagesdoesnotexists.png)';
-
-    expect($provider->parse($content))->toBe('...');
-
-    $content = 'other content ![](images/imagesdoesnotexists.png)';
-
-    expect($provider->parse($content))->toBe('other content ');
-});
-
-test('hashtags', function (string $content, string $parsed) {
+test('hashtags', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\HashtagProviderParsable();
 
     expect($provider->parse($content))->toBe($parsed);

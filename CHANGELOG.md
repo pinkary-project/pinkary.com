@@ -1,3 +1,27 @@
+## Version 1.47.0
+> 31 March, 2026
+
+- Adds option to select default feed
+- Internal improvements and bug fixes.
+
+## Version 1.46.0
+> 23 December, 2025
+
+- Internal improvements and bug fixes.
+
+## Version 1.45.1
+> 4 August, 2025
+
+- Improves link previews for posts.
+- Internal improvements and bug fixes.
+
+## Version 1.45.0
+> 3 August, 2025
+
+- Adds view likes button to posts.
+- Update to Laravel 12.
+- minor improvements
+
 ## Version 1.44.0
 > 27 July, 2025
 

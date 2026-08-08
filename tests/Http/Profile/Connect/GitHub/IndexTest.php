@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('guest', function () {
+test('guest', function (): void {
     $response = $this->get(route('profile.connect.github'));
 
     $response->assertStatus(302)
         ->assertRedirect(route('login'));
 });
 
-test('redirect to github', function () {
+test('redirect to github', function (): void {
     $response = $this->actingAs(User::factory()->create())
         ->get(route('profile.connect.github'));
 

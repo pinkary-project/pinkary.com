@@ -7,7 +7,7 @@ use App\Models\PollVote;
 use App\Models\Question;
 use Carbon\CarbonInterface;
 
-test('to array', function () {
+test('to array', function (): void {
     $pollOption = PollOption::factory()->create()->fresh();
 
     expect(array_keys($pollOption->toArray()))->toBe([
@@ -20,7 +20,7 @@ test('to array', function () {
     ]);
 });
 
-test('relations', function () {
+test('relations', function (): void {
     $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
 
     $pollOption = PollOption::factory()
@@ -37,7 +37,7 @@ test('relations', function () {
         ->and($pollOption->votes->first())->toBeInstanceOf(PollVote::class);
 });
 
-test('fillable attributes', function () {
+test('fillable attributes', function (): void {
     $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
 
     $pollOption = PollOption::create([
@@ -51,7 +51,7 @@ test('fillable attributes', function () {
         ->and($pollOption->votes_count)->toBe(5);
 });
 
-test('casts', function () {
+test('casts', function (): void {
     $pollOption = PollOption::factory()->create([
         'votes_count' => '10',
     ]);

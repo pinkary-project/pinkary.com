@@ -8,7 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use Carbon\CarbonInterface;
 
-test('to array', function () {
+test('to array', function (): void {
     $pollVote = PollVote::factory()->create()->fresh();
 
     expect(array_keys($pollVote->toArray()))->toBe([
@@ -20,7 +20,7 @@ test('to array', function () {
     ]);
 });
 
-test('relations', function () {
+test('relations', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
     $pollOption = PollOption::factory()->for($question)->create();
@@ -36,7 +36,7 @@ test('relations', function () {
         ->and($pollVote->pollOption->id)->toBe($pollOption->id);
 });
 
-test('fillable attributes', function () {
+test('fillable attributes', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
     $pollOption = PollOption::factory()->for($question)->create();
@@ -50,7 +50,7 @@ test('fillable attributes', function () {
         ->and($pollVote->poll_option_id)->toBe($pollOption->id);
 });
 
-test('casts', function () {
+test('casts', function (): void {
     $pollVote = PollVote::factory()->create();
 
     expect($pollVote->user_id)->toBeInt()
@@ -59,7 +59,7 @@ test('casts', function () {
         ->and($pollVote->updated_at)->toBeInstanceOf(CarbonInterface::class);
 });
 
-test('unique vote constraint', function () {
+test('unique vote constraint', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['poll_expires_at' => now()->addDays(1)]);
     $pollOption = PollOption::factory()->for($question)->create();

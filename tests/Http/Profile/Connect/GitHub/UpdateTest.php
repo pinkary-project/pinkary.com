@@ -7,15 +7,23 @@ use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 
-test('guest', function () {
+test('guest', function (): void {
     $response = $this->get(route('profile.connect.github.update'));
 
     $response->assertStatus(302)
         ->assertRedirect(route('login'));
 });
 
-test('connect github', function () {
-    Http::fake();
+test('connect github', function (): void {
+    Http::fake([
+        'github.com/*' => Http::response([
+            'data' => [
+                'user' => [
+                    'sponsorshipForViewerAsSponsorable' => [],
+                ],
+            ],
+        ]),
+    ]);
 
     $user = User::factory()->create();
     expect($user->github_username)->toBeNull();
@@ -30,12 +38,12 @@ test('connect github', function () {
 
     $user->refresh();
 
-    expect($user->github_username)->toBe('test');
-    expect($user->is_verified)->toBeFalse();
+    expect($user->github_username)->toBe('test')
+        ->and($user->is_verified)->toBeFalse();
 
 });
 
-test('connecting to same github username', function () {
+test('connecting to same github username', function (): void {
     $user = User::factory()->create([
         'github_username' => 'test',
     ]);
@@ -54,11 +62,11 @@ test('connecting to same github username', function () {
 
     $user->refresh();
 
-    expect($user->github_username)->toBe('test');
-    expect($user->is_verified)->toBeFalse();
+    expect($user->github_username)->toBe('test')
+        ->and($user->is_verified)->toBeFalse();
 });
 
-test('connecting to existing github username', function () {
+test('connecting to existing github username', function (): void {
     User::factory()->create([
         'github_username' => 'test',
     ]);
@@ -78,11 +86,11 @@ test('connecting to existing github username', function () {
 
     $user->refresh();
 
-    expect($user->github_username)->toBeNull();
-    expect($user->is_verified)->toBeFalse();
+    expect($user->github_username)->toBeNull()
+        ->and($user->is_verified)->toBeFalse();
 });
 
-test('connect to github may get you verified if you are sponsoring us', function () {
+test('connect to github may get you verified if you are sponsoring us', function (): void {
     $user = User::factory()->create();
     expect($user->is_verified)->toBeFalse();
     Socialite::shouldReceive('driver->user->getNickname')->andReturn('test');
@@ -110,12 +118,21 @@ test('connect to github may get you verified if you are sponsoring us', function
 
     $user->refresh();
 
-    expect($user->github_username)->toBe('test');
-    expect($user->is_verified)->toBeTrue();
+    expect($user->github_username)->toBe('test')
+        ->and($user->is_verified)->toBeTrue();
 });
 
-test('fetches github avatar if no custom avatar uploaded', function () {
-    Http::fake();
+test('fetches github avatar if no custom avatar uploaded', function (): void {
+    Http::fake([
+        'github.com/*' => Http::response([
+            'data' => [
+                'user' => [
+                    'sponsorshipForViewerAsSponsorable' => [],
+                ],
+            ],
+        ]),
+    ]);
+
     Queue::fake();
 
     $user = User::factory()->create();

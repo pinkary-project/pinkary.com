@@ -10,7 +10,6 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -39,9 +38,26 @@ final class Index extends Component
             ->where('pinned', true)
             ->first();
 
+        $latestQuestions = Question::query()
+            ->selectRaw('id as latest_id, updated_at as last_update')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY COALESCE(root_id, id) ORDER BY updated_at DESC, id DESC) as thread_rank')
+            ->where('is_ignored', false)
+            ->where('is_reported', false)
+            ->where('to_id', $user->id)
+            ->when($user->isNot($request->user()), function (Builder $query): void {
+                $query->whereNotNull('answer');
+            });
+
         $questions = $user
             ->questionsReceived()
-            ->select('id', 'root_id', 'parent_id')
+            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
+            ->joinSub(
+                $latestQuestions,
+                'grouped_questions',
+                'questions.id',
+                '=',
+                'grouped_questions.latest_id',
+            )
             ->withExists([
                 'root as showRoot' => function (Builder $query) use ($user): void {
                     $query->where('to_id', $user->id);
@@ -51,15 +67,23 @@ final class Index extends Component
                 },
             ])
             ->with('parent:id,parent_id')
-            ->where('pinned', false)
-            ->where('is_reported', false)
-            ->where('is_ignored', false)
+            ->where('grouped_questions.thread_rank', 1)
+            ->where('questions.pinned', false)
+            ->where('questions.is_reported', false)
+            ->where('questions.is_ignored', false)
             ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
-                $query->whereNotNull('answer');
+                $query->whereNotNull('questions.answer');
             })
-            ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-            ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-            ->orderByDesc(DB::raw('MAX(`updated_at`)'))
+            ->where(function (Builder $query) use ($user): void {
+                $belongsToUser = function (Builder $query) use ($user): void {
+                    $query->where('to_id', $user->id);
+                };
+
+                $query->whereNull('questions.parent_id')
+                    ->orWhereHas('root', $belongsToUser)
+                    ->orWhereHas('parent', $belongsToUser);
+            })
+            ->orderByDesc('grouped_questions.last_update')
             ->simplePaginate($this->perPage);
 
         return view('livewire.questions.index', [

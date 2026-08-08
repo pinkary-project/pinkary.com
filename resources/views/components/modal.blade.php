@@ -4,7 +4,7 @@
     'maxWidth' => '2xl',
     'showCloseButton' => true,
     'closeButtonOutsideModal' => false,
-    'shouldCenterModalContent' => false
+    'shouldCenterModalContent' => false,
 ])
 
 @php
@@ -17,7 +17,7 @@
     ][$maxWidth];
 
     $closeButtonPosition = $closeButtonOutsideModal ? 'right-0 -top-10' : 'right-2 top-2';
-    $contentOverflowStyle = ($closeButtonOutsideModal && !$shouldCenterModalContent) ? 'mt-10' : '';
+    $contentOverflowStyle = ($closeButtonOutsideModal && ! $shouldCenterModalContent) ? 'mt-10' : '';
     $modalContentPosition = $shouldCenterModalContent ? 'flex justify-center items-center' : '';
 @endphp
 
@@ -64,7 +64,7 @@
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 z-50 overflow-y-auto {{$modalContentPosition}} bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
+    class="fixed inset-0 z-100 overflow-y-auto {{ $modalContentPosition }} bg-clip-padding px-4 py-6 backdrop-blur-sm backdrop-filter sm:px-0"
     style="display: {{ $show ? 'block' : 'none' }}"
 >
     <div
@@ -78,11 +78,11 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-slate-500 bg-opacity-25"></div>
+        <div class="absolute inset-0 bg-slate-950/35 dark:bg-[#020617]/80"></div>
     </div>
     <div
         x-show="show"
-        class="{{ $maxWidth }} {{$contentOverflowStyle}} transform rounded-lg dark:bg-slate-950 bg-slate-50 shadow-xl transition-all sm:mx-auto sm:w-auto"
+        class="relative z-10 {{ $maxWidth }} {{ $contentOverflowStyle }} transform rounded-lg border border-slate-200/80 bg-white shadow-xl shadow-slate-900/10 transition-all dark:border-slate-800/80 dark:bg-[#050d1b] dark:shadow-black/40 sm:mx-auto sm:w-auto"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
@@ -94,7 +94,7 @@
             <button
                 x-show="showCloseButton == true"
                 x-on:click="show = false"
-                class="absolute text-xl focus:outline-none z-50 {{$closeButtonPosition}}"
+                class="absolute z-50 text-xl text-slate-500 transition hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:text-white {{ $closeButtonPosition }}"
             >
                 <x-heroicon-o-x-mark class="h-6 w-6" />
             </button>

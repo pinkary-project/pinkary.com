@@ -9,6 +9,7 @@ use App\Services\Avatar;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers;
 use Intervention\Image\ImageManager;
@@ -34,13 +35,13 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     public function handle(): void
     {
-        $disk = Storage::disk('public');
+        $disk = Storage::disk();
 
         if ($this->user->avatar && $disk->exists($this->user->avatar)) {
             $disk->delete($this->user->avatar);
         }
 
-        $file = $this->file ?? (new Avatar($this->user))->url(
+        $file = $this->file ?? new Avatar($this->user)->url(
             $this->service ?? 'gravatar',
         );
 
@@ -54,15 +55,18 @@ final class UpdateUserAvatar implements ShouldQueue
             return;
         }
 
-        $contents = (string) file_get_contents($file);
+        if (str_contains($file, 'gravatar.com')) {
+            $contents = Http::withoutVerifying()->get($file)->body();
+        } else {
+            $contents = (string) file_get_contents($file);
+        }
 
         $avatar = 'avatars/'.hash('sha256', random_int(0, PHP_INT_MAX).'@'.$this->user->id).'.png';
 
-        Storage::disk('public')->put($avatar, $contents, 'public');
+        $image = $this->resizer()->read($contents)
+            ->coverDown(200, 200)->toPng()->toFilePointer();
 
-        $this->resizer()->read($disk->path($avatar))
-            ->coverDown(200, 200)
-            ->save();
+        $disk->put($avatar, $image, ['visibility' => 'public']);
 
         $this->user->update([
             'avatar' => "$avatar",
@@ -75,6 +79,8 @@ final class UpdateUserAvatar implements ShouldQueue
 
     /**
      * Handle a job failure.
+     *
+     * @codeCoverageIgnore
      */
     public function failed(?Throwable $exception): void
     {
@@ -103,7 +109,8 @@ final class UpdateUserAvatar implements ShouldQueue
     private function resizer(): ImageManager
     {
         return new ImageManager(
-            new Drivers\Gd\Driver(),
+            new Drivers\Imagick\Driver(),
+            strip: true,
         );
     }
 }

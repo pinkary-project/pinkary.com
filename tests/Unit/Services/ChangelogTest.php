@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Services\Changelog;
 
-it('gets releases', function () {
+it('gets releases', function (): void {
     $changelog = new Changelog();
 
     $releases = $changelog->getReleases();

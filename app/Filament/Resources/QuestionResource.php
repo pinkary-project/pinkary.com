@@ -7,7 +7,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
 use App\Models\User;
+use BackedEnum;
 use Blade;
+use Filament\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\Column;
@@ -26,7 +28,7 @@ final class QuestionResource extends Resource
     /**
      * The navigation icon for the resource.
      */
-    protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-question-mark-circle';
 
     /**
      * Configures the table for the resource.
@@ -67,14 +69,14 @@ final class QuestionResource extends Resource
                 TernaryFilter::make('is_ignored'),
             ])
             ->actions([
-                Tables\Actions\Action::make('ignore')
+                Action::make('ignore')
                     ->color('gray')
                     ->action(function (Question $record): void {
                         $record->update(['is_ignored' => true]);
                     })
                     ->visible(fn (Question $record): bool => ! $record->is_ignored)
                     ->requiresConfirmation(),
-                Tables\Actions\Action::make('visit_question')
+                Action::make('visit_question')
                     ->label('Visit')
                     ->url(fn (Question $record): string => route('questions.show', [
                         'username' => User::findOrFail($record->to_id)->username,

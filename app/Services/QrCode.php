@@ -74,7 +74,7 @@ final readonly class QrCode
      */
     private function createQrCodeData(string $content): string
     {
-        return (new Writer(
+        return new Writer(
             renderer: new ImageRenderer(
                 rendererStyle: new RendererStyle(
                     size: 512,
@@ -83,7 +83,7 @@ final readonly class QrCode
                 ),
                 imageBackEnd: new ImagickImageBackEnd()
             )
-        ))->writeString(
+        )->writeString(
             content: $content,
             ecLevel: ErrorCorrectionLevel::M()
         );

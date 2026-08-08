@@ -62,6 +62,7 @@ final readonly class MetaData
         }
 
         $doc = new DOMDocument();
+        // @phpstan-ignore argument.type
         @$doc->loadHTML($value);
         $iframe = $doc->getElementsByTagName('iframe')->item(0);
 
@@ -88,7 +89,7 @@ final readonly class MetaData
         $min_width = self::CARD_WIDTH / 0.66;
         $min_height = self::CARD_HEIGHT / 0.66;
 
-        return ! ($dimensions && ($dimensions[0] < $min_width || $dimensions[1] < $min_height));
+        return ! $dimensions || $dimensions[0] >= $min_width && $dimensions[1] >= $min_height;
     }
 
     /**
@@ -116,7 +117,24 @@ final readonly class MetaData
                 return $oembed;
             }
         }
-
+        // If it's a Vimeo link, go straight to oEmbed
+        // return early to bypass bot detection issues.
+        if (in_array(
+            needle: Uri::of($this->url)->host(),
+            haystack: ['vimeo.com', 'www.vimeo.com'],
+            strict: true
+        )) {
+            $oembed = $this->fetchOEmbed(
+                service: 'https://vimeo.com/oembed',
+                options: [
+                    'maxwidth' => self::CARD_WIDTH,
+                    'maxheight' => self::CARD_HEIGHT,
+                ]
+            );
+            if ($oembed->isNotEmpty()) {
+                return $oembed;
+            }
+        }
         $data = collect();
 
         try {
@@ -163,6 +181,7 @@ final readonly class MetaData
     /**
      * Parse the response body for MetaData.
      *
+     * @param  non-empty-string  $content
      * @return Collection<string, non-empty-string>
      */
     private function parseContent(string $content): Collection
@@ -208,6 +227,7 @@ final readonly class MetaData
     /**
      * Parse the response body for MetaData.
      *
+     * @param  non-empty-string  $html
      * @return Collection<string, non-empty-string>
      *
      * @throws ConnectionException

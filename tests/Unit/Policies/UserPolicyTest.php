@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('follow', function () {
+test('follow', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
@@ -15,7 +15,7 @@ test('follow', function () {
     expect($user->can('follow', $user))->toBeFalse();
 });
 
-test('unfollow', function () {
+test('unfollow', function (): void {
     $user = User::factory()->create();
     $target = User::factory()->create();
 

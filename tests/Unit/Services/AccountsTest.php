@@ -5,17 +5,17 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Services\Accounts;
 
-beforeEach(function () {
+beforeEach(function (): void {
     cookie()->queue(cookie()->forget('accounts'));
 });
 
-test('all returns empty array when no accounts cookie exists', function () {
+test('all returns empty array when no accounts cookie exists', function (): void {
     $accounts = Accounts::all();
 
-    expect($accounts)->toBe([]);
+    expect($accounts)->toBeEmpty();
 });
 
-test('all returns accounts from cookie', function () {
+test('all returns accounts from cookie', function (): void {
     $cookieData = json_encode(['john' => true, 'jane' => true]);
     request()->cookies->set('accounts', $cookieData);
 
@@ -24,19 +24,19 @@ test('all returns accounts from cookie', function () {
     expect($accounts)->toBe(['john' => true, 'jane' => true]);
 });
 
-test('all handles invalid json in cookie', function () {
+test('all handles invalid json in cookie', function (): void {
     request()->cookies->set('accounts', 'invalid-json');
 
     $accounts = Accounts::all();
 
-    expect($accounts)->toBe([]);
+    expect($accounts)->toBeEmpty();
 });
 
-test('push adds account to cookie', function () {
+test('push adds account to cookie', function (): void {
     Accounts::push('testuser');
 
     $queuedCookies = cookie()->getQueuedCookies();
-    $accountsCookie = collect($queuedCookies)->first(fn ($cookie) => $cookie->getName() === 'accounts');
+    $accountsCookie = collect($queuedCookies)->first(fn ($cookie): bool => $cookie->getName() === 'accounts');
 
     expect($accountsCookie)->not()->toBeNull();
 
@@ -44,7 +44,7 @@ test('push adds account to cookie', function () {
     expect($accounts)->toBe(['testuser' => true]);
 });
 
-test('push adds multiple accounts to cookie', function () {
+test('push adds multiple accounts to cookie', function (): void {
     Accounts::push('user1');
 
     request()->cookies->set('accounts', json_encode(['user1' => true]));
@@ -52,13 +52,13 @@ test('push adds multiple accounts to cookie', function () {
     Accounts::push('user2');
 
     $queuedCookies = cookie()->getQueuedCookies();
-    $accountsCookie = collect($queuedCookies)->last(fn ($cookie) => $cookie->getName() === 'accounts');
+    $accountsCookie = collect($queuedCookies)->last(fn ($cookie): bool => $cookie->getName() === 'accounts');
 
     $accounts = json_decode($accountsCookie->getValue(), true);
     expect($accounts)->toBe(['user1' => true, 'user2' => true]);
 });
 
-test('switch authenticates user when account exists', function () {
+test('switch authenticates user when account exists', function (): void {
     $user = User::factory()->create(['username' => 'testuser']);
 
     Accounts::push('testuser');
@@ -66,43 +66,43 @@ test('switch authenticates user when account exists', function () {
 
     Accounts::switch('testuser');
 
-    expect(auth()->check())->toBeTrue();
-    expect(auth()->user()->username)->toBe('testuser');
+    expect(auth()->check())->toBeTrue()
+        ->and(auth()->user()->username)->toBe('testuser');
 });
 
-test('switch throws exception when account not found in cookie', function () {
+test('switch throws exception when account not found in cookie', function (): void {
     $user = User::factory()->create(['username' => 'testuser']);
 
     expect(fn () => Accounts::switch('testuser'))
         ->toThrow('Unauthorized action.');
 });
 
-test('switch throws exception when user not found in database', function () {
+test('switch throws exception when user not found in database', function (): void {
     request()->cookies->set('accounts', json_encode(['nonexistent' => true]));
 
     expect(fn () => Accounts::switch('nonexistent'))
         ->toThrow('User not found.');
 });
 
-test('remove deletes account from cookie', function () {
+test('remove deletes account from cookie', function (): void {
     request()->cookies->set('accounts', json_encode(['user1' => true, 'user2' => true]));
 
     Accounts::remove('user1');
 
     $queuedCookies = cookie()->getQueuedCookies();
-    $accountsCookie = collect($queuedCookies)->first(fn ($cookie) => $cookie->getName() === 'accounts');
+    $accountsCookie = collect($queuedCookies)->first(fn ($cookie): bool => $cookie->getName() === 'accounts');
 
     $accounts = json_decode($accountsCookie->getValue(), true);
     expect($accounts)->toBe(['user2' => true]);
 });
 
-test('remove handles non-existent account gracefully', function () {
+test('remove handles non-existent account gracefully', function (): void {
     request()->cookies->set('accounts', json_encode(['user1' => true]));
 
     Accounts::remove('nonexistent');
 
     $queuedCookies = cookie()->getQueuedCookies();
-    $accountsCookie = collect($queuedCookies)->first(fn ($cookie) => $cookie->getName() === 'accounts');
+    $accountsCookie = collect($queuedCookies)->first(fn ($cookie): bool => $cookie->getName() === 'accounts');
 
     $accounts = json_decode($accountsCookie->getValue(), true);
     expect($accounts)->toBe(['user1' => true]);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Question;
 use App\Notifications\QuestionAnswered;
 
-test('to database', function () {
+test('to database', function (): void {
     $question = Question::factory()->create();
 
     $notification = new QuestionAnswered($question);

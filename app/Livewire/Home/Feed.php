@@ -46,7 +46,7 @@ final class Feed extends Component
      */
     public function render(): View
     {
-        $questions = (new RecentQuestionsFeed($this->hashtag))
+        $questions = new RecentQuestionsFeed($this->hashtag)
             ->builder()
             ->simplePaginate($this->perPage);
 

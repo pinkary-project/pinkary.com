@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Services\Avatar;
 
-test('avatar default url', function () {
+test('avatar default url', function (): void {
     $avatar = new Avatar(
         user: User::factory()->create(),
     );
@@ -13,7 +13,7 @@ test('avatar default url', function () {
     expect($avatar->url())->toBe(asset('img/default-avatar.png'));
 });
 
-test('avatar url with gravatar', function () {
+test('avatar url with gravatar', function (): void {
     $user = User::factory()->create(['email' => 'enunomaduro@gmail.com']);
     $gravHash = hash('sha256', mb_strtolower($user->email));
 
@@ -24,7 +24,7 @@ test('avatar url with gravatar', function () {
     expect($avatar->url())->toBe("https://gravatar.com/avatar/{$gravHash}?s=300&d=404");
 });
 
-test('avatar url with github', function () {
+test('avatar url with github', function (): void {
     $user = User::factory()->create(['github_username' => 'nunomaduro']);
 
     $avatar = new Avatar(

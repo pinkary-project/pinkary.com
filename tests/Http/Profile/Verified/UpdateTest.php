@@ -5,14 +5,14 @@ declare(strict_types=1);
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
-test('guest', function () {
+test('guest', function (): void {
     $response = $this->post(route('profile.verified.update'));
 
     $response->assertStatus(302)
         ->assertRedirect(route('login'));
 });
 
-test('update verified', function () {
+test('update verified', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'is_company_verified' => false,
@@ -46,7 +46,7 @@ test('update verified', function () {
         ->and($user->is_company_verified)->toBeFalse();
 });
 
-test('update non verified because does not sponsor', function () {
+test('update non verified because does not sponsor', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'github_username' => 'test',
@@ -73,7 +73,7 @@ test('update non verified because does not sponsor', function () {
     expect($user->is_verified)->toBeFalse();
 });
 
-test('update non verified because does not have github username', function () {
+test('update non verified because does not have github username', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'github_username' => null,

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('questions', function (Blueprint $table): void {
-            $table->timestamp('poll_expires_at')->nullable()->after('is_poll');
+            $table->timestamp('poll_expires_at')->nullable()->after('answer_updated_at');
         });
     }
 };

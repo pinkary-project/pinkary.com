@@ -7,7 +7,7 @@ use App\Jobs\SyncVerifiedUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
-it('gets non-verified if does not have a GitHub username', function () {
+it('gets non-verified if does not have a GitHub username', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
         'github_username' => null,
@@ -18,7 +18,7 @@ it('gets non-verified if does not have a GitHub username', function () {
     expect($user->fresh()->is_verified)->toBeFalse();
 });
 
-it('gets non-verified if GitHub username is not sponsoring us', function () {
+it('gets non-verified if GitHub username is not sponsoring us', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
         'github_username' => 'test',
@@ -41,7 +41,7 @@ it('gets non-verified if GitHub username is not sponsoring us', function () {
     expect($user->fresh()->is_verified)->toBeFalse();
 });
 
-it('does not touch on the verified status if GitHub call fails', function () {
+it('does not touch on the verified status if GitHub call fails', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
         'github_username' => 'test',
@@ -54,7 +54,7 @@ it('does not touch on the verified status if GitHub call fails', function () {
     SyncVerifiedUser::dispatchSync($user);
 })->throws(GitHubException::class);
 
-it('does not get verified if GitHub username is sponsoring us but the tier is less than $9', function () {
+it('does not get verified if GitHub username is sponsoring us but the tier is less than $9', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'github_username' => 'test',
@@ -79,7 +79,7 @@ it('does not get verified if GitHub username is sponsoring us but the tier is le
     expect($user->fresh()->is_verified)->toBeFalse();
 });
 
-it('gets verified if GitHub username is sponsoring us', function () {
+it('gets verified if GitHub username is sponsoring us', function (): void {
     $user = User::factory()->create([
         'is_verified' => false,
         'github_username' => 'test',

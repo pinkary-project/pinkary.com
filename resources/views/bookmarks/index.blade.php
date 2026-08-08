@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="title">Bookmarks</x-slot>
 
-    <div class="flex flex-col items-center justify-center">
-        <div class="min-h-screen w-full max-w-md overflow-hidden px-2 sm:px-0">
-            <livewire:bookmarks.index />
+    <section class="border-b border-slate-200/70 bg-white/80 px-4 py-4 lg:border-r dark:border-slate-800/30 dark:bg-[#07101f]/95">
+        <div class="mx-auto min-h-screen w-full max-w-176 overflow-hidden">
+            <livewire:bookmarks />
         </div>
-    </div>
+    </section>
 </x-app-layout>

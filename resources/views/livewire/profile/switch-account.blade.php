@@ -1,7 +1,7 @@
 <div class="space-y-1">
     @foreach ($accounts as $account)
         @if ($account->is(auth()->user()))
-            <x-dropdown-button class="dark:bg-slate-800 bg-slate-200" disabled>
+            <x-dropdown-button class="bg-slate-200 dark:bg-slate-800" disabled>
                 {{ '@' . $account->username }}
             </x-dropdown-button>
         @else

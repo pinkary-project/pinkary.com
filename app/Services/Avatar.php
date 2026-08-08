@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
 final readonly class Avatar
 {
@@ -29,8 +30,8 @@ final readonly class Avatar
         if ($service === 'gravatar') {
             $gravatarHash = hash('sha256', mb_strtolower($this->user->email));
             $gravatarUrl = "https://gravatar.com/avatar/{$gravatarHash}?s=300&d=404";
-            $headers = get_headers($gravatarUrl);
-            if ($headers !== false && ! in_array('HTTP/1.1 404 Not Found', $headers, true)) {
+            $response = Http::head($gravatarUrl);
+            if (! $response->notFound()) {
                 return $gravatarUrl;
             }
         }

@@ -36,8 +36,23 @@ final readonly class QuestionsFollowingFeed
                 });
         };
 
+        $latestQuestions = Question::query()
+            ->selectRaw('id as latest_id, updated_at as last_update')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY COALESCE(root_id, id) ORDER BY updated_at DESC, id DESC) as thread_rank')
+            ->whereNotNull('answer')
+            ->where('is_ignored', false)
+            ->where($followQueryClosure)
+            ->where('is_reported', false);
+
         return Question::query()
-            ->select('id', 'root_id', 'parent_id')
+            ->joinSub(
+                $latestQuestions,
+                'grouped_questions',
+                'questions.id',
+                '=',
+                'grouped_questions.latest_id',
+            )
+            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
             ->withExists([
                 'root as showRoot' => $followQueryClosure,
                 'parent as showParent' => $followQueryClosure,
@@ -47,8 +62,12 @@ final readonly class QuestionsFollowingFeed
             ->where('is_reported', false)
             ->where('is_ignored', false)
             ->where($followQueryClosure)
-            ->havingRaw('parent_id IS NULL or showRoot = 1 or showParent = 1')
-            ->groupBy(DB::Raw('IFNULL(root_id, id)'))
-            ->orderByDesc(DB::raw('MAX(`updated_at`)'));
+            ->where('grouped_questions.thread_rank', 1)
+            ->where(function (Builder $query) use ($followQueryClosure): void {
+                $query->whereNull('questions.parent_id')
+                    ->orWhereHas('root', $followQueryClosure)
+                    ->orWhereHas('parent', $followQueryClosure);
+            })
+            ->orderByDesc('grouped_questions.last_update');
     }
 }

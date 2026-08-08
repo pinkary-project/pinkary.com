@@ -38,11 +38,15 @@ const imageUpload = () => ({
             this.removeErrors();
         });
 
-        Livewire.hook('morph.updated', ({el, component}) => {
-            if (this.$el === el) {
-                const errors = component.snapshot.memo.errors;
-                this.addErrors(errors);
-            }
+        Livewire.interceptMessage(({ component, message, onSuccess }) => {
+            onSuccess(({ onMorph }) => {
+                onMorph(async () => {
+                    if (this.$el === message.el) {
+                        const errors = message && message.memo && message.memo.errors ? message.memo.errors : [];
+                        this.addErrors(errors);
+                    }
+                });
+            });
         });
     },
 
@@ -53,7 +57,7 @@ const imageUpload = () => ({
         }
 
         // don't allow multiple uploads at once
-        if(this.uploading) {
+        if (this.uploading) {
             return;
         }
 
@@ -149,10 +153,10 @@ const imageUpload = () => ({
     createMarkdownImage(item) {
         let path, originalName;
         if (item instanceof Object) {
-            ({path, originalName} = item);
-            this.images.push({path, originalName});
+            ({ path, originalName } = item);
+            this.images.push({ path, originalName });
         } else if (typeof item === 'number') {
-            ({path, originalName} = this.images[item]);
+            ({ path, originalName } = this.images[item]);
         }
 
         const markdownSnippet = `![${originalName}](${this.normalizePath(path)})`;
@@ -180,7 +184,7 @@ const imageUpload = () => ({
     },
 
     removeMarkdownImage(index) {
-        let {path, originalName} = this.images[index];
+        let { path, originalName } = this.images[index];
         let regex = new RegExp(
             `!\\[${this.escapeRegExp(originalName)}\\]\\(${this.normalizePath(path)}\\)\\n?`,
             'g'
@@ -190,7 +194,7 @@ const imageUpload = () => ({
     },
 
     normalizePath(path) {
-        return path.replace(/\/storage\//, '');
+        return path.includes('/images/') ? path.substring(path.indexOf('images/')) : path;
     }
 })
 

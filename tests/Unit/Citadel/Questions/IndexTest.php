@@ -7,16 +7,16 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-it('can be listed', function () {
+it('can be listed', function (): void {
     $questions = Question::factory()->count(10)->create();
 
     Livewire::test(QuestionResource\Pages\Index::class)
         ->assertCanSeeTableRecords($questions);
 });
 
-it('can filtered by reported', function () {
+it('can filtered by reported', function (): void {
     $questions = Question::factory()->count(10)->create([
-        'is_reported' => rand(0, 1),
+        'is_reported' => random_int(0, 1),
     ]);
 
     Livewire::test(QuestionResource\Pages\Index::class)
@@ -26,9 +26,9 @@ it('can filtered by reported', function () {
         ->assertCanNotSeeTableRecords($questions->where('is_reported', false));
 });
 
-it('can filtered by ignored', function () {
+it('can filtered by ignored', function (): void {
     $questions = Question::factory()->count(10)->create([
-        'is_ignored' => rand(0, 1),
+        'is_ignored' => random_int(0, 1),
     ]);
 
     Livewire::test(QuestionResource\Pages\Index::class)
@@ -38,7 +38,7 @@ it('can filtered by ignored', function () {
         ->assertCanNotSeeTableRecords($questions->where('is_ignored', false));
 });
 
-it('can not see name of the questioner if anonymously', function () {
+it('can not see name of the questioner if anonymously', function (): void {
     User::factory()->hasQuestionsSent([
         'anonymously' => true,
     ])->create(['name' => 'Ludovic Guénet']);
@@ -50,13 +50,13 @@ it('can not see name of the questioner if anonymously', function () {
         ->assertDontSee('Ludovic Guénet');
 });
 
-it('can delete question', function () {
+it('can delete question', function (): void {
     $question = Question::factory()->create();
     $anotherQuestion = Question::factory()->create();
 
     Livewire::test(QuestionResource\Pages\Index::class)
         ->callTableAction('ignore', $question);
 
-    $this->assertTrue($question->refresh()->is_ignored);
-    $this->assertFalse($anotherQuestion->refresh()->is_ignored);
+    expect($question->refresh()->is_ignored)->toBeTrue()
+        ->and($anotherQuestion->refresh()->is_ignored)->toBeFalse();
 });

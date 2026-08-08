@@ -6,13 +6,13 @@ use App\Livewire\Notifications\Index;
 use App\Models\Question;
 use App\Models\User;
 
-test('guest', function () {
+test('guest', function (): void {
     $response = $this->get(route('notifications.index'));
 
     $response->assertRedirect(route('login'));
 });
 
-test('auth', function () {
+test('auth', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -44,5 +44,6 @@ test('auth', function () {
 
     $response->assertOk()
         ->assertSee('Notifications')
+        ->assertSee('People to follow')
         ->assertSeeLivewire(Index::class);
 });

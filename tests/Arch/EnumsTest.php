@@ -11,6 +11,7 @@ arch('enums')
     ->toOnlyBeUsedIn([
         'App\Console\Commands',
         'App\Http\Requests',
+        'App\Http\Responses',
         'App\Livewire',
         'App\Models',
     ]);

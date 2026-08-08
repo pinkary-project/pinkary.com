@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Rules\Username;
 
-test('username validation passes for valid usernames', function (string $username) {
+test('username validation passes for valid usernames', function (string $username): void {
     $rule = new Username();
 
     $rule->validate('username', $username, fn (string $errorMessage) => $this->fail($errorMessage));
@@ -17,7 +17,7 @@ test('username validation passes for valid usernames', function (string $usernam
     '_underscore',
 ]);
 
-test('username validation fails for invalid usernames', function (string $username) {
+test('username validation fails for invalid usernames', function (string $username): void {
     $rule = new Username();
 
     $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
@@ -32,7 +32,7 @@ test('username validation fails for invalid usernames', function (string $userna
     '   ',
 ])->throws(InvalidArgumentException::class);
 
-test('username validation fails for reserved usernames', function () {
+test('username validation fails for reserved usernames', function (): void {
     $user = User::factory()->create();
 
     $rule = new Username($user);
@@ -44,7 +44,7 @@ test('username validation fails for reserved usernames', function () {
     $rule->validate('username', $reservedUsername, $fail);
 })->throws(InvalidArgumentException::class, 'The :attribute is reserved.');
 
-test('username validation fails for existing usernames', function () {
+test('username validation fails for existing usernames', function (): void {
     User::factory()->create(['username' => 'existingUser']);
 
     $rule = new Username();

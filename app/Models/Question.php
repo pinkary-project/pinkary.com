@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
+use Carbon\CarbonImmutable;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @property string $id
@@ -28,14 +29,14 @@ use Illuminate\Support\Carbon;
  * @property string $content
  * @property bool $anonymously
  * @property string|null $answer
- * @property Carbon|null $answer_created_at
- * @property Carbon|null $answer_updated_at
+ * @property CarbonImmutable|null $answer_created_at
+ * @property CarbonImmutable|null $answer_updated_at
+ * @property CarbonImmutable|null $poll_expires_at
  * @property bool $is_reported
  * @property bool $is_ignored
- * @property Carbon|null $poll_expires_at
  * @property int $views
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property CarbonImmutable $created_at
+ * @property CarbonImmutable $updated_at
  * @property-read User $from
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
@@ -72,7 +73,7 @@ final class Question extends Model implements Viewable
     {
         $content = new ParsableContent();
 
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
     }
 
     /**
@@ -82,7 +83,7 @@ final class Question extends Model implements Viewable
     {
         $content = new ParsableContent();
 
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
     }
 
     /**
@@ -182,6 +183,16 @@ final class Question extends Model implements Viewable
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get the likers for the question.
+     *
+     * @return HasManyThrough<User, Like, $this>
+     */
+    public function likers(): HasManyThrough
+    {
+        return $this->hasManyThrough(User::class, Like::class, 'question_id', 'id', 'id', 'user_id');
     }
 
     /**

@@ -51,6 +51,12 @@ final class Show extends Component
     public bool $commenting = false;
 
     /**
+     * Render a bottom border for this post row.
+     */
+    #[Locked]
+    public bool $showBorder = false;
+
+    /**
      * The previous question ID, where the user came from.
      */
     #[Url]

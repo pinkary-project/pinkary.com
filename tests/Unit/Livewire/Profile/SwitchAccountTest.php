@@ -6,7 +6,7 @@ use App\Livewire\Profile\SwitchAccount;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('component renders available accounts', function () {
+test('component renders available accounts', function (): void {
     $user1 = User::factory()->create(['username' => 'john']);
     $user2 = User::factory()->create(['username' => 'jane']);
 
@@ -15,12 +15,10 @@ test('component renders available accounts', function () {
     $component = Livewire::withCookies(['accounts' => $cookieValue])
         ->test(SwitchAccount::class);
 
-    $component->assertViewHas('accounts', function ($accounts) use ($user1, $user2) {
-        return $accounts->contains($user1) && $accounts->contains($user2);
-    });
+    $component->assertViewHas('accounts', fn ($accounts): bool => $accounts->contains($user1) && $accounts->contains($user2));
 });
 
-test('component shows only usernames that exist in database', function () {
+test('component shows only usernames that exist in database', function (): void {
     User::factory()->create(['username' => 'john']);
 
     $cookieValue = json_encode(['john' => true, 'jane' => true]);
@@ -28,12 +26,10 @@ test('component shows only usernames that exist in database', function () {
     $component = Livewire::withCookies(['accounts' => $cookieValue])
         ->test(SwitchAccount::class);
 
-    $component->assertViewHas('accounts', function ($accounts) {
-        return $accounts->count() === 1 && $accounts->first()->username === 'john';
-    });
+    $component->assertViewHas('accounts', fn ($accounts): bool => $accounts->count() === 1 && $accounts->first()->username === 'john');
 });
 
-test('switch method authenticates user and redirects', function () {
+test('switch method authenticates user and redirects', function (): void {
     $user1 = User::factory()->create(['username' => 'user1']);
     $user2 = User::factory()->create(['username' => 'user2']);
 
@@ -50,13 +46,11 @@ test('switch method authenticates user and redirects', function () {
     expect(auth()->user()->username)->toBe('user2');
 });
 
-test('component handles empty accounts list', function () {
+test('component handles empty accounts list', function (): void {
     $cookieValue = json_encode([]);
 
     $component = Livewire::withCookies(['accounts' => $cookieValue])
         ->test(SwitchAccount::class);
 
-    $component->assertViewHas('accounts', function ($accounts) {
-        return $accounts->isEmpty();
-    });
+    $component->assertViewHas('accounts', fn ($accounts) => $accounts->isEmpty());
 });
