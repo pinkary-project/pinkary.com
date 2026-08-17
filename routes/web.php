@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserGitHubUsernameController;
@@ -24,6 +26,14 @@ Route::redirect('/for-you', '/following')->name('home.for_you');
 Route::view('/following', 'home/following')->name('home.following');
 Route::view('/trending', 'home/trending-questions')->name('home.trending');
 Route::view('/users', 'home/users')->name('home.users');
+
+Route::get('/topics', [TopicController::class, 'index'])->name('topics.index');
+Route::get('/topics/{topic:slug}', [TopicController::class, 'show'])->name('topics.show');
+
+Route::get('/feeds', [FeedController::class, 'index'])->name('feeds.index');
+Route::get('/feeds/create', [FeedController::class, 'create'])->name('feeds.create')->middleware(['auth', 'verified']);
+Route::get('/feeds/{feed}', [FeedController::class, 'show'])->name('feeds.show');
+Route::get('/feeds/{feed}/edit', [FeedController::class, 'edit'])->name('feeds.edit')->middleware(['auth', 'verified']);
 
 Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
 

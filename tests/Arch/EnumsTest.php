@@ -14,4 +14,5 @@ arch('enums')
         'App\Http\Responses',
         'App\Livewire',
         'App\Models',
+        'Database\Factories',
     ]);

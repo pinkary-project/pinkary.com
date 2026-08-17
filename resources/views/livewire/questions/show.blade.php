@@ -121,6 +121,19 @@
                         </a>
 
                         <div class="flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
+                            @if ($question->topic && ! $question->topic->is_system)
+                                <a
+                                    href="{{ route('topics.show', ['topic' => $question->topic->slug]) }}"
+                                    wire:navigate
+                                    class="inline-flex items-center gap-1 rounded-full bg-slate-100/90 px-2 py-0.5 text-[0.72rem] font-medium text-slate-600 transition hover:bg-pink-50 hover:text-pink-600 dark:bg-[#111a2d] dark:text-slate-400 dark:hover:bg-[#16203a] dark:hover:text-pink-400"
+                                    title="Topic: {{ $question->topic->name }}"
+                                    data-navigate-ignore="true"
+                                >
+                                    <span class="font-bold text-pink-500">#</span>
+                                    <span>{{ $question->topic->name }}</span>
+                                </a>
+                            @endif
+
                             <time
                                 class="inline-flex cursor-help items-center whitespace-nowrap"
                                 title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"
@@ -327,7 +340,7 @@
                                 </x-slot>
                             </x-dropdown>
 
-                            @if (auth()->check() && auth()->user()->can('update', $question))
+                            @if (auth()->check() && (auth()->user()->can('update', $question) || auth()->id() !== $question->to_id))
                                 <x-dropdown align="right" width="48">
                                     <x-slot name="trigger">
                                         <button data-navigate-ignore="true" class="{{ $menuButtonClasses }}">
@@ -345,7 +358,7 @@
                                                 <x-icons.pin class="h-4 w-4" />
                                                 <span>Pin</span>
                                             </x-dropdown-button>
-                                        @elseif ($question->pinned)
+                                        @elseif ($question->pinned && auth()->user()->can('update', $question))
                                             <x-dropdown-button
                                                 data-navigate-ignore="true"
                                                 wire:click="unpin"
@@ -385,6 +398,16 @@
                                                 <span>View likes</span>
                                             </x-dropdown-button>
                                         @endif
+                                        @if (auth()->check() && auth()->id() !== $question->to_id)
+                                            <x-dropdown-button
+                                                data-navigate-ignore="true"
+                                                x-on:click="$dispatch('open-modal', 'question.report.{{ $questionId }}')"
+                                                class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400"
+                                            >
+                                                <x-heroicon-o-flag class="h-4 w-4" />
+                                                <span>Report post</span>
+                                            </x-dropdown-button>
+                                        @endif
                                     </x-slot>
                                 </x-dropdown>
                             @endif
@@ -399,6 +422,12 @@
                     <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">Edit Answer</h2>
                     <livewire:questions.edit :questionId="$question->id" :key="'edit-answer-'.$question->id" />
                 </div>
+            </x-modal>
+        @endif
+
+        @if (auth()->check() && auth()->id() !== $question->to_id)
+            <x-modal max-width="md" name="question.report.{{ $questionId }}">
+                <livewire:questions.report-modal :questionId="$question->id" :key="'report-'.$question->id" />
             </x-modal>
         @endif
 

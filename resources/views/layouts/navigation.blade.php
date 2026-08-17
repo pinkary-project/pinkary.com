@@ -34,6 +34,26 @@
                     </a>
 
                     <a
+                        title="Topics"
+                        href="{{ route('topics.index') }}"
+                        class="{{ $desktopItemClasses }} {{ request()->routeIs('topics.*') ? $desktopActiveClasses : $desktopIdleClasses }}"
+                        wire:navigate
+                    >
+                        <x-heroicon-o-tag class="h-5 w-5" />
+                        <span>Topics</span>
+                    </a>
+
+                    <a
+                        title="Feeds"
+                        href="{{ route('feeds.index') }}"
+                        class="{{ $desktopItemClasses }} {{ request()->routeIs('feeds.*') ? $desktopActiveClasses : $desktopIdleClasses }}"
+                        wire:navigate
+                    >
+                        <x-heroicon-o-squares-2x2 class="h-5 w-5" />
+                        <span>Feeds</span>
+                    </a>
+
+                    <a
                         title="Profile"
                         href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
                         class="{{ $desktopItemClasses }} {{ $profileIsActive ? $desktopActiveClasses : $desktopIdleClasses }}"
@@ -73,6 +93,18 @@
                         <x-heroicon-o-cog-6-tooth class="h-5 w-5" />
                         <span>Settings</span>
                     </a>
+
+                    <div class="pt-4">
+                        <button
+                            type="button"
+                            x-on:click="$dispatch('open-modal', 'post.create')"
+                            class="flex w-full items-center justify-center gap-2 rounded-md bg-pink-500 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-pink-600 focus:outline-none"
+                            title="New Post"
+                        >
+                            <x-heroicon-m-pencil-square class="size-4" />
+                            <span>{{ __('New Post') }}</span>
+                        </button>
+                    </div>
                 @else
                     <a
                         title="Feed"
@@ -82,6 +114,26 @@
                     >
                         <x-heroicon-o-home class="h-5 w-5" />
                         <span>Feed</span>
+                    </a>
+
+                    <a
+                        title="Topics"
+                        href="{{ route('topics.index') }}"
+                        class="{{ $desktopItemClasses }} {{ request()->routeIs('topics.*') ? $desktopActiveClasses : $desktopIdleClasses }}"
+                        wire:navigate
+                    >
+                        <x-heroicon-o-tag class="h-5 w-5" />
+                        <span>Topics</span>
+                    </a>
+
+                    <a
+                        title="Feeds"
+                        href="{{ route('feeds.index') }}"
+                        class="{{ $desktopItemClasses }} {{ request()->routeIs('feeds.*') ? $desktopActiveClasses : $desktopIdleClasses }}"
+                        wire:navigate
+                    >
+                        <x-heroicon-o-squares-2x2 class="h-5 w-5" />
+                        <span>Feeds</span>
                     </a>
 
                     <a
@@ -266,6 +318,15 @@
                     <livewire:navigation.notifications-count.show />
                 </span>
             </a>
+
+            <button
+                type="button"
+                x-on:click="$dispatch('open-modal', 'post.create')"
+                class="{{ $mobileItemClasses }} text-pink-500 hover:text-pink-600 focus:outline-none"
+                title="New Post"
+            >
+                <x-heroicon-m-pencil-square class="h-5 w-5" />
+            </button>
         @else
             <a
                 title="Feed"
@@ -344,6 +405,9 @@
                     </div>
                 </div>
 
+                <x-dropdown-link :href="route('topics.index')"> {{ __('Topics') }} </x-dropdown-link>
+                <x-dropdown-link :href="route('feeds.index')"> {{ __('Custom Feeds') }} </x-dropdown-link>
+
                 <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
 
                 <x-dropdown-link
@@ -373,4 +437,24 @@
             </x-slot>
         </x-dropdown>
     </div>
+
+    @auth
+        <x-modal max-width="lg" name="post.create">
+            <div class="p-6" x-on:question.created.window="$dispatch('close-modal', 'post.create')">
+                <div class="flex items-center justify-between border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
+                    <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('New Post') }}</h3>
+                    <button
+                        type="button"
+                        x-on:click="$dispatch('close-modal', 'post.create')"
+                        class="text-slate-400 hover:text-slate-500 focus:outline-none dark:hover:text-slate-300"
+                    >
+                        <x-heroicon-o-x-mark class="size-5" />
+                    </button>
+                </div>
+                <div class="pt-4">
+                    <livewire:questions.create :to-id="auth()->id()" />
+                </div>
+            </div>
+        </x-modal>
+    @endauth
 </nav>

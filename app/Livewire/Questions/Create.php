@@ -6,6 +6,7 @@ namespace App\Livewire\Questions;
 
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
+use App\Models\Topic;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
@@ -13,6 +14,7 @@ use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
@@ -64,6 +66,11 @@ final class Create extends Component
      */
     #[Locked]
     public ?string $parentId = null;
+
+    /**
+     * The selected topic ID.
+     */
+    public ?int $topicId = null;
 
     /**
      * The component's content.
@@ -176,6 +183,11 @@ final class Create extends Component
     {
         if ($user instanceof User) {
             $this->anonymously = $user->prefers_anonymous_questions;
+        }
+
+        if ($this->topicId === null && blank($this->parentId)) {
+            $this->topicId = Topic::query()->where('is_active', true)->where('is_system', false)->value('id')
+                ?? Topic::firstOrCreate(['slug' => 'general'], ['name' => 'General', 'is_active' => true, 'is_system' => false])->id;
         }
     }
 
@@ -293,6 +305,14 @@ final class Create extends Component
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
             'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+            'topicId' => [
+                Rule::requiredIf(blank($this->parentId)),
+                'nullable',
+                Rule::exists('topics', 'id')->where('is_active', true)->where('is_system', false),
+            ],
+        ], [
+            'topicId.required' => __('Please select a topic for your post.'),
+            'topicId.exists' => __('The selected topic is invalid.'),
         ]);
 
         if ($this->isPoll) {
@@ -346,8 +366,14 @@ final class Create extends Component
 
         if (filled($this->parentId)) {
             $validated['parent_id'] = $this->parentId;
-            $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
+            $parentQuestion = Question::whereKey($this->parentId)->first();
+            $validated['root_id'] = $parentQuestion?->root_id ?? $this->parentId;
+            $validated['topic_id'] = $parentQuestion?->topic_id;
+        } else {
+            $validated['topic_id'] = $this->topicId;
         }
+
+        unset($validated['topicId']);
 
         $question = $user->questionsSent()->create([
             ...$validated,
@@ -393,6 +419,30 @@ final class Create extends Component
     }
 
     /**
+     * Select or create a topic by name on the fly.
+     */
+    public function selectOrCreateTopic(string $name): void
+    {
+        $clean = mb_ltrim(mb_trim($name), '#');
+
+        if (mb_strlen($clean) < 2 || mb_strlen($clean) > 50) {
+            return;
+        }
+
+        $topic = Topic::firstOrCreate(
+            ['slug' => Str::slug($clean)],
+            [
+                'name' => $clean,
+                'is_active' => true,
+                'is_discoverable' => true,
+                'is_system' => false,
+            ]
+        );
+
+        $this->topicId = $topic->id;
+    }
+
+    /**
      * Render the component.
      */
     public function render(): View
@@ -403,8 +453,37 @@ final class Create extends Component
             $user = $user->findOrFail($this->toId);
         }
 
+        $topics = Topic::query()
+            ->where('is_active', true)
+            ->where('is_system', false)
+            ->orderBy('name')
+            ->get();
+
+        $recentTopics = collect();
+        if (auth()->check()) {
+            $recentTopicIds = Question::query()
+                ->where('from_id', auth()->id())
+                ->whereNotNull('topic_id')
+                ->latest('id')
+                ->pluck('topic_id')
+                ->unique()
+                ->take(3)
+                ->values()
+                ->all();
+
+            if (! empty($recentTopicIds)) {
+                $recentTopics = Topic::query()
+                    ->whereIn('id', $recentTopicIds)
+                    ->where('is_active', true)
+                    ->where('is_system', false)
+                    ->get();
+            }
+        }
+
         return view('livewire.questions.create', [
             'user' => $user,
+            'topics' => $topics,
+            'recentTopics' => $recentTopics,
         ]);
     }
 
