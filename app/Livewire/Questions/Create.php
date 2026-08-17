@@ -386,6 +386,7 @@ final class Create extends Component
         $this->anonymously = $user->prefers_anonymous_questions;
 
         $this->dispatch('question.created');
+        $this->dispatch('close-modal', 'post-create');
 
         $message = match (true) {
             filled($this->parentId) => 'Comment sent.',

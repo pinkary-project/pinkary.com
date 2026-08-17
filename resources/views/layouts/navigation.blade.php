@@ -235,11 +235,11 @@
                         </x-dropdown>
                     </div>
                 </div>
-
-        @endif
+            </div>
+        @endauth
     </div>
 
-    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-60 mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-200/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur lg:hidden dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:shadow-black/30">
+    <div class="fixed inset-x-0 -bottom-px z-40 flex items-center justify-around border-t border-slate-200/70 bg-white px-3 py-2 pb-[max(0.65rem,env(safe-area-inset-bottom))] lg:hidden dark:border-slate-800/80 dark:bg-[#07101f]">
         @auth
             <a
                 title="Home"
@@ -386,16 +386,4 @@
             </x-slot>
         </x-dropdown>
     </div>
-
-    @auth
-        <button
-            x-data
-            type="button"
-            x-on:click="$dispatch('open-modal', 'post-create')"
-            class="fixed right-4 bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.75rem)] z-50 flex size-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/25 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
-            title="Post"
-        >
-            <x-icons.compose class="size-5" />
-        </button>
-    @endauth
 </nav>

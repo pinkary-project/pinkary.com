@@ -6,7 +6,7 @@
     x-cloak
     x-data="{ show: false, offset: {{ $offset }} }"
     x-on:scroll.window="show = window.pageYOffset >= offset"
-    class="fixed right-8 bottom-8 z-50"
+    class="fixed right-8 bottom-8 z-50 hidden lg:block"
 >
     <button
         x-show="show"

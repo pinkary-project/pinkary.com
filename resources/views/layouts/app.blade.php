@@ -128,6 +128,16 @@
     </div>
 
     @auth
+        <button
+            x-data
+            type="button"
+            x-on:click="$dispatch('open-modal', 'post-create')"
+            class="fixed right-5 bottom-20 z-50 flex size-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
+            title="Post"
+        >
+            <x-icons.compose class="size-5" />
+        </button>
+
         <x-modal max-width="lg" name="post-create" x-on:question.created.window="close('post-create')">
             <div class="p-4 sm:p-6">
                 <div class="mb-4 border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
