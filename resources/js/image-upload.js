@@ -29,10 +29,6 @@ const imageUpload = () => ({
             this.handleImagePaste(event);
         });
 
-        this.$el.addEventListener('image.uploaded', (event) => {
-            this.createMarkdownImage(event.detail);
-        });
-
         if (this.$wire) {
             this.$wire.on('image.uploaded', (event) => {
                 this.createMarkdownImage(event);
@@ -42,16 +38,16 @@ const imageUpload = () => ({
                 this.images = [];
                 this.removeErrors();
             });
+        } else {
+            Livewire.on('image.uploaded', (event) => {
+                this.createMarkdownImage(event);
+            });
+
+            Livewire.on('question.created', () => {
+                this.images = [];
+                this.removeErrors();
+            });
         }
-
-        Livewire.on('image.uploaded', (event) => {
-            this.createMarkdownImage(event);
-        });
-
-        Livewire.on('question.created', () => {
-            this.images = [];
-            this.removeErrors();
-        });
 
         Livewire.interceptMessage(({ component, message, onSuccess }) => {
             onSuccess(({ onMorph }) => {
@@ -207,6 +203,13 @@ const imageUpload = () => ({
 
         const normalizedPath = this.normalizePath(path);
         const markdownSnippet = `![${originalName}](${normalizedPath})`;
+
+        if (this.textarea.value.includes(markdownSnippet)) {
+            this.replaceUploadingText();
+            this.uploading = false;
+
+            return;
+        }
 
         if (this.isExceedingMaxContentLength(markdownSnippet)) {
             this.addErrors(['Adding this image will exceed the maximum content length.']);
