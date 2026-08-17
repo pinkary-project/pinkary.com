@@ -67,6 +67,7 @@ test('store', function (): void {
 
     $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
+    $component->assertDispatched('close-modal', 'post-create');
 
     $question = Question::first();
 
@@ -76,6 +77,17 @@ test('store', function (): void {
         ->and($question->anonymously)->toBeTrue()
         ->and($question->parent_id)->toBeNull()
         ->and($question->root_id)->toBeNull();
+});
+
+test('accepts custom draft key for isolated drafting', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->assertSet('customDraftKey', 'post_modal');
 });
 
 test('users with zero followers pass captcha and can store', function (): void {

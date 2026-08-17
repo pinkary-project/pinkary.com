@@ -103,3 +103,10 @@ it('can see the post create button in navigation when authenticated', function (
     $response->assertOk()
         ->assertSee('Post');
 });
+
+it('cannot see the post create button in navigation when guest', function (): void {
+    $response = $this->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertDontSee('post-create');
+});
