@@ -73,6 +73,18 @@
                         <x-heroicon-o-cog-6-tooth class="h-5 w-5" />
                         <span>Settings</span>
                     </a>
+
+                    <div class="pt-4">
+                        <button
+                            type="button"
+                            x-on:click="$dispatch('open-modal', 'post.create')"
+                            class="flex w-full items-center justify-center gap-2 rounded-md bg-pink-500 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-pink-600 focus:outline-none active:scale-[0.98]"
+                            title="New Post"
+                        >
+                            <x-icons.compose class="size-4" />
+                            <span>{{ __('New Post') }}</span>
+                        </button>
+                    </div>
                 @else
                     <a
                         title="Feed"
@@ -373,4 +385,33 @@
             </x-slot>
         </x-dropdown>
     </div>
+
+    @auth
+        <button
+            type="button"
+            x-on:click="$dispatch('open-modal', 'post.create')"
+            class="fixed right-4 bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.75rem)] z-50 flex size-14 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
+            title="New Post"
+        >
+            <x-icons.compose class="size-6" />
+        </button>
+
+        <x-modal max-width="lg" name="post.create">
+            <div class="p-6" x-on:question.created.window="$dispatch('close-modal', 'post.create')">
+                <div class="flex items-center justify-between border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
+                    <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('New Post') }}</h3>
+                    <button
+                        type="button"
+                        x-on:click="$dispatch('close-modal', 'post.create')"
+                        class="text-slate-400 hover:text-slate-500 focus:outline-none dark:hover:text-slate-300"
+                    >
+                        <x-heroicon-o-x-mark class="size-5" />
+                    </button>
+                </div>
+                <div class="pt-4">
+                    <livewire:questions.create :to-id="auth()->id()" />
+                </div>
+            </div>
+        </x-modal>
+    @endauth
 </nav>
