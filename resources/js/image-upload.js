@@ -29,24 +29,22 @@ const imageUpload = () => ({
             this.handleImagePaste(event);
         });
 
+        const registerListeners = (target) => {
+            target.on('image.uploaded', (payload) => {
+                const data = Array.isArray(payload) ? payload[0] : (payload?.detail ?? payload);
+                this.createMarkdownImage(data);
+            });
+
+            target.on('question.created', () => {
+                this.images = [];
+                this.removeErrors();
+            });
+        };
+
         if (this.$wire) {
-            this.$wire.on('image.uploaded', (event) => {
-                this.createMarkdownImage(event);
-            });
-
-            this.$wire.on('question.created', () => {
-                this.images = [];
-                this.removeErrors();
-            });
+            registerListeners(this.$wire);
         } else {
-            Livewire.on('image.uploaded', (event) => {
-                this.createMarkdownImage(event);
-            });
-
-            Livewire.on('question.created', () => {
-                this.images = [];
-                this.removeErrors();
-            });
+            registerListeners(Livewire);
         }
 
         Livewire.interceptMessage(({ component, message, onSuccess }) => {
@@ -168,30 +166,26 @@ const imageUpload = () => ({
         this.removeErrors();
     },
 
-    createMarkdownImage(item) {
+    /**
+     * Inserts image markdown into the textarea.
+     * Expected payload shape: { path: string, originalName: string } (dispatched on image.uploaded)
+     * or a number index (when re-inserting an existing uploaded image from the list).
+     */
+    createMarkdownImage(payload) {
         let path, originalName;
 
-        if (Array.isArray(item) && item.length > 0) {
-            item = item[0];
-        }
+        if (typeof payload === 'number') {
+            if (!this.images[payload]) {
+                return;
+            }
+            ({ path, originalName } = this.images[payload]);
+        } else if (payload && typeof payload === 'object') {
+            path = payload.path;
+            originalName = payload.originalName;
 
-        if (item && typeof item === 'object') {
-            if (item.detail) {
-                item = item.detail;
+            if (path && originalName && !this.images.some((img) => img.path === path)) {
+                this.images.push({ path, originalName });
             }
-            if (Array.isArray(item) && item.length > 0) {
-                item = item[0];
-            }
-            path = item.path;
-            originalName = item.originalName;
-            if (path && originalName) {
-                const alreadyExists = this.images.some(img => img.path === path);
-                if (!alreadyExists) {
-                    this.images.push({ path, originalName });
-                }
-            }
-        } else if (typeof item === 'number' && this.images[item]) {
-            ({ path, originalName } = this.images[item]);
         }
 
         if (!path || !originalName) {

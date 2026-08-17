@@ -134,6 +134,7 @@
             x-on:click="$dispatch('open-modal', 'post-create')"
             class="fixed right-5 bottom-20 z-50 flex size-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
             title="Post"
+            aria-label="Post"
         >
             <x-icons.compose class="size-5" />
         </button>

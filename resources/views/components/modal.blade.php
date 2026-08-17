@@ -74,7 +74,7 @@
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
-        x-transition:leave="duration-150 ease-in"
+        x-transition:leave="duration-200 ease-in"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
@@ -86,7 +86,7 @@
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
-        x-transition:leave="duration-150 ease-in"
+        x-transition:leave="duration-200 ease-in"
         x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
         x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
     >
