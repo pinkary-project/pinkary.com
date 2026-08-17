@@ -306,12 +306,10 @@ final class Create extends Component
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
             'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
             'topicId' => [
-                Rule::requiredIf(blank($this->parentId)),
                 'nullable',
                 Rule::exists('topics', 'id')->where('is_active', true)->where('is_system', false),
             ],
         ], [
-            'topicId.required' => __('Please select a topic for your post.'),
             'topicId.exists' => __('The selected topic is invalid.'),
         ]);
 

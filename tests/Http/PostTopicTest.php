@@ -11,7 +11,7 @@ use App\Models\Topic;
 use App\Models\User;
 use Livewire\Livewire;
 
-it('requires a topic when creating a top-level post', function (): void {
+it('allows creating a top-level post without a topic', function (): void {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)
@@ -19,7 +19,11 @@ it('requires a topic when creating a top-level post', function (): void {
         ->set('content', 'Testing post content with no topic')
         ->set('topicId', null)
         ->call('store')
-        ->assertHasErrors(['topicId']);
+        ->assertHasNoErrors();
+
+    $post = Question::where('answer', 'Testing post content with no topic')->first();
+    expect($post)->not->toBeNull()
+        ->and($post->topic_id)->toBeNull();
 });
 
 it('allows creating a post with a valid topic', function (): void {
