@@ -29,6 +29,10 @@ const imageUpload = () => ({
             this.handleImagePaste(event);
         });
 
+        this.$el.addEventListener('image.uploaded', (event) => {
+            this.createMarkdownImage(event.detail);
+        });
+
         if (this.$wire) {
             this.$wire.on('image.uploaded', (event) => {
                 this.createMarkdownImage(event);
@@ -38,16 +42,16 @@ const imageUpload = () => ({
                 this.images = [];
                 this.removeErrors();
             });
-        } else {
-            Livewire.on('image.uploaded', (event) => {
-                this.createMarkdownImage(event);
-            });
-
-            Livewire.on('question.created', () => {
-                this.images = [];
-                this.removeErrors();
-            });
         }
+
+        Livewire.on('image.uploaded', (event) => {
+            this.createMarkdownImage(event);
+        });
+
+        Livewire.on('question.created', () => {
+            this.images = [];
+            this.removeErrors();
+        });
 
         Livewire.interceptMessage(({ component, message, onSuccess }) => {
             onSuccess(({ onMorph }) => {
@@ -133,6 +137,9 @@ const imageUpload = () => ({
             /Uploading image\.\.\./g,
             ''
         );
+        if (this.$wire) {
+            this.$wire.set('content', this.textarea.value, false);
+        }
     },
 
     insertAtCorrectPosition(content) {
@@ -142,11 +149,15 @@ const imageUpload = () => ({
             content = '\n' + content;
         }
         this.textarea.value = existingContent + content;
+        if (this.$wire) {
+            this.$wire.set('content', this.textarea.value, false);
+        }
         this.resizeTextarea();
     },
 
     resizeTextarea() {
-        this.textarea.dispatchEvent(new Event('input'));
+        this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        this.textarea.dispatchEvent(new Event('change', { bubbles: true }));
         this.textarea.selectionStart = this.textarea.selectionEnd = this.textarea.value.length;
         this.textarea.focus();
     },
@@ -178,7 +189,10 @@ const imageUpload = () => ({
             path = item.path;
             originalName = item.originalName;
             if (path && originalName) {
-                this.images.push({ path, originalName });
+                const alreadyExists = this.images.some(img => img.path === path);
+                if (!alreadyExists) {
+                    this.images.push({ path, originalName });
+                }
             }
         } else if (typeof item === 'number' && this.images[item]) {
             ({ path, originalName } = this.images[item]);
@@ -229,6 +243,9 @@ const imageUpload = () => ({
             'g'
         );
         this.textarea.value = this.textarea.value.replace(regex, '');
+        if (this.$wire) {
+            this.$wire.set('content', this.textarea.value, false);
+        }
         this.resizeTextarea();
     },
 
