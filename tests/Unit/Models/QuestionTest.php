@@ -29,7 +29,8 @@ test('to array', function (): void {
         'parent_id',
         'root_id',
         'poll_expires_at',
-    )->toHaveCount(17);
+        'topic_id',
+    )->toHaveCount(18);
 });
 
 test('content', function (): void {

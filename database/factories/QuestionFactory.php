@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Question;
+use App\Models\Topic;
 use App\Models\User;
 use Database\Factories\Concerns\RefreshOnCreate;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -36,6 +37,7 @@ final class QuestionFactory extends Factory
         return [
             'from_id' => User::factory(),
             'to_id' => User::factory(),
+            'topic_id' => Topic::first()?->id ?? Topic::factory(),
             'content' => $this->faker->sentence,
             'anonymously' => $this->faker->boolean,
             'answer' => $this->faker->sentence,

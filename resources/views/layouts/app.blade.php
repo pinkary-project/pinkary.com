@@ -4,7 +4,7 @@
     @include('layouts.components.head')
 </head>
 @php
-    $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show');
+    $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show') || request()->routeIs('topics.*') || request()->routeIs('feeds.*');
     $showUtilityRail = request()->routeIs('bookmarks.*') || request()->routeIs('notifications.*');
     $showRightRail = $showDiscoverLayout || $showUtilityRail || request()->routeIs('profile.show') || request()->routeIs('questions.show');
     $globalSearchQuery = request()->routeIs('home.users')

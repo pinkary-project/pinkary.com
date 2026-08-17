@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $id
  * @property string|null $root_id
  * @property string|null $parent_id
+ * @property int|null $topic_id
  * @property int $from_id
  * @property int $to_id
  * @property bool $pinned
@@ -39,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property CarbonImmutable $updated_at
  * @property-read User $from
  * @property-read User $to
+ * @property-read Topic|null $topic
  * @property-read Collection<int, Like> $likes
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
@@ -46,6 +48,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property-read Collection<int, Question> $descendants
  * @property-read Collection<int, Hashtag> $hashtags
  * @property-read Collection<int, PollOption> $pollOptions
+ * @property-read Collection<int, TopicReport> $topicReports
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
@@ -142,6 +145,7 @@ final class Question extends Model implements Viewable
             'is_ignored' => 'boolean',
             'poll_expires_at' => 'datetime',
             'views' => 'integer',
+            'topic_id' => 'integer',
         ];
     }
 
@@ -271,6 +275,26 @@ final class Question extends Model implements Viewable
     public function hashtags(): BelongsToMany
     {
         return $this->belongsToMany(Hashtag::class);
+    }
+
+    /**
+     * Get the topic that the question belongs to.
+     *
+     * @return BelongsTo<Topic, $this>
+     */
+    public function topic(): BelongsTo
+    {
+        return $this->belongsTo(Topic::class);
+    }
+
+    /**
+     * Get the topic reports for the question.
+     *
+     * @return HasMany<TopicReport, $this>
+     */
+    public function topicReports(): HasMany
+    {
+        return $this->hasMany(TopicReport::class);
     }
 
     /**

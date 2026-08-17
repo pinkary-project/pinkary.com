@@ -63,6 +63,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  * @property-read Collection<int, User> $following
  * @property-read Collection<int, User> $followers
+ * @property-read Collection<int, Topic> $followedTopics
+ * @property-read Collection<int, Feed> $createdFeeds
+ * @property-read Collection<int, Feed> $followedFeeds
  */
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
@@ -166,6 +169,36 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function following(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'followers', 'follower_id', 'user_id');
+    }
+
+    /**
+     * Get the topics followed by the user.
+     *
+     * @return BelongsToMany<Topic, $this>
+     */
+    public function followedTopics(): BelongsToMany
+    {
+        return $this->belongsToMany(Topic::class, 'topic_user');
+    }
+
+    /**
+     * Get the custom feeds created by the user.
+     *
+     * @return HasMany<Feed, $this>
+     */
+    public function createdFeeds(): HasMany
+    {
+        return $this->hasMany(Feed::class);
+    }
+
+    /**
+     * Get the custom feeds followed by the user.
+     *
+     * @return BelongsToMany<Feed, $this>
+     */
+    public function followedFeeds(): BelongsToMany
+    {
+        return $this->belongsToMany(Feed::class, 'feed_followers');
     }
 
     /**

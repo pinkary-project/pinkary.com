@@ -3,6 +3,8 @@
         ['label' => __('Recent'), 'route' => 'home.feed', 'active' => request()->routeIs('home.feed') || request()->routeIs('hashtag.show')],
         ['label' => __('Following'), 'route' => 'home.following', 'active' => request()->routeIs('home.following')],
         ['label' => __('Trending'), 'route' => 'home.trending', 'active' => request()->routeIs('home.trending')],
+        ['label' => __('Topics'), 'route' => 'topics.index', 'active' => request()->routeIs('topics.*')],
+        ['label' => __('Feeds'), 'route' => 'feeds.index', 'active' => request()->routeIs('feeds.*')],
     ];
 @endphp
 
