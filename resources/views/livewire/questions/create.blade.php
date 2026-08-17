@@ -1,4 +1,4 @@
-<div class="" id="questions-create">
+<div class="" id="questions-create-{{ $this->getId() }}">
     @if ($this->needsCaptcha)
         <x-turnstile.scripts />
     @endif

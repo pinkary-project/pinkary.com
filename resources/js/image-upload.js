@@ -29,14 +29,25 @@ const imageUpload = () => ({
             this.handleImagePaste(event);
         });
 
-        Livewire.on('image.uploaded', (event) => {
-            this.createMarkdownImage(event);
-        });
+        if (this.$wire) {
+            this.$wire.on('image.uploaded', (event) => {
+                this.createMarkdownImage(event);
+            });
 
-        Livewire.on('question.created', () => {
-            this.images = [];
-            this.removeErrors();
-        });
+            this.$wire.on('question.created', () => {
+                this.images = [];
+                this.removeErrors();
+            });
+        } else {
+            Livewire.on('image.uploaded', (event) => {
+                this.createMarkdownImage(event);
+            });
+
+            Livewire.on('question.created', () => {
+                this.images = [];
+                this.removeErrors();
+            });
+        }
 
         Livewire.interceptMessage(({ component, message, onSuccess }) => {
             onSuccess(({ onMorph }) => {

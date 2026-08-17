@@ -134,7 +134,11 @@
                     <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('Share an update') }}</h3>
                 </div>
 
-                <livewire:questions.create :to-id="auth()->id()" key="global-modal-create-post" />
+                <livewire:questions.create
+                    :to-id="auth()->id()"
+                    :custom-draft-key="'post_modal'"
+                    key="global-modal-create-post"
+                />
             </div>
         </x-modal>
     @endauth
