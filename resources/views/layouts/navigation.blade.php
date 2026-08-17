@@ -73,18 +73,6 @@
                         <x-heroicon-o-cog-6-tooth class="h-5 w-5" />
                         <span>Settings</span>
                     </a>
-
-                    <div class="pt-4">
-                        <button
-                            type="button"
-                            x-on:click="$dispatch('open-modal', 'post.create')"
-                            class="flex w-full items-center justify-center gap-2 rounded-md bg-pink-500 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-pink-600 focus:outline-none active:scale-[0.98]"
-                            title="New Post"
-                        >
-                            <x-icons.compose class="size-4" />
-                            <span>{{ __('New Post') }}</span>
-                        </button>
-                    </div>
                 @else
                     <a
                         title="Feed"
@@ -130,111 +118,124 @@
         </div>
 
         @auth
-            <div class="border-t border-slate-200/70 py-6 dark:border-slate-800/40">
-                <div class="flex items-center gap-2">
-                    <a
-                        href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="flex min-w-0 flex-1 items-center gap-3 rounded-md p-2 transition hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white"
-                        wire:navigate
-                    >
-                        <img
-                            src="{{ auth()->user()->avatar_url }}"
-                            alt="{{ auth()->user()->username }}"
-                            class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0"
-                        />
+            <div class="py-6">
+                <button
+                    x-data
+                    type="button"
+                    x-on:click="$dispatch('open-modal', 'post-create')"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-pink-500 py-2.5 text-sm font-semibold text-white shadow-sm shadow-pink-500/20 transition hover:bg-pink-600 focus:outline-none active:scale-[0.98]"
+                    title="Post"
+                >
+                    <x-icons.compose class="size-4" />
+                    <span>{{ __('Post') }}</span>
+                </button>
 
-                        <div class="min-w-0">
-                            <p class="truncate text-sm font-semibold text-slate-950 dark:text-white">
-                                {{ auth()->user()->name }}
-                            </p>
+                <div class="mt-4 border-t border-slate-200/70 pt-4 dark:border-slate-800/40">
+                    <div class="flex items-center gap-2">
+                        <a
+                            href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
+                            class="flex min-w-0 flex-1 items-center gap-3 rounded-md p-2 transition hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white"
+                            wire:navigate
+                        >
+                            <img
+                                src="{{ auth()->user()->avatar_url }}"
+                                alt="{{ auth()->user()->username }}"
+                                class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0"
+                            />
 
-                            <p class="truncate text-xs text-slate-400">{{ '@'.auth()->user()->username }}</p>
-                        </div>
-                    </a>
+                            <div class="min-w-0">
+                                <p class="truncate text-sm font-semibold text-slate-950 dark:text-white">
+                                    {{ auth()->user()->name }}
+                                </p>
 
-                    <x-dropdown
-                        align="right"
-                        width="60"
-                        dropdown-classes="bottom-full"
-                        :content-classes="$menuContentClasses"
-                    >
-                        <x-slot name="trigger">
-                            <button
-                                type="button"
-                                class="inline-flex size-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-[#11192b] hover:text-white"
-                            >
-                                <x-heroicon-o-ellipsis-horizontal class="size-5" />
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
-                                <div class="flex w-full flex-row justify-between gap-2">
-                                    <button
-                                        type="button"
-                                        class="{{ $themeSwitchButtonClasses }}"
-                                        x-bind:class="
-                                            theme == 'light'
-                                                ? 'border-pink-500 bg-pink-500 text-white'
-                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                                        "
-                                        @click="setTheme('light')"
-                                    >
-                                        <x-heroicon-o-sun class="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="{{ $themeSwitchButtonClasses }}"
-                                        x-bind:class="
-                                            theme == 'dark'
-                                                ? 'border-pink-500 bg-pink-500 text-white'
-                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                                        "
-                                        @click="setTheme('dark')"
-                                    >
-                                        <x-heroicon-o-moon class="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="{{ $themeSwitchButtonClasses }}"
-                                        x-bind:class="
-                                            theme == 'system'
-                                                ? 'border-pink-500 bg-pink-500 text-white'
-                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                                        "
-                                        @click="setTheme('system')"
-                                    >
-                                        <x-heroicon-o-computer-desktop class="h-4 w-4" />
-                                    </button>
-                                </div>
+                                <p class="truncate text-xs text-slate-400">{{ '@'.auth()->user()->username }}</p>
                             </div>
+                        </a>
 
-                            <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
-
-                            <x-dropdown-link
-                                :navigate="false"
-                                href="https://github.com/pinkary-project/pinkary.com"
-                                target="_blank"
-                            >
-                                {{ __('Source code') }}
-                            </x-dropdown-link>
-
-                            <form method="POST" action="{{ route('logout') }}" x-data>
-                                @csrf
-
-                                <x-dropdown-button
-                                    onclick="
-                                        event.preventDefault();
-                                        this.closest('form').submit();
-                                    "
+                        <x-dropdown
+                            align="right"
+                            width="60"
+                            dropdown-classes="bottom-full"
+                            :content-classes="$menuContentClasses"
+                        >
+                            <x-slot name="trigger">
+                                <button
+                                    type="button"
+                                    class="inline-flex size-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-[#11192b] hover:text-white"
                                 >
-                                    {{ __('Log Out') }}
-                                </x-dropdown-button>
-                            </form>
-                        </x-slot>
-                    </x-dropdown>
+                                    <x-heroicon-o-ellipsis-horizontal class="size-5" />
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
+                                    <div class="flex w-full flex-row justify-between gap-2">
+                                        <button
+                                            type="button"
+                                            class="{{ $themeSwitchButtonClasses }}"
+                                            x-bind:class="
+                                                theme == 'light'
+                                                    ? 'border-pink-500 bg-pink-500 text-white'
+                                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                                            "
+                                            @click="setTheme('light')"
+                                        >
+                                            <x-heroicon-o-sun class="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="{{ $themeSwitchButtonClasses }}"
+                                            x-bind:class="
+                                                theme == 'dark'
+                                                    ? 'border-pink-500 bg-pink-500 text-white'
+                                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                                            "
+                                            @click="setTheme('dark')"
+                                        >
+                                            <x-heroicon-o-moon class="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="{{ $themeSwitchButtonClasses }}"
+                                            x-bind:class="
+                                                theme == 'system'
+                                                    ? 'border-pink-500 bg-pink-500 text-white'
+                                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
+                                            "
+                                            @click="setTheme('system')"
+                                        >
+                                            <x-heroicon-o-computer-desktop class="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
+
+                                <x-dropdown-link
+                                    :navigate="false"
+                                    href="https://github.com/pinkary-project/pinkary.com"
+                                    target="_blank"
+                                >
+                                    {{ __('Source code') }}
+                                </x-dropdown-link>
+
+                                <form method="POST" action="{{ route('logout') }}" x-data>
+                                    @csrf
+
+                                    <x-dropdown-button
+                                        onclick="
+                                            event.preventDefault();
+                                            this.closest('form').submit();
+                                        "
+                                    >
+                                        {{ __('Log Out') }}
+                                    </x-dropdown-button>
+                                </form>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                 </div>
-            </div>
+
         @endif
     </div>
 
@@ -388,30 +389,13 @@
 
     @auth
         <button
+            x-data
             type="button"
-            x-on:click="$dispatch('open-modal', 'post.create')"
-            class="fixed right-4 bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.75rem)] z-50 flex size-14 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
-            title="New Post"
+            x-on:click="$dispatch('open-modal', 'post-create')"
+            class="fixed right-4 bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+4.75rem)] z-50 flex size-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/25 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
+            title="Post"
         >
-            <x-icons.compose class="size-6" />
+            <x-icons.compose class="size-5" />
         </button>
-
-        <x-modal max-width="lg" name="post.create">
-            <div class="p-6" x-on:question.created.window="$dispatch('close-modal', 'post.create')">
-                <div class="flex items-center justify-between border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
-                    <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('New Post') }}</h3>
-                    <button
-                        type="button"
-                        x-on:click="$dispatch('close-modal', 'post.create')"
-                        class="text-slate-400 hover:text-slate-500 focus:outline-none dark:hover:text-slate-300"
-                    >
-                        <x-heroicon-o-x-mark class="size-5" />
-                    </button>
-                </div>
-                <div class="pt-4">
-                    <livewire:questions.create :to-id="auth()->id()" />
-                </div>
-            </div>
-        </x-modal>
     @endauth
 </nav>

@@ -126,6 +126,19 @@
             <x-footer />
         @endpersist
     </div>
+
+    @auth
+        <x-modal max-width="lg" name="post-create">
+            <div class="p-4 sm:p-6" x-on:question.created.window="$dispatch('close-modal', 'post-create')">
+                <div class="mb-4 border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
+                    <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('Share an update') }}</h3>
+                </div>
+
+                <livewire:questions.create :to-id="auth()->id()" key="global-modal-create-post" />
+            </div>
+        </x-modal>
+    @endauth
+
     @livewireScriptConfig
 
     <script>

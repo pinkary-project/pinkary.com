@@ -94,12 +94,12 @@ it('can filter questions to those with a particular hashtag', function (): void 
         ->assertDontSee('There are no questions to show.');
 });
 
-it('can see the new post button in navigation when authenticated', function (): void {
+it('can see the post create button in navigation when authenticated', function (): void {
     $user = User::factory()->create(['default_feed' => UserDefaultFeed::Recent]);
 
     $response = $this->actingAs($user)
         ->get(route('home.feed'));
 
     $response->assertOk()
-        ->assertSee('New Post');
+        ->assertSee('Post');
 });
