@@ -93,3 +93,20 @@ it('can filter questions to those with a particular hashtag', function (): void 
         ->assertDontSee('question 2')
         ->assertDontSee('There are no questions to show.');
 });
+
+it('can see the post create button in navigation when authenticated', function (): void {
+    $user = User::factory()->create(['default_feed' => UserDefaultFeed::Recent]);
+
+    $response = $this->actingAs($user)
+        ->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertSee('Post');
+});
+
+it('cannot see the post create button in navigation when guest', function (): void {
+    $response = $this->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertDontSee('post-create');
+});

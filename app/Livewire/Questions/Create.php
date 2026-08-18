@@ -66,6 +66,12 @@ final class Create extends Component
     public ?string $parentId = null;
 
     /**
+     * Optional custom draft key.
+     */
+    #[Locked]
+    public ?string $customDraftKey = null;
+
+    /**
      * The component's content.
      */
     public string $content = '';
@@ -216,6 +222,10 @@ final class Create extends Component
     #[Computed]
     public function draftKey(): string
     {
+        if ($this->customDraftKey !== null) {
+            return $this->customDraftKey;
+        }
+
         return filled($this->parentId)
             ? "reply_{$this->parentId}"
             : 'post_new';
@@ -376,6 +386,7 @@ final class Create extends Component
         $this->anonymously = $user->prefers_anonymous_questions;
 
         $this->dispatch('question.created');
+        $this->dispatch('close-modal', 'post-create');
 
         $message = match (true) {
             filled($this->parentId) => 'Comment sent.',

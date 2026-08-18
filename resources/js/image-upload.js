@@ -29,14 +29,23 @@ const imageUpload = () => ({
             this.handleImagePaste(event);
         });
 
-        Livewire.on('image.uploaded', (event) => {
-            this.createMarkdownImage(event);
-        });
+        const registerListeners = (target) => {
+            target.on('image.uploaded', (payload) => {
+                const data = Array.isArray(payload) ? payload[0] : (payload?.detail ?? payload);
+                this.createMarkdownImage(data);
+            });
 
-        Livewire.on('question.created', () => {
-            this.images = [];
-            this.removeErrors();
-        });
+            target.on('question.created', () => {
+                this.images = [];
+                this.removeErrors();
+            });
+        };
+
+        if (this.$wire) {
+            registerListeners(this.$wire);
+        } else {
+            registerListeners(Livewire);
+        }
 
         Livewire.interceptMessage(({ component, message, onSuccess }) => {
             onSuccess(({ onMorph }) => {
@@ -122,6 +131,9 @@ const imageUpload = () => ({
             /Uploading image\.\.\./g,
             ''
         );
+        if (this.$wire) {
+            this.$wire.set('content', this.textarea.value, false);
+        }
     },
 
     insertAtCorrectPosition(content) {
@@ -131,11 +143,15 @@ const imageUpload = () => ({
             content = '\n' + content;
         }
         this.textarea.value = existingContent + content;
+        if (this.$wire) {
+            this.$wire.set('content', this.textarea.value, false);
+        }
         this.resizeTextarea();
     },
 
     resizeTextarea() {
-        this.textarea.dispatchEvent(new Event('input'));
+        this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        this.textarea.dispatchEvent(new Event('change', { bubbles: true }));
         this.textarea.selectionStart = this.textarea.selectionEnd = this.textarea.value.length;
         this.textarea.focus();
     },
@@ -150,19 +166,48 @@ const imageUpload = () => ({
         this.removeErrors();
     },
 
-    createMarkdownImage(item) {
+    /**
+     * Inserts image markdown into the textarea.
+     * Expected payload shape: { path: string, originalName: string } (dispatched on image.uploaded)
+     * or a number index (when re-inserting an existing uploaded image from the list).
+     */
+    createMarkdownImage(payload) {
         let path, originalName;
-        if (item instanceof Object) {
-            ({ path, originalName } = item);
-            this.images.push({ path, originalName });
-        } else if (typeof item === 'number') {
-            ({ path, originalName } = this.images[item]);
+
+        if (typeof payload === 'number') {
+            if (!this.images[payload]) {
+                return;
+            }
+            ({ path, originalName } = this.images[payload]);
+        } else if (payload && typeof payload === 'object') {
+            path = payload.path;
+            originalName = payload.originalName;
+
+            if (path && originalName && !this.images.some((img) => img.path === path)) {
+                this.images.push({ path, originalName });
+            }
         }
 
-        const markdownSnippet = `![${originalName}](${this.normalizePath(path)})`;
+        if (!path || !originalName) {
+            this.replaceUploadingText();
+            this.uploading = false;
+
+            return;
+        }
+
+        const normalizedPath = this.normalizePath(path);
+        const markdownSnippet = `![${originalName}](${normalizedPath})`;
+
+        if (this.textarea.value.includes(markdownSnippet)) {
+            this.replaceUploadingText();
+            this.uploading = false;
+
+            return;
+        }
 
         if (this.isExceedingMaxContentLength(markdownSnippet)) {
             this.addErrors(['Adding this image will exceed the maximum content length.']);
+
             return;
         }
 
@@ -176,6 +221,7 @@ const imageUpload = () => ({
 
     isExceedingMaxContentLength(markdownSnippet) {
         const newLength = this.textarea.value.length + markdownSnippet.length;
+
         return newLength > this.maxContentLength;
     },
 
@@ -184,16 +230,27 @@ const imageUpload = () => ({
     },
 
     removeMarkdownImage(index) {
+        if (!this.images[index]) {
+            return;
+        }
+
         let { path, originalName } = this.images[index];
         let regex = new RegExp(
             `!\\[${this.escapeRegExp(originalName)}\\]\\(${this.normalizePath(path)}\\)\\n?`,
             'g'
         );
         this.textarea.value = this.textarea.value.replace(regex, '');
+        if (this.$wire) {
+            this.$wire.set('content', this.textarea.value, false);
+        }
         this.resizeTextarea();
     },
 
     normalizePath(path) {
+        if (!path || typeof path !== 'string') {
+            return '';
+        }
+
         return path.includes('/images/') ? path.substring(path.indexOf('images/')) : path;
     }
 })

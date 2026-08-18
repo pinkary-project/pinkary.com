@@ -26,7 +26,7 @@ test('renders questions with follow of authenticated user', function (): void {
     $component = Livewire::actingAs($authUser)->test(QuestionsFollowing::class);
 
     $component
-        ->assertDontSee('We haven\'t found any questions that may interest you based on the activity you\'ve done on Pinkary.')
+        ->assertDontSee('Your following feed is empty.')
         ->assertSee($questionContent);
 });
 
@@ -47,7 +47,7 @@ test('do not renders questions without follow of authenticated user', function (
     $component = Livewire::actingAs($authUser)->test(QuestionsFollowing::class);
 
     $component
-        ->assertSee('found any questions that may interest you based on the activity')
+        ->assertSee('Your following feed is empty.')
         ->assertDontSee($questionContent);
 });
 
