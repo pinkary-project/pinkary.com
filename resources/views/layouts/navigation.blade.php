@@ -73,6 +73,16 @@
                         <x-heroicon-o-cog-6-tooth class="h-5 w-5" />
                         <span>Settings</span>
                     </a>
+
+                    <a
+                        title="Source code"
+                        href="https://github.com/pinkary-project/pinkary.com"
+                        target="_blank"
+                        class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
+                    >
+                        <x-icons.github class="h-5 w-5" />
+                        <span>Source code</span>
+                    </a>
                 @else
                     <a
                         title="Feed"
@@ -92,6 +102,16 @@
                     >
                         <x-heroicon-o-information-circle class="h-5 w-5" />
                         <span>About</span>
+                    </a>
+
+                    <a
+                        title="Source code"
+                        href="https://github.com/pinkary-project/pinkary.com"
+                        target="_blank"
+                        class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
+                    >
+                        <x-icons.github class="h-5 w-5" />
+                        <span>Source code</span>
                     </a>
 
                     <a
@@ -210,14 +230,6 @@
                                 </div>
 
                                 <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
-
-                                <x-dropdown-link
-                                    :navigate="false"
-                                    href="https://github.com/pinkary-project/pinkary.com"
-                                    target="_blank"
-                                >
-                                    {{ __('Source code') }}
-                                </x-dropdown-link>
 
                                 <form method="POST" action="{{ route('logout') }}" x-data>
                                     @csrf
