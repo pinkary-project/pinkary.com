@@ -32,7 +32,11 @@
                 // All non-disabled elements...
                 .filter(el => ! el.hasAttribute('disabled'))
         },
-        firstFocusable() { return this.focusables()[0] },
+        firstFocusable() {
+            return $el.querySelector('[autofocus]')
+                || this.focusables().find(el => ['TEXTAREA', 'INPUT', 'SELECT'].includes(el.tagName))
+                || this.focusables()[0]
+        },
         lastFocusable() { return this.focusables().slice(-1)[0] },
         nextFocusable() { return this.focusables()[this.nextFocusableIndex()] || this.firstFocusable() },
         prevFocusable() { return this.focusables()[this.prevFocusableIndex()] || this.lastFocusable() },
@@ -41,6 +45,7 @@
         open(name) {
             this.show = true;
             this.$dispatch('modal-opened', name);
+            {{ $attributes->has('focusable') ? '$nextTick(() => this.firstFocusable()?.focus());' : '' }}
         },
         close(name) {
             this.show = false;
