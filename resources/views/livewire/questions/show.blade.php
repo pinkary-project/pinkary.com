@@ -394,9 +394,18 @@
             </div>
         </div>
         @if (! $question->is_ignored && $question->answer_created_at?->diffInHours() < 24 && auth()->user()?->can('update', $question))
-            <x-modal max-width="md" name="question.edit.answer.{{ $questionId }}">
-                <div class="p-8">
-                    <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">Edit Answer</h2>
+            <x-modal
+                max-width="2xl"
+                name="question.edit.answer.{{ $questionId }}"
+                focusable
+                x-on:question.updated.window="close('question.edit.answer.{{ $questionId }}')"
+            >
+                <div class="p-4 sm:p-6">
+                    <div class="mb-4 border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
+                        <h3 class="text-base font-semibold text-slate-950 dark:text-white">
+                            {{ $question->isSharedUpdate() ? __('Edit Post') : __('Edit Answer') }}
+                        </h3>
+                    </div>
                     <livewire:questions.edit :questionId="$question->id" :key="'edit-answer-'.$question->id" />
                 </div>
             </x-modal>
