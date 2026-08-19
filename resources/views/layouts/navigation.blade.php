@@ -3,10 +3,10 @@
 
     $desktopItemClasses = 'inline-flex w-full items-center gap-3 rounded-md p-2 text-sm/6 font-semibold transition duration-150 ease-in-out focus:outline-none';
     $desktopIdleClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
-    $desktopActiveClasses = 'bg-slate-950 text-white dark:bg-[#1a2438]';
+    $desktopActiveClasses = 'bg-pink-500 text-white';
     $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-md px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
     $mobileIdleClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
-    $mobileActiveClasses = 'bg-slate-950 text-white dark:bg-[#1a2438]';
+    $mobileActiveClasses = 'bg-pink-500 text-white';
     $profileIsActive = auth()->check() && request()->routeIs('profile.show') && request()->route('username')?->is(auth()->user());
     $menuLinkClasses = 'flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
     $menuContentClasses = 'space-y-2 rounded-2xl border border-slate-200/80 bg-white/95 p-2 text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:text-slate-300 dark:shadow-black/30';
@@ -80,7 +80,7 @@
                         target="_blank"
                         class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
                     >
-                        <x-icons.github class="h-5 w-5" />
+                        <x-heroicon-o-code-bracket class="h-5 w-5" />
                         <span>Source code</span>
                     </a>
                 @else
@@ -110,7 +110,7 @@
                         target="_blank"
                         class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
                     >
-                        <x-icons.github class="h-5 w-5" />
+                        <x-heroicon-o-code-bracket class="h-5 w-5" />
                         <span>Source code</span>
                     </a>
 
@@ -181,7 +181,7 @@
                             <x-slot name="trigger">
                                 <button
                                     type="button"
-                                    class="inline-flex size-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-[#11192b] hover:text-white"
+                                    class="inline-flex size-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-pink-50 hover:text-pink-500 dark:hover:bg-[#11192b] dark:hover:text-pink-400"
                                 >
                                     <x-heroicon-o-ellipsis-horizontal class="size-5" />
                                 </button>
