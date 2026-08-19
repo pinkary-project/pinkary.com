@@ -1,3 +1,24 @@
+## Version 2.0.0
+> 20 August, 2026
+
+- Major UI overhaul with modernized layout and styling across the application.
+- Adds People to Follow v2 widget with direct follow/unfollow actions.
+- Adds dedicated Post buttons to desktop navigation sidebar and mobile floating action button.
+- Replaces link delete browser alert with a confirmation modal.
+- Adds email blocking functionality.
+- Adds MySQL database support, Docker MySQL service, and S3 file upload migration commands.
+- Update to Laravel 13.
+- Update to Livewire v4.
+- Update to Tailwind CSS v4.
+- Adds Laravel Boost integration and coding conventions.
+- Adds Rector for Pest and increases unit test coverage threshold to 98.8%.
+- Improves layout consistency across bookmarks, notifications, and feed pages.
+- Improves link preview UI and mobile links toggle.
+- Fixes default feed selection and recent feed display on subsequent visits.
+- Fixes username display syntax in notifications.
+- Fixes Cloudflare Turnstile integration and image handling hooks.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 1.47.0
 > 31 March, 2026
 
