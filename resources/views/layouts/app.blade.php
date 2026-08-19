@@ -23,12 +23,12 @@
     </div>
 
     <div class="relative flex min-h-screen flex-col">
-        <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 pb-28 lg:grid lg:pb-0 {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_20rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
+        <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 pb-28 lg:grid lg:pb-0 {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_22.5rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
             <aside class="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
                 @include('layouts.navigation')
             </aside>
 
-            <div class="min-w-0 flex-1 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-4' : '' }}">
+            <div class="min-w-0 flex-1 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-2' : '' }}">
                 @if ($showDiscoverLayout)
                     <form
                         x-data="{ query: @js($globalSearchQuery) }"
@@ -109,7 +109,7 @@
             </div>
 
             @if ($showRightRail)
-                <aside class="hidden lg:col-start-3 lg:block lg:pl-4 {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
+                <aside class="hidden lg:col-start-3 lg:block lg:pl-2 {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
                     <div class="lg:sticky lg:top-4">
                         <livewire:people-to-follow
                             :context="$peopleToFollowContext"
