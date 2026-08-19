@@ -80,7 +80,7 @@
                         target="_blank"
                         class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
                     >
-                        <x-icons.github class="h-5 w-5" />
+                        <x-heroicon-o-code-bracket class="h-5 w-5" />
                         <span>Source code</span>
                     </a>
                 @else
@@ -110,7 +110,7 @@
                         target="_blank"
                         class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
                     >
-                        <x-icons.github class="h-5 w-5" />
+                        <x-heroicon-o-code-bracket class="h-5 w-5" />
                         <span>Source code</span>
                     </a>
 
