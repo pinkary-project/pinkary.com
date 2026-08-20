@@ -97,6 +97,7 @@ final class AppServiceProvider extends ServiceProvider
         Blaze::optimize()
             ->in(resource_path('views/components'))
             ->in(resource_path('views/components/footer.blade.php'), compile: false)
+            ->in(resource_path('views/components/link-preview-card.blade.php'), compile: false)
             ->in(resource_path('views/components/icons'), memo: true);
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2fd1155a6df611b1b4c4fe2525c32822",
+    "content-hash": "b96e3070912f255b106ff291da598054",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4261,16 +4261,16 @@
         },
         {
             "name": "livewire/blaze",
-            "version": "v1.0.14",
+            "version": "v1.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/blaze.git",
-                "reference": "dfd2b6b5a1ad824e71f35c631ccfbf52a3279aa2"
+                "reference": "8f5a2b82ba45d3c4d3676906b6d22de1cc1e5c19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/blaze/zipball/dfd2b6b5a1ad824e71f35c631ccfbf52a3279aa2",
-                "reference": "dfd2b6b5a1ad824e71f35c631ccfbf52a3279aa2",
+                "url": "https://api.github.com/repos/livewire/blaze/zipball/8f5a2b82ba45d3c4d3676906b6d22de1cc1e5c19",
+                "reference": "8f5a2b82ba45d3c4d3676906b6d22de1cc1e5c19",
                 "shasum": ""
             },
             "require": {
@@ -4313,9 +4313,9 @@
             "description": "A tool for optimizing Blade component performance by folding them into parent templates",
             "support": {
                 "issues": "https://github.com/livewire/blaze/issues",
-                "source": "https://github.com/livewire/blaze/tree/v1.0.14"
+                "source": "https://github.com/livewire/blaze/tree/v1.0.17"
             },
-            "time": "2026-08-02T03:19:21+00:00"
+            "time": "2026-08-18T14:39:46+00:00"
         },
         {
             "name": "livewire/livewire",
