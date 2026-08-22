@@ -15,6 +15,7 @@ test('to array', function (): void {
         'id',
         'user_id',
         'poll_option_id',
+        'question_id',
         'created_at',
         'updated_at',
     ]);
@@ -32,6 +33,8 @@ test('relations', function (): void {
 
     expect($pollVote->user)->toBeInstanceOf(User::class)
         ->and($pollVote->user->id)->toBe($user->id)
+        ->and($pollVote->question)->toBeInstanceOf(Question::class)
+        ->and($pollVote->question->id)->toBe($question->id)
         ->and($pollVote->pollOption)->toBeInstanceOf(PollOption::class)
         ->and($pollVote->pollOption->id)->toBe($pollOption->id);
 });
@@ -44,10 +47,12 @@ test('fillable attributes', function (): void {
     $pollVote = PollVote::create([
         'user_id' => $user->id,
         'poll_option_id' => $pollOption->id,
+        'question_id' => $question->id,
     ]);
 
     expect($pollVote->user_id)->toBe($user->id)
-        ->and($pollVote->poll_option_id)->toBe($pollOption->id);
+        ->and($pollVote->poll_option_id)->toBe($pollOption->id)
+        ->and($pollVote->question_id)->toBe($question->id);
 });
 
 test('casts', function (): void {
@@ -55,6 +60,7 @@ test('casts', function (): void {
 
     expect($pollVote->user_id)->toBeInt()
         ->and($pollVote->poll_option_id)->toBeInt()
+        ->and($pollVote->question_id)->toBeString()
         ->and($pollVote->created_at)->toBeInstanceOf(CarbonInterface::class)
         ->and($pollVote->updated_at)->toBeInstanceOf(CarbonInterface::class);
 });
@@ -68,6 +74,7 @@ test('unique vote constraint', function (): void {
     $pollVote1 = PollVote::create([
         'user_id' => $user->id,
         'poll_option_id' => $pollOption->id,
+        'question_id' => $question->id,
     ]);
 
     expect($pollVote1)->toBeInstanceOf(PollVote::class);
@@ -76,5 +83,6 @@ test('unique vote constraint', function (): void {
     expect(fn () => PollVote::create([
         'user_id' => $user->id,
         'poll_option_id' => $pollOption->id,
+        'question_id' => $question->id,
     ]))->toThrow(Exception::class);
 });

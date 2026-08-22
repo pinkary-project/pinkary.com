@@ -23,6 +23,14 @@ final class PollVoteFactory extends Factory
         return [
             'user_id' => User::factory(),
             'poll_option_id' => PollOption::factory(),
+            'question_id' => function (array $attributes): string {
+                /** @var string|null $questionId */
+                $questionId = PollOption::query()
+                    ->whereKey($attributes['poll_option_id'])
+                    ->value('question_id');
+
+                return $questionId ?? '';
+            },
         ];
     }
 }

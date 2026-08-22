@@ -56,7 +56,7 @@ final readonly class RegisteredUserController
 
         Auth::login($user);
 
-        UpdateUserAvatar::dispatch($user);
+        UpdateUserAvatar::dispatchFor($user);
 
         return redirect(route('profile.show', [
             'username' => $user->username,
