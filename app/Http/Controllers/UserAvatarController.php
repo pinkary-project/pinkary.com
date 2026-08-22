@@ -20,7 +20,7 @@ final readonly class UserAvatarController
     {
         /** @var UploadedFile $file */
         $file = $request->file('avatar');
-        UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
+        UpdateUserAvatar::dispatchForSync($user, $file->getRealPath());
 
         return to_route('profile.edit')
             ->with('flash-message', 'Avatar updated.');
@@ -31,7 +31,7 @@ final readonly class UserAvatarController
      */
     public function destroy(#[CurrentUser] User $user): RedirectResponse
     {
-        UpdateUserAvatar::dispatchSync(
+        UpdateUserAvatar::dispatchForSync(
             $user,
             null,
             $user->github_username ? 'github' : 'gravatar',

@@ -54,7 +54,7 @@ final readonly class UserController
             $user->sendEmailVerificationNotification();
 
             if (! $user->is_uploaded_avatar) {
-                UpdateUserAvatar::dispatch($user);
+                UpdateUserAvatar::dispatchFor($user);
             }
         }
         session()->flash('flash-message', 'Profile updated.');

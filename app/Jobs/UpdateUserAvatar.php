@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Services\Avatar;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\File;
@@ -20,6 +21,11 @@ final class UpdateUserAvatar implements ShouldQueue
     use Queueable;
 
     /**
+     * The avatar generation this job belongs to.
+     */
+    private ?CarbonInterface $generationAt;
+
+    /**
      * Create a new job instance.
      */
     public function __construct(
@@ -27,7 +33,30 @@ final class UpdateUserAvatar implements ShouldQueue
         private readonly ?string $file = null,
         private readonly ?string $service = null
     ) {
-        //
+        $this->generationAt = $user->avatar_updated_at;
+    }
+
+    /**
+     * Request a new avatar update, queuing the job.
+     *
+     * Bumping "avatar_updated_at" marks this request as the newest one,
+     * superseding any pending job that was dispatched earlier.
+     */
+    public static function dispatchFor(User $user, ?string $file = null, ?string $service = null): void
+    {
+        self::markGeneration($user);
+
+        self::dispatch($user, $file, $service);
+    }
+
+    /**
+     * Request a new avatar update, running the job synchronously.
+     */
+    public static function dispatchForSync(User $user, ?string $file = null, ?string $service = null): void
+    {
+        self::markGeneration($user);
+
+        self::dispatchSync($user, $file, $service);
     }
 
     /**
@@ -35,18 +64,26 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     public function handle(): void
     {
-        $disk = Storage::disk();
+        $user = $this->user->fresh();
 
-        if ($this->user->avatar && $disk->exists($this->user->avatar)) {
-            $disk->delete($this->user->avatar);
+        if ($user === null || $this->isSuperseded($user)) {
+            $this->ensureFileIsDeleted();
+
+            return;
         }
 
-        $file = $this->file ?? new Avatar($this->user)->url(
+        $disk = Storage::disk();
+
+        if ($user->avatar && $disk->exists($user->avatar)) {
+            $disk->delete($user->avatar);
+        }
+
+        $file = $this->file ?? new Avatar($user)->url(
             $this->service ?? 'gravatar',
         );
 
         if ($file === asset('img/default-avatar.png')) {
-            $this->user->update([
+            $user->update([
                 'avatar' => null,
                 'avatar_updated_at' => now(),
                 'is_uploaded_avatar' => false,
@@ -61,14 +98,14 @@ final class UpdateUserAvatar implements ShouldQueue
             $contents = (string) file_get_contents($file);
         }
 
-        $avatar = 'avatars/'.hash('sha256', random_int(0, PHP_INT_MAX).'@'.$this->user->id).'.png';
+        $avatar = 'avatars/'.hash('sha256', random_int(0, PHP_INT_MAX).'@'.$user->id).'.png';
 
         $image = $this->resizer()->read($contents)
             ->coverDown(200, 200)->toPng()->toFilePointer();
 
         $disk->put($avatar, $image, ['visibility' => 'public']);
 
-        $this->user->update([
+        $user->update([
             'avatar' => "$avatar",
             'avatar_updated_at' => now(),
             'is_uploaded_avatar' => $this->file !== null,
@@ -86,11 +123,45 @@ final class UpdateUserAvatar implements ShouldQueue
     {
         $this->ensureFileIsDeleted();
 
-        $this->user->fresh()?->update([
+        $user = $this->user->fresh();
+
+        if ($user === null || $this->isSuperseded($user)) {
+            return;
+        }
+
+        $user->update([
             'avatar' => null,
             'avatar_updated_at' => null,
             'is_uploaded_avatar' => false,
         ]);
+    }
+
+    /**
+     * Mark the given user as having requested a new avatar generation.
+     */
+    private static function markGeneration(User $user): void
+    {
+        $user->forceFill([
+            'avatar_updated_at' => now(),
+        ])->saveQuietly();
+    }
+
+    /**
+     * Determine whether a newer avatar update was requested after this job.
+     */
+    private function isSuperseded(User $user): bool
+    {
+        $current = $user->avatar_updated_at;
+
+        if ($current === null && ! $this->generationAt instanceof CarbonInterface) {
+            return false;
+        }
+
+        if ($current === null || ! $this->generationAt instanceof CarbonInterface) {
+            return true;
+        }
+
+        return $current->gt($this->generationAt);
     }
 
     /**
