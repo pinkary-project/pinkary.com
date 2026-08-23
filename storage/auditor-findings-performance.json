@@ -1,0 +1,86 @@
+{
+    "generated_at": "2026-08-23T00:00:00Z",
+    "audit_type": "performance",
+    "coverage_contract": [
+        {"id": "FEEDS", "boundary": "app/Queries/Feeds + livewire/feed.blade.php", "status": "reviewed", "rationale": "Home feed is the hottest read path; window-function queries verified."},
+        {"id": "LIV-QUESTIONS", "boundary": "app/Livewire/Questions + questions blades + components/comments", "status": "reviewed"},
+        {"id": "LIV-HOME", "boundary": "app/Livewire/Home (Users, Feed, QuestionsFollowing, Trending)", "status": "reviewed"},
+        {"id": "SVC-RECS", "boundary": "app/Services/PeopleToFollowRecommendations", "status": "reviewed"},
+        {"id": "JOBS", "boundary": "app/Jobs (IncrementViews, UpdateUserAvatar)", "status": "reviewed", "rationale": "Rewritten in audit round 2; re-verified for performance regressions."},
+        {"id": "NOTIF-SOCIAL", "boundary": "app/Livewire/Notifications + Bookmarks + Likes + Followers/Following", "status": "reviewed"},
+        {"id": "BLADE", "boundary": "resources/views (query-in-blade scan)", "status": "reviewed"},
+        {"id": "HTTP", "boundary": "app/Http/Controllers", "status": "reviewed"},
+        {"id": "FIL", "boundary": "app/Filament", "status": "skip", "rationale": "Small admin panel, policy-backed, low traffic."},
+        {"id": "DB-IDX", "boundary": "database/migrations full index review", "status": "skip", "rationale": "Index audit done in prior database audit; only search-shape gap reported here via AUD-PER-003."}
+    ],
+    "findings": [
+        {
+            "id": "F-2026-P001",
+            "rule_id": "AUD-PER-007",
+            "title": "Verified-users recommendation query runs uncached with ORDER BY RAND() on every home render",
+            "domain": "performance",
+            "severity": "low",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "Home\\Users::verifiedUsers() and PeopleToFollowRecommendations::verifiedUserIds() issue a whereHas('links') query with leading-wildcard LIKE conditions plus inRandomOrder() on every request. The sibling famousUsers path caches its id pool ('top-50-users' via Cache::remember until endOfDay) and randomizes over the cached ids; the verified path skips that treatment entirely.",
+            "why_it_matters": "ORDER BY RAND() forces MySQL to scan every row matching the verified/sponsor filter and filesort the set to pick 2 users, and the leading-wildcard LIKE inside the correlated EXISTS cannot use an index. The candidate set is curated (verified + sponsors) and therefore small - measured at 0 rows locally, realistically dozens to low hundreds in production - so per-request cost is sub-millisecond today. The value of the fix is consistency with the cached famousUsers pattern and immunity if the verified set is ever opened up (e.g. self-serve verification), at which point this becomes a per-render scan of an unbounded set.",
+            "evidence": [
+                {"type": "file", "location": "app/Livewire/Home/Users.php:132-150", "note": "verifiedUsers(): whereHas links LIKE '%twitter.com%'/'%github.com%'/'%://x.com%' + is_verified OR sponsor usernames + inRandomOrder()->get(); no cache"},
+                {"type": "file", "location": "app/Livewire/Home/Users.php:79", "note": "defaultUsers() calls verifiedUsers() on every render when search query is empty (render() lines 37-39)"},
+                {"type": "file", "location": "app/Services/PeopleToFollowRecommendations.php:246-272", "note": "verifiedUserIds(): same shape, inRandomOrder()->limit()->pluck(); no cache"},
+                {"type": "file", "location": "app/Services/PeopleToFollowRecommendations.php:209", "note": "genericFallbackUserIds() calls verifiedUserIds(); backs forContext() whenever context recs fall short (lines 53-62, 66-72)"},
+                {"type": "file", "location": "app/Livewire/Home/Users.php:105-124", "note": "house pattern already exists: famousUsers() caches 'top-50-users' until endOfDay and randomizes over <= 50 cached ids"}
+            ],
+            "affected_resources": [
+                "app/Livewire/Home/Users.php",
+                "app/Services/PeopleToFollowRecommendations.php",
+                "users table",
+                "links table"
+            ],
+            "symbol": "App\\Livewire\\Home\\Users::verifiedUsers / App\\Services\\PeopleToFollowRecommendations::verifiedUserIds",
+            "recommendation": "Cache the verified-users id pool the same way famousUsers caches 'top-50-users' (Cache::remember, endOfDay or multi-hour TTL), then pick the 2 random ids in PHP (array_rand). Apply the same treatment to PeopleToFollowRecommendations::verifiedUserIds().",
+            "remediation": "Implemented: Home\\Users::verifiedUsers() now caches the verified-id pool ('verified-user-ids', endOfDay TTL, same pattern as 'top-50-users') and randomizes over it with whereIn. PeopleToFollowRecommendations::verifiedUserIds() caches a per-authenticated-user pool ('verified-user-ids:{authId}') built without excludeIds, then applies exclusions in PHP and picks via shuffle+slice - distribution identical to the previous inRandomOrder query.",
+            "verification_notes": "Severity corrected during review: initially rated medium on hot-path frequency alone. Runtime data check (database-query) measured the candidate set at 0 verified users locally (4,594 users, 236 links total); production set is curated and expected to stay small, so amplification is bounded and per-request cost is sub-millisecond. Kept as low because the fix is nearly free, matches the shipped famousUsers caching pattern, and future-proofs against the verified set growing. Verified famousUsers() already uses the cached-pool + PHP-random pattern, so the fix is behaviorally consistent with shipped code. Verified defaultUsers() shuffles results afterwards (line 83), so no ordering contract exists. No other runtime measurements taken; impact described by mechanism.",
+            "metadata": {
+                "priority": "p3",
+                "impact": {
+                    "resource": "database/CPU",
+                    "mechanism": "Avoids a RAND() filesort over the curated verified-user set with an unindexable correlated LIKE EXISTS; near-zero cost today, insurance against set growth",
+                    "amplification": "Bounded by curated verified-user count (measured 0 locally); per home render and per fallback request"
+                }
+            }
+        },
+        {
+            "id": "F-2026-P002",
+            "rule_id": "AUD-PER-003",
+            "title": "User search uses leading-wildcard LIKE over name and username on every debounced keystroke",
+            "domain": "performance",
+            "severity": "info",
+            "confidence": "medium",
+            "status": "open",
+            "summary": "Home\\Users::usersByQuery() filters users with whereAny(['name','username'], 'like', \"%{$query}%\"). A leading wildcard prevents B-tree index usage, so each search (debounced at 500ms) scans the users table. Results are bounded by limit(10) but the scan is not.",
+            "why_it_matters": "Search is user-initiated and debounced, so impact today is modest, but scan cost grows linearly with user count on a home-page widget. If search volume or user count grows, the structural fix is a FULLTEXT (or trigram) index; a regular index cannot serve leading-wildcard LIKE.",
+            "evidence": [
+                {"type": "file", "location": "app/Livewire/Home/Users.php:50-52", "note": "whereAny(['name','username'], 'like', '%query%') - no index can serve the leading wildcard"},
+                {"type": "file", "location": "resources/views/livewire/home/users.blade.php:19", "note": "wire:model.live.debounce.500ms - executes per debounced keystroke"},
+                {"type": "file", "location": "app/Livewire/Home/Users.php:68", "note": "limit(10) bounds results, not the scan"}
+            ],
+            "affected_resources": [
+                "app/Livewire/Home/Users.php",
+                "users table"
+            ],
+            "symbol": "App\\Livewire\\Home\\Users::usersByQuery",
+            "recommendation": "Consider a FULLTEXT index on users (name, username) with a whereFullText search path once search volume or user count justifies it. Not urgent at current scale.",
+            "remediation": "Migration: $table->fullText(['name', 'username']); then switch usersByQuery() to ->whereFullText(['name', 'username'], $query) when needed.",
+            "verification_notes": "Checked the query is debounced (500ms), user-initiated, and result-bounded - which is why this is info, not medium. No runtime measurement; cost described by mechanism.",
+            "metadata": {
+                "priority": "p3",
+                "impact": {
+                    "resource": "database/CPU",
+                    "mechanism": "Leading-wildcard LIKE cannot use an index; each search scans the users table",
+                    "amplification": "One scan per debounced search; scales with user count"
+                }
+            }
+        }
+    ]
+}

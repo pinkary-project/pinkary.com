@@ -12413,16 +12413,16 @@
         },
         {
             "name": "mrpunyapal/laravel-auditor",
-            "version": "v0.1.4",
+            "version": "v0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MrPunyapal/laravel-auditor.git",
-                "reference": "e8f8c4402fceb419f235c7d7443dbddc74f774e2"
+                "reference": "63db728dd44d9b6743b41da44216497028e85a29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MrPunyapal/laravel-auditor/zipball/e8f8c4402fceb419f235c7d7443dbddc74f774e2",
-                "reference": "e8f8c4402fceb419f235c7d7443dbddc74f774e2",
+                "url": "https://api.github.com/repos/MrPunyapal/laravel-auditor/zipball/63db728dd44d9b6743b41da44216497028e85a29",
+                "reference": "63db728dd44d9b6743b41da44216497028e85a29",
                 "shasum": ""
             },
             "require": {
@@ -12491,7 +12491,7 @@
             ],
             "support": {
                 "issues": "https://github.com/MrPunyapal/laravel-auditor/issues",
-                "source": "https://github.com/MrPunyapal/laravel-auditor/tree/v0.1.4"
+                "source": "https://github.com/MrPunyapal/laravel-auditor/tree/v0.1.5"
             },
             "funding": [
                 {
@@ -12499,7 +12499,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-21T12:46:11+00:00"
+            "time": "2026-08-23T11:28:32+00:00"
         },
         {
             "name": "myclabs/deep-copy",
