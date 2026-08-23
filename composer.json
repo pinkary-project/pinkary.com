@@ -32,7 +32,6 @@
         "laravel/pint": "dev-feat/blade-support",
         "laravel/sail": "^1.65.0",
         "mockery/mockery": "^1.6.12",
-        "mrpunyapal/laravel-auditor": "^0.1.4",
         "nunomaduro/collision": "^8.9.5",
         "pestphp/pest": "^5.0.4",
         "pestphp/pest-plugin-laravel": "^5.0.1",
