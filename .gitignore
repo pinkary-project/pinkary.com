@@ -32,3 +32,5 @@ AGENTS.md
 /.codex
 /.grok
 /.github/skills
+
+storage/auditor-*
