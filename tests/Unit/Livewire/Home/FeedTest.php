@@ -54,7 +54,8 @@ test('ignore', function (): void {
 
     $component->dispatch('question.ignore', $question->id);
 
-    $component->assertDontSee($question->content);
+    $component->assertDontSee($question->content)
+        ->assertDispatched('question.ignored', questionId: $question->id);
 
     expect($question->fresh()->is_ignored)->toBeTrue();
 });

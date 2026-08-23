@@ -6,6 +6,7 @@ namespace App\Livewire\Questions;
 
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -41,8 +42,7 @@ final class Index extends Component
         $latestQuestions = Question::query()
             ->selectRaw('id as latest_id, updated_at as last_update')
             ->selectRaw('ROW_NUMBER() OVER (PARTITION BY COALESCE(root_id, id) ORDER BY updated_at DESC, id DESC) as thread_rank')
-            ->where('is_ignored', false)
-            ->where('is_reported', false)
+            ->tap(new WhereNotModerated)
             ->where('to_id', $user->id)
             ->when($user->isNot($request->user()), function (Builder $query): void {
                 $query->whereNotNull('answer');
@@ -69,8 +69,7 @@ final class Index extends Component
             ->with('parent:id,parent_id')
             ->where('grouped_questions.thread_rank', 1)
             ->where('questions.pinned', false)
-            ->where('questions.is_reported', false)
-            ->where('questions.is_ignored', false)
+            ->tap(new WhereNotModerated)
             ->when($user->isNot($request->user()), function (Builder|HasMany $query): void {
                 $query->whereNotNull('questions.answer');
             })
@@ -113,6 +112,6 @@ final class Index extends Component
 
         $question->update(['is_ignored' => true]);
 
-        $this->dispatch('question.ignored');
+        $this->dispatch('question.ignored', questionId: $question->id);
     }
 }

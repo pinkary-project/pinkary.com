@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -40,9 +41,8 @@ final readonly class QuestionsFollowingFeed
             ->selectRaw('id as latest_id, updated_at as last_update')
             ->selectRaw('ROW_NUMBER() OVER (PARTITION BY COALESCE(root_id, id) ORDER BY updated_at DESC, id DESC) as thread_rank')
             ->whereNotNull('answer')
-            ->where('is_ignored', false)
-            ->where($followQueryClosure)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated)
+            ->where($followQueryClosure);
 
         return Question::query()
             ->joinSub(
@@ -59,8 +59,7 @@ final readonly class QuestionsFollowingFeed
             ])
             ->with('root:id,to_id', 'root.to:id,username', 'parent:id,parent_id')
             ->whereNotNull('answer')
-            ->where('is_reported', false)
-            ->where('is_ignored', false)
+            ->tap(new WhereNotModerated)
             ->where($followQueryClosure)
             ->where('grouped_questions.thread_rank', 1)
             ->where(function (Builder $query) use ($followQueryClosure): void {

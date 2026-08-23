@@ -6,6 +6,7 @@ namespace App\Livewire\Questions;
 
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -54,8 +55,7 @@ final class Edit extends Component
         ]);
 
         $question = Question::query()
-            ->where('is_reported', false)
-            ->where('is_ignored', false)
+            ->tap(new WhereNotModerated)
             ->find($this->questionId);
 
         $originalAnswer = $question->answer ?? null;
@@ -107,7 +107,7 @@ final class Edit extends Component
         ]);
 
         $this->dispatch('notification.created', message: 'Question reported.');
-        $this->dispatch('question.reported');
+        $this->dispatch('question.reported', questionId: $this->questionId);
     }
 
     /**

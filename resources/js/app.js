@@ -72,4 +72,7 @@ Alpine.data('themeSwitch', themeSwitch);
 import { poll } from './poll.js';
 Alpine.data('poll', poll);
 
+import { questionItem } from './question-item.js';
+questionItem();
+
 Livewire.start()
