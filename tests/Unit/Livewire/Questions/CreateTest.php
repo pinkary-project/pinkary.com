@@ -306,6 +306,26 @@ test('cannot store with blank characters', function (): void {
     ]);
 });
 
+test('shows validation error when content is too short', function (): void {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    expect(Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', 'ab');
+    $component->call('store');
+
+    $component->assertHasErrors(['content' => 'min'])
+        ->assertSee('The content field must be at least 3 characters.');
+
+    expect(Question::count())->toBe(0);
+});
+
 test('poll should have at least 2 options', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
@@ -726,8 +746,10 @@ test('updated method invokes handleUploads', function (): void {
     $method = new ReflectionMethod(Create::class, 'uploadImages');
     $method->invoke($component->instance());
 
-    expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($path);
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    expect(session($sessionKey))->toBeArray()
+        ->and(session($sessionKey))->toContain($path);
 
     $component->assertDispatched('image.uploaded');
 
@@ -750,14 +772,16 @@ test('unused image cleanup when store is called', function (): void {
 
     Storage::disk()->assertExists($path);
 
-    expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($path);
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    expect(session($sessionKey))->toBeArray()
+        ->and(session($sessionKey))->toContain($path);
 
     $component->set('content', 'Hello World');
     $component->call('store');
 
     Storage::disk()->assertMissing($path);
-    expect(session('images'))->toBeNull();
+    expect(session($sessionKey))->toBeNull();
 });
 
 test('used images are NOT cleanup when store is called', function (): void {
@@ -774,8 +798,10 @@ test('used images are NOT cleanup when store is called', function (): void {
 
     Storage::disk()->assertExists($path);
 
-    expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($path);
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    expect(session($sessionKey))->toBeArray()
+        ->and(session($sessionKey))->toContain($path);
 
     $url = Storage::disk()->url($path);
 
@@ -783,7 +809,55 @@ test('used images are NOT cleanup when store is called', function (): void {
     $component->call('store');
 
     Storage::disk()->assertExists($path);
-    expect(session('images'))->toBeNull();
+    expect(session($sessionKey))->toBeNull();
+});
+
+test('posting one form does not delete another draft\'s tracked images', function (): void {
+    $user = User::factory()->create(['is_verified' => true]);
+    $parentQuestion = Question::factory()->create();
+
+    /** @var Testable $componentA */
+    $componentA = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'parentId' => $parentQuestion->id,
+    ]);
+
+    /** @var Testable $componentB */
+    $componentB = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
+
+    $componentA->set('images', [UploadedFile::fake()->image('photo-a.jpg')]);
+    $method->invoke($componentA->instance());
+
+    $componentB->set('images', [UploadedFile::fake()->image('photo-b.jpg')]);
+    $method->invoke($componentB->instance());
+
+    $sessionKeyA = 'images.reply_'.$parentQuestion->id;
+    $sessionKeyB = 'images.'.$componentB->instance()->draftKey();
+
+    expect(session($sessionKeyA))->toBeArray()->not->toBeEmpty()
+        ->and(session($sessionKeyB))->toBeArray()->not->toBeEmpty();
+
+    $pathA = session($sessionKeyA)[0];
+    $pathB = session($sessionKeyB)[0];
+
+    Storage::disk()->assertExists($pathA);
+    Storage::disk()->assertExists($pathB);
+
+    // Posting from draft A deletes its own unused image and clears only its own session key.
+    $componentA->set('content', 'Hello World');
+    $componentA->call('store');
+
+    Storage::disk()->assertMissing($pathA);
+    expect(session($sessionKeyA))->toBeNull()
+        // Draft B keeps its tracked image and its session entry intact.
+        ->and(session($sessionKeyB))->toContain($pathB);
+
+    Storage::disk()->assertExists($pathB);
 });
 
 test('delete image', function (): void {

@@ -12,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $user_id
+ * @property string $question_id
  * @property int $poll_option_id
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read User $user
+ * @property-read Question $question
  * @property-read PollOption $pollOption
  */
 final class PollVote extends Model
@@ -46,6 +48,16 @@ final class PollVote extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the question that owns the poll vote.
+     *
+     * @return BelongsTo<Question, $this>
+     */
+    public function question(): BelongsTo
+    {
+        return $this->belongsTo(Question::class);
     }
 
     /**

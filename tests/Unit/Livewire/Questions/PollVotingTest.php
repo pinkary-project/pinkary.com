@@ -7,6 +7,7 @@ use App\Models\PollOption;
 use App\Models\PollVote;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Livewire\Livewire;
 
 test('renders poll options correctly', function (): void {
@@ -88,6 +89,47 @@ test('user can remove their vote by voting for same option', function (): void {
         ->where('poll_option_id', $pollOption->id)
         ->exists())->toBeFalse()
         ->and($pollOption->fresh()->votes_count)->toBe(0);
+});
+
+test('database enforces one vote per user per poll', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->poll()->create();
+
+    $option1 = PollOption::factory()->for($question)->create();
+    $option2 = PollOption::factory()->for($question)->create();
+
+    PollVote::factory()->create([
+        'user_id' => $user->id,
+        'poll_option_id' => $option1->id,
+    ]);
+
+    expect(fn (): PollVote => PollVote::factory()->create([
+        'user_id' => $user->id,
+        'poll_option_id' => $option2->id,
+    ]))->toThrow(UniqueConstraintViolationException::class)
+        ->and(PollVote::query()->where('user_id', $user->id)->count())->toBe(1);
+});
+
+test('voting twice in quick succession keeps a single vote per user', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->poll()->create();
+
+    $optionA = PollOption::factory()->for($question)->create(['votes_count' => 0]);
+    $optionB = PollOption::factory()->for($question)->create(['votes_count' => 0]);
+
+    foreach ([$optionA->id, $optionB->id] as $pollOptionId) {
+        Livewire::actingAs($user)
+            ->test(PollVoting::class, ['questionId' => $question->id])
+            ->call('vote', $pollOptionId);
+    }
+
+    $vote = PollVote::query()->where('user_id', $user->id)->first();
+
+    expect(PollVote::query()->where('user_id', $user->id)->count())->toBe(1)
+        ->and($vote->question_id)->toBe($question->id)
+        ->and($vote->poll_option_id)->toBe($optionB->id)
+        ->and($optionA->fresh()->votes_count)->toBe(0)
+        ->and($optionB->fresh()->votes_count)->toBe(1);
 });
 
 test('guest user cannot vote', function (): void {

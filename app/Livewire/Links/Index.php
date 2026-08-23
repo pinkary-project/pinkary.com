@@ -81,7 +81,7 @@ final class Index extends Component
         $link->delete();
 
         if (! $user->is_uploaded_avatar) {
-            UpdateUserAvatar::dispatch($user);
+            UpdateUserAvatar::dispatchFor($user);
         }
 
         $this->dispatch('close-modal', 'delete-link');
