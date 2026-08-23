@@ -109,6 +109,26 @@ it('does not reset the avatar when the failing job is superseded', function (): 
     expect($user->refresh()->avatar)->toBe($avatar);
 });
 
+it('preserves the superseding token when the job fails', function (): void {
+    Storage::fake();
+
+    $user = User::factory()->create();
+
+    UpdateUserAvatar::dispatchSync($user);
+
+    $token = $user->refresh()->avatar_updated_at;
+
+    expect($token)->not()->toBeNull();
+
+    new UpdateUserAvatar($user->fresh())->failed(null);
+
+    $user->refresh();
+
+    expect($user->avatar_updated_at)->toEqual($token)
+        ->and($user->avatar)->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeFalse();
+});
+
 it('accepts different services to download avatar', function (): void {
     Storage::fake();
 

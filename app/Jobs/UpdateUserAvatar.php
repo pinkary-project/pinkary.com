@@ -116,8 +116,6 @@ final class UpdateUserAvatar implements ShouldQueue
 
     /**
      * Handle a job failure.
-     *
-     * @codeCoverageIgnore
      */
     public function failed(?Throwable $exception): void
     {

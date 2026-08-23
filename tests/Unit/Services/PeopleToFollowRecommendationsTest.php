@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 beforeEach(function (): void {
     Cache::forget('top-50-users');
     Cache::forget('top-200-users');
+    Cache::forget('verified-user-ids');
 });
 
 it('returns generic fallback users from the discovery pool', function (): void {
@@ -276,4 +277,29 @@ it('caches the top 50 users', function (): void {
     new PeopleToFollowRecommendations()->forContext(authenticatedUserId: null);
 
     expect(Cache::has('top-50-users'))->toBeTrue();
+});
+
+it('caches the verified users pool', function (): void {
+    $verified = User::factory()
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
+        ->create(['is_verified' => true]);
+
+    new PeopleToFollowRecommendations()->forContext(authenticatedUserId: null);
+
+    expect(Cache::has('verified-user-ids:'))->toBeTrue()
+        ->and(Cache::get('verified-user-ids:'))->toEqual([$verified->id]);
+
+    $lateVerified = User::factory()
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
+        ->create(['is_verified' => true]);
+
+    $users = new PeopleToFollowRecommendations()->forContext(authenticatedUserId: null);
+
+    expect($users->contains(fn (User $user): bool => $user->is($lateVerified)))->toBeFalse();
+
+    Cache::forget('verified-user-ids:');
+
+    $users = new PeopleToFollowRecommendations()->forContext(authenticatedUserId: null);
+
+    expect($users->contains(fn (User $user): bool => $user->is($lateVerified)))->toBeTrue();
 });
