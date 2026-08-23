@@ -31,11 +31,7 @@ final readonly class UserAvatarController
      */
     public function destroy(#[CurrentUser] User $user): RedirectResponse
     {
-        UpdateUserAvatar::dispatchForSync(
-            $user,
-            null,
-            $user->github_username ? 'github' : 'gravatar',
-        );
+        UpdateUserAvatar::dispatchForSync($user);
 
         return to_route('profile.edit')
             ->with('flash-message', 'Updating avatar using '.($user->github_username ? 'GitHub' : 'Gravatar').'.');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class RecentQuestionsFeed
@@ -26,8 +27,7 @@ final readonly class RecentQuestionsFeed
         return Question::query()
             ->select('questions.id', 'questions.root_id', 'questions.parent_id')
             ->whereNotNull('answer')
-            ->where('is_ignored', false)
-            ->where('is_reported', false)
+            ->tap(new WhereNotModerated)
             ->when($this->hashtag, function (Builder $query): void {
                 $query->whereHas('hashtags', function (Builder $query): void {
                     $query
@@ -41,8 +41,7 @@ final readonly class RecentQuestionsFeed
                     ->selectRaw('id as latest_id, updated_at as last_update')
                     ->selectRaw('ROW_NUMBER() OVER (PARTITION BY COALESCE(root_id, id) ORDER BY updated_at DESC, id DESC) as thread_rank')
                     ->whereNotNull('answer')
-                    ->where('is_ignored', false)
-                    ->where('is_reported', false);
+                    ->tap(new WhereNotModerated);
 
                 $query->joinSub(
                     $latestQuestions,

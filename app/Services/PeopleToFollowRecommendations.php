@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -174,8 +175,7 @@ final readonly class PeopleToFollowRecommendations
                     ->orWhere('to_id', $userId);
             })
             ->whereNotNull('answer')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
 
         /** @var array<int, int> $candidateIds */
         $candidateIds = DB::query()

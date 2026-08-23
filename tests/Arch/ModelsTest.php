@@ -6,8 +6,10 @@ arch('models')
     ->expect('App\Models')
     ->toHaveMethod('casts')
     ->ignoring('App\Models\Concerns')
+    ->ignoring('App\Models\Scopes')
     ->toExtend(Illuminate\Database\Eloquent\Model::class)
     ->ignoring('App\Models\Concerns')
+    ->ignoring('App\Models\Scopes')
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',

@@ -1,0 +1,260 @@
+{
+    "generated_at": "2026-08-23T00:00:00Z",
+    "audit_type": "dsa",
+    "coverage_contract": [
+        {"id": "MDL-OBS", "boundary": "app/Models + app/Observers + app/EventActions", "status": "reviewed"},
+        {"id": "QRY", "boundary": "app/Queries", "status": "reviewed"},
+        {"id": "JOB-CMD", "boundary": "app/Jobs + app/Console + routes/console.php", "status": "reviewed"},
+        {"id": "LIV-Q", "boundary": "app/Livewire/Questions + Views + Navigation", "status": "reviewed"},
+        {"id": "LIV-SOCIAL", "boundary": "app/Livewire (remaining)", "status": "reviewed"},
+        {"id": "SVC", "boundary": "app/Services + app/Contracts", "status": "reviewed"},
+        {"id": "HTTP-AUTH", "boundary": "app/Http/Controllers + Policies + Middleware", "status": "reviewed"},
+        {"id": "MAIL-NOTIF", "boundary": "app/Mail + app/Notifications", "status": "skip", "rationale": "Thin data carriers; lifecycle cleanup owned by QuestionObserver and DeleteOrphanNotifications job (covered in JOB-CMD/MDL-OBS lanes)."},
+        {"id": "DB", "boundary": "database/migrations + schema", "status": "skip", "rationale": "Schema verified during prior security/database audit and poll_votes invariant work; FK/index conventions uniform; no invalid-state combinations found beyond those already reported."},
+        {"id": "FIL", "boundary": "app/Filament", "status": "skip", "rationale": "Small admin panel; resources backed by policies; no state machines or duplicated branching above threshold."},
+        {"id": "TST-CFG-DEP", "boundary": "tests / config / composer", "status": "skip", "rationale": "Arch test suite enforces structural conventions; dependencies audited via composer audit tooling."},
+        {"id": "MISC", "boundary": "app/Enums + app/View + app/Rules + app/Providers + app/Exceptions", "status": "skip", "rationale": "Backed enums, presentational components, stateless validation rules, framework wiring, thin exceptions - boring local code already."}
+    ],
+    "findings": [
+        {
+            "id": "F-2026-0005",
+            "rule_id": "AUD-ARC-002",
+            "title": "Question visibility predicate hand-copied at ~15 sites",
+            "domain": "architecture",
+            "severity": "medium",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "The 'is_ignored/is_reported false' pair (sometimes plus answer-not-null) was hand-copied across feed builders, Question relations, Livewire components, and recommendation services with no named owner.",
+            "why_it_matters": "Any future visibility rule (blocked accounts, poll expiry) must be applied at every site by hand; missing one yields feeds that disagree silently. Inside window-function feeds the predicate must apply to outer query AND subquery - drift drops whole threads.",
+            "evidence": [
+                {"type": "file", "location": "app/Queries/Feeds/RecentQuestionsFeed.php:28-30,43-45", "note": "predicate twice"},
+                {"type": "file", "location": "app/Queries/Feeds/QuestionsFollowingFeed.php:42-45,61-64", "note": "predicate twice"},
+                {"type": "file", "location": "app/Queries/Feeds/TrendingQuestionsFeed.php:53-55", "note": "flags variant"},
+                {"type": "file", "location": "app/Models/Question.php:240-275", "note": "four relations restate the pair"},
+                {"type": "file", "location": "app/Livewire/Questions/Index.php:44-48,71-75", "note": "two more copies"},
+                {"type": "file", "location": "app/Livewire/Questions/Edit.php:56-59", "note": "copy"},
+                {"type": "file", "location": "app/Services/PeopleToFollowRecommendations.php:176-178", "note": "copy"}
+            ],
+            "affected_resources": ["app/Models/Question.php", "app/Queries/Feeds/*", "app/Livewire/Questions/*", "app/Services/PeopleToFollowRecommendations.php"],
+            "recommendation": "Name the predicate once as a tappable scope class (App\\Models\\Scopes\\WhereNotModerated with __invoke(Builder)) applied via ->tap(); compose with whereNotNull('answer') where semantics require answered-only visibility.",
+            "remediation": "Implemented: WhereNotModerated scope class created; adopted via ->tap() in 4 relations, 3 feed builders (5 sites incl. subqueries), Livewire Index/Edit, PeopleToFollowRecommendations. Trending keeps its freshness condition inline - no forced shape.",
+            "verification_notes": "tests/Unit/Feeds/* pin ignored/reported/unanswered exclusions; 267 tests green after adoption (Feeds + Livewire/Questions + Services suites).",
+            "metadata": {"priority": "p1", "subsystem": "MDL-OBS"}
+        },
+        {
+            "id": "F-2026-0006",
+            "rule_id": "AUD-DSA-002",
+            "title": "Untargeted question.ignore broadcast lets every mounted Show card mutate its own question",
+            "domain": "architecture",
+            "severity": "high",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "Questions\\Show registers ignore/reported listeners only when not in index mode, and Edit broadcasts question.ignore without a target id - so every non-index Show component on the page runs ignore() against its own questionId.",
+            "why_it_matters": "On any page mixing pinned and thread cards (own profile), ignoring one question durably marks every visible received question is_ignored. On foreign profiles each card throws inside a batched update. Wrong-record durable-state mutation reachable by a normal click.",
+            "evidence": [
+                {"type": "file", "location": "app/Livewire/Questions/Show.php:80-86,101-128", "note": "conditional listeners + inIndex fork"},
+                {"type": "file", "location": "app/Livewire/Questions/Edit.php:116-121", "note": "untargeted broadcast"},
+                {"type": "file", "location": "resources/views/components/thread.blade.php:11,25,30", "note": "cards mount listeners-active Shows alongside pinned inIndex card"}
+            ],
+            "affected_resources": ["app/Livewire/Questions/Show.php", "app/Livewire/Questions/Edit.php"],
+            "recommendation": "Register listeners unconditionally; guard handlers by identity (questionId parameter must match, null = direct wire:click call); drop the inIndex relay fork and dead showBorder state.",
+            "remediation": "Implemented in Show.php/Edit.php per audit spec; ShowTest listener map updated.",
+            "verification_notes": "tests/Unit/Livewire/Questions/* green (included in 267-test run).",
+            "metadata": {"priority": "p0", "subsystem": "LIV-Q"}
+        },
+        {
+            "id": "F-2026-0007",
+            "rule_id": "AUD-DSA-001",
+            "title": "Create composer shares one global session bucket for uploaded images across all instances",
+            "domain": "architecture",
+            "severity": "medium",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "Draft content is persisted per draftKey, but uploaded-image tracking uses one unordered session list; posting form A deletes form B's referenced files ('unused' relative to A) and wipes B's tracking.",
+            "why_it_matters": "Multiple Create components mount simultaneously (feeds, profile, one per comment box). Cross-draft interference produces broken image markdown or orphaned storage files depending on ordering.",
+            "evidence": [
+                {"type": "file", "location": "app/Livewire/Questions/Create.php:514,544-551", "note": "global push + containment delete + whole-key forget"}
+            ],
+            "affected_resources": ["app/Livewire/Questions/Create.php"],
+            "recommendation": "Namespace the bucket by existing draft identity: key 'images.{draftKey}' threaded through uploadImages/deleteUnusedImages/cleanSession/getSessionImages; forget only the own key.",
+            "remediation": "Implemented exactly; CreateTest assertions updated to namespaced keys and a two-component regression test added (fails against old code).",
+            "verification_notes": "CreateTest: 52 passed (235 assertions).",
+            "metadata": {"priority": "p1", "subsystem": "LIV-Q"}
+        },
+        {
+            "id": "F-2026-0008",
+            "rule_id": "AUD-DSA-002",
+            "title": "Avatar source selection policy split across five call sites with contradictory outcomes",
+            "domain": "architecture",
+            "severity": "low",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "For a connected, non-uploaded-avatar user, regeneration flips between GitHub and Gravatar sources depending on trigger: controllers thread literals ('github' on connect/delete, nothing on register/email-change/link-delete) while the job defaults to gravatar.",
+            "why_it_matters": "Same logical state yields different avatar sources by entry point; the destroy route's own flash copy already commits to github-first. Ownership of 'pick the right source' was undefined.",
+            "evidence": [
+                {"type": "file", "location": "app/Http/Controllers/UserAvatarController.php:32-41", "note": "inline ternary x2"},
+                {"type": "file", "location": "app/Http/Controllers/UserGitHubUsernameController.php:63-69", "note": "literal github"},
+                {"type": "file", "location": "app/Jobs/UpdateUserAvatar.php:81-83", "note": "hard gravatar default"}
+            ],
+            "affected_resources": ["app/Jobs/UpdateUserAvatar.php", "app/Http/Controllers/UserAvatarController.php", "app/Http/Controllers/UserGitHubUsernameController.php"],
+            "recommendation": "Derive once where the default lives: service ?? (github_username !== null ? 'github' : 'gravatar') in handle(); controllers stop threading literals.",
+            "remediation": "Implemented in job + both controller sites; Avatar::url guard unchanged.",
+            "verification_notes": "UpdateUserAvatarTest + GitHub UpdateTest: 13 passed, 1 skipped (Windows-only skip).",
+            "metadata": {"priority": "p1", "subsystem": "HTTP-AUTH"}
+        },
+        {
+            "id": "F-2026-0009",
+            "rule_id": "AUD-DSA-001",
+            "title": "Avatar generation marker conflates request/success/failure events; failure cancels pending supersession state",
+            "domain": "architecture",
+            "severity": "medium",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "failed() wrote avatar_updated_at = null, erasing the ordering marker so any queued job with a non-null snapshot classified itself superseded until the next request; the column encodes three event meanings forcing a four-branch isSuperseded.",
+            "why_it_matters": "A stale job failing suppresses unrelated queued updates; same-second dispatches share a generation (second-granularity column).",
+            "evidence": [
+                {"type": "file", "location": "app/Jobs/UpdateUserAvatar.php:132-136", "note": "failure nulled ordering marker (pre-fix)"},
+                {"type": "file", "location": "database/migrations/2024_04_08_142134_add_avatar_updated_at_to_users_table.php:17", "note": "second-granularity nullable timestamp"}
+            ],
+            "affected_resources": ["app/Jobs/UpdateUserAvatar.php"],
+            "recommendation": "Minimal: stop touching the marker in failed() (content reset stays). Full: opaque monotonic token column (ULID/counter) reducing isSuperseded to an inequality.",
+            "remediation": "Minimal variant implemented (marker preserved on failure). Monotonic-token migration recorded as future hardening (see F-2026-0013).",
+            "verification_notes": "Supersession tests green; failure-path test still asserts avatar content reset.",
+            "metadata": {"priority": "p1", "subsystem": "JOB-CMD"}
+        },
+        {
+            "id": "F-2026-0010",
+            "rule_id": "AUD-CON-002",
+            "title": "IncrementViews deduplicates views with a lock-guarded shared cache list",
+            "domain": "performance",
+            "severity": "low",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "One shared mutable array per (model, viewer) under an advisory lock: read-modify-write that loses dedup on crash, serializes concurrent runs, grows without bound over its TTL, and had an odd lock-timeout flow marked @codeCoverageIgnore.",
+            "why_it_matters": "State representation permits lost/contradictory dedup and unbounded growth; the mechanism can be replaced by an atomic primitive.",
+            "evidence": [
+                {"type": "file", "location": "app/Jobs/IncrementViews.php:56-86,107-117", "note": "lock + merge/unique/put"}
+            ],
+            "affected_resources": ["app/Jobs/IncrementViews.php"],
+            "recommendation": "Atomic per-item flags: Cache::add(\"viewed:{model}:{id}:{viewer}\", true, ttl) - SETNX semantics make 'true return = I own the count'; deletes lock/block/catch/finally/helper.",
+            "remediation": "Implemented; tests rewritten to per-flag assertions plus a double-dispatch no-double-count regression test.",
+            "verification_notes": "IncrementViewsTest: 7 passed (26 assertions). Trade-off noted: N cache round-trips per page vs 1 get+put - acceptable for Redis-style drivers.",
+            "metadata": {"priority": "p2", "subsystem": "JOB-CMD"}
+        },
+        {
+            "id": "F-2026-0011",
+            "rule_id": "AUD-DSA-003",
+            "title": "MetaData duplicates oEmbed host-dispatch blocks per provider",
+            "domain": "architecture",
+            "severity": "low",
+            "confidence": "high",
+            "status": "fixed",
+            "summary": "YouTube and Vimeo blocks in getData() are byte-for-byte copies differing only in host list and endpoint; provider knowledge lived in three places across two methods.",
+            "why_it_matters": "Adding a fourth oEmbed provider means pasting another block and hoping options match.",
+            "evidence": [
+                {"type": "file", "location": "app/Services/MetaData.php:104-137", "note": "duplicated blocks (pre-fix)"}
+            ],
+            "affected_resources": ["app/Services/MetaData.php"],
+            "recommendation": "Class constant map endpoint => hosts iterated once through existing fetchOEmbed().",
+            "remediation": "Implemented as OEMBED_SERVICES const + single foreach.",
+            "verification_notes": "MetaDataTest: 15 passed unmodified - equivalence proof.",
+            "metadata": {"priority": "p3", "subsystem": "SVC"}
+        },
+        {
+            "id": "F-2026-0012",
+            "rule_id": "AUD-DSA-001",
+            "title": "'top-50-users' cache key written by two features with divergent definitions; request-scoped exclusion baked into global cache",
+            "domain": "architecture",
+            "severity": "low",
+            "confidence": "high",
+            "status": "open",
+            "summary": "Home\\Users caches top-50 WITH its request-scoped verified-user exclusions under the same 24h key PeopleToFollowRecommendations writes WITHOUT exclusions; whichever warms first wins for the day.",
+            "why_it_matters": "Non-deterministic-by-write-order shared state: the rendered pool permanently misses <=2 ids for all users until expiry.",
+            "evidence": [
+                {"type": "file", "location": "app/Livewire/Home/Users.php:105-118", "note": "whereNotIn(except) inside cached closure"},
+                {"type": "file", "location": "app/Services/PeopleToFollowRecommendations.php:289-293", "note": "same key, no exclusions"}
+            ],
+            "affected_resources": ["app/Livewire/Home/Users.php"],
+            "recommendation": "Cache holds canonical ranking; apply exclusions after read. Optionally bump key to v2 to shed stale entries at deploy.",
+            "verification_notes": "Two-line change; UsersTest pins caching semantics; new test should assert cached payload independent of $except.",
+            "metadata": {"priority": "p2", "subsystem": "LIV-SOCIAL"}
+        },
+        {
+            "id": "F-2026-0013",
+            "rule_id": "AUD-DSA-001",
+            "title": "Latest-per-thread ROW_NUMBER subquery duplicated across feed builders",
+            "domain": "architecture",
+            "severity": "low",
+            "confidence": "high",
+            "status": "open",
+            "summary": "RecentQuestionsFeed and QuestionsFollowingFeed carry verbatim copies of the selectRaw ROW_NUMBER latest-per-thread construction (plus a variant in Livewire Questions\\Index).",
+            "why_it_matters": "Thread-grouping rules drift silently if one copy changes; both feeds currently agree only by discipline.",
+            "evidence": [
+                {"type": "file", "location": "app/Queries/Feeds/RecentQuestionsFeed.php:40-45", "note": "copy A"},
+                {"type": "file", "location": "app/Queries/Feeds/QuestionsFollowingFeed.php:39-45", "note": "copy B"},
+                {"type": "file", "location": "app/Livewire/Questions/Index.php:41-49", "note": "copy C (different filters)"}
+            ],
+            "affected_resources": ["app/Queries/Feeds/RecentQuestionsFeed.php", "app/Queries/Feeds/QuestionsFollowingFeed.php"],
+            "recommendation": "Extract a shared builder helper (e.g., Question::scopeWhereLatestPerThread(Builder)) consumed by both feeds; Livewire copy has extra filters - adopt only the common core.",
+            "verification_notes": "Deferred: window-function SQL text must stay identical per site; existing feed tests pin behavior when attempted.",
+            "metadata": {"priority": "p2", "subsystem": "QRY"}
+        },
+        {
+            "id": "F-2026-0014",
+            "rule_id": "AUD-ARC-002",
+            "title": "PeopleToFollowRecommendations repeats the fill-remaining-slots idiom five times with two exclusion spellings",
+            "domain": "architecture",
+            "severity": "low",
+            "confidence": "medium",
+            "status": "open",
+            "summary": "limit-count arithmetic + exclude-list threading re-implemented at five sites with two conventions, compensated by four zero-limit guards.",
+            "why_it_matters": "A sixth stage forgetting the spread reintroduces duplicates (masked downstream by array_unique at the cost of wrong slot counts/ordering).",
+            "evidence": [
+                {"type": "file", "location": "app/Services/PeopleToFollowRecommendations.php:52-61,128-138,140-150,209-237", "note": "five sites"}
+            ],
+            "affected_resources": ["app/Services/PeopleToFollowRecommendations.php"],
+            "recommendation": "Private fillRemaining(selectedIds, limit, callable $source) helper preserving laziness via closure sources; exact-ordering tests already pin behavior.",
+            "verification_notes": "Deferred: exclude-threading subtlety around genericFallback inner chain needs careful encoding; suite (PeopleToFollowRecommendationsTest) guards the refactor.",
+            "metadata": {"priority": "p3", "subsystem": "SVC"}
+        },
+        {
+            "id": "F-2026-0015",
+            "rule_id": "AUD-PER-006",
+            "title": "Follow-state viewer closures duplicated across Followers/Following/Likes components",
+            "domain": "architecture",
+            "severity": "low",
+            "confidence": "high",
+            "status": "open",
+            "summary": "Three sibling modal components repeat equivalent 'does viewer follow / is followed by' closure logic for attribute decoration.",
+            "why_it_matters": "Relationship-direction bugs would need fixing thrice; a small shared helper removes the triplication without a new abstraction layer.",
+            "evidence": [
+                {"type": "file", "location": "app/Livewire/Followers/Index.php", "note": "closure set"},
+                {"type": "file", "location": "app/Livewire/Following/Index.php", "note": "closure set"},
+                {"type": "file", "location": "app/Livewire/Likes/Index.php", "note": "closure set"}
+            ],
+            "affected_resources": ["app/Livewire/Followers/Index.php", "app/Livewire/Following/Index.php", "app/Livewire/Likes/Index.php"],
+            "recommendation": "Extract one helper (trait or static) producing the follow/follower flag pairs; LikesTest pins both directions simultaneously.",
+            "verification_notes": "Deferred as P3 maintainability; existing four component suites assert exact attributes.",
+            "metadata": {"priority": "p3", "subsystem": "LIV-SOCIAL"}
+        },
+        {
+            "id": "F-2026-0016",
+            "rule_id": "AUD-DB-005",
+            "title": "poll_options.votes_count denormalized counter can drift from poll_votes rows under cascade deletes",
+            "domain": "database",
+            "severity": "low",
+            "confidence": "medium",
+            "status": "open",
+            "summary": "votes_count duplicates a derivable count; FK cascades bypass Eloquent increments/decrements so drift is possible when votes disappear via cascade.",
+            "why_it_matters": "Poll percentages derive from the counter; drift misrepresents results. Mitigated by the unique(user_id, question_id) constraint and transactional vote() keeping normal paths exact.",
+            "evidence": [
+                {"type": "file", "location": "app/Models/PollOption.php:36", "note": "counter cast"},
+                {"type": "file", "location": "database/migrations/2025_07_18_150140_create_poll_options_table.php", "note": "column definition"}
+            ],
+            "affected_resources": ["app/Models/PollOption.php", "app/Livewire/Questions/PollVoting.php"],
+            "recommendation": "Either drop the column and derive via withCount('votes'), or accept the counter with the existing transactional maintenance as the contract.",
+            "verification_notes": "Deferred: touches hot voting path and render percentages; PollVotingTest pins counter semantics end-to-end.",
+            "metadata": {"priority": "p3", "subsystem": "MDL-OBS"}
+        }
+    ]
+}

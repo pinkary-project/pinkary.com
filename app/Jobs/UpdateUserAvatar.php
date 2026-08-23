@@ -79,7 +79,7 @@ final class UpdateUserAvatar implements ShouldQueue
         }
 
         $file = $this->file ?? new Avatar($user)->url(
-            $this->service ?? 'gravatar',
+            $this->service ?? ($user->github_username !== null ? 'github' : 'gravatar'),
         );
 
         if ($file === asset('img/default-avatar.png')) {
@@ -131,7 +131,6 @@ final class UpdateUserAvatar implements ShouldQueue
 
         $user->update([
             'avatar' => null,
-            'avatar_updated_at' => null,
             'is_uploaded_avatar' => false,
         ]);
     }

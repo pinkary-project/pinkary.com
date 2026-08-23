@@ -46,21 +46,24 @@ test('refresh', function (): void {
 test('listeners', function (): void {
     $question = Question::factory()->create();
 
-    $component = Livewire::test(Show::class, [
-        'questionId' => $question->id,
-    ]);
-
-    expect($component->instance()->getListeners())->toBe([
-        'question.ignore' => 'ignore',
-        'question.reported' => 'redirectToProfile',
-    ]);
-
+    // Listeners are registered unconditionally, even within the index view.
     $component = Livewire::test(Show::class, [
         'questionId' => $question->id,
         'inIndex' => true,
     ]);
 
-    expect($component->instance()->getListeners())->toBe([]);
+    $component->dispatch('question.reported', questionId: $question->id);
+
+    $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
+
+    $component = Livewire::actingAs($question->to)->test(Show::class, [
+        'questionId' => $question->id,
+        'inIndex' => true,
+    ]);
+
+    $component->dispatch('question.ignore', questionId: $question->id);
+
+    expect($question->fresh()->is_ignored)->toBeTrue();
 });
 
 test('redirect to profile', function (): void {
@@ -80,28 +83,62 @@ test('ignore', function (): void {
 
     $user = User::find($question->to_id);
 
+    // Embedded card (feed, listing, thread): stays in place.
     $component = Livewire::actingAs($user)->test(Show::class, [
         'questionId' => $question->id,
-        'inIndex' => false,
     ]);
 
     $component->call('ignore');
 
     expect($question->fresh()->is_ignored)->toBeTrue();
 
-    $component->assertRedirect(route('profile.show', ['username' => $question->to->username]));
+    $component->assertDispatched('notification.created', message: 'Question ignored.')
+        ->assertDispatched('question.ignored', questionId: $question->id)
+        ->assertNoRedirect();
 
-    $question = Question::factory()->create();
-    $user = User::find($question->to_id);
+    // Main card on the question's own show page: stays in place as well.
+    $ownQuestion = Question::factory()->create([
+        'to_id' => $user->id,
+        'from_id' => $user->id,
+    ]);
 
     $component = Livewire::actingAs($user)->test(Show::class, [
-        'questionId' => $question->id,
-        'inIndex' => true,
+        'questionId' => $ownQuestion->id,
+        'commenting' => true,
     ]);
 
     $component->call('ignore');
-    $component->assertDispatched('notification.created', message: 'Question ignored.');
-    $component->assertDispatched('question.ignore');
+
+    expect($ownQuestion->fresh()->is_ignored)->toBeTrue()
+        ->and($component)->assertNoRedirect();
+});
+
+test('ignore event only affects the dispatched question', function (): void {
+    $ownQuestion = Question::factory()->create();
+
+    $otherQuestion = Question::factory()->create([
+        'to_id' => $ownQuestion->to_id,
+    ]);
+
+    $component = Livewire::actingAs(User::find($ownQuestion->to_id))->test(Show::class, [
+        'questionId' => $ownQuestion->id,
+    ]);
+
+    // A broadcast targeting another question must not ignore this component's question.
+    $component->dispatch('question.ignore', questionId: $otherQuestion->id);
+
+    expect($ownQuestion->fresh()->is_ignored)->toBeFalse()
+        ->and($otherQuestion->fresh()->is_ignored)->toBeFalse();
+
+    // A broadcast targeting its own question is handled.
+    $component->dispatch('question.ignore', questionId: $ownQuestion->id);
+
+    expect($ownQuestion->fresh()->is_ignored)->toBeTrue();
+
+    // Directly calling ignore still ignores its own question.
+    $component->call('ignore');
+
+    expect($ownQuestion->fresh()->is_ignored)->toBeTrue();
 });
 
 test('ignore auth', function (): void {

@@ -51,12 +51,6 @@ final class Show extends Component
     public bool $commenting = false;
 
     /**
-     * Render a bottom border for this post row.
-     */
-    #[Locked]
-    public bool $showBorder = false;
-
-    /**
      * The previous question ID, where the user came from.
      */
     #[Url]
@@ -73,23 +67,15 @@ final class Show extends Component
     }
 
     /**
-     * Get the listeners for the component.
-     *
-     * @return array<string, string>
-     */
-    public function getListeners(): array
-    {
-        return $this->inIndex ? [] : [
-            'question.ignore' => 'ignore',
-            'question.reported' => 'redirectToProfile',
-        ];
-    }
-
-    /**
      * Redirect to the profile.
      */
-    public function redirectToProfile(): void
+    #[On('question.reported')]
+    public function redirectToProfile(?string $questionId = null): void
     {
+        if ($questionId !== null && $questionId !== $this->questionId) {
+            return;
+        }
+
         $question = Question::findOrFail($this->questionId);
 
         $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
@@ -98,8 +84,13 @@ final class Show extends Component
     /**
      * Ignores the question.
      */
-    public function ignore(): void
+    #[On('question.ignore')]
+    public function ignore(?string $questionId = null): void
     {
+        if ($questionId !== null && $questionId !== $this->questionId) {
+            return;
+        }
+
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
 
@@ -110,21 +101,14 @@ final class Show extends Component
             return;
         }
 
-        if ($this->inIndex) {
-            $this->dispatch('notification.created', message: 'Question ignored.');
-
-            $this->dispatch('question.ignore', questionId: $this->questionId);
-
-            return;
-        }
-
         $question = Question::findOrFail($this->questionId);
 
         $this->authorize('ignore', $question);
 
         $question->update(['is_ignored' => true]);
 
-        $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
+        $this->dispatch('notification.created', message: 'Question ignored.');
+        $this->dispatch('question.ignored', questionId: $this->questionId);
     }
 
     /**

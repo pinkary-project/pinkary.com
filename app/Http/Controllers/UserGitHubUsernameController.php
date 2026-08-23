@@ -61,11 +61,7 @@ final readonly class UserGitHubUsernameController
             : session()->flash('flash-message', 'Your GitHub account has been connected.');
 
         if (! $user->is_uploaded_avatar) {
-            UpdateUserAvatar::dispatchFor(
-                $user,
-                null,
-                'github',
-            );
+            UpdateUserAvatar::dispatchFor($user);
         }
 
         return to_route('profile.edit');
