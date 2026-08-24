@@ -6,9 +6,10 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Services\Avatar;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Queue\Attributes\DebounceFor;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,7 @@ use Intervention\Image\Drivers;
 use Intervention\Image\ImageManager;
 use Throwable;
 
+#[DebounceFor(10, maxWait: 30)]
 final class UpdateUserAvatar implements ShouldQueue
 {
     use Queueable;
@@ -23,7 +25,7 @@ final class UpdateUserAvatar implements ShouldQueue
     /**
      * The avatar generation this job belongs to.
      */
-    private int $generation;
+    private ?CarbonInterface $generationAt;
 
     /**
      * Create a new job instance.
@@ -33,13 +35,13 @@ final class UpdateUserAvatar implements ShouldQueue
         private readonly ?string $file = null,
         private readonly ?string $service = null
     ) {
-        $this->generation = $user->avatar_generation;
+        $this->generationAt = $user->avatar_updated_at;
     }
 
     /**
      * Request a new avatar update, queuing the job.
      *
-     * Bumping "avatar_generation" marks this request as the newest one,
+     * Bumping "avatar_updated_at" marks this request as the newest one,
      * superseding any pending job that was dispatched earlier.
      */
     public static function dispatchFor(User $user, ?string $file = null, ?string $service = null): void
@@ -57,6 +59,15 @@ final class UpdateUserAvatar implements ShouldQueue
         self::markGeneration($user);
 
         self::dispatchSync($user, $file, $service);
+    }
+
+    /**
+     * Scope the debounce to the user so that concurrent avatar updates of
+     * different users never cancel each other.
+     */
+    public function debounceId(): string
+    {
+        return (string) $this->user->id;
     }
 
     /**
@@ -138,9 +149,9 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     private static function markGeneration(User $user): void
     {
-        DB::table('users')->where('id', $user->getKey())->increment('avatar_generation');
-
-        $user->refresh();
+        $user->forceFill([
+            'avatar_updated_at' => now(),
+        ])->saveQuietly();
     }
 
     /**
@@ -148,7 +159,17 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     private function isSuperseded(User $user): bool
     {
-        return $user->avatar_generation > $this->generation;
+        $current = $user->avatar_updated_at;
+
+        if ($current === null && ! $this->generationAt instanceof CarbonInterface) {
+            return false;
+        }
+
+        if ($current === null || ! $this->generationAt instanceof CarbonInterface) {
+            return true;
+        }
+
+        return $current->gt($this->generationAt);
     }
 
     /**
