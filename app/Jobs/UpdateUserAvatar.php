@@ -6,9 +6,9 @@ namespace App\Jobs;
 
 use App\Models\User;
 use App\Services\Avatar;
-use Carbon\CarbonInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -23,7 +23,7 @@ final class UpdateUserAvatar implements ShouldQueue
     /**
      * The avatar generation this job belongs to.
      */
-    private ?CarbonInterface $generationAt;
+    private int $generation;
 
     /**
      * Create a new job instance.
@@ -33,13 +33,13 @@ final class UpdateUserAvatar implements ShouldQueue
         private readonly ?string $file = null,
         private readonly ?string $service = null
     ) {
-        $this->generationAt = $user->avatar_updated_at;
+        $this->generation = $user->avatar_generation;
     }
 
     /**
      * Request a new avatar update, queuing the job.
      *
-     * Bumping "avatar_updated_at" marks this request as the newest one,
+     * Bumping "avatar_generation" marks this request as the newest one,
      * superseding any pending job that was dispatched earlier.
      */
     public static function dispatchFor(User $user, ?string $file = null, ?string $service = null): void
@@ -138,9 +138,9 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     private static function markGeneration(User $user): void
     {
-        $user->forceFill([
-            'avatar_updated_at' => now(),
-        ])->saveQuietly();
+        DB::table('users')->where('id', $user->getKey())->increment('avatar_generation');
+
+        $user->refresh();
     }
 
     /**
@@ -148,17 +148,7 @@ final class UpdateUserAvatar implements ShouldQueue
      */
     private function isSuperseded(User $user): bool
     {
-        $current = $user->avatar_updated_at;
-
-        if ($current === null && ! $this->generationAt instanceof CarbonInterface) {
-            return false;
-        }
-
-        if ($current === null || ! $this->generationAt instanceof CarbonInterface) {
-            return true;
-        }
-
-        return $current->gt($this->generationAt);
+        return $user->avatar_generation > $this->generation;
     }
 
     /**

@@ -26,13 +26,14 @@ test('to array', function (): void {
         'prefers_anonymous_questions',
         'is_company_verified',
         'avatar_updated_at',
+        'avatar_generation',
         'views',
         'is_uploaded_avatar',
         'two_factor_secret',
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
         'default_feed',
-    )->toHaveCount(23);
+    )->toHaveCount(24);
 });
 
 test('is verified', function (): void {

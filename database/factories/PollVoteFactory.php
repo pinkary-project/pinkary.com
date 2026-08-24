@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Models\PollOption;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use RuntimeException;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PollVote>
@@ -29,7 +30,11 @@ final class PollVoteFactory extends Factory
                     ->whereKey($attributes['poll_option_id'])
                     ->value('question_id');
 
-                return $questionId ?? '';
+                if ($questionId === null) {
+                    throw new RuntimeException('Cannot derive question_id: the poll option does not exist.');
+                }
+
+                return $questionId;
             },
         ];
     }

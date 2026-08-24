@@ -52,6 +52,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property array<string, string>|null $settings
  * @property CarbonImmutable $updated_at
  * @property ?CarbonImmutable $avatar_updated_at
+ * @property int $avatar_generation
  * @property string $username
  * @property int $views
  * @property bool $is_uploaded_avatar

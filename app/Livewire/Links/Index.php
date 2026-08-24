@@ -6,6 +6,7 @@ namespace App\Livewire\Links;
 
 use App\Jobs\UpdateUserAvatar;
 use App\Models\Link;
+use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -182,8 +183,7 @@ final class Index extends Component
         return view('livewire.links.index', [
             'user' => $user,
             'questionsReceivedCount' => $user->questionsReceived()
-                ->where('is_reported', false)
-                ->where('is_ignored', false)
+                ->tap(new WhereNotModerated)
                 ->where('answer', '!=', '')->count(),
             'links' => $user->links->sortBy(function (Link $link) use ($sort): int {
                 if (($index = array_search($link->id, $sort)) === false) {

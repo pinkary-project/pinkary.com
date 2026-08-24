@@ -34,8 +34,7 @@ final class Index extends Component
         $user = User::findOrFail($this->userId);
 
         $pinnedQuestion = $user->questionsReceived()
-            ->where('is_ignored', false)
-            ->where('is_reported', false)
+            ->tap(new WhereNotModerated)
             ->where('pinned', true)
             ->first();
 
