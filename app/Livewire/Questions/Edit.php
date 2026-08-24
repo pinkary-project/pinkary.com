@@ -107,7 +107,7 @@ final class Edit extends Component
         ]);
 
         $this->dispatch('notification.created', message: 'Question reported.');
-        $this->dispatch('question.reported', questionId: $this->questionId);
+        $this->dispatch('question.reported');
     }
 
     /**

@@ -112,6 +112,6 @@ final class Index extends Component
 
         $question->update(['is_ignored' => true]);
 
-        $this->dispatch('question.ignored', questionId: $question->id);
+        $this->dispatch('question.ignored');
     }
 }

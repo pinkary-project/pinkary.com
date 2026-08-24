@@ -1,10 +1,7 @@
 <div class="w-full text-slate-700 dark:text-slate-200">
     <section class="min-h-screen space-y-0">
         @forelse ($trendingQuestions as $question)
-            <div
-                data-question-item
-                class="border-b border-slate-200 px-2 py-2 transition hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-[#0a1325]"
-            >
+            <div class="border-b border-slate-200 px-2 py-2 transition hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-[#0a1325]">
                 <livewire:questions.show
                     :questionId="$question->id"
                     :key="'question-'.$question->id"

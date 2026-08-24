@@ -1,6 +1,6 @@
 <div class="mb-20 space-y-4">
     @forelse ($bookmarks as $bookmark)
-        <div data-question-item class="border-b border-slate-200 py-2 dark:border-slate-700/50">
+        <div class="border-b border-slate-200 py-2 dark:border-slate-700/50">
             <livewire:questions.show
                 :questionId="$bookmark->question->id"
                 :key="'question-'.$bookmark->question->id"

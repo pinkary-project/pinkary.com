@@ -263,28 +263,6 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * The question ids that disappear together with this one when it is ignored:
-     * the question itself, its replies, and every other question sharing its root
-     * (the observer hard-deletes all of them).
-     *
-     * @return array<int, string>
-     */
-    public function idsAffectedByIgnore(): array
-    {
-        $this->loadMissing(['children', 'descendants']);
-
-        $ids = [$this->id];
-
-        foreach ([$this->children, $this->descendants] as $questions) {
-            foreach ($questions as $question) {
-                $ids[] = $question->id;
-            }
-        }
-
-        return array_values(array_unique($ids));
-    }
-
-    /**
      * @return BelongsToMany<Hashtag, $this>
      */
     public function hashtags(): BelongsToMany

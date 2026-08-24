@@ -74,6 +74,7 @@
             x-on:click="handleNavigation($event)"
             @class([
                 'group',
+                'border-b border-slate-200 dark:border-slate-700/50' => $showBorder,
                 'bg-pink-50/70 dark:bg-[#151225]' => $previousQuestionId === $questionId,
                 'cursor-pointer transition-colors duration-100 ease-in-out' => ! $commenting,
             ])
@@ -420,12 +421,7 @@
                     <x-secondary-button x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')">
                         Cancel
                     </x-secondary-button>
-                    <x-primary-button
-                        x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')"
-                        wire:click="ignore"
-                    >
-                        Delete
-                    </x-primary-button>
+                    <x-primary-button wire:click="ignore"> Delete </x-primary-button>
                 </div>
             </div>
         </x-modal>

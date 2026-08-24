@@ -19,12 +19,9 @@
                     : (! $loop->last || $comment->children->isNotEmpty());
             @endphp
 
-            <div
-                data-question-item
-                @class([
-                    'py-6 first:pt-0 last:pb-0' => $depth === 0,
-                ])
-            >
+            <div @class([
+                'py-6 first:pt-0 last:pb-0' => $depth === 0,
+            ])>
                 <livewire:questions.show
                     :question-id="$comment->id"
                     :inThread="$showThreadContinuation"
