@@ -29,19 +29,4 @@ return new class extends Migration
             $table->foreign('question_id')->references('id')->on('questions')->cascadeOnDelete();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('poll_votes', function (Blueprint $table): void {
-            $table->dropForeign(['question_id']);
-            $table->dropUnique(['user_id', 'question_id']);
-        });
-
-        Schema::table('poll_votes', function (Blueprint $table): void {
-            $table->dropColumn('question_id');
-        });
-    }
 };
