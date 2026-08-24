@@ -50,8 +50,8 @@ it('detects HeadlessChrome automation', function (): void {
 });
 
 it('matches user agents case-insensitively', function (): void {
-    expect($this->firewall->isBlockedCrawler(userAgentRequest('mozilla/5.0 (compatible; gptbot/1.0)')))->toBeTrue();
-    expect($this->firewall->isBlockedCrawler(userAgentRequest('Mozilla/5.0 headlesschrome/120.0.0.0 Safari/537.36')))->toBeTrue();
+    expect($this->firewall->isBlockedCrawler(userAgentRequest('mozilla/5.0 (compatible; gptbot/1.0)')))->toBeTrue()
+        ->and($this->firewall->isBlockedCrawler(userAgentRequest('Mozilla/5.0 headlesschrome/120.0.0.0 Safari/537.36')))->toBeTrue();
 });
 
 it('allows Googlebot (search indexing) via isBlockedCrawler', function (): void {

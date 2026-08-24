@@ -92,12 +92,6 @@ final readonly class Firewall
     {
         $userAgent = mb_strtolower($userAgent);
 
-        foreach (array_merge(self::AI_CRAWLERS, self::HEADLESS_BROWSERS) as $pattern) {
-            if (str_contains($userAgent, mb_strtolower($pattern))) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(array_merge(self::AI_CRAWLERS, self::HEADLESS_BROWSERS), fn (string $pattern): bool => str_contains($userAgent, mb_strtolower($pattern)));
     }
 }
