@@ -1117,3 +1117,56 @@ test('only verified users can create questions', function (): void {
 
     $component->assertRedirect(route('verification.notice'));
 });
+
+test('delete image after validation ignores untracked or missing images', function (): void {
+    $user = User::factory()->create();
+    $untrackedPath = UploadedFile::fake()->image('untracked.jpg')->store('images', ['disk' => Create::IMAGE_DISK]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    Storage::disk()->assertExists($untrackedPath);
+
+    $method = new ReflectionMethod(Create::class, 'deleteImageAfterValidation');
+
+    // An untracked path is never deleted.
+    $method->invoke($component->instance(), $untrackedPath);
+
+    Storage::disk()->assertExists($untrackedPath);
+
+    // A tracked but missing path is silently ignored.
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+    session([$sessionKey => ['images/missing.png']]);
+
+    $method->invoke($component->instance(), 'images/missing.png');
+
+    expect(session($sessionKey))->toContain('images/missing.png');
+});
+
+test('delete image after validation removes tracked images and guards other folders', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    $trackedPath = UploadedFile::fake()->image('tracked.png')->store('images', ['disk' => Create::IMAGE_DISK]);
+    session([$sessionKey => [$trackedPath]]);
+
+    new ReflectionMethod(Create::class, 'deleteImageAfterValidation')
+        ->invoke($component->instance(), $trackedPath);
+
+    Storage::disk()->assertMissing($trackedPath);
+
+    // Files outside the images folder are kept even when tracked.
+    $outsidePath = UploadedFile::fake()->image('outside.png')->store('uploads', ['disk' => Create::IMAGE_DISK]);
+    session([$sessionKey => [$outsidePath]]);
+
+    new ReflectionMethod(Create::class, 'deleteImage')
+        ->invoke($component->instance(), $outsidePath);
+
+    Storage::disk()->assertExists($outsidePath);
+});

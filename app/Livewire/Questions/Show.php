@@ -105,10 +105,15 @@ final class Show extends Component
 
         $this->authorize('ignore', $question);
 
+        $affectedIds = $question->idsAffectedByIgnore();
+
         $question->update(['is_ignored' => true]);
 
         $this->dispatch('notification.created', message: 'Question ignored.');
-        $this->dispatch('question.ignored', questionId: $this->questionId);
+
+        foreach ($affectedIds as $affectedId) {
+            $this->dispatch('question.ignored', questionId: $affectedId);
+        }
     }
 
     /**

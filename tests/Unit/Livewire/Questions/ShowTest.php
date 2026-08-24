@@ -548,3 +548,79 @@ test('it has a likes component', function (): void {
 
     $component->assertSeeLivewire('likes');
 });
+
+test('ignoring a reply dispatches an event for every removed question', function (): void {
+    $user = User::factory()->create();
+
+    $root = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'content' => 'SCENARIO root',
+        'answer' => 'root answer',
+        'answer_created_at' => now(),
+    ]);
+
+    $child = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'parent_id' => $root->id,
+        'root_id' => $root->id,
+        'content' => 'SCENARIO child',
+        'answer' => 'child answer',
+        'answer_created_at' => now(),
+    ]);
+
+    $grandChild = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'parent_id' => $child->id,
+        'root_id' => $root->id,
+        'content' => 'SCENARIO grandchild',
+        'answer' => 'grandchild answer',
+        'answer_created_at' => now(),
+    ]);
+
+    $sibling = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'parent_id' => $root->id,
+        'root_id' => $root->id,
+        'content' => 'SCENARIO sibling',
+        'answer' => 'sibling answer',
+        'answer_created_at' => now(),
+    ]);
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $child->id,
+    ]);
+
+    $component->call('ignore');
+
+    foreach ([$child->id, $grandChild->id] as $id) {
+        $component->assertDispatched('question.ignored', questionId: $id);
+    }
+
+    $component->assertNotDispatched('question.ignored', questionId: $root->id)
+        ->assertNotDispatched('question.ignored', questionId: $sibling->id);
+
+    expect(Question::find($grandChild->id))->toBeNull()
+        ->and(Question::find($child->id))->not->toBeNull()
+        ->and($child->refresh()->is_ignored)->toBeTrue()
+        ->and(Question::find($root->id))->not->toBeNull()
+        ->and($root->refresh()->is_ignored)->toBeFalse()
+        ->and(Question::find($sibling->id))->not->toBeNull()
+        ->and($sibling->refresh()->is_ignored)->toBeFalse();
+});
+
+test('reported event for another question does not redirect', function (): void {
+    $question = Question::factory()->create();
+    $other = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->dispatch('question.reported', questionId: $other->id);
+
+    $component->assertNoRedirect();
+});

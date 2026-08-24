@@ -112,3 +112,9 @@ it('handles empty models', function (): void {
 
     expect(Cache::has("viewed:user:{$user->id}:{$user->id}"))->toBeFalse();
 });
+
+it('returns an empty model name when there are no viewables', function (): void {
+    $job = new IncrementViews(new Collection(), 'session-id');
+
+    expect($job->getModelName())->toBeEmpty();
+});
