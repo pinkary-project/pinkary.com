@@ -88,6 +88,10 @@ final readonly class Firewall
         return $this->matchesPattern($userAgent);
     }
 
+    /**
+     * Case-insensitively match the user agent against the known
+     * AI crawler and headless browser patterns.
+     */
     private function matchesPattern(string $userAgent): bool
     {
         $userAgent = mb_strtolower($userAgent);

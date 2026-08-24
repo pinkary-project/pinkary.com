@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final readonly class BlockBots
 {
+    /**
+     * Create a new middleware instance.
+     */
     public function __construct(
         private Firewall $firewall,
     ) {}
