@@ -8,7 +8,6 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Controllers/** | .ai/rules/controllers.md |
 | app/Enums/** | .ai/rules/enums.md |
 | app/EventActions/** | .ai/rules/event-actions.md |
-| composer.json, **/*.php | .ai/rules/general.md |
 | app/Livewire/** | .ai/rules/livewire.md |
 | database/migrations/** | .ai/rules/migrations.md |
 | app/Models/*.php, app/Models/** | .ai/rules/models.md |
