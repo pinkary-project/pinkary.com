@@ -271,9 +271,14 @@ final readonly class PeopleToFollowRecommendations
         );
 
         $candidates = array_values(array_diff($pool, $excludeIds));
-        shuffle($candidates);
 
-        return array_slice($candidates, 0, $limit);
+        $picked = [];
+
+        while (count($picked) < min($limit, count($candidates))) {
+            $picked[$candidates[random_int(0, count($candidates) - 1)]] = true;
+        }
+
+        return array_keys($picked);
     }
 
     /**

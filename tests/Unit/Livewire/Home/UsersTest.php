@@ -283,7 +283,7 @@ test('cached verified users are refreshed after a day', function (): void {
     $cachedVerifiedUsers = Cache::get('verified-user-ids');
 
     expect($cachedVerifiedUsers)->toContain($newVerifiedUser->id)
-        ->and(count($cachedVerifiedUsers))->toBe(3);
+        ->and($cachedVerifiedUsers)->toHaveCount(3);
 
     Cache::forget('verified-user-ids');
 });
