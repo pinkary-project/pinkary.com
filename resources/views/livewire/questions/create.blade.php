@@ -50,8 +50,14 @@
             focusLastPost() {
                 this.$nextTick(() => {
                     const textareas = this.$root.querySelectorAll('[data-thread-post]');
+                    const last = textareas[textareas.length - 1];
 
-                    textareas[textareas.length - 1]?.focus();
+                    if (! last) {
+                        return;
+                    }
+
+                    last.focus();
+                    last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 });
             },
         }"
@@ -142,7 +148,7 @@
                 @if ($this->canThread)
                     <div x-show="threadPosts.length > 0" style="display: none">
                         <template x-for="(post, index) in threadPosts" :key="'thread-post-' + index">
-                            <div class="mt-3 flex gap-3">
+                            <div class="mt-1 flex animate-[thread-post-enter_0.3s_ease-out] gap-3">
                                 <div class="flex w-10 shrink-0 flex-col items-center">
                                     <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
                                     <img
@@ -153,7 +159,7 @@
                                     />
                                     <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
                                 </div>
-                                <div class="relative min-w-0 flex-1">
+                                <div class="relative -mx-3 min-w-0 flex-1 rounded-xl px-3 py-1 transition-colors hover:bg-slate-500/5 dark:hover:bg-white/[0.04]">
                                     <x-textarea
                                         x-model="threadPosts[index]"
                                         data-thread-post
@@ -161,14 +167,14 @@
                                         maxlength="{{ $this->maxContentLength }}"
                                         rows="2"
                                         x-autosize
-                                        class="resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
+                                        class="resize-none rounded-none! border-0! bg-transparent! px-3.5! py-2! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-500! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!"
                                     />
                                     <button
                                         type="button"
                                         x-on:click="removePost(index)"
                                         title="Remove this post"
                                         aria-label="Remove this post"
-                                        class="absolute top-2 right-2 rounded-full bg-white/90 p-1 text-slate-400 opacity-50 transition hover:bg-slate-100 hover:text-red-500 hover:opacity-100 focus-visible:opacity-100 dark:bg-[#10182b]/90 dark:text-slate-500 dark:hover:bg-[#162038] dark:hover:text-red-400"
+                                        class="absolute top-2 right-4 rounded-full p-1 text-slate-400 opacity-50 transition hover:text-red-500 hover:opacity-100 focus-visible:opacity-100 dark:text-slate-500 dark:hover:text-red-400"
                                     >
                                         <x-heroicon-o-x-mark class="size-4" />
                                     </button>
@@ -180,7 +186,7 @@
                                                 ? 'text-red-500 dark:text-red-400'
                                                 : 'text-slate-500 dark:text-slate-400'
                                         "
-                                        class="mt-1 text-right text-xs"
+                                        class="mt-1 pr-1 text-right text-xs"
                                     >
                                         <span x-text="(threadPosts[index] || '').length"></span>
                                         / {{ $this->maxContentLength }}
