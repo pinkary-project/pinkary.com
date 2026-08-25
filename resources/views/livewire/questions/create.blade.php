@@ -65,7 +65,7 @@
     >
         <div class="min-w-0">
             <div class="group/menu relative">
-                <div class="group/root flex gap-3">
+                <div class="flex gap-3">
                     @if ($this->canThread)
                         <div class="flex w-10 shrink-0 flex-col items-center">
                             <img
@@ -77,7 +77,7 @@
                             <div
                                 x-show="threadPosts.length > 0"
                                 style="display: none"
-                                class="mt-1 w-px flex-1 bg-slate-200 transition-colors group-focus-within/root:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/root:bg-pink-500"
+                                class="mt-1 w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"
                             ></div>
                         </div>
                     @endif
@@ -94,8 +94,17 @@
                             class="min-h-20! resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
                         />
 
-                        <p class="mt-2 text-right text-sm text-slate-500 dark:text-slate-400">
-                            <span x-text="$wire.content.length"></span> / {{ $this->maxContentLength }}
+                        <p
+                            x-show="(content || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
+                            style="display: none"
+                            :class="
+                                (content || '').length >= {{ $this->maxContentLength }}
+                                    ? 'text-red-500 dark:text-red-400'
+                                    : 'text-slate-500 dark:text-slate-400'
+                            "
+                            class="mt-2 text-right text-sm"
+                        >
+                            <span x-text="(content || '').length"></span> / {{ $this->maxContentLength }}
                         </p>
 
                         <x-input-error :messages="$errors->get('content')" class="mt-2" />
@@ -133,22 +142,22 @@
                 @if ($this->canThread)
                     <div x-show="threadPosts.length > 0" style="display: none">
                         <template x-for="(post, index) in threadPosts" :key="'thread-post-' + index">
-                            <div class="group/post mt-3 flex gap-3">
+                            <div class="mt-3 flex gap-3">
                                 <div class="flex w-10 shrink-0 flex-col items-center">
-                                    <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/post:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/post:bg-pink-500"></div>
+                                    <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
                                     <img
                                         src="{{ $user->avatar_url }}"
                                         alt="{{ $user->username ?? '' }}"
                                         loading="lazy"
-                                        class="my-1 size-7 rounded-full border border-slate-200/70 object-cover transition-colors group-focus-within/post:border-pink-300 dark:border-slate-800 dark:group-focus-within/post:border-pink-500/50"
+                                        class="my-1 size-7 rounded-full border border-slate-200/70 object-cover transition-colors group-focus-within/menu:border-pink-300 dark:border-slate-800 dark:group-focus-within/menu:border-pink-500/50"
                                     />
-                                    <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/post:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/post:bg-pink-500"></div>
+                                    <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
                                 </div>
                                 <div class="relative min-w-0 flex-1">
                                     <x-textarea
                                         x-model="threadPosts[index]"
                                         data-thread-post
-                                        placeholder="Add another post..."
+                                        placeholder="Say more..."
                                         maxlength="{{ $this->maxContentLength }}"
                                         rows="2"
                                         x-autosize
