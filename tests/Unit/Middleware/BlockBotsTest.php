@@ -29,7 +29,7 @@ test('blocks GPTBot with a 403 response', function (): void {
 
     $this->get('/test-block-bots', ['User-Agent' => 'Mozilla/5.0 (compatible; GPTBot/1.0; +https://openai.com/bot)'])
         ->assertStatus(403)
-        ->assertSee('Access Denied');
+        ->assertSee("This content isn't available for AI browsers and agents.", false);
 });
 
 test('blocks ClaudeBot with a 403 response', function (): void {

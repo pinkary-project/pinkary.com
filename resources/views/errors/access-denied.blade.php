@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Access Denied</title>
+    <title>Content Not Available</title>
     <style>
         body {
             background: #f8fafc;
@@ -34,7 +34,7 @@
 <body>
     <div class="content">
         <h1>403</h1>
-        <p>Access Denied</p>
+        <p>This content isn't available for AI browsers and agents.</p>
     </div>
 </body>
 </html>
