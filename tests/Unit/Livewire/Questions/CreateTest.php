@@ -264,6 +264,255 @@ test('store comment on a comment', function (): void {
         ->and($comment->root_id)->toBe($question->id);
 });
 
+test('stores a thread with multiple posts', function (): void {
+    $user = User::factory()->create();
+
+    expect(Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'First post');
+    $component->set('threadPosts', ['Second post', 'Third post']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(3);
+
+    /** @var Question $root */
+    $root = Question::query()->where('answer', 'First post')->firstOrFail();
+
+    /** @var Question $second */
+    $second = Question::query()->where('answer', 'Second post')->firstOrFail();
+
+    /** @var Question $third */
+    $third = Question::query()->where('answer', 'Third post')->firstOrFail();
+
+    $this->assertDatabaseHas('questions', ['id' => $root->id, 'content' => '__UPDATE__']);
+
+    expect($root->parent_id)->toBeNull()
+        ->and($root->root_id)->toBeNull()
+        ->and($second->from_id)->toBe($user->id)
+        ->and($second->to_id)->toBe($user->id)
+        ->and($second->parent_id)->toBe($root->id)
+        ->and($second->root_id)->toBe($root->id)
+        ->and($third->parent_id)->toBe($second->id)
+        ->and($third->root_id)->toBe($root->id);
+
+    $component->assertSet('threadPosts', []);
+    $component->assertDispatched('notification.created', message: 'Thread sent.');
+    $component->assertDispatched('question.created');
+    $component->assertDispatched('close-modal', 'post-create');
+});
+
+test('drops empty thread posts when storing', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['', '   ', 'Second real post']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(2)
+        ->and(Question::query()->where('answer', 'Second real post')->exists())->toBeTrue();
+});
+
+test('rejects too short extra thread posts', function (): void {
+    $user = User::factory()->create();
+
+    expect(Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['ab']);
+
+    $component->call('store');
+
+    $component->assertHasErrors(['threadPosts.0' => 'min']);
+
+    expect(Question::count())->toBe(0);
+});
+
+test('rejects more than nine extra thread posts', function (): void {
+    $user = User::factory()->create();
+
+    expect(Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', array_fill(0, 10, 'Another post'));
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'threadPosts' => 'A thread can have a maximum of '.(Create::MAX_THREAD_POSTS - 1).' extra posts.',
+    ]);
+
+    expect(Question::count())->toBe(0);
+});
+
+test('ignores extra thread posts when asking another user', function (): void {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', 'What do you think?');
+    $component->set('threadPosts', ['Sneaky extra']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(1);
+
+    $component->assertDispatched('notification.created', message: 'Question sent.');
+});
+
+test('ignores extra thread posts when commenting on a question', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'parentId' => $question->id,
+    ]);
+
+    $this->travel(1)->seconds();
+
+    $component->set('content', 'My comment');
+    $component->set('threadPosts', ['Ignored extra']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(2);
+
+    $component->assertDispatched('notification.created', message: 'Comment sent.');
+});
+
+test('a whole thread counts against the per minute limit', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    foreach ([1, 2] as $i) {
+        $component->set('content', "Update {$i}");
+        $component->set('threadPosts', ["Extra {$i}"]);
+
+        $component->call('store');
+
+        $component->assertHasNoErrors();
+    }
+
+    expect(Question::count())->toBe(4);
+
+    $component->set('content', 'One thread too many');
+    $component->set('threadPosts', ['Extra three']);
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'content' => 'You can only send 3 questions per minute.',
+    ]);
+
+    expect(Question::count())->toBe(4);
+});
+
+test('each thread post counts towards the daily limit', function (): void {
+    $user = User::factory()->create();
+
+    Question::factory()
+        ->count(29)
+        ->sequence(fn (Illuminate\Database\Eloquent\Factories\Sequence $sequence): array => [
+            'from_id' => $user->id,
+            'created_at' => now()->subMinutes($sequence->index + 2),
+        ])
+        ->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['Extra one here', 'Extra two here']);
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'content' => 'You can only send 30 questions per day.',
+    ]);
+
+    expect(Question::count())->toBe(29);
+});
+
+test('a thread fitting the remaining daily quota is allowed', function (): void {
+    $user = User::factory()->create();
+
+    Question::factory()
+        ->count(27)
+        ->sequence(fn (Illuminate\Database\Eloquent\Factories\Sequence $sequence): array => [
+            'from_id' => $user->id,
+            'created_at' => now()->subMinutes($sequence->index + 2),
+        ])
+        ->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['Extra one here', 'Extra two here']);
+
+    $component->call('store');
+
+    $component->assertHasNoErrors();
+
+    expect(Question::count())->toBe(30);
+});
+
+test('thread posts are dropped when sharing a poll', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'What is your favorite color?');
+    $component->set('isPoll', true);
+    $component->set('pollOptions', ['Red', 'Blue']);
+    $component->set('threadPosts', ['Should be ignored']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(1)
+        ->and(Question::first()->pollOptions)->toHaveCount(2);
+
+    $component->assertDispatched('notification.created', message: 'Update sent.');
+});
+
 test('max 30 questions per day', function (): void {
     $user = User::factory()->create();
 
@@ -272,12 +521,14 @@ test('max 30 questions per day', function (): void {
         'toId' => $user->id,
     ]);
 
-    for ($i = 0; $i <= 30; $i++) {
+    for ($i = 0; $i <= 29; $i++) {
         $component->set('content', 'Hello World');
         $component->call('store');
         $this->travelTo(now()->addMinutes($i));
         $component->assertHasNoErrors();
     }
+
+    expect(Question::count())->toBe(30);
 
     $component->set('content', 'Hello World');
     $component->call('store');
@@ -285,6 +536,8 @@ test('max 30 questions per day', function (): void {
     $component->assertHasErrors([
         'content' => 'You can only send 30 questions per day.',
     ]);
+
+    expect(Question::count())->toBe(30);
 });
 
 test('cannot store with blank characters', function (): void {

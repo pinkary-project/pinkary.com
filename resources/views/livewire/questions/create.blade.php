@@ -13,6 +13,22 @@
                 imageUpload().init.call(this);
                 poll().init.call(this);
             },
+            content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}'),
+            threadPosts: $persist($wire.entangle('threadPosts')).as('{{ $this->draftKey }}_posts'),
+            addPost() {
+                if (this.threadPosts.length < {{ $this->maxThreadPosts - 1 }}) {
+                    this.threadPosts.push('');
+
+                    this.$nextTick(() => {
+                        const textareas = this.$root.querySelectorAll('[data-thread-post]');
+
+                        textareas[textareas.length - 1]?.focus();
+                    });
+                }
+            },
+            removePost(index) {
+                this.threadPosts.splice(index, 1);
+            },
         }"
         x-init='() => {
             uploadLimit = {{ $this->uploadLimit }};
@@ -24,24 +40,41 @@
     >
         <div class="min-w-0">
             <div class="group/menu relative">
-                <div x-data="{ content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}') }" class="p-0">
-                    <x-textarea
-                        x-model="content"
-                        placeholder="{{ $this->placeholder }}"
-                        maxlength="{{ $this->maxContentLength }}"
-                        rows="3"
-                        required
-                        x-autosize
-                        x-ref="content"
-                        autocomplete
-                        class="min-h-20! resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
-                    />
+                <div class="flex gap-3">
+                    @if ($this->canThread)
+                        <div class="flex w-10 shrink-0 flex-col items-center">
+                            <img
+                                src="{{ $user->avatar_url }}"
+                                alt="{{ $user->username ?? '' }}"
+                                loading="lazy"
+                                class="size-10 rounded-full border border-slate-200/70 object-cover dark:border-slate-800"
+                            />
+                            <div
+                                x-show="threadPosts.length > 0"
+                                style="display: none"
+                                class="mt-1 w-px flex-1 bg-slate-200 dark:bg-slate-700/60"
+                            ></div>
+                        </div>
+                    @endif
+                    <div class="min-w-0 flex-1 p-0">
+                        <x-textarea
+                            x-model="content"
+                            placeholder="{{ $this->placeholder }}"
+                            maxlength="{{ $this->maxContentLength }}"
+                            rows="3"
+                            required
+                            x-autosize
+                            x-ref="content"
+                            autocomplete
+                            class="min-h-20! resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
+                        />
 
-                    <p class="mt-2 text-right text-sm text-slate-500 dark:text-slate-400">
-                        <span x-text="$wire.content.length"></span> / {{ $this->maxContentLength }}
-                    </p>
+                        <p class="mt-2 text-right text-sm text-slate-500 dark:text-slate-400">
+                            <span x-text="$wire.content.length"></span> / {{ $this->maxContentLength }}
+                        </p>
 
-                    <x-input-error :messages="$errors->get('content')" class="mt-2" />
+                        <x-input-error :messages="$errors->get('content')" class="mt-2" />
+                    </div>
                 </div>
                 <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
                 <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
@@ -71,6 +104,66 @@
                         <li class="w-full py-2 text-sm text-red-500"><span x-text="error"></span></li>
                     </template>
                 </ul>
+
+                @if ($this->canThread)
+                    <div x-show="threadPosts.length > 0" style="display: none">
+                        <template x-for="(post, index) in threadPosts" :key="'thread-post-' + index">
+                            <div class="mt-3 flex gap-3">
+                                <div class="flex w-10 shrink-0 flex-col items-center">
+                                    <div class="w-px flex-1 bg-slate-200 dark:bg-slate-700/60"></div>
+                                    <img
+                                        src="{{ $user->avatar_url }}"
+                                        alt="{{ $user->username ?? '' }}"
+                                        loading="lazy"
+                                        class="my-1 size-7 rounded-full border border-slate-200/70 object-cover dark:border-slate-800"
+                                    />
+                                    <div class="w-px flex-1 bg-slate-200 dark:bg-slate-700/60"></div>
+                                </div>
+                                <div class="relative min-w-0 flex-1">
+                                    <x-textarea
+                                        x-model="threadPosts[index]"
+                                        data-thread-post
+                                        placeholder="Add another post..."
+                                        maxlength="{{ $this->maxContentLength }}"
+                                        rows="2"
+                                        x-autosize
+                                        class="resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
+                                    />
+                                    <button
+                                        type="button"
+                                        x-on:click="removePost(index)"
+                                        title="Remove this post"
+                                        aria-label="Remove this post"
+                                        class="absolute top-2 right-2 rounded-full bg-white/90 p-1 text-slate-400 transition hover:bg-slate-100 hover:text-red-500 dark:bg-[#10182b]/90 dark:text-slate-500 dark:hover:bg-[#162038] dark:hover:text-red-400"
+                                    >
+                                        <x-heroicon-o-x-mark class="size-4" />
+                                    </button>
+                                    <p
+                                        x-show="(threadPosts[index] || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
+                                        style="display: none"
+                                        class="mt-1 text-right text-xs text-slate-500 dark:text-slate-400"
+                                    >
+                                        <span x-text="(threadPosts[index] || '').length"></span>
+                                        / {{ $this->maxContentLength }}
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <button
+                        type="button"
+                        x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }} && ! $wire.isPoll"
+                        style="display: none"
+                        x-on:click="addPost()"
+                        class="mt-3 flex w-full items-center justify-center gap-1.5 border border-dashed border-slate-300 py-2.5 text-sm font-medium text-slate-500 transition hover:border-pink-400 hover:text-pink-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-pink-600 dark:hover:text-pink-400"
+                    >
+                        <x-heroicon-o-plus class="size-4" />
+                        Add another post
+                    </button>
+
+                    <x-input-error :messages="collect($errors->get('threadPosts.*'))->flatten()->all()" class="mt-2" />
+                @endif
             </div>
             <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
@@ -78,7 +171,12 @@
                         type="submit"
                         class="inline-flex items-center border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white dark:hover:bg-slate-800"
                     >
-                        {{ $this->parentId ? __('Reply') : __('Post') }}
+                        @if ($this->parentId)
+                            {{ __('Reply') }}
+                        @else
+                            <span x-show="threadPosts.length === 0">{{ __('Post') }}</span>
+                            <span x-show="threadPosts.length > 0" style="display: none">{{ __('Post thread') }}</span>
+                        @endif
                     </button>
                     <button
                         title="Upload an image"
@@ -93,9 +191,13 @@
                         <button
                             type="button"
                             x-on:click="togglePoll()"
+                            :disabled="threadPosts.length > 0"
                             title="Create a poll"
                             class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
-                            :class="{ 'text-pink-500': isPoll }"
+                            :class="{
+                                'cursor-not-allowed opacity-40': threadPosts.length > 0,
+                                'text-pink-500': isPoll,
+                            }"
                         >
                             <x-heroicon-o-chart-bar class="h-5 w-5" />
                         </button>

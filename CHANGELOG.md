@@ -2,6 +2,7 @@
 > 20 August, 2026
 
 - Major UI overhaul with modernized layout and styling across the application.
+- Adds thread composer for publishing multiple connected posts at once.
 - Adds People to Follow v2 widget with direct follow/unfollow actions.
 - Adds dedicated Post buttons to desktop navigation sidebar and mobile floating action button.
 - Replaces link delete browser alert with a confirmation modal.

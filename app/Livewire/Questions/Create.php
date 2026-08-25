@@ -12,6 +12,7 @@ use App\Rules\NoBlankCharacters;
 use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
@@ -27,7 +28,9 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 /**
  * @property-read bool $isSharingUpdate
+ * @property-read bool $canThread
  * @property-read int $maxContentLength
+ * @property-read int $maxThreadPosts
  * @property-read int $needsCaptcha
  * @property-read string $turnstileId
  */
@@ -40,6 +43,11 @@ final class Create extends Component
      * The disk to store the images.
      */
     public const ?string IMAGE_DISK = null;
+
+    /**
+     * Max number of posts allowed in a thread.
+     */
+    public const int MAX_THREAD_POSTS = 10;
 
     /**
      * Max number of images allowed.
@@ -75,6 +83,13 @@ final class Create extends Component
      * The component's content.
      */
     public string $content = '';
+
+    /**
+     * Additional posts forming a thread, published together with the main post.
+     *
+     * @var array<int, string>
+     */
+    public array $threadPosts = [];
 
     /**
      * Uploaded images.
@@ -195,6 +210,24 @@ final class Create extends Component
     }
 
     /**
+     * Determine if the composer can publish a thread of multiple posts.
+     */
+    #[Computed]
+    public function canThread(): bool
+    {
+        return filled($this->parentId) === false && $this->isSharingUpdate;
+    }
+
+    /**
+     * Get the maximum number of posts a thread can contain.
+     */
+    #[Computed]
+    public function maxThreadPosts(): int
+    {
+        return self::MAX_THREAD_POSTS;
+    }
+
+    /**
      * Choose appropriate placeholder copy.
      */
     #[Computed]
@@ -278,17 +311,18 @@ final class Create extends Component
             return;
         }
 
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
-            $this->addError('content', 'You can only send 3 questions per minute.');
+        // Treat whitespace-only rows as empty and drop them before validating.
+        $this->threadPosts = collect($this->threadPosts)
+            ->filter(fn (string $post): bool => mb_trim($post) !== '')
+            ->values()
+            ->all();
 
-            return;
-        }
-
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
-            $this->addError('content', 'You can only send 30 questions per day.');
-
-            return;
-        }
+        /** @var array<string, mixed> $validated */
+        $validated = $this->validate($this->validationRules(), [
+            'threadPosts.max' => __('A thread can have a maximum of :max extra posts.'),
+            'threadPosts.*.min' => __('Each post must be at least 3 characters.'),
+            'threadPosts.*.max' => __('A post may not be greater than :max characters.'),
+        ]);
 
         // Require captcha for users with zero followers (bot protection).
         if ($this->needsCaptcha) {
@@ -299,11 +333,26 @@ final class Create extends Component
             ]);
         }
 
-        /** @var array<string, mixed> $validated */
-        $validated = $this->validate([
-            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min:3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
-        ]);
+        // Polls are always single posts.
+        $threadPosts = $this->canThread && ! $this->isPoll
+            ? collect($this->threadPosts)
+            : collect();
+
+        // The thread posts are not a database column on questions.
+        unset($validated['threadPosts']);
+
+        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
+            $this->addError('content', 'You can only send 3 questions per minute.');
+
+            return;
+        }
+
+        // Each post of a thread counts towards the daily limit.
+        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() + 1 + $threadPosts->count() > 30) {
+            $this->addError('content', 'You can only send 30 questions per day.');
+
+            return;
+        }
 
         if ($this->isPoll) {
             $this->validate([
@@ -359,11 +408,42 @@ final class Create extends Component
             $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
-        $question = $user->questionsSent()->create([
-            ...$validated,
-            'to_id' => $this->toId,
-            'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
-        ]);
+        /** @var array<int, array<string, mixed>> $payloads */
+        $payloads = [
+            [
+                ...$validated,
+                'to_id' => $this->toId,
+                'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
+            ],
+        ];
+
+        foreach ($threadPosts as $postContent) {
+            $payloads[] = [
+                'to_id' => $this->toId,
+                'content' => '__UPDATE__',
+                'answer' => $postContent,
+                'answer_created_at' => now(),
+            ];
+        }
+
+        /** @var array<int, Question> $questions */
+        $questions = DB::transaction(function () use ($user, $payloads): array {
+            /** @var array<int, Question> $created */
+            $created = [];
+
+            foreach ($payloads as $index => $payload) {
+                if ($index > 0) {
+                    $payload['parent_id'] = $created[$index - 1]->id;
+                    $payload['root_id'] = $created[0]->id;
+                }
+
+                $created[$index] = $user->questionsSent()->create($payload);
+            }
+
+            return $created;
+        });
+
+        $question = $questions[0];
 
         if ($this->isPoll) {
             $options = [];
@@ -380,7 +460,7 @@ final class Create extends Component
 
         $this->deleteUnusedImages();
 
-        $this->reset(['content', 'isPoll', 'pollDuration']);
+        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts']);
         $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
@@ -389,6 +469,7 @@ final class Create extends Component
         $this->dispatch('close-modal', 'post-create');
 
         $message = match (true) {
+            $threadPosts->isNotEmpty() => 'Thread sent.',
             filled($this->parentId) => 'Comment sent.',
             $this->isSharingUpdate => 'Update sent.',
             default => 'Question sent.'
@@ -543,12 +624,40 @@ final class Create extends Component
     }
 
     /**
+     * Get the validation rules for storing.
+     *
+     * @return array<string, mixed>
+     */
+    private function validationRules(): array
+    {
+        $rules = [
+            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
+            'content' => ['required', 'string', 'min:3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+        ];
+
+        if ($this->canThread) {
+            $rules['threadPosts'] = ['array', 'max:'.(self::MAX_THREAD_POSTS - 1)];
+            $rules['threadPosts.*'] = [
+                'nullable',
+                'string',
+                'min:3',
+                'max:'.$this->maxContentLength,
+                new NoBlankCharacters,
+            ];
+        }
+
+        return $rules;
+    }
+
+    /**
      * Delete any unused images.
      */
     private function deleteUnusedImages(): void
     {
+        $publishedContent = implode("\n", [$this->content, ...$this->threadPosts]);
+
         collect($this->getSessionImages())
-            ->reject(fn (string $path): bool => str_contains($this->content, $path))
+            ->reject(fn (string $path): bool => str_contains($publishedContent, $path))
             ->each(fn (string $path): ?bool => $this->deleteImage($path));
 
         session()->forget('images.'.$this->draftKey());
