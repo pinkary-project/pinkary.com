@@ -16,6 +16,7 @@
         wire:keydown.cmd.enter="store"
         wire:keydown.ctrl.enter="store"
         data-post-composer
+        data-draft-key="{{ $this->draftKey }}"
         x-data="{
             ...imageUpload(),
             ...poll(),

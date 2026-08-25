@@ -170,11 +170,7 @@
                             return;
                         }
 
-                        if (confirm('{{ __('Are you sure you want to discard this post? Your progress will be lost.') }}')) {
-                            state.discardDraft();
-                        } else {
-                            show = true;
-                        }
+                        $dispatch('open-modal', 'discard-post-draft');
                     })
                 "
             >
@@ -188,6 +184,36 @@
                         :custom-draft-key="'post_modal'"
                         key="global-modal-create-post"
                     />
+                </div>
+            </div>
+        </x-modal>
+
+        <x-modal name="discard-post-draft" max-width="md">
+            <div class="p-8">
+                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">{{ __('Discard this post?') }}</h2>
+                <div class="mt-4 text-slate-500 dark:text-slate-400">
+                    <p>{{ __('Are you sure you want to discard this post? Your progress will be lost.') }}</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <x-secondary-button
+                        x-on:click="
+                            $dispatch('close-modal', 'discard-post-draft');
+                            $dispatch('open-modal', 'post-create');
+                        "
+                    >
+                        {{ __('Keep editing') }}
+                    </x-secondary-button>
+                    <x-primary-button
+                        x-on:click="
+                            const composer = document.querySelector('[data-post-composer][data-draft-key=post_modal]');
+                            if (composer) {
+                                Alpine.$data(composer).discardDraft();
+                            }
+                            $dispatch('close-modal', 'discard-post-draft');
+                        "
+                    >
+                        {{ __('Discard') }}
+                    </x-primary-button>
                 </div>
             </div>
         </x-modal>
