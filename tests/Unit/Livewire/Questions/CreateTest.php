@@ -324,10 +324,8 @@ test('drops empty thread posts when storing', function (): void {
         ->and(Question::query()->where('answer', 'Second real post')->exists())->toBeTrue();
 });
 
-test('rejects too short extra thread posts', function (): void {
+test('accepts single character thread posts', function (): void {
     $user = User::factory()->create();
-
-    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -335,13 +333,14 @@ test('rejects too short extra thread posts', function (): void {
     ]);
 
     $component->set('content', 'Main update');
-    $component->set('threadPosts', ['ab']);
+    $component->set('threadPosts', ['x']);
 
     $component->call('store');
 
-    $component->assertHasErrors(['threadPosts.0' => 'min']);
+    $component->assertHasNoErrors();
 
-    expect(Question::count())->toBe(0);
+    expect(Question::count())->toBe(2)
+        ->and(Question::query()->where('answer', 'x')->exists())->toBeTrue();
 });
 
 test('rejects more than nine extra thread posts', function (): void {
@@ -589,7 +588,7 @@ test('cannot store with blank characters', function (): void {
     ]);
 });
 
-test('shows validation error when content is too short', function (): void {
+test('shows validation error when content is missing', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -600,11 +599,10 @@ test('shows validation error when content is too short', function (): void {
         'toId' => $userB->id,
     ]);
 
-    $component->set('content', 'ab');
+    $component->set('content', '');
     $component->call('store');
 
-    $component->assertHasErrors(['content' => 'min'])
-        ->assertSee('The content field must be at least 3 characters.');
+    $component->assertHasErrors(['content' => 'required']);
 
     expect(Question::count())->toBe(0);
 });

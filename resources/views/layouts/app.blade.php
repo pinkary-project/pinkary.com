@@ -139,8 +139,45 @@
             <x-icons.compose class="size-5" />
         </button>
 
-        <x-modal max-width="2xl" name="post-create" focusable x-on:question.created.window="close('post-create')">
-            <div class="flex max-h-[calc(100dvh-3rem)] flex-col">
+        <x-modal
+            max-width="2xl"
+            name="post-create"
+            focusable
+            x-on:question.created.window="
+                window.__postJustPublished = true;
+                close('post-create');
+            "
+        >
+            <div
+                class="flex max-h-[calc(100dvh-3rem)] flex-col"
+                x-init="
+                    $watch('show', (value) => {
+                        if (value || window.__postJustPublished) {
+                            window.__postJustPublished = false;
+
+                            return;
+                        }
+
+                        const composer = $el.querySelector('[data-post-composer]');
+
+                        if (! composer) {
+                            return;
+                        }
+
+                        const state = Alpine.$data(composer);
+
+                        if (! state.hasDraft()) {
+                            return;
+                        }
+
+                        if (confirm('{{ __('Are you sure you want to discard this post? Your progress will be lost.') }}')) {
+                            state.discardDraft();
+                        } else {
+                            show = true;
+                        }
+                    })
+                "
+            >
                 <div class="border-b border-slate-200/70 px-4 pt-4 pb-3 sm:px-6 sm:pt-6 dark:border-slate-800/40">
                     <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('Share an update') }}</h3>
                 </div>

@@ -345,7 +345,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate($this->validationRules(), [
             'threadPosts.max' => __('A thread can have a maximum of :max extra posts.'),
-            'threadPosts.*.min' => __('Each post must be at least 3 characters.'),
+            'threadPosts.*.min' => __('Each post must be at least 1 character.'),
             'threadPosts.*.max' => __('A post may not be greater than :max characters.'),
         ]);
 
@@ -657,7 +657,7 @@ final class Create extends Component
     {
         $rules = [
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min:3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+            'content' => ['required', 'string', 'min:1', 'max:'.$this->maxContentLength, new NoBlankCharacters],
         ];
 
         if ($this->canThread) {
@@ -665,7 +665,7 @@ final class Create extends Component
             $rules['threadPosts.*'] = [
                 'nullable',
                 'string',
-                'min:3',
+                'min:1',
                 'max:'.$this->maxContentLength,
                 new NoBlankCharacters,
             ];

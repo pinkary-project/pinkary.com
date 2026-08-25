@@ -15,6 +15,7 @@
         wire:submit="store"
         wire:keydown.cmd.enter="store"
         wire:keydown.ctrl.enter="store"
+        data-post-composer
         x-data="{
             ...imageUpload(),
             ...poll(),
@@ -24,6 +25,23 @@
             },
             content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}'),
             threadPosts: $persist($wire.entangle('threadPosts')).as('{{ $this->draftKey }}_posts'),
+            hasDraft() {
+                if ((this.content || '').trim() !== '') {
+                    return true;
+                }
+
+                return (this.threadPosts || []).some((post) => (post || '').trim() !== '');
+            },
+            discardDraft() {
+                (this.images || []).forEach((image) => {
+                    this.$wire.deleteImageAfterValidation(this.normalizePath(image.path));
+                });
+
+                this.content = '';
+                this.threadPosts = [];
+                this.images = [];
+                this.removeErrors();
+            },
             canAddPost() {
                 if ((this.content || '').trim() === '') {
                     return false;
@@ -228,19 +246,33 @@
                                         >
                                             <x-heroicon-o-x-mark class="size-4" />
                                         </button>
-                                        <p
-                                            x-show="(threadPosts[index] || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
-                                            style="display: none"
-                                            :class="
-                                            (threadPosts[index] || '').length >= {{ $this->maxContentLength }}
-                                                ? 'text-red-500 dark:text-red-400'
-                                                : 'text-slate-500 dark:text-slate-400'
-                                        "
-                                            class="mt-1 pr-1 text-right text-xs"
-                                        >
-                                            <span x-text="(threadPosts[index] || '').length"></span>
-                                            / {{ $this->maxContentLength }}
-                                        </p>
+                                        <div class="mt-0.5 flex items-center justify-between pr-1">
+                                            <button
+                                                type="button"
+                                                x-on:click="
+                                                    activeImageTarget = index;
+                                                    $refs.imageInput.click();
+                                                "
+                                                :disabled="uploading || images.length >= uploadLimit"
+                                                title="Add an image to this post"
+                                                class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
+                                            >
+                                                <x-heroicon-o-photo class="size-4" />
+                                            </button>
+                                            <p
+                                                x-show="(threadPosts[index] || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
+                                                style="display: none"
+                                                :class="
+                                                (threadPosts[index] || '').length >= {{ $this->maxContentLength }}
+                                                    ? 'text-red-500 dark:text-red-400'
+                                                    : 'text-slate-500 dark:text-slate-400'
+                                            "
+                                                class="text-right text-xs"
+                                            >
+                                                <span x-text="(threadPosts[index] || '').length"></span>
+                                                / {{ $this->maxContentLength }}
+                                            </p>
+                                        </div>
                                         <p
                                             x-show="($wire.errors['threadPosts.' + index] || []).length > 0"
                                             style="display: none"
@@ -294,6 +326,7 @@
                     <button
                         title="Upload an image"
                         x-ref="imageButton"
+                        x-on:click="activeImageTarget = null"
                         :disabled="uploading || images.length >= uploadLimit"
                         class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
                         :class="{ 'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit }"

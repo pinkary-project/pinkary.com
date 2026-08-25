@@ -6,11 +6,48 @@ const imageUpload = () => ({
     images: [],
     errors: [],
     textarea: null,
+    activeImageTarget: null,
 
     init() {
         this.textarea = this.$el.querySelector('textarea[x-ref="content"]');
         if (this.$refs.imageButton !== undefined) {
             this.setupListeners();
+        }
+    },
+
+    /**
+     * The field images are inserted into: the main post (null) or a thread post (index).
+     */
+    activeField() {
+        if (this.activeImageTarget === null || this.activeImageTarget === undefined) {
+            return {
+                textarea: this.$el.querySelector('textarea[x-ref="content"]'),
+                prop: 'content',
+            };
+        }
+
+        return {
+            textarea: this.$el.querySelectorAll('[data-thread-post]')[this.activeImageTarget] ?? null,
+            prop: 'threadPosts.' + this.activeImageTarget,
+        };
+    },
+
+    allFields() {
+        const fields = [{
+            textarea: this.$el.querySelector('textarea[x-ref="content"]'),
+            prop: 'content',
+        }];
+
+        this.$el.querySelectorAll('[data-thread-post]').forEach((textarea, index) => {
+            fields.push({ textarea, prop: 'threadPosts.' + index });
+        });
+
+        return fields;
+    },
+
+    syncField(field) {
+        if (this.$wire && field.textarea) {
+            this.$wire.set(field.prop, field.textarea.value, false);
         }
     },
 
@@ -127,33 +164,48 @@ const imageUpload = () => ({
     },
 
     replaceUploadingText() {
-        this.textarea.value = this.textarea.value.replace(
+        const field = this.activeField();
+
+        if (! field.textarea) {
+            return;
+        }
+
+        field.textarea.value = field.textarea.value.replace(
             /Uploading image\.\.\./g,
             ''
         );
-        if (this.$wire) {
-            this.$wire.set('content', this.textarea.value, false);
-        }
+        this.syncField(field);
     },
 
     insertAtCorrectPosition(content) {
         this.replaceUploadingText();
-        let existingContent = this.textarea.value;
+
+        const field = this.activeField();
+
+        if (! field.textarea) {
+            return;
+        }
+
+        let existingContent = field.textarea.value;
         if (existingContent && !existingContent.endsWith('\n')) {
             content = '\n' + content;
         }
-        this.textarea.value = existingContent + content;
-        if (this.$wire) {
-            this.$wire.set('content', this.textarea.value, false);
-        }
+        field.textarea.value = existingContent + content;
+        this.syncField(field);
         this.resizeTextarea();
     },
 
     resizeTextarea() {
-        this.textarea.dispatchEvent(new Event('input', { bubbles: true }));
-        this.textarea.dispatchEvent(new Event('change', { bubbles: true }));
-        this.textarea.selectionStart = this.textarea.selectionEnd = this.textarea.value.length;
-        this.textarea.focus();
+        const field = this.activeField();
+
+        if (! field.textarea) {
+            return;
+        }
+
+        field.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        field.textarea.dispatchEvent(new Event('change', { bubbles: true }));
+        field.textarea.selectionStart = field.textarea.selectionEnd = field.textarea.value.length;
+        field.textarea.focus();
     },
 
     removeImage(event, index) {
@@ -167,7 +219,7 @@ const imageUpload = () => ({
     },
 
     /**
-     * Inserts image markdown into the textarea.
+     * Inserts image markdown into the active textarea.
      * Expected payload shape: { path: string, originalName: string } (dispatched on image.uploaded)
      * or a number index (when re-inserting an existing uploaded image from the list).
      */
@@ -197,8 +249,16 @@ const imageUpload = () => ({
 
         const normalizedPath = this.normalizePath(path);
         const markdownSnippet = `![${originalName}](${normalizedPath})`;
+        const field = this.activeField();
 
-        if (this.textarea.value.includes(markdownSnippet)) {
+        if (! field.textarea) {
+            this.replaceUploadingText();
+            this.uploading = false;
+
+            return;
+        }
+
+        if (field.textarea.value.includes(markdownSnippet)) {
             this.replaceUploadingText();
             this.uploading = false;
 
@@ -220,7 +280,13 @@ const imageUpload = () => ({
     },
 
     isExceedingMaxContentLength(markdownSnippet) {
-        const newLength = this.textarea.value.length + markdownSnippet.length;
+        const field = this.activeField();
+
+        if (! field.textarea) {
+            return false;
+        }
+
+        const newLength = field.textarea.value.length + markdownSnippet.length;
 
         return newLength > this.maxContentLength;
     },
@@ -239,11 +305,21 @@ const imageUpload = () => ({
             `!\\[${this.escapeRegExp(originalName)}\\]\\(${this.normalizePath(path)}\\)\\n?`,
             'g'
         );
-        this.textarea.value = this.textarea.value.replace(regex, '');
-        if (this.$wire) {
-            this.$wire.set('content', this.textarea.value, false);
-        }
-        this.resizeTextarea();
+
+        this.allFields().forEach((field) => {
+            if (! field.textarea || ! regex.test(field.textarea.value)) {
+                regex.lastIndex = 0;
+
+                return;
+            }
+
+            regex.lastIndex = 0;
+            field.textarea.value = field.textarea.value.replace(regex, '');
+            this.syncField(field);
+            field.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+
+        this.textarea?.focus();
     },
 
     normalizePath(path) {
