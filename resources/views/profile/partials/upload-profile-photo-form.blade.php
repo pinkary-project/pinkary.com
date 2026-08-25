@@ -1,5 +1,6 @@
 <section
     x-data='{
+    submitting: false,
     avatar: null,
     errors: @json($errors->get('avatar')),
     checkFileSize(target) {
@@ -47,7 +48,12 @@
         @endif
     </div>
 
-    <form method="post" enctype="multipart/form-data" action="{{ route('profile.avatar.update') }}">
+    <form
+        method="post"
+        enctype="multipart/form-data"
+        action="{{ route('profile.avatar.update') }}"
+        @submit="submitting = true"
+    >
         @csrf
         @method('patch')
 
@@ -69,15 +75,27 @@
         </div>
 
         <div class="mt-6 flex items-center gap-2">
-            <x-primary-button>{{ __('Upload') }}</x-primary-button>
+            <x-primary-button
+                x-bind:disabled="submitting"
+                class="disabled:pointer-events-none disabled:opacity-50"
+            >{{ __('Upload') }}</x-primary-button>
         </div>
     </form>
     <div class="relative">
-        <form method="post" class="absolute top-[-34px] left-[100px]" action="{{ route('profile.avatar.destroy') }}">
+        <form
+            method="post"
+            class="absolute top-[-34px] left-[100px]"
+            action="{{ route('profile.avatar.destroy') }}"
+            @submit="submitting = true"
+        >
             @csrf
             @method('delete')
 
-            <x-secondary-button type="submit">
+            <x-secondary-button
+                type="submit"
+                x-bind:disabled="submitting"
+                class="disabled:pointer-events-none disabled:opacity-50"
+            >
                 {{ auth()->user()->is_uploaded_avatar ? __('Delete Uploaded Avatar') : __('Re-fetch Avatar') }}
             </x-secondary-button>
         </form>
