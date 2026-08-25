@@ -140,16 +140,18 @@
         </button>
 
         <x-modal max-width="2xl" name="post-create" focusable x-on:question.created.window="close('post-create')">
-            <div class="p-4 sm:p-6">
-                <div class="mb-4 border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
+            <div class="flex max-h-[calc(100dvh-3rem)] flex-col">
+                <div class="border-b border-slate-200/70 px-4 pt-4 pb-3 sm:px-6 sm:pt-6 dark:border-slate-800/40">
                     <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('Share an update') }}</h3>
                 </div>
 
-                <livewire:questions.create
-                    :to-id="auth()->id()"
-                    :custom-draft-key="'post_modal'"
-                    key="global-modal-create-post"
-                />
+                <div class="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pb-6">
+                    <livewire:questions.create
+                        :to-id="auth()->id()"
+                        :custom-draft-key="'post_modal'"
+                        key="global-modal-create-post"
+                    />
+                </div>
             </div>
         </x-modal>
     @endauth

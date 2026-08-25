@@ -211,7 +211,7 @@
                     <x-input-error :messages="collect($errors->get('threadPosts.*'))->flatten()->all()" class="mt-2" />
                 @endif
             </div>
-            <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+            <div class="mt-2 flex flex-wrap items-center justify-between gap-2 {{ $this->customDraftKey === 'post_modal' ? 'sticky bottom-0 -mx-4 bg-white/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 dark:bg-[#050d1b]/95' : '' }}">
                 <div class="flex items-center gap-2">
                     <button
                         type="submit"
