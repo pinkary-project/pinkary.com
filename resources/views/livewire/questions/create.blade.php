@@ -204,9 +204,10 @@
                                         <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
                                     </div>
                                     <div
-                                        class="relative -mx-3 min-w-0 flex-1 rounded-xl px-3 py-1 transition-colors focus-within:bg-slate-500/5 dark:focus-within:bg-white/[0.04]"
+                                        class="relative min-w-0 flex-1"
                                         :class="{
-                                            'bg-red-500/5': ($wire.errors['threadPosts.' + index] || []).length > 0,
+                                            'rounded-lg bg-red-500/5':
+                                                ($wire.errors['threadPosts.' + index] || []).length > 0,
                                         }"
                                     >
                                         <x-textarea
@@ -214,16 +215,16 @@
                                             data-thread-post
                                             placeholder="Say more..."
                                             maxlength="{{ $this->maxContentLength }}"
-                                            rows="2"
+                                            rows="1"
                                             x-autosize
-                                            class="resize-none rounded-none! border-0! bg-transparent! px-3.5! py-2! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-500! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!"
+                                            class="resize-none rounded-none! border-0! bg-transparent! px-3.5! py-1.5! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-500! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!"
                                         />
                                         <button
                                             type="button"
                                             x-on:click="removePost(index)"
                                             title="Remove this post"
                                             aria-label="Remove this post"
-                                            class="absolute top-2 right-4 rounded-full p-1 text-slate-400 opacity-50 transition hover:text-red-500 hover:opacity-100 focus-visible:opacity-100 dark:text-slate-500 dark:hover:text-red-400"
+                                            class="absolute top-1.5 right-4 rounded-full p-1 text-slate-400 opacity-50 transition hover:text-red-500 hover:opacity-100 focus-visible:opacity-100 dark:text-slate-500 dark:hover:text-red-400"
                                         >
                                             <x-heroicon-o-x-mark class="size-4" />
                                         </button>
