@@ -126,7 +126,7 @@
         <div class="{{ $isModalComposer ? 'min-h-0 flex-1 overflow-y-auto' : '' }}">
             <div class="min-w-0">
                 <div class="group/menu relative">
-                    <div class="flex gap-3">
+                    <div class="group/main flex gap-3">
                         @if ($this->canThread)
                             <div class="flex w-10 shrink-0 flex-col items-center">
                                 <img
@@ -138,7 +138,7 @@
                                 <div
                                     x-show="threadPosts.length > 0"
                                     style="display: none"
-                                    class="mt-1 w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"
+                                    class="mt-1 w-px flex-1 bg-slate-200 transition-colors group-focus-within/main:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/main:bg-pink-500"
                                 ></div>
                             </div>
                         @endif
@@ -181,26 +181,6 @@
                         wire:model="images"
                     />
 
-                    <div x-show="images.length > 0" class="relative mt-3 flex flex-wrap gap-2">
-                        <template x-for="(image, index) in images" :key="index">
-                            <div class="relative h-20 w-20">
-                                <img
-                                    :src="image.path"
-                                    :alt="image.originalName"
-                                    x-on:click="createMarkdownImage(index)"
-                                    title="Reinsert the image"
-                                    class="h-full w-full cursor-pointer object-cover"
-                                />
-                                <button
-                                    @click="removeImage($event, index)"
-                                    class="absolute top-0.5 right-0.5 bg-white/90 p-1 text-slate-500 hover:text-pink-500 dark:bg-[#050d1b]/80 dark:text-slate-400"
-                                >
-                                    <x-icons.close class="size-4" />
-                                </button>
-                            </div>
-                        </template>
-                    </div>
-
                     <ul>
                         <template x-for="(error, index) in errors" :key="index">
                             <li class="w-full py-2 text-sm text-red-500"><span x-text="error"></span></li>
@@ -210,16 +190,16 @@
                     @if ($this->canThread)
                         <div x-show="threadPosts.length > 0" style="display: none">
                             <template x-for="(post, index) in threadPosts" :key="'thread-post-' + index">
-                                <div class="mt-1 flex animate-[thread-post-enter_0.3s_ease-out] gap-3">
+                                <div class="group/post mt-1 flex animate-[thread-post-enter_0.3s_ease-out] gap-3">
                                     <div class="flex w-10 shrink-0 flex-col items-center">
-                                        <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
+                                        <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/post:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/post:bg-pink-500"></div>
                                         <img
                                             src="{{ $user->avatar_url }}"
                                             alt="{{ $user->username ?? '' }}"
                                             loading="lazy"
-                                            class="my-1 size-7 rounded-full border border-slate-200/70 object-cover transition-colors group-focus-within/menu:border-pink-300 dark:border-slate-800 dark:group-focus-within/menu:border-pink-500/50"
+                                            class="my-1 size-7 rounded-full border border-slate-200/70 object-cover transition-colors group-focus-within/post:border-pink-300 dark:border-slate-800 dark:group-focus-within/post:border-pink-500/50"
                                         />
-                                        <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
+                                        <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/post:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/post:bg-pink-500"></div>
                                     </div>
                                     <div
                                         class="relative min-w-0 flex-1"
@@ -255,7 +235,7 @@
                                                 "
                                                 :disabled="uploading || images.length >= uploadLimit"
                                                 title="Add an image to this post"
-                                                class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
+                                                class="flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition group-focus-within/post:opacity-100 group-hover/post:opacity-100 hover:bg-slate-500/10 hover:text-slate-600 focus-visible:opacity-100 disabled:cursor-not-allowed dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
                                             >
                                                 <x-heroicon-o-photo class="size-4" />
                                             </button>
@@ -310,6 +290,25 @@
             </div>
         </div>
         <div class="min-w-0">
+            <div x-show="images.length > 0" class="relative mt-3 flex flex-wrap gap-2">
+                <template x-for="(image, index) in images" :key="index">
+                    <div class="relative h-16 w-16">
+                        <img
+                            :src="image.path"
+                            :alt="image.originalName"
+                            x-on:click="createMarkdownImage(index)"
+                            title="Reinsert the image"
+                            class="h-full w-full cursor-pointer rounded-lg object-cover"
+                        />
+                        <button
+                            @click="removeImage($event, index)"
+                            class="absolute top-0.5 right-0.5 rounded bg-white/90 p-1 text-slate-500 hover:text-pink-500 dark:bg-[#050d1b]/80 dark:text-slate-400"
+                        >
+                            <x-icons.close class="size-3.5" />
+                        </button>
+                    </div>
+                </template>
+            </div>
             <div class="mt-2 flex flex-wrap items-center justify-between gap-2 {{ $isModalComposer ? 'border-t border-slate-200/70 pt-3 dark:border-slate-800/40' : '' }}">
                 <div class="flex items-center gap-2">
                     <button
