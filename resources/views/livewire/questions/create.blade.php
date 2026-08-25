@@ -16,18 +16,43 @@
             content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}'),
             threadPosts: $persist($wire.entangle('threadPosts')).as('{{ $this->draftKey }}_posts'),
             addPost() {
+                if (this.$wire.customDraftKey !== 'post_modal') {
+                    this.continueToModal();
+
+                    return;
+                }
+
                 if (this.threadPosts.length < {{ $this->maxThreadPosts - 1 }}) {
                     this.threadPosts.push('');
 
-                    this.$nextTick(() => {
-                        const textareas = this.$root.querySelectorAll('[data-thread-post]');
-
-                        textareas[textareas.length - 1]?.focus();
-                    });
+                    this.focusLastPost();
                 }
+            },
+            continueToModal() {
+                const content = (this.content || '').trim();
+                const threadPosts = (this.threadPosts || []).filter((post) => (post || '').trim() !== '');
+
+                if (content !== '' || threadPosts.length > 0) {
+                    this.$wire.dispatch('thread.continue-in-modal', {
+                        content: content,
+                        threadPosts: threadPosts,
+                    });
+
+                    this.content = '';
+                    this.threadPosts = [];
+                }
+
+                this.$dispatch('open-modal', 'post-create');
             },
             removePost(index) {
                 this.threadPosts.splice(index, 1);
+            },
+            focusLastPost() {
+                this.$nextTick(() => {
+                    const textareas = this.$root.querySelectorAll('[data-thread-post]');
+
+                    textareas[textareas.length - 1]?.focus();
+                });
             },
         }"
         x-init='() => {
@@ -40,7 +65,7 @@
     >
         <div class="min-w-0">
             <div class="group/menu relative">
-                <div class="flex gap-3">
+                <div class="group/root flex gap-3">
                     @if ($this->canThread)
                         <div class="flex w-10 shrink-0 flex-col items-center">
                             <img
@@ -52,7 +77,7 @@
                             <div
                                 x-show="threadPosts.length > 0"
                                 style="display: none"
-                                class="mt-1 w-px flex-1 bg-slate-200 dark:bg-slate-700/60"
+                                class="mt-1 w-px flex-1 bg-slate-200 transition-colors group-focus-within/root:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/root:bg-pink-500"
                             ></div>
                         </div>
                     @endif
@@ -108,16 +133,16 @@
                 @if ($this->canThread)
                     <div x-show="threadPosts.length > 0" style="display: none">
                         <template x-for="(post, index) in threadPosts" :key="'thread-post-' + index">
-                            <div class="mt-3 flex gap-3">
+                            <div class="group/post mt-3 flex gap-3">
                                 <div class="flex w-10 shrink-0 flex-col items-center">
-                                    <div class="w-px flex-1 bg-slate-200 dark:bg-slate-700/60"></div>
+                                    <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/post:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/post:bg-pink-500"></div>
                                     <img
                                         src="{{ $user->avatar_url }}"
                                         alt="{{ $user->username ?? '' }}"
                                         loading="lazy"
-                                        class="my-1 size-7 rounded-full border border-slate-200/70 object-cover dark:border-slate-800"
+                                        class="my-1 size-7 rounded-full border border-slate-200/70 object-cover transition-colors group-focus-within/post:border-pink-300 dark:border-slate-800 dark:group-focus-within/post:border-pink-500/50"
                                     />
-                                    <div class="w-px flex-1 bg-slate-200 dark:bg-slate-700/60"></div>
+                                    <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/post:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/post:bg-pink-500"></div>
                                 </div>
                                 <div class="relative min-w-0 flex-1">
                                     <x-textarea
@@ -134,14 +159,19 @@
                                         x-on:click="removePost(index)"
                                         title="Remove this post"
                                         aria-label="Remove this post"
-                                        class="absolute top-2 right-2 rounded-full bg-white/90 p-1 text-slate-400 transition hover:bg-slate-100 hover:text-red-500 dark:bg-[#10182b]/90 dark:text-slate-500 dark:hover:bg-[#162038] dark:hover:text-red-400"
+                                        class="absolute top-2 right-2 rounded-full bg-white/90 p-1 text-slate-400 opacity-50 transition hover:bg-slate-100 hover:text-red-500 hover:opacity-100 focus-visible:opacity-100 dark:bg-[#10182b]/90 dark:text-slate-500 dark:hover:bg-[#162038] dark:hover:text-red-400"
                                     >
                                         <x-heroicon-o-x-mark class="size-4" />
                                     </button>
                                     <p
                                         x-show="(threadPosts[index] || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
                                         style="display: none"
-                                        class="mt-1 text-right text-xs text-slate-500 dark:text-slate-400"
+                                        :class="
+                                            (threadPosts[index] || '').length >= {{ $this->maxContentLength }}
+                                                ? 'text-red-500 dark:text-red-400'
+                                                : 'text-slate-500 dark:text-slate-400'
+                                        "
+                                        class="mt-1 text-right text-xs"
                                     >
                                         <span x-text="(threadPosts[index] || '').length"></span>
                                         / {{ $this->maxContentLength }}
@@ -156,10 +186,17 @@
                         x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }} && ! $wire.isPoll"
                         style="display: none"
                         x-on:click="addPost()"
-                        class="mt-3 flex w-full items-center justify-center gap-1.5 border border-dashed border-slate-300 py-2.5 text-sm font-medium text-slate-500 transition hover:border-pink-400 hover:text-pink-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-pink-600 dark:hover:text-pink-400"
+                        class="group/add mt-1 flex w-full items-center gap-3 py-1 text-left"
                     >
-                        <x-heroicon-o-plus class="size-4" />
-                        Add another post
+                        <span class="flex w-10 shrink-0 flex-col items-center">
+                            <span class="w-px flex-1 bg-slate-200 dark:bg-slate-700/60"></span>
+                            <span class="my-1 flex size-7 items-center justify-center rounded-full border border-dashed border-slate-300 text-slate-400 transition group-hover/add:border-pink-400 group-hover/add:bg-pink-50 group-hover/add:text-pink-500 dark:border-slate-600 dark:text-slate-500 dark:group-hover/add:border-pink-600 dark:group-hover/add:bg-pink-500/10 dark:group-hover/add:text-pink-400">
+                                <x-heroicon-o-plus class="size-4" />
+                            </span>
+                        </span>
+                        <span class="text-sm font-medium text-slate-400 transition group-hover/add:text-pink-500 dark:text-slate-500 dark:group-hover/add:text-pink-400">
+                            Add another post
+                        </span>
                     </button>
 
                     <x-input-error :messages="collect($errors->get('threadPosts.*'))->flatten()->all()" class="mt-2" />

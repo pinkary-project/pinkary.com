@@ -297,6 +297,31 @@ final class Create extends Component
     }
 
     /**
+     * Continue an inline composer's draft inside the global post modal.
+     *
+     * @param  array<int, string>  $threadPosts
+     */
+    #[On('thread.continue-in-modal')]
+    public function continueInModal(string $content = '', array $threadPosts = []): void
+    {
+        // Only the global modal instance accepts handed-over drafts.
+        if ($this->customDraftKey !== 'post_modal') {
+            return;
+        }
+
+        if (filled($content)) {
+            $this->content = $content;
+        }
+
+        if ($threadPosts !== []) {
+            $this->threadPosts = collect($threadPosts)
+                ->filter(fn (string $post): bool => mb_trim($post) !== '')
+                ->values()
+                ->all();
+        }
+    }
+
+    /**
      * Stores a new question.
      */
     public function store(#[CurrentUser] ?User $user): void

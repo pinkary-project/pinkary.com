@@ -513,6 +513,36 @@ test('thread posts are dropped when sharing a poll', function (): void {
     $component->assertDispatched('notification.created', message: 'Update sent.');
 });
 
+test('continues an inline thread inside the post modal', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->dispatch('thread.continue-in-modal', content: 'Inline thoughts', threadPosts: ['More here', '   ']);
+
+    $component->assertSet('content', 'Inline thoughts')
+        ->assertSet('threadPosts', ['More here']);
+});
+
+test('inline composers ignore the continue-in-modal event', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Existing draft');
+    $component->dispatch('thread.continue-in-modal', content: 'Incoming', threadPosts: ['Incoming extra']);
+
+    $component->assertSet('content', 'Existing draft')
+        ->assertSet('threadPosts', []);
+});
+
 test('max 30 questions per day', function (): void {
     $user = User::factory()->create();
 
