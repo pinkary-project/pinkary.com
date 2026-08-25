@@ -20,9 +20,22 @@
             },
             content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}'),
             threadPosts: $persist($wire.entangle('threadPosts')).as('{{ $this->draftKey }}_posts'),
+            canAddPost() {
+                if ((this.content || '').trim() === '') {
+                    return false;
+                }
+
+                return (this.threadPosts || []).every((post) => (post || '').trim() !== '');
+            },
             addPost() {
                 if (this.$wire.customDraftKey !== 'post_modal') {
                     this.continueToModal();
+
+                    return;
+                }
+
+                if (! this.canAddPost()) {
+                    this.focusFirstEmptyPost();
 
                     return;
                 }
@@ -32,6 +45,20 @@
 
                     this.focusLastPost();
                 }
+            },
+            focusFirstEmptyPost() {
+                if ((this.content || '').trim() === '') {
+                    this.$refs.content?.focus();
+
+                    return;
+                }
+
+                this.$nextTick(() => {
+                    const textareas = this.$root.querySelectorAll('[data-thread-post]');
+                    const index = (this.threadPosts || []).findIndex((post) => (post || '').trim() === '');
+
+                    textareas[index]?.focus();
+                });
             },
             continueToModal() {
                 const content = (this.content || '').trim();
@@ -206,15 +233,18 @@
                         x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }} && ! $wire.isPoll"
                         style="display: none"
                         x-on:click="addPost()"
-                        class="group/add mt-1 flex w-full items-center gap-3 py-1 text-left"
+                        :disabled="! canAddPost()"
+                        :title="canAddPost() ? 'Add another post' : 'Finish your current post first'"
+                        class="group/add mt-1 flex w-full items-center gap-3 py-1 text-left transition disabled:cursor-not-allowed"
+                        :class="{ 'opacity-40': ! canAddPost() }"
                     >
                         <span class="flex w-10 shrink-0 flex-col items-center">
                             <span class="w-px flex-1 bg-slate-200 dark:bg-slate-700/60"></span>
-                            <span class="my-1 flex size-7 items-center justify-center rounded-full border border-dashed border-slate-300 text-slate-400 transition group-hover/add:border-pink-400 group-hover/add:bg-pink-50 group-hover/add:text-pink-500 dark:border-slate-600 dark:text-slate-500 dark:group-hover/add:border-pink-600 dark:group-hover/add:bg-pink-500/10 dark:group-hover/add:text-pink-400">
+                            <span class="my-1 flex size-7 items-center justify-center rounded-full border border-dashed border-slate-300 text-slate-400 transition enabled:group-hover/add:border-pink-400 enabled:group-hover/add:bg-pink-50 enabled:group-hover/add:text-pink-500 dark:border-slate-600 dark:text-slate-500 dark:enabled:group-hover/add:border-pink-600 dark:enabled:group-hover/add:bg-pink-500/10 dark:enabled:group-hover/add:text-pink-400">
                                 <x-heroicon-o-plus class="size-4" />
                             </span>
                         </span>
-                        <span class="text-sm font-medium text-slate-400 transition group-hover/add:text-pink-500 dark:text-slate-500 dark:group-hover/add:text-pink-400">
+                        <span class="text-sm font-medium text-slate-400 transition enabled:group-hover/add:text-pink-500 dark:text-slate-500 dark:enabled:group-hover/add:text-pink-400">
                             Add another post
                         </span>
                     </button>
