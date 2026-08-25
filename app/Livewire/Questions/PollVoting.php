@@ -12,6 +12,8 @@ use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -52,27 +54,37 @@ final class PollVoting extends Component
         $pollOption = PollOption::where('question_id', $question->id)
             ->findOrFail($pollOptionId);
 
-        $existingVote = PollVote::whereHas('pollOption', function (Builder $query) use ($question): void {
-            $query->where('question_id', $question->id);
-        })->where('user_id', $user->id)->first();
+        DB::transaction(function () use ($user, $question, $pollOption, $pollOptionId): void {
+            /** @var PollVote|null $existingVote */
+            $existingVote = PollVote::query()
+                ->where('user_id', $user->id)
+                ->where('question_id', $question->id)
+                ->lockForUpdate()
+                ->first();
 
-        if ($existingVote) {
-            $existingVote->pollOption->decrement('votes_count');
-            $existingVote->delete();
+            if ($existingVote !== null) {
+                $existingVote->pollOption->decrement('votes_count');
+                $existingVote->delete();
 
-            if ($existingVote->poll_option_id === $pollOptionId) {
-                $this->dispatch('poll.voted');
+                if ($existingVote->poll_option_id === $pollOptionId) {
+                    return;
+                }
+            }
 
+            try {
+                PollVote::create([
+                    'user_id' => $user->id,
+                    'poll_option_id' => $pollOptionId,
+                    'question_id' => $question->id,
+                ]);
+            } catch (UniqueConstraintViolationException) {
+                // A concurrent first-time vote won the race; the vote
+                // already exists, so treat this request as idempotent.
                 return;
             }
-        }
 
-        PollVote::create([
-            'user_id' => $user->id,
-            'poll_option_id' => $pollOptionId,
-        ]);
-
-        $pollOption->increment('votes_count');
+            $pollOption->increment('votes_count');
+        });
 
         $this->dispatch('poll.voted');
     }
@@ -88,9 +100,10 @@ final class PollVoting extends Component
 
         $userVote = null;
         if (auth()->check()) {
-            $userVote = PollVote::whereHas('pollOption', function (Builder $query) use ($question): void {
-                $query->where('question_id', $question->id);
-            })->where('user_id', auth()->id())->first();
+            $userVote = PollVote::query()
+                ->where('user_id', (int) auth()->id())
+                ->where('question_id', $question->id)
+                ->first();
         }
 
         $totalVotes = $question->pollOptions->sum('votes_count');

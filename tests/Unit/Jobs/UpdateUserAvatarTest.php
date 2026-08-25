@@ -62,13 +62,72 @@ it('sets resets avatar state when job fails', function (): void {
     expect(file_exists($file->getRealPath()))->toBeTrue();
 
     UpdateUserAvatar::dispatchSync($user, $file->getRealPath());
-    new UpdateUserAvatar($user)->failed(null);
+    new UpdateUserAvatar($user->fresh())->failed(null);
 
     $user = $user->fresh();
 
     expect($user->avatar)->toBeNull()
         ->and($file->getRealPath())->toBeFalse();
 })->skipOnWindows(); // Skipped on Windows because of file permissions
+
+it('skips a superseded job so the newest avatar request wins', function (): void {
+    Storage::fake();
+
+    $user = User::factory()->create(['github_username' => 'CamKem']);
+
+    $staleJob = new UpdateUserAvatar($user);
+
+    $this->travel(1)->seconds();
+
+    UpdateUserAvatar::dispatchForSync($user, service: 'github');
+
+    $avatar = $user->refresh()->avatar;
+    expect($avatar)->toBeString();
+
+    $staleJob->handle();
+
+    expect($user->refresh()->avatar)->toBe($avatar)
+        ->and(Storage::disk()->exists((string) $avatar))->toBeTrue();
+});
+
+it('does not reset the avatar when the failing job is superseded', function (): void {
+    Storage::fake();
+
+    $user = User::factory()->create(['github_username' => 'CamKem']);
+
+    $staleJob = new UpdateUserAvatar($user);
+
+    $this->travel(1)->seconds();
+
+    UpdateUserAvatar::dispatchForSync($user, service: 'github');
+
+    $avatar = $user->refresh()->avatar;
+    expect($avatar)->toBeString();
+
+    $staleJob->failed(null);
+
+    expect($user->refresh()->avatar)->toBe($avatar);
+});
+
+it('preserves the superseding token when the job fails', function (): void {
+    Storage::fake();
+
+    $user = User::factory()->create();
+
+    UpdateUserAvatar::dispatchSync($user);
+
+    $token = $user->refresh()->avatar_updated_at;
+
+    expect($token)->not()->toBeNull();
+
+    new UpdateUserAvatar($user->fresh())->failed(null);
+
+    $user->refresh();
+
+    expect($user->avatar_updated_at)->toEqual($token)
+        ->and($user->avatar)->toBeNull()
+        ->and($user->is_uploaded_avatar)->toBeFalse();
+});
 
 it('accepts different services to download avatar', function (): void {
     Storage::fake();

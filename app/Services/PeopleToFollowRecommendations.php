@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -174,8 +175,7 @@ final readonly class PeopleToFollowRecommendations
                     ->orWhere('to_id', $userId);
             })
             ->whereNotNull('answer')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
 
         /** @var array<int, int> $candidateIds */
         $candidateIds = DB::query()
@@ -249,26 +249,36 @@ final readonly class PeopleToFollowRecommendations
             return [];
         }
 
-        /** @var array<int, int> $verifiedUserIds */
-        $verifiedUserIds = $this->availableUsersQuery($authenticatedUserId, $excludeIds)
-            ->whereHas('links', function (Builder $query): void {
-                $query->where('url', 'like', '%twitter.com%')
-                    ->orWhere('url', 'like', '%github.com%')
-                    ->orWhere('url', 'like', '%://x.com%');
-            })
-            ->where(function (Builder $query): void {
-                $query->where('is_verified', true)
-                    ->orWhereIn('username', array_merge(
-                        config()->array('sponsors.github_company_usernames', []),
-                        config()->array('sponsors.github_usernames', [])
-                    ));
-            })
-            ->inRandomOrder()
-            ->limit($limit)
-            ->pluck('id')
-            ->all();
+        /** @var array<int, int> $pool */
+        $pool = Cache::remember(
+            "verified-user-ids:{$authenticatedUserId}",
+            now()->endOfDay(),
+            fn (): array => $this->availableUsersQuery($authenticatedUserId, [])
+                ->whereHas('links', function (Builder $query): void {
+                    $query->where('url', 'like', '%twitter.com%')
+                        ->orWhere('url', 'like', '%github.com%')
+                        ->orWhere('url', 'like', '%://x.com%');
+                })
+                ->where(function (Builder $query): void {
+                    $query->where('is_verified', true)
+                        ->orWhereIn('username', array_merge(
+                            config()->array('sponsors.github_company_usernames', []),
+                            config()->array('sponsors.github_usernames', [])
+                        ));
+                })
+                ->pluck('id')
+                ->all()
+        );
 
-        return array_values($verifiedUserIds);
+        $candidates = array_values(array_diff($pool, $excludeIds));
+
+        $picked = [];
+
+        while (count($picked) < min($limit, count($candidates))) {
+            $picked[$candidates[random_int(0, count($candidates) - 1)]] = true;
+        }
+
+        return array_keys($picked);
     }
 
     /**

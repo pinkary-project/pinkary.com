@@ -40,6 +40,8 @@
                     <p class="mt-2 text-right text-sm text-slate-500 dark:text-slate-400">
                         <span x-text="$wire.content.length"></span> / {{ $this->maxContentLength }}
                     </p>
+
+                    <x-input-error :messages="$errors->get('content')" class="mt-2" />
                 </div>
                 <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
                 <input class="hidden" type="file" x-ref="imageUpload" multiple accept="image/*" wire:model="images" />
@@ -174,6 +176,9 @@
                     <option value="7">1 week</option>
                 </select>
             </div>
+
+            <x-input-error :messages="$errors->get('pollOptions')" class="mt-2" />
+            <x-input-error :messages="$errors->get('pollDuration')" class="mt-2" />
         </div>
     </form>
 </div>

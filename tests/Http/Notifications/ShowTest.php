@@ -17,6 +17,24 @@ test('guest', function (): void {
     $response->assertRedirect(route('login'));
 });
 
+test("another user's notification is not visible nor deleted", function (): void {
+    $question = Question::factory()->create();
+
+    $question->update(['answer' => 'Question answer']);
+
+    $notification = $question->from->notifications()->first();
+    expect($notification->fresh())->not->toBeNull();
+
+    /** @var Illuminate\Testing\TestResponse $response */
+    $response = $this->actingAs($question->to)
+        ->get(route('notifications.show', [
+            'notification' => $notification,
+        ]));
+
+    $response->assertNotFound();
+    expect($notification->fresh())->not->toBeNull();
+});
+
 test('notifications about answers are deleted', function (): void {
     $question = Question::factory()->create();
 

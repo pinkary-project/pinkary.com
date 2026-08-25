@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Contracts\Models\Viewable;
+use App\Models\Scopes\WhereNotModerated;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
 use Carbon\CarbonImmutable;
@@ -231,8 +232,7 @@ final class Question extends Model implements Viewable
     public function root(): BelongsTo
     {
         return $this->belongsTo(self::class, 'root_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -241,8 +241,7 @@ final class Question extends Model implements Viewable
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -251,8 +250,7 @@ final class Question extends Model implements Viewable
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -261,8 +259,7 @@ final class Question extends Model implements Viewable
     public function descendants(): HasMany
     {
         return $this->hasMany(self::class, 'root_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**

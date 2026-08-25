@@ -302,7 +302,7 @@ final class Create extends Component
         /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+            'content' => ['required', 'string', 'min:3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
         ]);
 
         if ($this->isPoll) {
@@ -506,12 +506,14 @@ final class Create extends Component
      */
     private function uploadImages(): void
     {
-        collect($this->images)->each(function (UploadedFile $image): void {
+        $sessionKey = 'images.'.$this->draftKey();
+
+        collect($this->images)->each(function (UploadedFile $image) use ($sessionKey): void {
 
             $path = $this->optimizeImage($image);
 
             if ($path) {
-                session()->push('images', $path);
+                session()->push($sessionKey, $path);
 
                 $this->dispatch(
                     'image.uploaded',
@@ -532,10 +534,12 @@ final class Create extends Component
      */
     private function cleanSession(string $path): void
     {
+        $sessionKey = 'images.'.$this->draftKey();
+
         $remainingImages = collect($this->getSessionImages())
             ->reject(fn (string $imagePath): bool => $imagePath === $path);
 
-        session()->put('images', $remainingImages->toArray());
+        session()->put($sessionKey, $remainingImages->toArray());
     }
 
     /**
@@ -547,7 +551,7 @@ final class Create extends Component
             ->reject(fn (string $path): bool => str_contains($this->content, $path))
             ->each(fn (string $path): ?bool => $this->deleteImage($path));
 
-        session()->forget('images');
+        session()->forget('images.'.$this->draftKey());
     }
 
     /**
@@ -558,7 +562,7 @@ final class Create extends Component
     private function getSessionImages(): array
     {
         /** @var array<int, string> $images */
-        $images = session()->get('images', []);
+        $images = session()->get('images.'.$this->draftKey(), []);
 
         return $images;
     }
