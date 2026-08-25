@@ -191,7 +191,7 @@
                                     />
                                     <div class="w-px flex-1 bg-slate-200 transition-colors group-focus-within/menu:bg-pink-400 dark:bg-slate-700/60 dark:group-focus-within/menu:bg-pink-500"></div>
                                 </div>
-                                <div class="relative -mx-3 min-w-0 flex-1 rounded-xl px-3 py-1 transition-colors hover:bg-slate-500/5 dark:hover:bg-white/[0.04]">
+                                <div class="relative -mx-3 min-w-0 flex-1 rounded-xl px-3 py-1 transition-colors focus-within:bg-slate-500/5 dark:focus-within:bg-white/[0.04]">
                                     <x-textarea
                                         x-model="threadPosts[index]"
                                         data-thread-post
@@ -256,7 +256,7 @@
                 <div class="flex items-center gap-2">
                     <button
                         type="submit"
-                        class="inline-flex items-center rounded-md bg-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                        class="inline-flex items-center border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white dark:hover:bg-slate-800"
                     >
                         @if ($this->parentId)
                             {{ __('Reply') }}
@@ -269,7 +269,7 @@
                         title="Upload an image"
                         x-ref="imageButton"
                         :disabled="uploading || images.length >= uploadLimit"
-                        class="flex size-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-500/10 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                        class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
                         :class="{ 'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit }"
                     >
                         <x-heroicon-o-photo class="h-5 w-5" />
@@ -280,7 +280,7 @@
                             x-on:click="togglePoll()"
                             :disabled="threadPosts.length > 0"
                             title="Create a poll"
-                            class="flex size-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-500/10 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                            class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
                             :class="{
                                 'cursor-not-allowed opacity-40': threadPosts.length > 0,
                                 'text-pink-500': isPoll,

@@ -34,7 +34,7 @@ test('refreshes when link settings changes', function (): void {
         'toId' => $user->id,
     ]);
 
-    $component->assertSeeHtml('bg-blue-500');
+    $component->assertSeeHtml('text-blue-500');
 
     $user->update([
         'settings' => [
@@ -45,7 +45,7 @@ test('refreshes when link settings changes', function (): void {
 
     $component->dispatch('link-settings.updated');
 
-    $component->assertSeeHtml('bg-red-500');
+    $component->assertSeeHtml('text-red-500');
 });
 
 test('store', function (): void {
