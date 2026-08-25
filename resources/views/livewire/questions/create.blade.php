@@ -1,4 +1,9 @@
 <div class="" id="questions-create-{{ $this->getId() }}">
+    @php
+        $mainTextareaClasses = $this->canThread
+            ? 'resize-none rounded-none! border-0! bg-transparent! px-3.5! py-3! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-400! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!'
+            : 'min-h-20! resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!';
+    @endphp
     @if ($this->needsCaptcha)
         <x-turnstile.scripts />
     @endif
@@ -97,7 +102,7 @@
                             x-autosize
                             x-ref="content"
                             autocomplete
-                            class="min-h-20! resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
+                            class="{{ $mainTextareaClasses }}"
                         />
 
                         <p
@@ -221,7 +226,7 @@
                 <div class="flex items-center gap-2">
                     <button
                         type="submit"
-                        class="inline-flex items-center border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white dark:hover:bg-slate-800"
+                        class="inline-flex items-center rounded-md bg-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
                     >
                         @if ($this->parentId)
                             {{ __('Reply') }}
@@ -234,7 +239,7 @@
                         title="Upload an image"
                         x-ref="imageButton"
                         :disabled="uploading || images.length >= uploadLimit"
-                        class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
+                        class="flex size-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-500/10 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
                         :class="{ 'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit }"
                     >
                         <x-heroicon-o-photo class="h-5 w-5" />
@@ -245,7 +250,7 @@
                             x-on:click="togglePoll()"
                             :disabled="threadPosts.length > 0"
                             title="Create a poll"
-                            class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
+                            class="flex size-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-500/10 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
                             :class="{
                                 'cursor-not-allowed opacity-40': threadPosts.length > 0,
                                 'text-pink-500': isPoll,
