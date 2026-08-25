@@ -145,7 +145,7 @@
                     <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('Share an update') }}</h3>
                 </div>
 
-                <div class="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-4 sm:px-6 sm:pb-6">
+                <div class="flex min-h-0 flex-1 flex-col px-4 pt-4 pb-4 sm:px-6 sm:pb-6">
                     <livewire:questions.create
                         :to-id="auth()->id()"
                         :custom-draft-key="'post_modal'"
