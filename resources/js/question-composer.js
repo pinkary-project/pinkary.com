@@ -64,6 +64,7 @@ const questionComposer = (config = {}) => ({
             this.threadPosts = event.detail.threadPosts || [];
             this.threadPolls = event.detail.threadPolls || [];
             this.images = event.detail.images || [];
+            this.$wire.$set('imageSourceDraftKey', event.detail.sourceDraftKey || null, false);
             this.ensureThreadPolls();
             this.resizeAllTextareas();
         });
@@ -100,6 +101,8 @@ const questionComposer = (config = {}) => ({
     },
 
     discardDraft() {
+        this.$wire.discardSourceImages();
+
         (this.images || []).forEach((image) => {
             this.$wire.deleteImageAfterValidation(this.normalizePath(image.path));
         });
@@ -176,16 +179,6 @@ const questionComposer = (config = {}) => ({
 
         if (content !== '' || threadPosts.length > 0) {
             this.$wire.$errors.clear();
-            this.$wire.dispatch('thread.continue-in-modal', {
-                content,
-                threadPosts,
-                threadPolls,
-                isPoll: Boolean(this.isPoll),
-                pollOptions,
-                pollDuration: this.pollDuration,
-                images,
-                sourceDraftKey: this.draftKey,
-            });
             window.dispatchEvent(new CustomEvent('post-modal-poll', {
                 detail: {
                     content,
@@ -195,6 +188,7 @@ const questionComposer = (config = {}) => ({
                     pollDuration: this.pollDuration,
                     threadPolls,
                     images,
+                    sourceDraftKey: this.draftKey,
                 },
             }));
 

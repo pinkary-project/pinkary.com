@@ -522,8 +522,11 @@ test('a poll can be included in a thread', function (): void {
     $component->assertDispatched('notification.created', message: 'Thread sent.');
 });
 
-test('continues an inline thread inside the post modal', function (): void {
+test('transfers handed-off images when the modal post is stored', function (): void {
     $user = User::factory()->create();
+    $path = 'images/2026-01-01/handed-off.png';
+    Storage::disk(Create::IMAGE_DISK)->put($path, 'image');
+    session(['images.post_new' => [$path]]);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($user)->test(Create::class, [
@@ -531,23 +534,16 @@ test('continues an inline thread inside the post modal', function (): void {
         'customDraftKey' => 'post_modal',
     ]);
 
-    $component->dispatch(
-        'thread.continue-in-modal',
-        content: 'Inline thoughts',
-        threadPosts: ['More here', '   '],
-        isPoll: true,
-        pollOptions: ['Yes', 'No'],
-        pollDuration: 3,
-    );
+    $component->set('content', 'Inline thoughts ![handed-off.png](/images/2026-01-01/handed-off.png)');
+    $component->set('imageSourceDraftKey', 'post_new');
+    $component->call('store');
 
-    $component->assertSet('content', 'Inline thoughts')
-        ->assertSet('threadPosts', ['More here'])
-        ->assertSet('isPoll', true)
-        ->assertSet('pollOptions', ['Yes', 'No'])
-        ->assertSet('pollDuration', 3);
+    expect(session('images.post_new'))->toBeNull()
+        ->and(session('images.post_modal'))->toBeNull();
+    Storage::disk(Create::IMAGE_DISK)->assertExists($path);
 });
 
-test('inline composers ignore the continue-in-modal event', function (): void {
+test('inline composers retain their draft state without a modal handoff event', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -556,10 +552,10 @@ test('inline composers ignore the continue-in-modal event', function (): void {
     ]);
 
     $component->set('content', 'Existing draft');
-    $component->dispatch('thread.continue-in-modal', content: 'Incoming', threadPosts: ['Incoming extra']);
 
     $component->assertSet('content', 'Existing draft')
-        ->assertSet('threadPosts', []);
+        ->assertSet('threadPosts', [])
+        ->assertSet('imageSourceDraftKey', null);
 });
 
 test('max 30 questions per day', function (): void {

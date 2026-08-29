@@ -14,7 +14,6 @@ use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
@@ -105,6 +104,11 @@ final class Create extends Component
      * @var array<int, UploadedFile>
      */
     public array $images = [];
+
+    /**
+     * Draft key containing images handed off to this composer.
+     */
+    public ?string $imageSourceDraftKey = null;
 
     /**
      * The component's anonymously state.
@@ -305,73 +309,6 @@ final class Create extends Component
     }
 
     /**
-     * Continue an inline composer's draft inside the global post modal.
-     *
-     * @param  array<int, string>  $threadPosts
-     * @param  array<int, array{isPoll: bool, options: array<int, string>, duration: int}>  $threadPolls
-     * @param  array<int, string>  $pollOptions
-     * @param  array<int, array{path: string, originalName: string, target?: int|null}>  $images
-     */
-    #[On('thread.continue-in-modal')]
-    public function continueInModal(
-        string $content = '',
-        array $threadPosts = [],
-        array $threadPolls = [],
-        bool $isPoll = false,
-        array $pollOptions = ['', ''],
-        int $pollDuration = 1,
-        array $images = [],
-        ?string $sourceDraftKey = null,
-    ): void {
-        // Only the global modal instance accepts handed-over drafts.
-        if ($this->customDraftKey !== 'post_modal') {
-            return;
-        }
-
-        $this->resetValidation();
-
-        if (filled($content)) {
-            $this->content = $content;
-        }
-
-        $this->isPoll = $isPoll;
-        $this->pollOptions = $pollOptions;
-        $this->pollDuration = $pollDuration;
-
-        if ($sourceDraftKey !== null && $sourceDraftKey !== $this->draftKey()) {
-            $sourceSessionKey = 'images.'.$sourceDraftKey;
-            $targetSessionKey = 'images.'.$this->draftKey();
-            $requestedPaths = collect($images)
-                ->pluck('path')
-                ->map(fn (mixed $path): string => is_string($path) ? $path : '')
-                ->filter()
-                ->map(fn (string $path): string => Str::after($path, '/images/') !== $path ? 'images/'.Str::after($path, '/images/') : $path)
-                ->values();
-            $sourcePaths = collect(session()->get($sourceSessionKey, []))
-                ->filter(fn (mixed $path): bool => is_string($path) && $requestedPaths->contains($path));
-
-            session()->put($targetSessionKey, collect(session()->get($targetSessionKey, []))
-                ->merge($sourcePaths)
-                ->unique()
-                ->values()
-                ->all());
-            session()->forget($sourceSessionKey);
-        }
-
-        if ($threadPosts !== []) {
-            $this->threadPosts = collect($threadPosts)
-                ->filter(fn (string $post): bool => mb_trim($post) !== '')
-                ->values()
-                ->all();
-            $this->threadPolls = array_map(
-                fn (string $post, int $index): array => $threadPolls[$index] ?? $this->emptyThreadPoll(),
-                $this->threadPosts,
-                array_keys($this->threadPosts),
-            );
-        }
-    }
-
-    /**
      * Stores a new question.
      */
     public function store(#[CurrentUser] ?User $user): void
@@ -559,9 +496,10 @@ final class Create extends Component
             ));
         }
 
+        $this->transferImagesFromSourceDraft();
         $this->deleteUnusedImages();
 
-        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls']);
+        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey']);
         $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
@@ -611,6 +549,28 @@ final class Create extends Component
         }
 
         $this->deleteImage($path);
+    }
+
+    /**
+     * Delete images handed off from another composer when its draft is discarded.
+     */
+    public function discardSourceImages(): void
+    {
+        if ($this->imageSourceDraftKey === null || $this->imageSourceDraftKey === $this->draftKey()) {
+            return;
+        }
+
+        $sourceSessionKey = 'images.'.$this->imageSourceDraftKey;
+        $sourceImages = session()->get($sourceSessionKey, []);
+
+        if (is_array($sourceImages)) {
+            collect($sourceImages)
+                ->filter(fn (mixed $path): bool => is_string($path) && str_starts_with($path, 'images/'))
+                ->each(fn (string $path): bool => Storage::disk(self::IMAGE_DISK)->delete($path));
+        }
+
+        session()->forget($sourceSessionKey);
+        $this->reset('imageSourceDraftKey');
     }
 
     /**
@@ -813,6 +773,31 @@ final class Create extends Component
             ->each(fn (string $path): ?bool => $this->deleteImage($path));
 
         session()->forget('images.'.$this->draftKey());
+    }
+
+    /**
+     * Move images handed off by another composer into this draft's session.
+     */
+    private function transferImagesFromSourceDraft(): void
+    {
+        if ($this->imageSourceDraftKey === null || $this->imageSourceDraftKey === $this->draftKey()) {
+            return;
+        }
+
+        $sourceSessionKey = 'images.'.$this->imageSourceDraftKey;
+        $sourceImages = session()->get($sourceSessionKey, []);
+
+        if (! is_array($sourceImages) || $sourceImages === []) {
+            return;
+        }
+
+        session()->put('images.'.$this->draftKey(), collect($this->getSessionImages())
+            ->merge($sourceImages)
+            ->filter(fn (mixed $path): bool => is_string($path))
+            ->unique()
+            ->values()
+            ->all());
+        session()->forget($sourceSessionKey);
     }
 
     /**
