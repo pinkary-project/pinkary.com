@@ -26,6 +26,7 @@
             },
             content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}'),
             threadPosts: $persist($wire.entangle('threadPosts')).as('{{ $this->draftKey }}_posts'),
+            threadPolls: $persist($wire.entangle('threadPolls')).as('{{ $this->draftKey }}_polls'),
             hasDraft() {
                 if ((this.content || '').trim() !== '') {
                     return true;
@@ -40,6 +41,7 @@
 
                 this.content = '';
                 this.threadPosts = [];
+                this.threadPolls = [];
                 this.images = [];
                 this.removeErrors();
             },
@@ -73,6 +75,7 @@
 
                 if (this.threadPosts.length < {{ $this->maxThreadPosts - 1 }}) {
                     this.threadPosts.push('');
+                    this.threadPolls.push(this.emptyThreadPoll());
 
                     this.focusLastPost();
                 }
@@ -99,6 +102,7 @@
                     this.$wire.dispatch('thread.continue-in-modal', {
                         content: content,
                         threadPosts: threadPosts,
+                        threadPolls: this.threadPolls,
                     });
 
                     this.content = '';
@@ -128,6 +132,27 @@
                 }
 
                 this.threadPosts.splice(index, 1);
+                this.threadPolls.splice(index, 1);
+            },
+            emptyThreadPoll() {
+                return { isPoll: false, options: ['', ''], duration: 1 };
+            },
+            toggleThreadPoll(index) {
+                if (! this.threadPolls[index]) {
+                    this.threadPolls[index] = this.emptyThreadPoll();
+                }
+
+                this.threadPolls[index].isPoll = ! this.threadPolls[index].isPoll;
+            },
+            addThreadPollOption(index) {
+                if (this.threadPolls[index].options.length < 4) {
+                    this.threadPolls[index].options.push('');
+                }
+            },
+            removeThreadPollOption(index, optionIndex) {
+                if (this.threadPolls[index].options.length > 2) {
+                    this.threadPolls[index].options.splice(optionIndex, 1);
+                }
             },
             focusLastPost() {
                 this.$nextTick(() => {
@@ -302,6 +327,62 @@
                                                 </div>
                                             </template>
                                         </div>
+                                        <div
+                                            x-show="threadPolls[index]?.isPoll"
+                                            class="mt-2 space-y-2 px-3.5"
+                                            style="display: none"
+                                        >
+                                            <template
+                                                x-for="(option, optionIndex) in (threadPolls[index]?.options || [])"
+                                                :key="optionIndex"
+                                            >
+                                                <div class="flex items-center gap-2">
+                                                    <span class="size-3.5 shrink-0 rounded-full border border-slate-400 dark:border-slate-600"></span>
+                                                    <input
+                                                        type="text"
+                                                        x-model="threadPolls[index].options[optionIndex]"
+                                                        maxlength="40"
+                                                        :placeholder="`Option ${optionIndex + 1}`"
+                                                        class="min-w-0 flex-1 rounded-lg border-slate-200/70 bg-transparent px-3 py-2 text-sm text-slate-950 shadow-none focus:border-pink-500 focus:ring-pink-500 dark:border-slate-800/60 dark:text-white"
+                                                    />
+                                                    <button
+                                                        x-show="threadPolls[index].options.length > 2"
+                                                        type="button"
+                                                        x-on:click="removeThreadPollOption(index, optionIndex)"
+                                                        class="rounded-full p-1 text-slate-400 transition hover:text-red-500"
+                                                        title="Remove option"
+                                                    >
+                                                        <x-heroicon-o-x-mark class="size-4" />
+                                                    </button>
+                                                </div>
+                                            </template>
+                                            <button
+                                                x-show="threadPolls[index].options.length < 4"
+                                                type="button"
+                                                x-on:click="addThreadPollOption(index)"
+                                                class="w-full rounded-lg border border-dashed border-slate-300 px-3 py-2 text-left text-sm text-slate-400 transition hover:border-pink-400 hover:text-pink-500 dark:border-slate-700 dark:text-slate-500"
+                                            >
+                                                Add another option
+                                            </button>
+                                            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                                <select
+                                                    x-model="threadPolls[index].duration"
+                                                    class="rounded border-0 bg-transparent p-0 text-xs text-slate-500 focus:ring-0 dark:text-slate-400"
+                                                >
+                                                    <option value="1">Ends in 24h</option>
+                                                    <option value="2">Ends in 2 days</option>
+                                                    <option value="3">Ends in 3 days</option>
+                                                    <option value="7">Ends in 1 week</option>
+                                                </select>
+                                                <button
+                                                    type="button"
+                                                    x-on:click="toggleThreadPoll(index)"
+                                                    class="hover:text-pink-500"
+                                                >
+                                                    Remove poll
+                                                </button>
+                                            </div>
+                                        </div>
                                         <button
                                             type="button"
                                             x-on:click="removePost(index)"
@@ -323,6 +404,16 @@
                                                 class="flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition group-focus-within/post:opacity-100 group-hover/post:opacity-100 hover:bg-slate-500/10 hover:text-slate-600 focus-visible:opacity-100 disabled:cursor-not-allowed dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
                                             >
                                                 <x-heroicon-o-photo class="size-4" />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                x-on:click="toggleThreadPoll(index)"
+                                                :disabled="uploading"
+                                                title="Create a poll for this post"
+                                                class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
+                                                :class="{ 'text-pink-500': threadPolls[index]?.isPoll }"
+                                            >
+                                                <x-heroicon-o-chart-bar class="size-4" />
                                             </button>
                                             <p
                                                 x-show="(threadPosts[index] || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
@@ -351,7 +442,7 @@
 
                         <button
                             type="button"
-                            x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }} && ! $wire.isPoll"
+                            x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }}"
                             style="display: none"
                             x-on:click="addPost()"
                             :disabled="! canAddPost()"
@@ -402,21 +493,19 @@
                     >
                         <x-heroicon-o-photo class="h-5 w-5" />
                     </button>
-                    @if (! $this->parentId && $this->isSharingUpdate)
-                        <button
-                            type="button"
-                            x-on:click="togglePoll()"
-                            :disabled="threadPosts.length > 0"
-                            title="Create a poll"
-                            class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
-                            :class="{
-                                'cursor-not-allowed opacity-40': threadPosts.length > 0,
-                                'text-pink-500': isPoll,
-                            }"
-                        >
-                            <x-heroicon-o-chart-bar class="h-5 w-5" />
-                        </button>
-                    @endif
+                    <button
+                        type="button"
+                        x-on:click="togglePoll()"
+                        :disabled="uploading"
+                        title="Create a poll"
+                        class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
+                        :class="{
+                            'cursor-not-allowed opacity-40': uploading,
+                            'text-pink-500': isPoll,
+                        }"
+                    >
+                        <x-heroicon-o-chart-bar class="h-5 w-5" />
+                    </button>
                 </div>
                 @if (! $this->parentId && ! $this->isSharingUpdate)
                     <div class="flex items-center border border-slate-200/70 bg-white px-3 py-2 dark:border-slate-800/30 dark:bg-[#10182b]">

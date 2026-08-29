@@ -491,7 +491,7 @@ test('a thread fitting the remaining daily quota is allowed', function (): void 
     expect(Question::count())->toBe(30);
 });
 
-test('thread posts are dropped when sharing a poll', function (): void {
+test('a poll can be included in a thread', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -502,14 +502,22 @@ test('thread posts are dropped when sharing a poll', function (): void {
     $component->set('content', 'What is your favorite color?');
     $component->set('isPoll', true);
     $component->set('pollOptions', ['Red', 'Blue']);
-    $component->set('threadPosts', ['Should be ignored']);
+    $component->set('threadPosts', ['Should be included']);
+    $component->set('threadPolls', [[
+        'isPoll' => true,
+        'options' => ['Maybe', 'Definitely'],
+        'duration' => 2,
+    ]]);
 
     $component->call('store');
 
-    expect(Question::count())->toBe(1)
-        ->and(Question::first()->pollOptions)->toHaveCount(2);
+    $threadPost = Question::where('answer', 'Should be included')->first();
 
-    $component->assertDispatched('notification.created', message: 'Update sent.');
+    expect(Question::count())->toBe(2)
+        ->and($threadPost->pollOptions)->toHaveCount(2)
+        ->and($threadPost->pollOptions->pluck('text')->all())->toBe(['Maybe', 'Definitely']);
+
+    $component->assertDispatched('notification.created', message: 'Thread sent.');
 });
 
 test('continues an inline thread inside the post modal', function (): void {
@@ -647,7 +655,7 @@ test('poll should have at most 4 options', function (): void {
     ]);
 });
 
-test('poll button is visible only for shared updates', function (): void {
+test('poll button is visible for every composer', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)
@@ -655,21 +663,13 @@ test('poll button is visible only for shared updates', function (): void {
 
     $component->assertSee('Create a poll');
 
-    $otherUser = User::factory()->create();
-    $component = Livewire::actingAs($user)
-        ->test(Create::class, ['toId' => $otherUser->id]);
-
-    $component->assertDontSee('Create a poll');
-});
-
-test('poll button is not visible for replies', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
     $component = Livewire::actingAs($user)
         ->test(Create::class, ['toId' => $user->id, 'parentId' => $question->id]);
 
-    $component->assertDontSee('Create a poll');
+    $component->assertSee('Create a poll');
 });
 
 test('can create a poll with valid options', function (): void {

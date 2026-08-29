@@ -92,6 +92,13 @@ final class Create extends Component
     public array $threadPosts = [];
 
     /**
+     * Poll state for each additional thread post.
+     *
+     * @var array<int, array{isPoll: bool, options: array<int, string>, duration: int}>
+     */
+    public array $threadPolls = [];
+
+    /**
      * Uploaded images.
      *
      * @var array<int, UploadedFile>
@@ -300,9 +307,10 @@ final class Create extends Component
      * Continue an inline composer's draft inside the global post modal.
      *
      * @param  array<int, string>  $threadPosts
+     * @param  array<int, array{isPoll: bool, options: array<int, string>, duration: int}>  $threadPolls
      */
     #[On('thread.continue-in-modal')]
-    public function continueInModal(string $content = '', array $threadPosts = []): void
+    public function continueInModal(string $content = '', array $threadPosts = [], array $threadPolls = []): void
     {
         // Only the global modal instance accepts handed-over drafts.
         if ($this->customDraftKey !== 'post_modal') {
@@ -318,6 +326,11 @@ final class Create extends Component
                 ->filter(fn (string $post): bool => mb_trim($post) !== '')
                 ->values()
                 ->all();
+            $this->threadPolls = array_map(
+                fn (string $post, int $index): array => $threadPolls[$index] ?? $this->emptyThreadPoll(),
+                $this->threadPosts,
+                array_keys($this->threadPosts),
+            );
         }
     }
 
@@ -336,11 +349,17 @@ final class Create extends Component
             return;
         }
 
-        // Treat whitespace-only rows as empty and drop them before validating.
-        $this->threadPosts = collect($this->threadPosts)
-            ->filter(fn (string $post): bool => mb_trim($post) !== '')
-            ->values()
-            ->all();
+        // Treat whitespace-only rows as empty and keep each row's poll state aligned.
+        $threadEntries = collect($this->threadPosts)
+            ->map(fn (string $post, int $index): array => [
+                'content' => $post,
+                'poll' => $this->threadPolls[$index] ?? $this->emptyThreadPoll(),
+            ])
+            ->filter(fn (array $entry): bool => mb_trim($entry['content']) !== '')
+            ->values();
+
+        $this->threadPosts = $threadEntries->pluck('content')->all();
+        $this->threadPolls = $threadEntries->pluck('poll')->all();
 
         /** @var array<string, mixed> $validated */
         $validated = $this->validate($this->validationRules(), [
@@ -358,10 +377,7 @@ final class Create extends Component
             ]);
         }
 
-        // Polls are always single posts.
-        $threadPosts = $this->canThread && ! $this->isPoll
-            ? collect($this->threadPosts)
-            : collect();
+        $threadPosts = $this->canThread ? collect($this->threadPosts) : collect();
 
         // The thread posts are not a database column on questions.
         unset($validated['threadPosts']);
@@ -422,6 +438,15 @@ final class Create extends Component
             }
         }
 
+        $threadPollOptions = [];
+        foreach ($this->threadPolls as $index => $threadPoll) {
+            $threadPollOptions[$index] = $this->validatedPollOptions($threadPoll, "threadPolls.{$index}");
+
+            if (($threadPoll['isPoll'] ?? false) && $threadPollOptions[$index] === null) {
+                return;
+            }
+        }
+
         if ($this->isSharingUpdate) {
             $validated['answer_created_at'] = now();
             $validated['answer'] = $validated['content'];
@@ -442,12 +467,15 @@ final class Create extends Component
             ],
         ];
 
-        foreach ($threadPosts as $postContent) {
+        foreach ($threadPosts as $index => $postContent) {
             $payloads[] = [
                 'to_id' => $this->toId,
                 'content' => '__UPDATE__',
                 'answer' => $postContent,
                 'answer_created_at' => now(),
+                'poll_expires_at' => ($this->threadPolls[$index]['isPoll'] ?? false)
+                    ? now()->addDays((int) $this->threadPolls[$index]['duration'])
+                    : null,
             ];
         }
 
@@ -483,9 +511,20 @@ final class Create extends Component
             $question->pollOptions()->createMany($options);
         }
 
+        foreach ($questions as $index => $createdQuestion) {
+            if ($index === 0 || empty($threadPollOptions[$index - 1])) {
+                continue;
+            }
+
+            $createdQuestion->pollOptions()->createMany(array_map(
+                fn (string $option): array => ['text' => mb_trim($option), 'votes_count' => 0],
+                $threadPollOptions[$index - 1],
+            ));
+        }
+
         $this->deleteUnusedImages();
 
-        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts']);
+        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls']);
         $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
@@ -535,6 +574,57 @@ final class Create extends Component
         }
 
         $this->deleteImage($path);
+    }
+
+    /**
+     * Return the default poll state for an additional thread post.
+     *
+     * @return array{isPoll: bool, options: array<int, string>, duration: int}
+     */
+    private function emptyThreadPoll(): array
+    {
+        return ['isPoll' => false, 'options' => ['', ''], 'duration' => 1];
+    }
+
+    /**
+     * Validate a poll belonging to a specific composer row.
+     *
+     * @param  array<string, mixed>  $poll
+     * @return array<int, string>|null
+     */
+    private function validatedPollOptions(array $poll, string $attribute): ?array
+    {
+        if (! ($poll['isPoll'] ?? false)) {
+            return null;
+        }
+
+        $duration = (int) ($poll['duration'] ?? 0);
+        if ($duration < 1 || $duration > 7) {
+            $this->addError("{$attribute}.duration", 'Poll duration must be between 1 and 7 days.');
+
+            return null;
+        }
+
+        $options = array_map(
+            static fn (mixed $option): string => is_string($option) ? $option : '',
+            is_array($poll['options'] ?? null) ? $poll['options'] : [],
+        );
+
+        if (count($options) < 2 || count($options) > 4 || in_array('', array_map(mb_trim(...), $options), true)) {
+            $this->addError("{$attribute}.options", 'Polls must have 2 to 4 non-empty options.');
+
+            return null;
+        }
+
+        foreach ($options as $option) {
+            if (mb_strlen($option) > 40) {
+                $this->addError("{$attribute}.options", 'Poll options cannot exceed 40 characters.');
+
+                return null;
+            }
+        }
+
+        return $options;
     }
 
     /**
