@@ -100,6 +100,25 @@
                 this.$dispatch('open-modal', 'post-create');
             },
             removePost(index) {
+                images
+                    .filter((image) => image.target === index)
+                    .forEach((image) => {
+                        this.$wire.deleteImageAfterValidation(this.normalizePath(image.path));
+                    });
+
+                images = images
+                    .filter((image) => image.target !== index)
+                    .map((image) => image.target !== null && image.target > index
+                        ? { ...image, target: image.target - 1 }
+                        : image
+                    );
+
+                if (this.activeImageTarget === index) {
+                    this.activeImageTarget = null;
+                } else if (this.activeImageTarget !== null && this.activeImageTarget > index) {
+                    this.activeImageTarget -= 1;
+                }
+
                 this.threadPosts.splice(index, 1);
             },
             focusLastPost() {
