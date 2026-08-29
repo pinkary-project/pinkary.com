@@ -11,12 +11,21 @@ const questionComposer = (config = {}) => ({
     threadPolls: [],
 
     init() {
-        this.content = this.$wire.entangle('content');
-        this.threadPosts = this.$wire.entangle('threadPosts');
-        this.threadPolls = this.$wire.entangle('threadPolls');
-        this.persistDraft('', () => this.content, (value) => { this.content = value; });
-        this.persistDraft('posts', () => this.threadPosts, (value) => { this.threadPosts = value; });
-        this.persistDraft('polls', () => this.threadPolls, (value) => { this.threadPolls = value; });
+        this.content = typeof this.$wire.$get('content') === 'string' ? this.$wire.$get('content') : '';
+        this.threadPosts = Array.isArray(this.$wire.$get('threadPosts')) ? this.$wire.$get('threadPosts') : [];
+        this.threadPolls = Array.isArray(this.$wire.$get('threadPolls')) ? this.$wire.$get('threadPolls') : [];
+        this.$watch('content', (value) => this.$wire.$set('content', value, false));
+        this.$watch('threadPosts', (value) => this.$wire.$set('threadPosts', value, false));
+        this.$watch('threadPolls', (value) => this.$wire.$set('threadPolls', value, false));
+        this.persistDraft('', () => this.content, (value) => {
+            this.content = typeof value === 'string' ? value : '';
+        });
+        this.persistDraft('posts', () => this.threadPosts, (value) => {
+            this.threadPosts = Array.isArray(value) ? value : [];
+        });
+        this.persistDraft('polls', () => this.threadPolls, (value) => {
+            this.threadPolls = Array.isArray(value) ? value : [];
+        });
         this.uploadLimit = config.uploadLimit;
         this.maxFileSize = config.maxFileSize;
         this.maxContentLength = config.maxContentLength;
@@ -34,8 +43,8 @@ const questionComposer = (config = {}) => ({
             this.isPoll = event.detail.isPoll;
             this.pollOptions = event.detail.pollOptions;
             this.pollDuration = event.detail.pollDuration;
-            this.content = event.detail.content;
-            this.threadPosts = event.detail.threadPosts;
+            this.content = event.detail.content || '';
+            this.threadPosts = event.detail.threadPosts || [];
             this.threadPolls = event.detail.threadPolls;
             this.images = event.detail.images;
             this.resizeAllTextareas();
@@ -172,6 +181,7 @@ const questionComposer = (config = {}) => ({
             this.isPoll = false;
             this.pollOptions = ['', ''];
             this.pollDuration = 1;
+            this.images = [];
         }
 
         this.$dispatch('open-modal', 'post-create');
