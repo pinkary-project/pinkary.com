@@ -33,6 +33,8 @@ const questionComposer = (config = {}) => ({
             this.isPoll = event.detail.isPoll;
             this.pollOptions = event.detail.pollOptions;
             this.pollDuration = event.detail.pollDuration;
+            this.content = event.detail.content;
+            this.threadPosts = event.detail.threadPosts;
             this.threadPolls = event.detail.threadPolls;
             this.images = event.detail.images;
         });
@@ -144,7 +146,15 @@ const questionComposer = (config = {}) => ({
                 sourceDraftKey: this.draftKey,
             });
             window.dispatchEvent(new CustomEvent('post-modal-poll', {
-                detail: { isPoll: Boolean(this.isPoll), pollOptions, pollDuration: this.pollDuration, threadPolls, images },
+                detail: {
+                    content,
+                    threadPosts,
+                    isPoll: Boolean(this.isPoll),
+                    pollOptions,
+                    pollDuration: this.pollDuration,
+                    threadPolls,
+                    images,
+                },
             }));
 
             this.content = '';
