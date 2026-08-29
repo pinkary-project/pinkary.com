@@ -97,14 +97,19 @@
             continueToModal() {
                 const content = (this.content || '').trim();
                 const threadPosts = (this.threadPosts || []).filter((post) => (post || '').trim() !== '');
+                const pollOptions = [...this.pollOptions];
+                const threadPolls = this.threadPolls.map((poll) => ({
+                    ...poll,
+                    options: [...poll.options],
+                }));
 
                 if (content !== '' || threadPosts.length > 0) {
                     this.$wire.dispatch('thread.continue-in-modal', {
                         content: content,
                         threadPosts: threadPosts,
-                        threadPolls: this.threadPolls,
-                        isPoll: this.isPoll,
-                        pollOptions: this.pollOptions,
+                        threadPolls: threadPolls,
+                        isPoll: Boolean(this.isPoll),
+                        pollOptions: pollOptions,
                         pollDuration: this.pollDuration,
                     });
 
@@ -481,7 +486,7 @@
                                         >
                                             <x-heroicon-o-x-mark class="size-4" />
                                         </button>
-                                        <div class="mt-0.5 flex items-center justify-start gap-1 pr-1">
+                                        <div class="mt-0.5 flex items-center justify-start gap-1 px-3.5">
                                             <button
                                                 type="button"
                                                 x-on:click="
