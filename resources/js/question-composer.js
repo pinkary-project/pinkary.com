@@ -45,8 +45,8 @@ const questionComposer = (config = {}) => ({
         });
 
         this.$wire.interceptMessage(({ onSuccess }) => {
-            onSuccess(({ onMorphed }) => {
-                onMorphed(() => {
+            onSuccess(({ onMorph }) => {
+                onMorph(() => {
                     this.resizeAllTextareas();
                 });
             });
@@ -117,11 +117,13 @@ const questionComposer = (config = {}) => ({
             return false;
         }
 
-        if ((this.content || '').trim() === '') {
+        if ((typeof this.content === 'string' ? this.content : '').trim() === '') {
             return false;
         }
 
-        return (this.threadPosts || []).every((post) => (post || '').trim() !== '');
+        return (Array.isArray(this.threadPosts) ? this.threadPosts : []).every((post) =>
+            (typeof post === 'string' ? post : '').trim() !== '',
+        );
     },
 
     addPost() {
