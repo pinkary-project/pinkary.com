@@ -10,6 +10,31 @@ beforeEach(function (): void {
     ]);
 });
 
+test('text formatting', function (string $content, string $parsed): void {
+    $provider = new App\Services\ParsableContentProviders\FormattingProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    ['**bold**', '<strong>bold</strong>'],
+    ['*italic*', '<em>italic</em>'],
+    ['&gt; quoted text', '<blockquote class="border-l-4 border-slate-300 pl-3 text-slate-600 dark:border-slate-600 dark:text-slate-300">quoted text</blockquote>'],
+    ['[Laravel](https://laravel.com)', '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://laravel.com">Laravel</a>'],
+]);
+
+test('formatting keeps unsafe and unsupported links as text', function (): void {
+    $provider = new App\Services\ParsableContentProviders\FormattingProviderParsable();
+
+    expect($provider->parse('[unsafe](javascript:alert(1))'))
+        ->toBe('[unsafe](javascript:alert(1))');
+});
+
+test('formatting ignores generated html elements', function (): void {
+    $provider = new App\Services\ParsableContentProviders\FormattingProviderParsable();
+
+    expect($provider->parse('<pre><code>**not bold**</code></pre> **bold**'))
+        ->toBe('<pre><code>**not bold**</code></pre> <strong>bold</strong>');
+});
+
 test('brs', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\BrProviderParsable();
 
