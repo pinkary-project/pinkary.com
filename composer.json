@@ -69,6 +69,14 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --ansi"
         ],
+        "setup": [
+            "composer install",
+            "npm install",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate --ansi",
+            "@php artisan migrate --ansi",
+            "@php artisan storage:link --ansi"
+        ],
         "bump:minor": [
             "composer update && composer bump",
             "npx npm-check-updates -u -t minor && npm install"
