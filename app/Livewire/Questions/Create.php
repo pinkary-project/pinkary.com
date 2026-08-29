@@ -308,10 +308,17 @@ final class Create extends Component
      *
      * @param  array<int, string>  $threadPosts
      * @param  array<int, array{isPoll: bool, options: array<int, string>, duration: int}>  $threadPolls
+     * @param  array<int, string>  $pollOptions
      */
     #[On('thread.continue-in-modal')]
-    public function continueInModal(string $content = '', array $threadPosts = [], array $threadPolls = []): void
-    {
+    public function continueInModal(
+        string $content = '',
+        array $threadPosts = [],
+        array $threadPolls = [],
+        bool $isPoll = false,
+        array $pollOptions = ['', ''],
+        int $pollDuration = 1,
+    ): void {
         // Only the global modal instance accepts handed-over drafts.
         if ($this->customDraftKey !== 'post_modal') {
             return;
@@ -320,6 +327,10 @@ final class Create extends Component
         if (filled($content)) {
             $this->content = $content;
         }
+
+        $this->isPoll = $isPoll;
+        $this->pollOptions = $pollOptions;
+        $this->pollDuration = $pollDuration;
 
         if ($threadPosts !== []) {
             $this->threadPosts = collect($threadPosts)

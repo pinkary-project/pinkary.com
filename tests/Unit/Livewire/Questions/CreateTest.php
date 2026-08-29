@@ -529,10 +529,20 @@ test('continues an inline thread inside the post modal', function (): void {
         'customDraftKey' => 'post_modal',
     ]);
 
-    $component->dispatch('thread.continue-in-modal', content: 'Inline thoughts', threadPosts: ['More here', '   ']);
+    $component->dispatch(
+        'thread.continue-in-modal',
+        content: 'Inline thoughts',
+        threadPosts: ['More here', '   '],
+        isPoll: true,
+        pollOptions: ['Yes', 'No'],
+        pollDuration: 3,
+    );
 
     $component->assertSet('content', 'Inline thoughts')
-        ->assertSet('threadPosts', ['More here']);
+        ->assertSet('threadPosts', ['More here'])
+        ->assertSet('isPoll', true)
+        ->assertSet('pollOptions', ['Yes', 'No'])
+        ->assertSet('pollDuration', 3);
 });
 
 test('inline composers ignore the continue-in-modal event', function (): void {

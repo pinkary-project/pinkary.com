@@ -103,10 +103,16 @@
                         content: content,
                         threadPosts: threadPosts,
                         threadPolls: this.threadPolls,
+                        isPoll: this.isPoll,
+                        pollOptions: this.pollOptions,
+                        pollDuration: this.pollDuration,
                     });
 
                     this.content = '';
                     this.threadPosts = [];
+                    this.isPoll = false;
+                    this.pollOptions = ['', ''];
+                    this.pollDuration = 1;
                 }
 
                 this.$dispatch('open-modal', 'post-create');
