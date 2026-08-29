@@ -218,6 +218,36 @@
                                             x-autosize
                                             class="resize-none rounded-none! border-0! bg-transparent! px-3.5! py-1.5! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-500! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!"
                                         />
+                                        <div
+                                            x-show="images.some((image) => image.target === index)"
+                                            class="mt-1 flex flex-wrap gap-2 px-3.5"
+                                        >
+                                            <template
+                                                x-for="
+                                                    (image, imageIndex) in
+                                                    images.filter((image) => image.target === index)
+                                                "
+                                                :key="image.path"
+                                            >
+                                                <div class="relative size-14 overflow-hidden rounded-lg border border-slate-200/70 dark:border-slate-800/50">
+                                                    <img
+                                                        :src="image.path"
+                                                        :alt="image.originalName"
+                                                        x-on:click="createMarkdownImage(images.indexOf(image))"
+                                                        title="Reinsert the image"
+                                                        class="size-full cursor-pointer object-cover"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        x-on:click="removeImage($event, images.indexOf(image))"
+                                                        class="absolute top-1 right-1 rounded bg-slate-950/70 p-0.5 text-white transition hover:bg-pink-500"
+                                                        :aria-label="`Remove ${image.originalName}`"
+                                                    >
+                                                        <x-icons.close class="size-3" />
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
                                         <button
                                             type="button"
                                             x-on:click="removePost(index)"
@@ -291,8 +321,8 @@
             </div>
         </div>
         <div class="min-w-0">
-            <div x-show="images.length > 0" class="relative mt-3 flex flex-wrap gap-2">
-                <template x-for="(image, index) in images" :key="index">
+            <div x-show="images.some((image) => image.target === null)" class="relative mt-3 flex flex-wrap gap-2">
+                <template x-for="(image, index) in images.filter((image) => image.target === null)" :key="image.path">
                     <div class="relative h-16 w-16">
                         <img
                             :src="image.path"
@@ -302,7 +332,7 @@
                             class="h-full w-full cursor-pointer rounded-lg object-cover"
                         />
                         <button
-                            @click="removeImage($event, index)"
+                            x-on:click="removeImage($event, images.indexOf(image))"
                             class="absolute top-0.5 right-0.5 rounded bg-white/90 p-1 text-slate-500 hover:text-pink-500 dark:bg-[#050d1b]/80 dark:text-slate-400"
                         >
                             <x-icons.close class="size-3.5" />

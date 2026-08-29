@@ -233,6 +233,7 @@ const imageUpload = () => ({
      */
     createMarkdownImage(payload) {
         let path, originalName;
+        let imageTarget = this.activeImageTarget ?? null;
 
         if (typeof payload === 'number') {
             if (!this.images[payload]) {
@@ -244,7 +245,7 @@ const imageUpload = () => ({
             originalName = payload.originalName;
 
             if (path && originalName && !this.images.some((img) => img.path === path)) {
-                this.images.push({ path, originalName });
+                this.images.push({ path, originalName, target: imageTarget });
             }
         }
 
