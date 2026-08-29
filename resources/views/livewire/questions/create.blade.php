@@ -197,6 +197,33 @@
                             </p>
 
                             <x-input-error :messages="$errors->get('content')" class="mt-2" />
+                            <div
+                                x-show="images.some((image) => image.target === null)"
+                                class="mt-2 flex flex-wrap gap-2"
+                            >
+                                <template
+                                    x-for="image in images.filter((image) => image.target === null)"
+                                    :key="image.path"
+                                >
+                                    <div class="relative size-14 overflow-hidden rounded-lg border border-slate-200/70 dark:border-slate-800/50">
+                                        <img
+                                            :src="image.path"
+                                            :alt="image.originalName"
+                                            x-on:click="createMarkdownImage(images.indexOf(image))"
+                                            title="Reinsert the image"
+                                            class="size-full cursor-pointer object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            x-on:click="removeImage($event, images.indexOf(image))"
+                                            class="absolute top-1 right-1 rounded bg-slate-950/70 p-0.5 text-white transition hover:bg-pink-500"
+                                            :aria-label="`Remove ${image.originalName}`"
+                                        >
+                                            <x-icons.close class="size-3" />
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </div>
                     <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
@@ -352,26 +379,6 @@
             </div>
         </div>
         <div class="min-w-0">
-            <div x-show="images.some((image) => image.target === null)" class="relative mt-3 flex flex-wrap gap-2">
-                <template x-for="(image, index) in images.filter((image) => image.target === null)" :key="image.path">
-                    <div class="relative h-16 w-16">
-                        <img
-                            :src="image.path"
-                            :alt="image.originalName"
-                            x-on:click="createMarkdownImage(images.indexOf(image))"
-                            title="Reinsert the image"
-                            class="h-full w-full cursor-pointer rounded-lg object-cover"
-                        />
-                        <button
-                            type="button"
-                            x-on:click="removeImage($event, images.indexOf(image))"
-                            class="absolute top-0.5 right-0.5 rounded bg-white/90 p-1 text-slate-500 hover:text-pink-500 dark:bg-[#050d1b]/80 dark:text-slate-400"
-                        >
-                            <x-icons.close class="size-3.5" />
-                        </button>
-                    </div>
-                </template>
-            </div>
             <div class="mt-2 flex flex-wrap items-center justify-between gap-2 {{ $isModalComposer ? 'border-t border-slate-200/70 pt-3 dark:border-slate-800/40' : '' }}">
                 <div class="flex items-center gap-2">
                     <button
