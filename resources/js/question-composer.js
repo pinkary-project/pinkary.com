@@ -11,9 +11,12 @@ const questionComposer = (config = {}) => ({
     threadPolls: [],
 
     init() {
-        this.content = this.$persist(this.$wire.entangle('content')).as(this.draftKey);
-        this.threadPosts = this.$persist(this.$wire.entangle('threadPosts')).as(`${this.draftKey}_posts`);
-        this.threadPolls = this.$persist(this.$wire.entangle('threadPolls')).as(`${this.draftKey}_polls`);
+        this.content = this.$wire.entangle('content');
+        this.threadPosts = this.$wire.entangle('threadPosts');
+        this.threadPolls = this.$wire.entangle('threadPolls');
+        this.persistDraft('', () => this.content, (value) => { this.content = value; });
+        this.persistDraft('posts', () => this.threadPosts, (value) => { this.threadPosts = value; });
+        this.persistDraft('polls', () => this.threadPolls, (value) => { this.threadPolls = value; });
         this.uploadLimit = config.uploadLimit;
         this.maxFileSize = config.maxFileSize;
         this.maxContentLength = config.maxContentLength;
@@ -33,6 +36,10 @@ const questionComposer = (config = {}) => ({
             this.threadPolls = event.detail.threadPolls;
             this.images = event.detail.images;
         });
+    },
+
+    persistDraft(suffix, get, set) {
+        Alpine.persist(`${this.draftKey}${suffix ? `_${suffix}` : ''}`, { get, set });
     },
 
     ensureThreadPolls() {
