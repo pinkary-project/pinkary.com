@@ -188,7 +188,7 @@
             </div>
         </x-modal>
 
-        <x-modal name="discard-post-draft" max-width="md">
+        <x-modal name="discard-post-draft" max-width="md" class="z-110">
             <div class="p-8">
                 <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">{{ __('Discard this post?') }}</h2>
                 <div class="mt-4 text-slate-500 dark:text-slate-400">

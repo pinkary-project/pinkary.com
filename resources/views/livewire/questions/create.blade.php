@@ -17,6 +17,14 @@
         wire:keydown.ctrl.enter="store"
         data-post-composer
         data-draft-key="{{ $this->draftKey }}"
+        x-on:post-modal-poll.window="
+            if ($wire.customDraftKey === 'post_modal') {
+                isPoll = $event.detail.isPoll;
+                pollOptions = $event.detail.pollOptions;
+                pollDuration = $event.detail.pollDuration;
+                threadPolls = $event.detail.threadPolls;
+            }
+        "
         x-data="{
             ...imageUpload(),
             ...poll(),
@@ -112,6 +120,14 @@
                         pollOptions: pollOptions,
                         pollDuration: this.pollDuration,
                     });
+                    window.dispatchEvent(new CustomEvent('post-modal-poll', {
+                        detail: {
+                            isPoll: Boolean(this.isPoll),
+                            pollOptions: pollOptions,
+                            pollDuration: this.pollDuration,
+                            threadPolls: threadPolls,
+                        },
+                    }));
 
                     this.content = '';
                     this.threadPosts = [];
