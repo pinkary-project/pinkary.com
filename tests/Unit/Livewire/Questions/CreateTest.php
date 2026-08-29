@@ -24,7 +24,9 @@ test('render', function (): void {
         'toId' => $userB->id,
     ]);
 
-    $component->assertOk()->assertSee('Ask a question...');
+    $component->assertOk()
+        ->assertSee('Ask a question...')
+        ->assertSeeHtml(':disabled="uploading"');
 });
 
 test('refreshes when link settings changes', function (): void {
