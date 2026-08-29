@@ -1,5 +1,6 @@
 import { imageUpload } from './image-upload.js';
 import { poll } from './poll.js';
+import autosize from 'autosize';
 
 const questionComposer = (config = {}) => ({
     ...imageUpload(),
@@ -35,6 +36,22 @@ const questionComposer = (config = {}) => ({
         this.ensureThreadPolls();
         this.resizeAllTextareas();
 
+        Livewire.on('question.created', () => {
+            this.content = '';
+            this.threadPosts = [];
+            this.threadPolls = [];
+            this.images = [];
+            this.$wire.$errors.clear();
+        });
+
+        this.$wire.interceptMessage(({ onSuccess }) => {
+            onSuccess(({ onMorphed }) => {
+                onMorphed(() => {
+                    this.resizeAllTextareas();
+                });
+            });
+        });
+
         window.addEventListener('post-modal-poll', (event) => {
             if (this.$wire.customDraftKey !== 'post_modal') {
                 return;
@@ -45,8 +62,9 @@ const questionComposer = (config = {}) => ({
             this.pollDuration = event.detail.pollDuration;
             this.content = event.detail.content || '';
             this.threadPosts = event.detail.threadPosts || [];
-            this.threadPolls = event.detail.threadPolls;
-            this.images = event.detail.images;
+            this.threadPolls = event.detail.threadPolls || [];
+            this.images = event.detail.images || [];
+            this.ensureThreadPolls();
             this.resizeAllTextareas();
         });
     },
@@ -55,7 +73,7 @@ const questionComposer = (config = {}) => ({
         this.$nextTick(() => {
             requestAnimationFrame(() => {
                 this.$root.querySelectorAll('textarea').forEach((textarea) => {
-                    textarea.dispatchEvent(new Event('autosize:update', { bubbles: true }));
+                    autosize.update(textarea);
                 });
             });
         });
@@ -180,6 +198,7 @@ const questionComposer = (config = {}) => ({
 
             this.content = '';
             this.threadPosts = [];
+            this.threadPolls = [];
             this.isPoll = false;
             this.pollOptions = ['', ''];
             this.pollDuration = 1;
