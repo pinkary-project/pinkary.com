@@ -301,16 +301,23 @@
                                     Add another option
                                 </button>
                                 <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                    <select
-                                        x-model="pollDuration"
-                                        class="rounded border-0 bg-transparent p-0 text-xs text-slate-500 focus:ring-0 dark:text-slate-400"
-                                    >
-                                        <option value="1">Ends in 24h</option>
-                                        <option value="2">Ends in 2 days</option>
-                                        <option value="3">Ends in 3 days</option>
-                                        <option value="5">Ends in 5 days</option>
-                                        <option value="7">Ends in 1 week</option>
-                                    </select>
+                                    <label class="flex items-center gap-2">
+                                        <span>Duration</span>
+                                        <span class="relative">
+                                            <select
+                                                x-model="pollDuration"
+                                                aria-label="Poll duration"
+                                                class="appearance-none rounded-lg border border-slate-200/70 bg-white px-2.5 py-1.5 pr-8 text-xs text-slate-600 shadow-sm focus:border-pink-500 focus:ring-pink-500 dark:border-slate-800/70 dark:bg-[#10182b] dark:text-slate-300"
+                                            >
+                                                <option value="1">24 hours</option>
+                                                <option value="2">2 days</option>
+                                                <option value="3">3 days</option>
+                                                <option value="5">5 days</option>
+                                                <option value="7">1 week</option>
+                                            </select>
+                                            <x-heroicon-o-chevron-down class="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                                        </span>
+                                    </label>
                                     <button type="button" x-on:click="togglePoll()" class="hover:text-pink-500">
                                         Remove poll
                                     </button>
@@ -434,15 +441,22 @@
                                                 Add another option
                                             </button>
                                             <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                                <select
-                                                    x-model="threadPolls[index].duration"
-                                                    class="rounded border-0 bg-transparent p-0 text-xs text-slate-500 focus:ring-0 dark:text-slate-400"
-                                                >
-                                                    <option value="1">Ends in 24h</option>
-                                                    <option value="2">Ends in 2 days</option>
-                                                    <option value="3">Ends in 3 days</option>
-                                                    <option value="7">Ends in 1 week</option>
-                                                </select>
+                                                <label class="flex items-center gap-2">
+                                                    <span>Duration</span>
+                                                    <span class="relative">
+                                                        <select
+                                                            x-model="threadPolls[index].duration"
+                                                            aria-label="Poll duration"
+                                                            class="appearance-none rounded-lg border border-slate-200/70 bg-white px-2.5 py-1.5 pr-8 text-xs text-slate-600 shadow-sm focus:border-pink-500 focus:ring-pink-500 dark:border-slate-800/70 dark:bg-[#10182b] dark:text-slate-300"
+                                                        >
+                                                            <option value="1">24 hours</option>
+                                                            <option value="2">2 days</option>
+                                                            <option value="3">3 days</option>
+                                                            <option value="7">1 week</option>
+                                                        </select>
+                                                        <x-heroicon-o-chevron-down class="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                                                    </span>
+                                                </label>
                                                 <button
                                                     type="button"
                                                     x-on:click="toggleThreadPoll(index)"
