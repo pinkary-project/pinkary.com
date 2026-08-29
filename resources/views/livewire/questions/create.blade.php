@@ -35,6 +35,13 @@
             content: $persist($wire.entangle('content')).as('{{ $this->draftKey }}'),
             threadPosts: $persist($wire.entangle('threadPosts')).as('{{ $this->draftKey }}_posts'),
             threadPolls: $persist($wire.entangle('threadPolls')).as('{{ $this->draftKey }}_polls'),
+            ensureThreadPolls() {
+                while (this.threadPolls.length < this.threadPosts.length) {
+                    this.threadPolls.push(this.emptyThreadPoll());
+                }
+
+                this.threadPolls.splice(this.threadPosts.length);
+            },
             hasDraft() {
                 if ((this.content || '').trim() !== '') {
                     return true;
@@ -174,6 +181,10 @@
                 this.threadPolls[index].isPoll = ! this.threadPolls[index].isPoll;
             },
             addThreadPollOption(index) {
+                if (! this.threadPolls[index]) {
+                    this.threadPolls[index] = this.emptyThreadPoll();
+                }
+
                 if (this.threadPolls[index].options.length < 4) {
                     this.threadPolls[index].options.push('');
                 }
@@ -202,6 +213,7 @@
             maxFileSize = {{ $this->maxFileSize }};
             maxContentLength = {{ $this->maxContentLength }};
             initComponents();
+            ensureThreadPolls();
         }'
         class="{{ $isModalComposer ? 'flex min-h-0 flex-1 flex-col' : '' }} pb-0"
     >
@@ -451,7 +463,7 @@
                                                         class="min-w-0 flex-1 rounded-lg border-slate-200/70 bg-transparent px-3 py-2 text-sm text-slate-950 shadow-none focus:border-pink-500 focus:ring-pink-500 dark:border-slate-800/60 dark:text-white"
                                                     />
                                                     <button
-                                                        x-show="threadPolls[index].options.length > 2"
+                                                        x-show="threadPolls[index]?.options?.length > 2"
                                                         type="button"
                                                         x-on:click="removeThreadPollOption(index, optionIndex)"
                                                         class="rounded-full p-1 text-slate-400 transition hover:text-red-500"
@@ -462,7 +474,7 @@
                                                 </div>
                                             </template>
                                             <button
-                                                x-show="threadPolls[index].options.length < 4"
+                                                x-show="threadPolls[index]?.options?.length < 4"
                                                 type="button"
                                                 x-on:click="addThreadPollOption(index)"
                                                 class="w-full rounded-lg border border-dashed border-slate-300 px-3 py-2 text-left text-sm text-slate-400 transition hover:border-pink-400 hover:text-pink-500 dark:border-slate-700 dark:text-slate-500"
