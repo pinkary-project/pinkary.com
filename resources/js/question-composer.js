@@ -53,8 +53,10 @@ const questionComposer = (config = {}) => ({
 
     resizeAllTextareas() {
         this.$nextTick(() => {
-            this.$root.querySelectorAll('textarea').forEach((textarea) => {
-                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            requestAnimationFrame(() => {
+                this.$root.querySelectorAll('textarea').forEach((textarea) => {
+                    textarea.dispatchEvent(new Event('autosize:update', { bubbles: true }));
+                });
             });
         });
     },
