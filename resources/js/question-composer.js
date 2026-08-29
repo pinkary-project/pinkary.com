@@ -24,6 +24,7 @@ const questionComposer = (config = {}) => ({
         imageUpload().init.call(this);
         poll().init.call(this);
         this.ensureThreadPolls();
+        this.resizeAllTextareas();
 
         window.addEventListener('post-modal-poll', (event) => {
             if (this.$wire.customDraftKey !== 'post_modal') {
@@ -37,6 +38,15 @@ const questionComposer = (config = {}) => ({
             this.threadPosts = event.detail.threadPosts;
             this.threadPolls = event.detail.threadPolls;
             this.images = event.detail.images;
+            this.resizeAllTextareas();
+        });
+    },
+
+    resizeAllTextareas() {
+        this.$nextTick(() => {
+            this.$root.querySelectorAll('textarea').forEach((textarea) => {
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            });
         });
     },
 
