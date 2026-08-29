@@ -100,13 +100,13 @@
                 this.$dispatch('open-modal', 'post-create');
             },
             removePost(index) {
-                images
+                this.images
                     .filter((image) => image.target === index)
                     .forEach((image) => {
                         this.$wire.deleteImageAfterValidation(this.normalizePath(image.path));
                     });
 
-                images = images
+                this.images = this.images
                     .filter((image) => image.target !== index)
                     .map((image) => image.target !== null && image.target > index
                         ? { ...image, target: image.target - 1 }
