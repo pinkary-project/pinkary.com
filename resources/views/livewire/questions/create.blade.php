@@ -346,11 +346,12 @@
                         <img
                             :src="image.path"
                             :alt="image.originalName"
-                            x-on:click="createMarkdownImage(index)"
+                            x-on:click="createMarkdownImage(images.indexOf(image))"
                             title="Reinsert the image"
                             class="h-full w-full cursor-pointer rounded-lg object-cover"
                         />
                         <button
+                            type="button"
                             x-on:click="removeImage($event, images.indexOf(image))"
                             class="absolute top-0.5 right-0.5 rounded bg-white/90 p-1 text-slate-500 hover:text-pink-500 dark:bg-[#050d1b]/80 dark:text-slate-400"
                         >
