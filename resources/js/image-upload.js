@@ -51,6 +51,12 @@ const imageUpload = () => ({
         }
     },
 
+    syncAllFields() {
+        this.allFields().forEach((field) => {
+            this.syncField(field);
+        });
+    },
+
     setupListeners() {
         this.$refs.imageButton.addEventListener('click', (e) => {
             e.preventDefault();
@@ -154,6 +160,8 @@ const imageUpload = () => ({
         if ((files.length + this.images.length) > this.uploadLimit) {
             this.addErrors([`You can only upload ${this.uploadLimit} images.`]);
         } else {
+            // Queue all draft fields before the upload request can rehydrate the component.
+            this.syncAllFields();
             this.uploading = true;
             this.$refs.imageUpload.files = files;
             this.$refs.imageUpload.dispatchEvent(new Event('change'));
