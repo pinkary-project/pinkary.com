@@ -5,7 +5,7 @@
     @php
         $isModalComposer = $this->customDraftKey === 'post_modal';
         $mainTextareaClasses = $this->canThread
-            ? 'resize-none rounded-none! border-0! bg-transparent! px-3.5! py-3! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-400! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!'
+            ? 'resize-none rounded-none! border-0! bg-transparent! px-3.5! py-1.5! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-400! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!'
             : 'min-h-20! resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!';
     @endphp
     @if ($this->needsCaptcha)
@@ -200,7 +200,7 @@
                                 x-model="content"
                                 placeholder="{{ $this->placeholder }}"
                                 maxlength="{{ $this->maxContentLength }}"
-                                rows="3"
+                                rows="1"
                                 required
                                 x-autosize
                                 x-ref="content"
