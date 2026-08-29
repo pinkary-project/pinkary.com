@@ -42,6 +42,9 @@
                                 {{ $option->text }}
                             </span>
                             <div class="flex shrink-0 items-center gap-2">
+                                @if ($isSelected)
+                                    <x-heroicon-s-check-circle class="size-4 text-white" />
+                                @endif
                                 <span @class([
                                     'text-xs font-semibold tabular-nums',
                                     'text-white' => $isSelected,
@@ -49,9 +52,6 @@
                                 ])>
                                     {{ $percentage }}%
                                 </span>
-                                @if ($isSelected)
-                                    <x-heroicon-s-check-circle class="size-4 text-white" />
-                                @endif
                             </div>
                         </div>
                     </div>
