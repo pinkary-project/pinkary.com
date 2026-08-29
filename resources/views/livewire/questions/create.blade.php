@@ -249,6 +249,28 @@
                                     </div>
                                 </template>
                             </div>
+                            <div class="mt-1 flex items-center gap-1 px-3.5">
+                                <button
+                                    type="button"
+                                    title="Upload an image"
+                                    x-ref="imageButton"
+                                    x-on:click="activeImageTarget = null"
+                                    :disabled="uploading || images.length >= uploadLimit"
+                                    class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
+                                >
+                                    <x-heroicon-o-photo class="size-4" />
+                                </button>
+                                <button
+                                    type="button"
+                                    x-on:click="togglePoll()"
+                                    :disabled="uploading"
+                                    title="Create a poll"
+                                    class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
+                                    :class="{ 'text-pink-500': isPoll }"
+                                >
+                                    <x-heroicon-o-chart-bar class="size-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />
@@ -392,7 +414,7 @@
                                         >
                                             <x-heroicon-o-x-mark class="size-4" />
                                         </button>
-                                        <div class="mt-0.5 flex items-center justify-between pr-1">
+                                        <div class="mt-0.5 flex items-center justify-start gap-1 pr-1">
                                             <button
                                                 type="button"
                                                 x-on:click="
@@ -401,7 +423,7 @@
                                                 "
                                                 :disabled="uploading || images.length >= uploadLimit"
                                                 title="Add an image to this post"
-                                                class="flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition group-focus-within/post:opacity-100 group-hover/post:opacity-100 hover:bg-slate-500/10 hover:text-slate-600 focus-visible:opacity-100 disabled:cursor-not-allowed dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
+                                                class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
                                             >
                                                 <x-heroicon-o-photo class="size-4" />
                                             </button>
@@ -423,7 +445,7 @@
                                                     ? 'text-red-500 dark:text-red-400'
                                                     : 'text-slate-500 dark:text-slate-400'
                                             "
-                                                class="text-right text-xs"
+                                                class="ml-auto text-right text-xs"
                                             >
                                                 <span x-text="(threadPosts[index] || '').length"></span>
                                                 / {{ $this->maxContentLength }}
@@ -482,29 +504,6 @@
                             <span x-show="threadPosts.length === 0">{{ __('Post') }}</span>
                             <span x-show="threadPosts.length > 0" style="display: none">{{ __('Post thread') }}</span>
                         @endif
-                    </button>
-                    <button
-                        title="Upload an image"
-                        x-ref="imageButton"
-                        x-on:click="activeImageTarget = null"
-                        :disabled="uploading || images.length >= uploadLimit"
-                        class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
-                        :class="{ 'cursor-not-allowed text-pink-500': uploading || images.length >= uploadLimit }"
-                    >
-                        <x-heroicon-o-photo class="h-5 w-5" />
-                    </button>
-                    <button
-                        type="button"
-                        x-on:click="togglePoll()"
-                        :disabled="uploading"
-                        title="Create a poll"
-                        class="flex size-10 items-center justify-center border border-slate-200/70 bg-white text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:border-slate-800/30 dark:bg-[#10182b] dark:text-slate-400 dark:hover:bg-[#162038] dark:hover:text-white"
-                        :class="{
-                            'cursor-not-allowed opacity-40': uploading,
-                            'text-pink-500': isPoll,
-                        }"
-                    >
-                        <x-heroicon-o-chart-bar class="h-5 w-5" />
                     </button>
                 </div>
                 @if (! $this->parentId && ! $this->isSharingUpdate)
