@@ -14,6 +14,7 @@ use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
@@ -309,6 +310,7 @@ final class Create extends Component
      * @param  array<int, string>  $threadPosts
      * @param  array<int, array{isPoll: bool, options: array<int, string>, duration: int}>  $threadPolls
      * @param  array<int, string>  $pollOptions
+     * @param  array<int, array{path: string, originalName: string, target?: int|null}>  $images
      */
     #[On('thread.continue-in-modal')]
     public function continueInModal(
@@ -318,6 +320,8 @@ final class Create extends Component
         bool $isPoll = false,
         array $pollOptions = ['', ''],
         int $pollDuration = 1,
+        array $images = [],
+        ?string $sourceDraftKey = null,
     ): void {
         // Only the global modal instance accepts handed-over drafts.
         if ($this->customDraftKey !== 'post_modal') {
@@ -333,6 +337,26 @@ final class Create extends Component
         $this->isPoll = $isPoll;
         $this->pollOptions = $pollOptions;
         $this->pollDuration = $pollDuration;
+
+        if ($sourceDraftKey !== null && $sourceDraftKey !== $this->draftKey()) {
+            $sourceSessionKey = 'images.'.$sourceDraftKey;
+            $targetSessionKey = 'images.'.$this->draftKey();
+            $requestedPaths = collect($images)
+                ->pluck('path')
+                ->map(fn (mixed $path): string => is_string($path) ? $path : '')
+                ->filter()
+                ->map(fn (string $path): string => Str::after($path, '/images/') !== $path ? 'images/'.Str::after($path, '/images/') : $path)
+                ->values();
+            $sourcePaths = collect(session()->get($sourceSessionKey, []))
+                ->filter(fn (mixed $path): bool => is_string($path) && $requestedPaths->contains($path));
+
+            session()->put($targetSessionKey, collect(session()->get($targetSessionKey, []))
+                ->merge($sourcePaths)
+                ->unique()
+                ->values()
+                ->all());
+            session()->forget($sourceSessionKey);
+        }
 
         if ($threadPosts !== []) {
             $this->threadPosts = collect($threadPosts)

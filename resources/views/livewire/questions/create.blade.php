@@ -23,6 +23,7 @@
                 pollOptions = $event.detail.pollOptions;
                 pollDuration = $event.detail.pollDuration;
                 threadPolls = $event.detail.threadPolls;
+                images = $event.detail.images;
             }
         "
         x-data="{
@@ -118,6 +119,7 @@
                     ...poll,
                     options: [...poll.options],
                 }));
+                const images = this.images.map((image) => ({ ...image }));
 
                 if (content !== '' || threadPosts.length > 0) {
                     this.$wire.$errors.clear();
@@ -128,6 +130,8 @@
                         isPoll: Boolean(this.isPoll),
                         pollOptions: pollOptions,
                         pollDuration: this.pollDuration,
+                        images: images,
+                        sourceDraftKey: '{{ $this->draftKey }}',
                     });
                     window.dispatchEvent(new CustomEvent('post-modal-poll', {
                         detail: {
@@ -135,6 +139,7 @@
                             pollOptions: pollOptions,
                             pollDuration: this.pollDuration,
                             threadPolls: threadPolls,
+                            images: images,
                         },
                     }));
 
