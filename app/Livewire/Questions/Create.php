@@ -324,6 +324,8 @@ final class Create extends Component
             return;
         }
 
+        $this->resetValidation();
+
         if (filled($content)) {
             $this->content = $content;
         }

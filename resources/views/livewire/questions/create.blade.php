@@ -47,6 +47,7 @@
                     this.$wire.deleteImageAfterValidation(this.normalizePath(image.path));
                 });
 
+                this.$wire.resetValidation();
                 this.content = '';
                 this.threadPosts = [];
                 this.threadPolls = [];
@@ -112,6 +113,7 @@
                 }));
 
                 if (content !== '' || threadPosts.length > 0) {
+                    this.$wire.$errors.clear();
                     this.$wire.dispatch('thread.continue-in-modal', {
                         content: content,
                         threadPosts: threadPosts,
