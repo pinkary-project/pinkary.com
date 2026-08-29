@@ -44,6 +44,10 @@
                 this.removeErrors();
             },
             canAddPost() {
+                if (this.uploading) {
+                    return false;
+                }
+
                 if ((this.content || '').trim() === '') {
                     return false;
                 }
@@ -51,6 +55,10 @@
                 return (this.threadPosts || []).every((post) => (post || '').trim() !== '');
             },
             addPost() {
+                if (this.uploading) {
+                    return;
+                }
+
                 if (this.$wire.customDraftKey !== 'post_modal') {
                     this.continueToModal();
 
@@ -320,7 +328,11 @@
                             style="display: none"
                             x-on:click="addPost()"
                             :disabled="! canAddPost()"
-                            :title="canAddPost() ? 'Add another post' : 'Finish your current post first'"
+                            :title="uploading
+                                ? 'Wait for the image upload to finish'
+                                : canAddPost()
+                                  ? 'Add another post'
+                                  : 'Finish your current post first'"
                             class="group/add mt-1 flex w-full items-center gap-3 py-1 text-left transition disabled:cursor-not-allowed"
                             :class="{ 'opacity-40': ! canAddPost() }"
                         >
