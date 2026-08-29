@@ -47,7 +47,7 @@
                     this.$wire.deleteImageAfterValidation(this.normalizePath(image.path));
                 });
 
-                this.$wire.resetValidation();
+                this.$wire.$errors.clear();
                 this.content = '';
                 this.threadPosts = [];
                 this.threadPolls = [];
