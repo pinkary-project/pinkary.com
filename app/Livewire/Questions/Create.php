@@ -324,16 +324,23 @@ final class Create extends Component
         }
 
         // Treat whitespace-only rows as empty and keep each row's poll state aligned.
-        $threadEntries = collect($this->threadPosts)
-            ->map(fn (string $post, int $index): array => [
-                'content' => $post,
-                'poll' => $this->threadPolls[$index] ?? $this->emptyThreadPoll(),
-            ])
-            ->filter(fn (array $entry): bool => mb_trim($entry['content']) !== '')
-            ->values();
+        /** @var array<int, array{isPoll: bool, options: array<int, string>, duration: int}> $threadPolls */
+        $threadPolls = $this->threadPolls;
+        $threadPosts = [];
+        $normalizedThreadPolls = [];
 
-        $this->threadPosts = $threadEntries->pluck('content')->all();
-        $this->threadPolls = $threadEntries->pluck('poll')->all();
+        foreach ($this->threadPosts as $index => $post) {
+            if (mb_trim($post) === '') {
+                continue;
+            }
+
+            $threadPosts[] = $post;
+            $normalizedThreadPolls[] = $threadPolls[$index] ?? $this->emptyThreadPoll();
+        }
+
+        $this->threadPosts = $threadPosts;
+        $this->threadPolls = $normalizedThreadPolls;
+        $threadPolls = $normalizedThreadPolls;
 
         /** @var array<string, mixed> $validated */
         $validated = $this->validate($this->validationRules(), [
@@ -413,10 +420,10 @@ final class Create extends Component
         }
 
         $threadPollOptions = [];
-        foreach ($this->threadPolls as $index => $threadPoll) {
+        foreach ($threadPolls as $index => $threadPoll) {
             $threadPollOptions[$index] = $this->validatedPollOptions($threadPoll, "threadPolls.{$index}");
 
-            if (($threadPoll['isPoll'] ?? false) && $threadPollOptions[$index] === null) {
+            if ($threadPoll['isPoll'] && $threadPollOptions[$index] === null) {
                 return;
             }
         }
@@ -486,7 +493,11 @@ final class Create extends Component
         }
 
         foreach ($questions as $index => $createdQuestion) {
-            if ($index === 0 || empty($threadPollOptions[$index - 1])) {
+            if ($index === 0) {
+                continue;
+            }
+
+            if (empty($threadPollOptions[$index - 1])) {
                 continue;
             }
 
@@ -595,17 +606,20 @@ final class Create extends Component
             return null;
         }
 
-        $duration = (int) ($poll['duration'] ?? 0);
+        $durationValue = $poll['duration'] ?? null;
+        $duration = is_int($durationValue)
+            ? $durationValue
+            : (is_numeric($durationValue) ? (int) $durationValue : 0);
         if ($duration < 1 || $duration > 7) {
             $this->addError("{$attribute}.duration", 'Poll duration must be between 1 and 7 days.');
 
             return null;
         }
 
-        $options = array_map(
+        $options = array_values(array_map(
             static fn (mixed $option): string => is_string($option) ? $option : '',
             is_array($poll['options'] ?? null) ? $poll['options'] : [],
-        );
+        ));
 
         if (count($options) < 2 || count($options) > 4 || in_array('', array_map(mb_trim(...), $options), true)) {
             $this->addError("{$attribute}.options", 'Polls must have 2 to 4 non-empty options.');
@@ -791,6 +805,7 @@ final class Create extends Component
             return;
         }
 
+        /** @var array<int, mixed> $sourceImages */
         session()->put('images.'.$this->draftKey(), collect($this->getSessionImages())
             ->merge($sourceImages)
             ->filter(fn (mixed $path): bool => is_string($path))
