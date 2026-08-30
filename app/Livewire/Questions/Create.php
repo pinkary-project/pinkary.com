@@ -449,14 +449,18 @@ final class Create extends Component
         ];
 
         foreach ($threadPosts as $index => $postContent) {
+            $pollExpiresAt = null;
+
+            if ($this->threadPolls[$index]['isPoll'] ?? false) {
+                $pollExpiresAt = now()->addDays((int) $this->threadPolls[$index]['duration']);
+            }
+
             $payloads[] = [
                 'to_id' => $this->toId,
                 'content' => '__UPDATE__',
                 'answer' => $postContent,
                 'answer_created_at' => now(),
-                'poll_expires_at' => ($this->threadPolls[$index]['isPoll'] ?? false)
-                    ? now()->addDays((int) $this->threadPolls[$index]['duration'])
-                    : null,
+                'poll_expires_at' => $pollExpiresAt,
             ];
         }
 

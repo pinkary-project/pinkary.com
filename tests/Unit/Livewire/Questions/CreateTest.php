@@ -520,6 +520,72 @@ test('a poll can be included in a thread', function (): void {
     $component->assertDispatched('notification.created', message: 'Thread sent.');
 });
 
+test('rejects an invalid thread poll duration', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => true,
+            'options' => ['Yes', 'No'],
+            'duration' => 'invalid',
+        ]])
+        ->call('store')
+        ->assertHasErrors(['threadPolls.0.duration']);
+});
+
+test('accepts a non-poll thread post', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => false,
+            'options' => ['', ''],
+            'duration' => 1,
+        ]])
+        ->call('store')
+        ->assertHasNoErrors();
+
+    expect(Question::where('answer', 'Thread post')->exists())->toBeTrue();
+});
+
+test('rejects invalid thread poll options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => true,
+            'options' => ['Yes', ''],
+            'duration' => 1,
+        ]])
+        ->call('store')
+        ->assertHasErrors(['threadPolls.0.options']);
+});
+
+test('rejects oversized thread poll options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => true,
+            'options' => [str_repeat('x', 41), 'No'],
+            'duration' => 1,
+        ]])
+        ->call('store')
+        ->assertHasErrors(['threadPolls.0.options']);
+});
+
 test('transfers handed-off images when the modal post is stored', function (): void {
     $user = User::factory()->create();
     $path = 'images/2026-01-01/handed-off.png';
@@ -539,6 +605,68 @@ test('transfers handed-off images when the modal post is stored', function (): v
     expect(session('images.post_new'))->toBeNull()
         ->and(session('images.post_modal'))->toBeNull();
     Storage::disk(Create::IMAGE_DISK)->assertExists($path);
+});
+
+test('discards images handed off from another composer', function (): void {
+    $user = User::factory()->create();
+    $path = 'images/2026-01-01/discarded.png';
+    Storage::disk(Create::IMAGE_DISK)->put($path, 'image');
+    session(['images.post_new' => [$path]]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->set('imageSourceDraftKey', 'post_new')->call('discardSourceImages');
+
+    expect(session('images.post_new'))->toBeNull();
+    Storage::disk(Create::IMAGE_DISK)->assertMissing($path);
+});
+
+test('ignores a same-draft image discard request', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->set('imageSourceDraftKey', 'post_modal')->call('discardSourceImages');
+
+    $component->assertSet('imageSourceDraftKey', 'post_modal');
+});
+
+test('ignores an empty handed-off image session', function (): void {
+    $user = User::factory()->create();
+    session(['images.post_new' => []]);
+
+    Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+            'customDraftKey' => 'post_modal',
+        ])
+        ->set('content', 'Main post')
+        ->set('imageSourceDraftKey', 'post_new')
+        ->call('store');
+
+    expect(session('images.post_new'))->toBeEmpty();
+});
+
+test('ignores an invalid handed-off image session', function (): void {
+    $user = User::factory()->create();
+    session(['images.post_new' => 'invalid']);
+
+    Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+            'customDraftKey' => 'post_modal',
+        ])
+        ->set('content', 'Main post')
+        ->set('imageSourceDraftKey', 'post_new')
+        ->call('store');
+
+    expect(session('images.post_new'))->toBe('invalid');
 });
 
 test('inline composers retain their draft state without a modal handoff event', function (): void {
