@@ -273,7 +273,6 @@
                                         data-navigate-ignore="true"
                                         x-cloak
                                         x-data="copyUrl"
-                                        x-show="isVisible"
                                         x-on:click="
                                     copyToClipboard(
                                         '{{
@@ -285,6 +284,8 @@
                                     )
                                 "
                                         type="button"
+                                        aria-label="Copy link"
+                                        title="Copy link"
                                         class="{{ $shareMenuItemClasses }}"
                                     >
                                         <x-heroicon-o-link class="size-4" />
