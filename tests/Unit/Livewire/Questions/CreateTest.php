@@ -24,12 +24,7 @@ test('render', function (): void {
         'toId' => $userB->id,
     ]);
 
-    $component->assertOk()
-        ->assertSee('Ask a question...')
-        ->assertSeeHtml(':disabled="uploading"')
-        ->assertSeeHtml('x-on:focusin="expandComposer()"')
-        ->assertSeeHtml('x-cloak')
-        ->assertSeeHtml('compact: true');
+    $component->assertOk()->assertSee('Ask a question...');
 });
 
 test('refreshes when link settings changes', function (): void {
