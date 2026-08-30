@@ -139,17 +139,83 @@
             <x-icons.compose class="size-5" />
         </button>
 
-        <x-modal max-width="2xl" name="post-create" focusable x-on:question.created.window="close('post-create')">
-            <div class="p-4 sm:p-6">
-                <div class="mb-4 border-b border-slate-200/70 pb-3 dark:border-slate-800/40">
+        <x-modal
+            max-width="2xl"
+            name="post-create"
+            focusable
+            focus-target="last-thread-post"
+            x-on:question.created.window="
+                window.__postJustPublished = true;
+                close('post-create');
+            "
+        >
+            <div
+                class="flex max-h-[calc(100dvh-3rem)] flex-col"
+                x-init="
+                    $watch('show', (value) => {
+                        if (value || window.__postJustPublished) {
+                            window.__postJustPublished = false;
+
+                            return;
+                        }
+
+                        const composer = $el.querySelector('[data-post-composer]');
+
+                        if (! composer) {
+                            return;
+                        }
+
+                        const state = Alpine.$data(composer);
+
+                        if (! state.hasDraft()) {
+                            return;
+                        }
+
+                        $dispatch('open-modal', 'discard-post-draft');
+                    })
+                "
+            >
+                <div class="border-b border-slate-200/70 px-4 pt-4 pb-3 sm:px-6 sm:pt-6 dark:border-slate-800/40">
                     <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('Share an update') }}</h3>
                 </div>
 
-                <livewire:questions.create
-                    :to-id="auth()->id()"
-                    :custom-draft-key="'post_modal'"
-                    key="global-modal-create-post"
-                />
+                <div class="flex min-h-0 flex-1 flex-col px-4 pt-4 pb-4 sm:px-6 sm:pb-6">
+                    <livewire:questions.create
+                        :to-id="auth()->id()"
+                        :custom-draft-key="'post_modal'"
+                        key="global-modal-create-post"
+                    />
+                </div>
+            </div>
+        </x-modal>
+
+        <x-modal name="discard-post-draft" max-width="md" class="z-110">
+            <div class="p-8">
+                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">{{ __('Discard this post?') }}</h2>
+                <div class="mt-4 text-slate-500 dark:text-slate-400">
+                    <p>{{ __('Are you sure you want to discard this post? Your progress will be lost.') }}</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <x-secondary-button
+                        x-on:click="
+                            $dispatch('close-modal', 'discard-post-draft');
+                            $dispatch('open-modal', 'post-create');
+                        "
+                    >
+                        {{ __('Keep editing') }}
+                    </x-secondary-button>
+                    <x-primary-button
+                        x-on:click="
+                            const composer = document.querySelector('[data-post-composer][data-draft-key=post_modal]');
+                            if (composer) {
+                                Alpine.$data(composer).discardDraft();
+                            }
+                            $dispatch('close-modal', 'discard-post-draft');
+                        "
+                    >
+                        {{ __('Discard') }}
+                    </x-primary-button>
+                </div>
             </div>
         </x-modal>
     @endauth

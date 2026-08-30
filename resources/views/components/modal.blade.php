@@ -5,6 +5,7 @@
     'showCloseButton' => true,
     'closeButtonOutsideModal' => false,
     'shouldCenterModalContent' => false,
+    'focusTarget' => null,
 ])
 
 @php
@@ -25,6 +26,7 @@
     x-data="{
         show: @js($show),
         showCloseButton: @js($showCloseButton),
+        focusTarget: @js($focusTarget),
         focusables() {
             // All focusable element types...
             let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
@@ -33,7 +35,12 @@
                 .filter(el => ! el.hasAttribute('disabled'))
         },
         firstFocusable() {
-            return $el.querySelector('[autofocus]')
+            const requestedTarget = this.focusTarget === 'last-thread-post'
+                ? [...$el.querySelectorAll('[data-thread-post]')].at(-1)
+                : this.focusTarget ? $el.querySelector(this.focusTarget) : null
+
+            return requestedTarget
+                || $el.querySelector('[autofocus]')
                 || this.focusables().find(el => ['TEXTAREA', 'INPUT', 'SELECT'].includes(el.tagName))
                 || this.focusables()[0]
         },
@@ -56,7 +63,7 @@
         $watch('show', (value) => {
             if (value) {
                 document.body.classList.add('overflow-y-hidden')
-                {{ $attributes->has('focusable') ? 'setTimeout(() => firstFocusable().focus(), 100)' : '' }}
+                {{ $attributes->has('focusable') ? 'setTimeout(() => firstFocusable()?.focus(), 100)' : '' }}
             } else {
                 document.body.classList.remove('overflow-y-hidden')
             }
