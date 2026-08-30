@@ -143,6 +143,7 @@
             max-width="2xl"
             name="post-create"
             focusable
+            focus-target="last-thread-post"
             x-on:question.created.window="
                 window.__postJustPublished = true;
                 close('post-create');

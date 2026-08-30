@@ -71,10 +71,6 @@ const questionComposer = (config = {}) => ({
             this.$wire.$set('imageSourceDraftKey', event.detail.sourceDraftKey || null, false);
             this.ensureThreadPolls();
             this.resizeAllTextareas();
-
-            if (event.detail.focusNewPost) {
-                this.focusLastPost(150);
-            }
         });
     },
 
@@ -215,7 +211,6 @@ const questionComposer = (config = {}) => ({
                     threadPolls,
                     images,
                     sourceDraftKey: this.draftKey,
-                    focusNewPost: includeEmptyPost,
                 },
             }));
 
@@ -283,27 +278,17 @@ const questionComposer = (config = {}) => ({
         }
     },
 
-    focusLastPost(delay = 0) {
+    focusLastPost() {
         this.$nextTick(() => {
-            const focus = () => {
-                const textareas = this.$root.querySelectorAll('[data-thread-post]');
-                const last = textareas[textareas.length - 1];
+            const textareas = this.$root.querySelectorAll('[data-thread-post]');
+            const last = textareas[textareas.length - 1];
 
-                if (! last) {
-                    return;
-                }
-
-                last.focus();
-                last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            };
-
-            if (delay > 0) {
-                setTimeout(focus, delay);
-
+            if (! last) {
                 return;
             }
 
-            focus();
+            last.focus();
+            last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
     },
 });
