@@ -95,6 +95,7 @@
                                 </template>
                             </div>
                             <div
+                                x-cloak
                                 x-show="showSecondaryControls()"
                                 x-transition
                                 class="mt-1 flex items-center gap-1 px-3.5"
@@ -121,6 +122,7 @@
                                 </button>
                             </div>
                             <div
+                                x-cloak
                                 x-show="isPoll && showSecondaryControls()"
                                 class="mt-3 space-y-2 px-3.5"
                                 style="display: none"
@@ -378,6 +380,7 @@
 
                         <button
                             type="button"
+                            x-cloak
                             x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }} && showSecondaryControls()"
                             style="display: none"
                             x-on:click="addPost()"

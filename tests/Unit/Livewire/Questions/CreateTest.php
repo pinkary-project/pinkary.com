@@ -28,6 +28,7 @@ test('render', function (): void {
         ->assertSee('Ask a question...')
         ->assertSeeHtml(':disabled="uploading"')
         ->assertSeeHtml('x-on:focusin="expandComposer()"')
+        ->assertSeeHtml('x-cloak')
         ->assertSeeHtml('compact: true');
 });
 
