@@ -71,6 +71,10 @@ const questionComposer = (config = {}) => ({
             this.$wire.$set('imageSourceDraftKey', event.detail.sourceDraftKey || null, false);
             this.ensureThreadPolls();
             this.resizeAllTextareas();
+
+            if (event.detail.focusNewPost) {
+                this.focusLastPost();
+            }
         });
     },
 
@@ -151,7 +155,11 @@ const questionComposer = (config = {}) => ({
         }
 
         if (this.$wire.customDraftKey !== 'post_modal') {
-            this.continueToModal();
+            if (this.threadPosts.length < this.maxThreadPosts - 1) {
+                this.threadPosts.push('');
+                this.threadPolls.push(this.emptyThreadPoll());
+                this.continueToModal(true);
+            }
 
             return;
         }
@@ -183,9 +191,11 @@ const questionComposer = (config = {}) => ({
         });
     },
 
-    continueToModal() {
+    continueToModal(includeEmptyPost = false) {
         const content = (this.content || '').trim();
-        const threadPosts = (this.threadPosts || []).filter((post) => (post || '').trim() !== '');
+        const threadPosts = includeEmptyPost
+            ? [...this.threadPosts]
+            : (this.threadPosts || []).filter((post) => (post || '').trim() !== '');
         const pollOptions = [...this.pollOptions];
         const threadPolls = this.threadPolls.map((threadPoll) => ({
             ...threadPoll,
@@ -205,6 +215,7 @@ const questionComposer = (config = {}) => ({
                     threadPolls,
                     images,
                     sourceDraftKey: this.draftKey,
+                    focusNewPost: includeEmptyPost,
                 },
             }));
 
