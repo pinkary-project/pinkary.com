@@ -288,7 +288,7 @@
                                         title="Copy link"
                                         class="{{ $shareMenuItemClasses }}"
                                     >
-                                        <x-heroicon-o-link class="size-4" />
+                                        <x-heroicon-o-clipboard-document class="size-4" />
                                     </button>
                                     <button
                                         data-navigate-ignore="true"
@@ -307,7 +307,7 @@
                                 "
                                         class="{{ $shareMenuItemClasses }}"
                                     >
-                                        <x-heroicon-o-link class="size-4" />
+                                        <x-heroicon-o-share class="size-4" />
                                     </button>
                                     <button
                                         data-navigate-ignore="true"
