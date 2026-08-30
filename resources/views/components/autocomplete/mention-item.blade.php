@@ -1,6 +1,4 @@
-@php
-    /** @var \App\Services\Autocomplete\Result $result */
-@endphp
+@props(['result'])
 <div class="flex items-center justify-between">
     <div class="flex items-center gap-3">
         <figure class="{{ $result->payload['isCompanyVerified'] ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 dark:bg-slate-800 bg-slate-50">

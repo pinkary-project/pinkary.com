@@ -529,7 +529,14 @@ final class Create extends Component
             default => 'Question sent.'
         };
 
-        $this->dispatch('notification.created', message: $message);
+        if ($this->isSharingUpdate) {
+            $this->dispatch('notification.created', message: $message, url: route('questions.show', [
+                'username' => $question->to->username,
+                'question' => $question,
+            ]), actionText: 'View update');
+        } else {
+            $this->dispatch('notification.created', message: $message);
+        }
 
         if (filled($this->parentId)) {
             $this->js(<<<'JS'
