@@ -71,6 +71,7 @@ const questionComposer = (config = {}) => ({
             this.$wire.$set('imageSourceDraftKey', event.detail.sourceDraftKey || null, false);
             this.ensureThreadPolls();
             this.resizeAllTextareas();
+            this.scrollComposerToBottom();
         });
     },
 
@@ -169,6 +170,7 @@ const questionComposer = (config = {}) => ({
         if (this.threadPosts.length < this.maxThreadPosts - 1) {
             this.threadPosts.push('');
             this.threadPolls.push(this.emptyThreadPoll());
+            this.scrollComposerToBottom();
             this.focusLastPost();
         }
     },
@@ -184,6 +186,17 @@ const questionComposer = (config = {}) => ({
             const textareas = this.$root.querySelectorAll('[data-thread-post]');
             const index = (this.threadPosts || []).findIndex((post) => (post || '').trim() === '');
             textareas[index]?.focus();
+        });
+    },
+
+    scrollComposerToBottom() {
+        this.$nextTick(() => {
+            requestAnimationFrame(() => {
+                this.$refs.composerScroll?.scrollTo({
+                    top: this.$refs.composerScroll.scrollHeight,
+                    behavior: 'smooth',
+                });
+            });
         });
     },
 

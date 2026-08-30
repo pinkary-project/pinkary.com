@@ -21,7 +21,7 @@
         x-on:focusin="expandComposer()"
         class="{{ $isModalComposer ? 'flex min-h-0 flex-1 flex-col' : '' }} pb-0"
     >
-        <div class="{{ $isModalComposer ? 'min-h-0 flex-1 overflow-y-auto' : '' }}">
+        <div x-ref="composerScroll" class="{{ $isModalComposer ? 'min-h-0 flex-1 overflow-y-auto' : '' }}">
             <div class="min-w-0">
                 <div class="group/menu relative">
                     <div class="group/main flex gap-3">
