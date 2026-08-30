@@ -43,16 +43,16 @@
     padding-right: 1rem;
 }
 
-.answer img,
-.answer figure,
+.answer > p img,
+.answer > p figure,
 .answer p > a:has(img) {
     @apply w-full rounded-xl overflow-hidden;
     display: block;
     margin-top: 0.35rem;
 }
 
-.answer img:first-child,
-.answer figure:first-child,
+.answer > p img:first-child,
+.answer > p figure:first-child,
 .answer p > a:has(img):first-child {
     margin-top: 0;
 }

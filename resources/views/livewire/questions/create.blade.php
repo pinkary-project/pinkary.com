@@ -1,5 +1,5 @@
 <div
-    class="{{ $this->customDraftKey === 'post_modal' ? 'flex min-h-0 flex-1 flex-col' : '' }}"
+    class="relative {{ $this->customDraftKey === 'post_modal' ? 'flex min-h-0 flex-1 flex-col' : '' }}"
     id="questions-create-{{ $this->getId() }}"
 >
     @php
@@ -43,6 +43,7 @@
                         <div class="min-w-0 flex-1 p-0">
                             <x-textarea
                                 x-model="content"
+                                id="mention-main-{{ $this->getId() }}"
                                 placeholder="{{ $this->placeholder }}"
                                 maxlength="{{ $this->maxContentLength }}"
                                 rows="1"
@@ -222,6 +223,9 @@
                                         <x-textarea
                                             x-model="threadPosts[index]"
                                             data-thread-post
+                                            ::id="`mention-thread-${index}-{{ $this->getId() }}`"
+                                            x-data="usesDynamicAutocomplete('mention-main-{{ $this->getId() }}')"
+                                            x-bind="autocompleteInputBindings"
                                             placeholder="Say more..."
                                             maxlength="{{ $this->maxContentLength }}"
                                             rows="1"

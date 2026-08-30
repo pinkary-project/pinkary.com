@@ -82,6 +82,25 @@ test('autocompleteResults computed property returns correct data', function (): 
         ->and($result->first()->id)->toBe($user->id);
 });
 
+test('autocomplete renders all matching mention results', function (): void {
+    App\Models\User::factory()->create([
+        'username' => 'maria',
+        'name' => 'Maria',
+        'email_verified_at' => now(),
+    ]);
+    App\Models\User::factory()->create([
+        'username' => 'matt',
+        'name' => 'Matt',
+        'email_verified_at' => now(),
+    ]);
+
+    $component = Livewire::test(Autocomplete::class);
+    $component->set('matchedTypes', ['mentions']);
+    $component->set('query', 'ma');
+
+    $component->assertSeeInOrder(['Maria', 'Matt']);
+});
+
 test('autocompleteResults returns empty collection when no matched types are set', function (): void {
     $component = Livewire::test(Autocomplete::class);
 
