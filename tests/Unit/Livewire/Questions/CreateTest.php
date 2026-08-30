@@ -26,7 +26,9 @@ test('render', function (): void {
 
     $component->assertOk()
         ->assertSee('Ask a question...')
-        ->assertSeeHtml(':disabled="uploading"');
+        ->assertSeeHtml(':disabled="uploading"')
+        ->assertSeeHtml('x-on:focusin="expandComposer()"')
+        ->assertSeeHtml('compact: true');
 });
 
 test('refreshes when link settings changes', function (): void {

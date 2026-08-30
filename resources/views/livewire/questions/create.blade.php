@@ -17,7 +17,8 @@
         wire:keydown.ctrl.enter="store"
         data-post-composer
         data-draft-key="{{ $this->draftKey }}"
-        x-data="questionComposer({ draftKey: '{{ $this->draftKey }}', maxThreadPosts: {{ $this->maxThreadPosts }}, uploadLimit: {{ $this->uploadLimit }}, maxFileSize: {{ $this->maxFileSize }}, maxContentLength: {{ $this->maxContentLength }} })"
+        x-data="questionComposer({ draftKey: '{{ $this->draftKey }}', maxThreadPosts: {{ $this->maxThreadPosts }}, uploadLimit: {{ $this->uploadLimit }}, maxFileSize: {{ $this->maxFileSize }}, maxContentLength: {{ $this->maxContentLength }}, compact: {{ $isModalComposer ? 'false' : 'true' }} })"
+        x-on:focusin="expandComposer()"
         class="{{ $isModalComposer ? 'flex min-h-0 flex-1 flex-col' : '' }} pb-0"
     >
         <div class="{{ $isModalComposer ? 'min-h-0 flex-1 overflow-y-auto' : '' }}">
@@ -93,7 +94,11 @@
                                     </div>
                                 </template>
                             </div>
-                            <div class="mt-1 flex items-center gap-1 px-3.5">
+                            <div
+                                x-show="showSecondaryControls()"
+                                x-transition
+                                class="mt-1 flex items-center gap-1 px-3.5"
+                            >
                                 <button
                                     type="button"
                                     title="Upload an image"
@@ -115,7 +120,11 @@
                                     <x-heroicon-o-chart-bar class="size-4" />
                                 </button>
                             </div>
-                            <div x-show="isPoll" class="mt-3 space-y-2 px-3.5" style="display: none">
+                            <div
+                                x-show="isPoll && showSecondaryControls()"
+                                class="mt-3 space-y-2 px-3.5"
+                                style="display: none"
+                            >
                                 <template x-for="(option, index) in pollOptions" :key="index">
                                     <div class="flex items-center gap-2">
                                         <span class="size-3.5 shrink-0 rounded-full border border-slate-400 dark:border-slate-600"></span>
@@ -369,7 +378,7 @@
 
                         <button
                             type="button"
-                            x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }}"
+                            x-show="threadPosts.length < {{ $this->maxThreadPosts - 1 }} && showSecondaryControls()"
                             style="display: none"
                             x-on:click="addPost()"
                             :disabled="! canAddPost()"

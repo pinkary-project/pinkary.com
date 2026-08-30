@@ -7,6 +7,8 @@ const questionComposer = (config = {}) => ({
     ...poll(),
     draftKey: config.draftKey,
     maxThreadPosts: config.maxThreadPosts,
+    compactComposer: config.compact === true,
+    hasInteracted: false,
     content: '',
     threadPosts: [],
     threadPolls: [],
@@ -30,6 +32,7 @@ const questionComposer = (config = {}) => ({
         this.uploadLimit = config.uploadLimit;
         this.maxFileSize = config.maxFileSize;
         this.maxContentLength = config.maxContentLength;
+        this.hasInteracted = !this.compactComposer || this.hasDraft();
 
         imageUpload().init.call(this);
         poll().init.call(this);
@@ -41,6 +44,7 @@ const questionComposer = (config = {}) => ({
             this.threadPosts = [];
             this.threadPolls = [];
             this.images = [];
+            this.hasInteracted = !this.compactComposer;
             this.$wire.$errors.clear();
         });
 
@@ -98,6 +102,18 @@ const questionComposer = (config = {}) => ({
         }
 
         return (this.threadPosts || []).some((post) => (post || '').trim() !== '');
+    },
+
+    expandComposer() {
+        this.hasInteracted = true;
+    },
+
+    showSecondaryControls() {
+        return !this.compactComposer
+            || this.hasInteracted
+            || this.hasDraft()
+            || this.images.length > 0
+            || this.isPoll;
     },
 
     discardDraft() {
