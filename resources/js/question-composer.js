@@ -73,7 +73,7 @@ const questionComposer = (config = {}) => ({
             this.resizeAllTextareas();
 
             if (event.detail.focusNewPost) {
-                this.focusLastPost();
+                this.focusLastPost(150);
             }
         });
     },
@@ -283,17 +283,27 @@ const questionComposer = (config = {}) => ({
         }
     },
 
-    focusLastPost() {
+    focusLastPost(delay = 0) {
         this.$nextTick(() => {
-            const textareas = this.$root.querySelectorAll('[data-thread-post]');
-            const last = textareas[textareas.length - 1];
+            const focus = () => {
+                const textareas = this.$root.querySelectorAll('[data-thread-post]');
+                const last = textareas[textareas.length - 1];
 
-            if (! last) {
+                if (! last) {
+                    return;
+                }
+
+                last.focus();
+                last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            };
+
+            if (delay > 0) {
+                setTimeout(focus, delay);
+
                 return;
             }
 
-            last.focus();
-            last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            focus();
         });
     },
 });
