@@ -32,10 +32,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Cache Dependencies
+      - name: Cache Dependencies PHP
+        id: php-cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
         with:
-          path: ~/.composer/cache/files
+          path: vendor
           key: dependencies-php-composer-${{ hashFiles('composer.lock') }}
 
       - name: Setup PHP
@@ -57,6 +58,7 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Install PHP dependencies
+        if: steps.php-cache.outputs.cache-hit != 'true'
         run: composer install --no-interaction --no-progress --ansi
 
       - name: Get NPM cache directory
