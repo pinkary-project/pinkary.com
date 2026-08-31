@@ -13,7 +13,7 @@ final readonly class Git
      */
     public function getLatestTag(): string
     {
-        return trim(
+        return mb_trim(
             Process::path(base_path())->run(['git', 'describe', '--tags', '--abbrev=0'])->output(),
         );
     }

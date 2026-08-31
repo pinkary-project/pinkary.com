@@ -6,7 +6,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Notifications\UserMentioned;
 
-test('to database', function () {
+test('to database', function (): void {
     $user = User::factory()->create([
         'username' => 'johndoe',
     ]);

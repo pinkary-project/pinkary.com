@@ -1,2 +1,72 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# AI crawler opt-out (these agents scrape content for training)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Perplexity-User
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: AI2Bot
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: Kangaroo Bot
+Disallow: /
+
+User-agent: Seekr
+Disallow: /
+
+User-agent: Timpibot
+Disallow: /
+
+User-agent: VelenPublicWebCrawler
+Disallow: /
+
+User-agent: Webzio-Extended
+Disallow: /
+
+User-agent: YouBot
+Disallow: /

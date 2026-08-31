@@ -4,8 +4,6 @@
 
 ------
 
-> Telegram group: **[pinkary.com/telegram »](https://pinkary.com/telegram)**.
-
 **Welcome to Pinkary!** Pinkary is a landing page for all your links and a place to connect with like-minded individuals without the noise.
 
 Initially, it was created to help people share their links in a more organized way. In just 15 hours, we went from `composer create-project` to production, and after 24 hours, we reached over 1,000 users.
@@ -14,18 +12,16 @@ The source code still shows some signs of the rush; that's why we think **it's i
 
 Over time, we've managed to add more features, such as feed, explore, questions, likes, and more. We've also improved the design, added tests, and improved the overall quality of the code. There is still a lot to do, but most importantly, there is a huge opportunity to make this a **community-driven project**.
 
-- Telegram group: **[pinkary.com/telegram »](https://pinkary.com/telegram)**
-- Follow us on X at **[@PinkaryProject »](https://x.com/PinkaryProject)**
 - Wish to contribute? Here is how:
 
 ## Installation
 
-Pinkary is a regular Laravel application; it's build on top of Laravel 11 and uses Livewire / Tailwind CSS for the frontend. If you are familiar with Laravel, you should feel right at home.
+Pinkary is a regular Laravel application built on Laravel 13 and uses Livewire v4 / Tailwind CSS v4 for the frontend. If you are familiar with Laravel, you should feel right at home.
 
 In terms of local development, you can use the following requirements:
 
-- PHP 8.3 - with SQLite, GD, and other common extensions.
-- Node.js 16 or more recent.
+- PHP 8.4 - with MySQL, GD, and other common extensions.
+- Node.js 22 or more recent.
 
 If you have these requirements, you can start by cloning the repository and installing the dependencies:
 
@@ -39,7 +35,17 @@ git checkout -b feat/your-feature # or fix/your-fix
 
 > **Don't push directly to the `main` branch**. Instead, create a new branch and push it to your branch.
 
-Next, install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
+Two ways to set up the project:
+
+### Automated Setup
+
+```bash
+composer setup
+```
+
+### Manual Setup
+
+Install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
 
 ```bash
 composer install
@@ -55,11 +61,9 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Prepare your database and run the migrations:
+Prepare your MySQL database connection and run the migrations:
 
 ```bash
-touch database/database.sqlite
-
 php artisan migrate
 ```
 
@@ -69,13 +73,17 @@ Link the storage to the public folder:
 php artisan storage:link
 ```
 
-In a **separate terminal**, build the assets in watch mode:
+### Running the Project
+
+Regardless of which setup path you chose, run these in **separate terminals**.
+
+Build the assets in watch mode:
 
 ```bash
 npm run dev
 ```
 
-Also in a **separate terminal**, run the queue worker:
+Run the queue worker:
 
 ```bash
 php artisan queue:work
@@ -136,11 +144,9 @@ Pull requests that don't pass the test suite will not be merged. So, as suggeste
 
 ## Production
 
-Pinkary is hosted on [DigitalOcean](https://www.digitalocean.com) and uses [Laravel Forge](https://forge.laravel.com) to manage the server and deployments. The server is running on Ubuntu 22.04 (LTS) x64 and is a 2 vCPUs 2GB / 25GB Disk droplet.
+Pinkary is Hosted on Laravel Cloud with MySQL as the primary database and S3-compatible object storage for uploaded files.
 
-The only service we use is [Mailcoach](https://mailcoach.app) to manage the send emails. Besides that, SQLite is used as database driver, sessions driver, queue driver, cache driver, etc.
-
-Server backups are done daily by Digital Ocean.
+The only service we use is [Mailcoach](https://mailcoach.app) to manage the send emails. Besides that, MySQL is used as database driver, sessions driver, queue driver, cache driver, etc.
 
 ---
 

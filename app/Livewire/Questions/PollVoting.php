@@ -1,0 +1,120 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Livewire\Questions;
+
+use App\Livewire\Concerns\NeedsVerifiedEmail;
+use App\Models\PollOption;
+use App\Models\PollVote;
+use App\Models\Question;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Livewire\Attributes\Locked;
+use Livewire\Component;
+
+final class PollVoting extends Component
+{
+    use NeedsVerifiedEmail;
+
+    /**
+     * The question ID.
+     */
+    #[Locked]
+    public string $questionId;
+
+    /**
+     * Vote for a poll option.
+     */
+    public function vote(int $pollOptionId, #[CurrentUser] ?User $user): void
+    {
+        if (! $user instanceof User) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        if ($question->isPollExpired()) {
+            $this->addError('poll', 'This poll has expired and voting is no longer allowed.');
+
+            return;
+        }
+
+        $pollOption = PollOption::where('question_id', $question->id)
+            ->findOrFail($pollOptionId);
+
+        DB::transaction(function () use ($user, $question, $pollOption, $pollOptionId): void {
+            /** @var PollVote|null $existingVote */
+            $existingVote = PollVote::query()
+                ->where('user_id', $user->id)
+                ->where('question_id', $question->id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($existingVote !== null) {
+                $existingVote->pollOption->decrement('votes_count');
+                $existingVote->delete();
+
+                if ($existingVote->poll_option_id === $pollOptionId) {
+                    return;
+                }
+            }
+
+            try {
+                PollVote::create([
+                    'user_id' => $user->id,
+                    'poll_option_id' => $pollOptionId,
+                    'question_id' => $question->id,
+                ]);
+            } catch (UniqueConstraintViolationException) {
+                // A concurrent first-time vote won the race; the vote
+                // already exists, so treat this request as idempotent.
+                return;
+            }
+
+            $pollOption->increment('votes_count');
+        });
+
+        $this->dispatch('poll.voted');
+    }
+
+    /**
+     * Render the component.
+     */
+    public function render(): View
+    {
+        $question = Question::with(['pollOptions' => function (Builder|HasMany $query): void {
+            $query->orderBy('id');
+        }])->findOrFail($this->questionId);
+
+        $userVote = null;
+        if (auth()->check()) {
+            $userVote = PollVote::query()
+                ->where('user_id', (int) auth()->id())
+                ->where('question_id', $question->id)
+                ->first();
+        }
+
+        $totalVotes = $question->pollOptions->sum('votes_count');
+
+        return view('livewire.questions.poll-voting', [
+            'question' => $question,
+            'pollOptions' => $question->pollOptions,
+            'userVote' => $userVote,
+            'totalVotes' => $totalVotes,
+            'isPollExpired' => $question->isPollExpired(),
+            'timeRemaining' => $question->getPollTimeRemaining(),
+        ]);
+    }
+}

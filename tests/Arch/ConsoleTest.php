@@ -1,11 +1,12 @@
 <?php
 
 declare(strict_types=1);
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 
 arch('commands')
     ->expect('App\Console\Commands')
-    ->toExtend('Illuminate\Console\Command')
+    ->toExtend(Illuminate\Console\Command::class)
     ->toHaveSuffix('Command')
     ->toHaveMethod('handle')
-    ->toImplementNothing()
+    ->toOnlyImplement(SignalableCommandInterface::class)
     ->not->toBeUsed();

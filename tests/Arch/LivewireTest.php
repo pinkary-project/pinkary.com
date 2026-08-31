@@ -6,14 +6,14 @@ arch('livewire components')
     ->expect('App\Livewire')
     ->toBeClasses()
     ->ignoring('App\Livewire\Concerns')
-    ->toExtend('Livewire\Component')
+    ->toExtend(Livewire\Component::class)
     ->ignoring('App\Livewire\Concerns')
     ->toHaveMethod('render')
     ->ignoring('App\Livewire\Concerns')
     ->toOnlyBeUsedIn([
         'App\Http\Controllers',
         'App\Http\Livewire',
-        'App\Providers\AppServiceProvider',
+        App\Providers\AppServiceProvider::class,
     ])
     ->ignoring('App\Livewire\Concerns')
     ->not->toUse(['redirect', 'to_route', 'back']);

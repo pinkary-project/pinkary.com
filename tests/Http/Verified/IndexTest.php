@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use Illuminate\Support\Facades\Process;
 
-it('guest', function () {
+it('guest', function (): void {
     $response = $this->get('/verified');
 
     $response
@@ -14,7 +14,7 @@ it('guest', function () {
         ->assertSee('Become a trusted user');
 });
 
-it('auth', function () {
+it('auth', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get('/verified');
@@ -25,7 +25,7 @@ it('auth', function () {
         ->assertSee('Become a trusted user');
 });
 
-it('displays login button', function () {
+it('displays login button', function (): void {
     $response = $this->get('/verified');
 
     $response
@@ -34,7 +34,7 @@ it('displays login button', function () {
         ->assertDontSee('Your Profile');
 });
 
-it('displays "Your Profile" when logged in', function () {
+it('displays "Your Profile" when logged in', function (): void {
     $user = User::factory()->create();
 
     $this->actingAs($user);
@@ -47,7 +47,7 @@ it('displays "Your Profile" when logged in', function () {
         ->assertDontSee('Log In');
 });
 
-it('displays "Get Verified" when logged in and not verified', function () {
+it('displays "Get Verified" when logged in and not verified', function (): void {
     $user = User::factory()->create();
 
     $this->actingAs($user);
@@ -59,7 +59,7 @@ it('displays "Get Verified" when logged in and not verified', function () {
         ->assertSee('Get Verified');
 });
 
-it('displays "Manage Verified Badge" when logged in and is verified', function () {
+it('displays "Manage Verified Badge" when logged in and is verified', function (): void {
     $user = User::factory()->create([
         'is_verified' => true,
     ]);
@@ -73,7 +73,7 @@ it('displays "Manage Verified Badge" when logged in and is verified', function (
         ->assertSee('Manage Verified Badge');
 });
 
-it('displays terms of service and privacy policy', function () {
+it('displays terms of service and privacy policy', function (): void {
     $response = $this->get('/verified');
 
     $response
@@ -85,7 +85,7 @@ it('displays terms of service and privacy policy', function () {
         ->assertSee('Brand');
 });
 
-it('displays the current version of the app', function () {
+it('displays the current version of the app', function (): void {
     Process::fake([
         '*' => Process::result(
             output: "v1.0.0\n",

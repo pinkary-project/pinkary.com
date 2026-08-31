@@ -15,7 +15,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables\Table;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
@@ -32,6 +32,7 @@ final class CitadelPanelProvider extends PanelProvider
             ->default()
             ->id('citadel')
             ->path('citadel')
+            ->viteTheme('resources/css/filament/citadel/theme.css')
             ->homeUrl(fn (): string => route('home.feed'))
             ->spa()
             ->pages([
@@ -55,7 +56,7 @@ final class CitadelPanelProvider extends PanelProvider
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
+                PreventRequestForgery::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,

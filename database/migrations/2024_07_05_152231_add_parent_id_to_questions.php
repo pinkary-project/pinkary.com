@@ -14,7 +14,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('questions', function (Blueprint $table): void {
-            $table->foreignId('parent_id')->nullable()->after('id');
+            $table->foreignUuid('parent_id')
+                ->nullable()
+                ->after('id')
+                ->constrained('questions')
+                ->cascadeOnDelete();
         });
     }
 };

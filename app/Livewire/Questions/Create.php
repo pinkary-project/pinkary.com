@@ -10,22 +10,29 @@ use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
 use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Imagick;
+use Intervention\Image\Drivers;
+use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 /**
  * @property-read bool $isSharingUpdate
+ * @property-read bool $canThread
  * @property-read int $maxContentLength
+ * @property-read int $maxThreadPosts
+ * @property-read int $needsCaptcha
+ * @property-read string $turnstileId
  */
 final class Create extends Component
 {
@@ -35,7 +42,12 @@ final class Create extends Component
     /**
      * The disk to store the images.
      */
-    private const string IMAGE_DISK = 'public';
+    public const ?string IMAGE_DISK = null;
+
+    /**
+     * Max number of posts allowed in a thread.
+     */
+    public const int MAX_THREAD_POSTS = 10;
 
     /**
      * Max number of images allowed.
@@ -62,9 +74,29 @@ final class Create extends Component
     public ?string $parentId = null;
 
     /**
+     * Optional custom draft key.
+     */
+    #[Locked]
+    public ?string $customDraftKey = null;
+
+    /**
      * The component's content.
      */
     public string $content = '';
+
+    /**
+     * Additional posts forming a thread, published together with the main post.
+     *
+     * @var array<int, string>
+     */
+    public array $threadPosts = [];
+
+    /**
+     * Poll state for each additional thread post.
+     *
+     * @var array<int, array{isPoll: bool, options: array<int, string>, duration: int}>
+     */
+    public array $threadPolls = [];
 
     /**
      * Uploaded images.
@@ -74,9 +106,36 @@ final class Create extends Component
     public array $images = [];
 
     /**
+     * Draft key containing images handed off to this composer.
+     */
+    public ?string $imageSourceDraftKey = null;
+
+    /**
      * The component's anonymously state.
      */
     public bool $anonymously = true;
+
+    /**
+     * Whether this is a poll.
+     */
+    public bool $isPoll = false;
+
+    /**
+     * The turnstile response from the client (bound via wire:model).
+     */
+    public ?string $cfTurnstileResponse = null;
+
+    /**
+     * Poll options.
+     *
+     * @var array<int, string>
+     */
+    public array $pollOptions = ['', ''];
+
+    /**
+     * Poll duration in days.
+     */
+    public int $pollDuration = 1;
 
     /**
      * The updated lifecycle hook.
@@ -146,11 +205,9 @@ final class Create extends Component
     /**
      * Mount the component.
      */
-    public function mount(Request $request): void
+    public function mount(#[CurrentUser] ?User $user): void
     {
-        if (auth()->check()) {
-            $user = type($request->user())->as(User::class);
-
+        if ($user instanceof User) {
             $this->anonymously = $user->prefers_anonymous_questions;
         }
     }
@@ -162,6 +219,24 @@ final class Create extends Component
     public function isSharingUpdate(): bool
     {
         return $this->toId === auth()->id();
+    }
+
+    /**
+     * Determine if the composer can publish a thread of multiple posts.
+     */
+    #[Computed]
+    public function canThread(): bool
+    {
+        return filled($this->parentId) === false && $this->isSharingUpdate;
+    }
+
+    /**
+     * Get the maximum number of posts a thread can contain.
+     */
+    #[Computed]
+    public function maxThreadPosts(): int
+    {
+        return self::MAX_THREAD_POSTS;
     }
 
     /**
@@ -192,9 +267,33 @@ final class Create extends Component
     #[Computed]
     public function draftKey(): string
     {
+        if ($this->customDraftKey !== null) {
+            return $this->customDraftKey;
+        }
+
         return filled($this->parentId)
             ? "reply_{$this->parentId}"
             : 'post_new';
+    }
+
+    /**
+     * Get the captcha widget ID, restricted to the characters allowed by Turnstile.
+     */
+    #[Computed]
+    public function turnstileId(): string
+    {
+        $id = $this->draftKey().'_turnstile_'.($this->toId ?? 'global');
+
+        return (string) preg_replace('/[^A-Za-z0-9_]/', '_', $id);
+    }
+
+    /**
+     * Whether the current acting user should be shown a captcha.
+     */
+    #[Computed]
+    public function needsCaptcha(): bool
+    {
+        return app()->isProduction() && (int) auth()->user()?->followers()->count() === 0;
     }
 
     /**
@@ -212,9 +311,9 @@ final class Create extends Component
     /**
      * Stores a new question.
      */
-    public function store(Request $request): void
+    public function store(#[CurrentUser] ?User $user): void
     {
-        if (! auth()->check()) {
+        if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -224,7 +323,45 @@ final class Create extends Component
             return;
         }
 
-        $user = type($request->user())->as(User::class);
+        // Treat whitespace-only rows as empty and keep each row's poll state aligned.
+        /** @var array<int, array{isPoll: bool, options: array<int, string>, duration: int}> $threadPolls */
+        $threadPolls = $this->threadPolls;
+        $threadPosts = [];
+        $normalizedThreadPolls = [];
+
+        foreach ($this->threadPosts as $index => $post) {
+            if (mb_trim($post) === '') {
+                continue;
+            }
+
+            $threadPosts[] = $post;
+            $normalizedThreadPolls[] = $threadPolls[$index] ?? $this->emptyThreadPoll();
+        }
+
+        $this->threadPosts = $threadPosts;
+        $this->threadPolls = $normalizedThreadPolls;
+        $threadPolls = $normalizedThreadPolls;
+
+        /** @var array<string, mixed> $validated */
+        $validated = $this->validate($this->validationRules(), [
+            'threadPosts.max' => __('A thread can have a maximum of :max extra posts.'),
+            'threadPosts.*.min' => __('Each post must be at least 1 character.'),
+            'threadPosts.*.max' => __('A post may not be greater than :max characters.'),
+        ]);
+
+        // Require captcha for users with zero followers (bot protection).
+        if ($this->needsCaptcha) {
+            $this->validate([
+                'cfTurnstileResponse' => ['required', app(Turnstile::class)],
+            ], [
+                'cfTurnstileResponse.required' => __('The reCAPTCHA is required.'),
+            ]);
+        }
+
+        $threadPosts = $this->canThread ? collect($this->threadPosts) : collect();
+
+        // The thread posts are not a database column on questions.
+        unset($validated['threadPosts']);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
             $this->addError('content', 'You can only send 3 questions per minute.');
@@ -232,17 +369,64 @@ final class Create extends Component
             return;
         }
 
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
+        // Each post of a thread counts towards the daily limit.
+        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() + 1 + $threadPosts->count() > 30) {
             $this->addError('content', 'You can only send 30 questions per day.');
 
             return;
         }
 
-        /** @var array<string, mixed> $validated */
-        $validated = $this->validate([
-            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
-        ]);
+        if ($this->isPoll) {
+            $this->validate([
+                'pollDuration' => ['required', 'integer', 'min:1', 'max:7'],
+            ]);
+
+            /** @var array<int, string> $validOptions */
+            $validOptions = array_filter($this->pollOptions, fn (string $option): bool => mb_trim($option) !== '');
+
+            $hasEmptyOptions = false;
+            foreach ($this->pollOptions as $option) {
+                if (mb_trim($option) === '') {
+                    $hasEmptyOptions = true;
+                    break;
+                }
+            }
+
+            if ($hasEmptyOptions) {
+                $this->addError('pollOptions', 'All poll options are required.');
+
+                return;
+            }
+
+            foreach ($this->pollOptions as $option) {
+                if (mb_strlen($option) > 40) {
+                    $this->addError('pollOptions', 'Poll options cannot exceed 40 characters.');
+
+                    return;
+                }
+            }
+
+            if (count($validOptions) < 2) {
+                $this->addError('pollOptions', 'A poll must have at least 2 options.');
+
+                return;
+            }
+
+            if (count($validOptions) > 4) {
+                $this->addError('pollOptions', 'A poll can have maximum 4 options.');
+
+                return;
+            }
+        }
+
+        $threadPollOptions = [];
+        foreach ($threadPolls as $index => $threadPoll) {
+            $threadPollOptions[$index] = $this->validatedPollOptions($threadPoll, "threadPolls.{$index}");
+
+            if ($threadPoll['isPoll'] && $threadPollOptions[$index] === null) {
+                return;
+            }
+        }
 
         if ($this->isSharingUpdate) {
             $validated['answer_created_at'] = now();
@@ -255,26 +439,104 @@ final class Create extends Component
             $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
-        $user->questionsSent()->create([
-            ...$validated,
-            'to_id' => $this->toId,
-        ]);
+        /** @var array<int, array<string, mixed>> $payloads */
+        $payloads = [
+            [
+                ...$validated,
+                'to_id' => $this->toId,
+                'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
+            ],
+        ];
 
+        foreach ($threadPosts as $index => $postContent) {
+            $pollExpiresAt = null;
+
+            if ($this->threadPolls[$index]['isPoll'] ?? false) {
+                $pollExpiresAt = now()->addDays((int) $this->threadPolls[$index]['duration']);
+            }
+
+            $payloads[] = [
+                'to_id' => $this->toId,
+                'content' => '__UPDATE__',
+                'answer' => $postContent,
+                'answer_created_at' => now(),
+                'poll_expires_at' => $pollExpiresAt,
+            ];
+        }
+
+        /** @var array<int, Question> $questions */
+        $questions = DB::transaction(function () use ($user, $payloads): array {
+            /** @var array<int, Question> $created */
+            $created = [];
+
+            foreach ($payloads as $index => $payload) {
+                if ($index > 0) {
+                    $payload['parent_id'] = $created[$index - 1]->id;
+                    $payload['root_id'] = $created[0]->id;
+                }
+
+                $created[$index] = $user->questionsSent()->create($payload);
+            }
+
+            return $created;
+        });
+
+        $question = $questions[0];
+
+        if ($this->isPoll) {
+            $options = [];
+
+            foreach ($validOptions as $optionText) {
+                $options[] = [
+                    'text' => mb_trim($optionText),
+                    'votes_count' => 0,
+                ];
+            }
+
+            $question->pollOptions()->createMany($options);
+        }
+
+        foreach ($questions as $index => $createdQuestion) {
+            if ($index === 0) {
+                continue;
+            }
+
+            if (empty($threadPollOptions[$index - 1])) {
+                continue;
+            }
+
+            $createdQuestion->pollOptions()->createMany(array_map(
+                fn (string $option): array => ['text' => mb_trim($option), 'votes_count' => 0],
+                $threadPollOptions[$index - 1],
+            ));
+        }
+
+        $this->transferImagesFromSourceDraft();
         $this->deleteUnusedImages();
 
-        $this->reset(['content']);
+        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey']);
+        $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
 
         $this->dispatch('question.created');
+        $this->dispatch('close-modal', 'post-create');
 
         $message = match (true) {
+            $threadPosts->isNotEmpty() => 'Thread sent.',
             filled($this->parentId) => 'Comment sent.',
             $this->isSharingUpdate => 'Update sent.',
             default => 'Question sent.'
         };
 
-        $this->dispatch('notification.created', message: $message);
+        if ($this->isSharingUpdate) {
+            $this->dispatch('notification.created', message: $message, url: route('questions.show', [
+                'username' => $question->to->username,
+                'question' => $question,
+            ]), actionText: 'View update');
+        } else {
+            $this->dispatch('notification.created', message: $message);
+        }
 
         if (filled($this->parentId)) {
             $this->js(<<<'JS'
@@ -312,6 +574,82 @@ final class Create extends Component
     }
 
     /**
+     * Delete images handed off from another composer when its draft is discarded.
+     */
+    public function discardSourceImages(): void
+    {
+        if ($this->imageSourceDraftKey === null || $this->imageSourceDraftKey === $this->draftKey()) {
+            return;
+        }
+
+        $sourceSessionKey = 'images.'.$this->imageSourceDraftKey;
+        $sourceImages = session()->get($sourceSessionKey, []);
+
+        if (is_array($sourceImages)) {
+            collect($sourceImages)
+                ->filter(fn (mixed $path): bool => is_string($path) && str_starts_with($path, 'images/'))
+                ->each(fn (string $path): bool => Storage::disk(self::IMAGE_DISK)->delete($path));
+        }
+
+        session()->forget($sourceSessionKey);
+        $this->reset('imageSourceDraftKey');
+    }
+
+    /**
+     * Return the default poll state for an additional thread post.
+     *
+     * @return array{isPoll: bool, options: array<int, string>, duration: int}
+     */
+    private function emptyThreadPoll(): array
+    {
+        return ['isPoll' => false, 'options' => ['', ''], 'duration' => 1];
+    }
+
+    /**
+     * Validate a poll belonging to a specific composer row.
+     *
+     * @param  array<string, mixed>  $poll
+     * @return array<int, string>|null
+     */
+    private function validatedPollOptions(array $poll, string $attribute): ?array
+    {
+        if (! ($poll['isPoll'] ?? false)) {
+            return null;
+        }
+
+        $durationValue = $poll['duration'] ?? null;
+        $duration = is_int($durationValue)
+            ? $durationValue
+            : (is_numeric($durationValue) ? (int) $durationValue : 0);
+        if ($duration < 1 || $duration > 7) {
+            $this->addError("{$attribute}.duration", 'Poll duration must be between 1 and 7 days.');
+
+            return null;
+        }
+
+        $options = array_values(array_map(
+            static fn (mixed $option): string => is_string($option) ? $option : '',
+            is_array($poll['options'] ?? null) ? $poll['options'] : [],
+        ));
+
+        if (count($options) < 2 || count($options) > 4 || in_array('', array_map(mb_trim(...), $options), true)) {
+            $this->addError("{$attribute}.options", 'Polls must have 2 to 4 non-empty options.');
+
+            return null;
+        }
+
+        foreach ($options as $option) {
+            if (mb_strlen($option) > 40) {
+                $this->addError("{$attribute}.options", 'Poll options cannot exceed 40 characters.');
+
+                return null;
+            }
+        }
+
+        return $options;
+    }
+
+    /**
      * Validate if the image path is eligible for deletion.
      */
     private function validateImagePath(string $path): bool
@@ -338,31 +676,34 @@ final class Create extends Component
     /**
      * Optimize the images.
      */
-    private function optimizeImage(string $path): void
+    private function optimizeImage(UploadedFile $image): string|false
     {
-        $imagePath = Storage::disk(self::IMAGE_DISK)->path($path);
-        $imagick = new Imagick($imagePath);
+        $today = today()->format('Y-m-d');
 
-        if ($imagick->getNumberImages() > 1) {
-            $imagick = $imagick->coalesceImages();
+        $imagePath = 'images/'.$today;
 
-            foreach ($imagick as $frame) {
-                $frame->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-                $frame->stripImage();
-                $frame->setImageCompressionQuality(80);
-            }
-
-            $imagick = $imagick->deconstructImages();
-            $imagick->writeImages($imagePath, true);
-        } else {
-            $imagick->resizeImage(1000, 1000, Imagick::FILTER_LANCZOS, 1, true);
-            $imagick->stripImage();
-            $imagick->setImageCompressionQuality(80);
-            $imagick->writeImage($imagePath);
+        if ($image->getMimeType() === 'image/gif') {
+            return $image->store(
+                $imagePath, [
+                    'disk' => self::IMAGE_DISK,
+                    'visibility' => 'public',
+                ]
+            );
         }
 
-        $imagick->clear();
-        $imagick->destroy();
+        $resizer = $this->resizer()->read($image)
+            ->scaleDown(750, 750);
+
+        $imagePath .= '/'.$image->hashName();
+
+        return Storage::disk(self::IMAGE_DISK)->put(
+            $imagePath,
+            $resizer->encodeByExtension(
+                $image->getClientOriginalExtension(),
+                quality: 80
+            )->toFilePointer(),
+            ['visibility' => 'public'],
+        ) ? $imagePath : false;
     }
 
     /**
@@ -383,19 +724,18 @@ final class Create extends Component
      */
     private function uploadImages(): void
     {
-        collect($this->images)->each(function (UploadedFile $image): void {
-            $today = now()->format('Y-m-d');
+        $sessionKey = 'images.'.$this->draftKey();
 
-            /** @var string $path */
-            $path = $image->store("images/{$today}", self::IMAGE_DISK);
-            $this->optimizeImage($path);
+        collect($this->images)->each(function (UploadedFile $image) use ($sessionKey): void {
+
+            $path = $this->optimizeImage($image);
 
             if ($path) {
-                session()->push('images', $path);
+                session()->push($sessionKey, $path);
 
                 $this->dispatch(
                     'image.uploaded',
-                    path: Storage::url($path),
+                    path: Storage::disk(self::IMAGE_DISK)->url($path),
                     originalName: $image->getClientOriginalName()
                 );
             } else { // @codeCoverageIgnoreStart
@@ -412,10 +752,38 @@ final class Create extends Component
      */
     private function cleanSession(string $path): void
     {
+        $sessionKey = 'images.'.$this->draftKey();
+
         $remainingImages = collect($this->getSessionImages())
             ->reject(fn (string $imagePath): bool => $imagePath === $path);
 
-        session()->put('images', $remainingImages->toArray());
+        session()->put($sessionKey, $remainingImages->toArray());
+    }
+
+    /**
+     * Get the validation rules for storing.
+     *
+     * @return array<string, mixed>
+     */
+    private function validationRules(): array
+    {
+        $rules = [
+            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
+            'content' => ['required', 'string', 'min:1', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+        ];
+
+        if ($this->canThread) {
+            $rules['threadPosts'] = ['array', 'max:'.(self::MAX_THREAD_POSTS - 1)];
+            $rules['threadPosts.*'] = [
+                'nullable',
+                'string',
+                'min:1',
+                'max:'.$this->maxContentLength,
+                new NoBlankCharacters,
+            ];
+        }
+
+        return $rules;
     }
 
     /**
@@ -423,11 +791,39 @@ final class Create extends Component
      */
     private function deleteUnusedImages(): void
     {
+        $publishedContent = implode("\n", [$this->content, ...$this->threadPosts]);
+
         collect($this->getSessionImages())
-            ->reject(fn (string $path): bool => str_contains($this->content, $path))
+            ->reject(fn (string $path): bool => str_contains($publishedContent, $path))
             ->each(fn (string $path): ?bool => $this->deleteImage($path));
 
-        session()->forget('images');
+        session()->forget('images.'.$this->draftKey());
+    }
+
+    /**
+     * Move images handed off by another composer into this draft's session.
+     */
+    private function transferImagesFromSourceDraft(): void
+    {
+        if ($this->imageSourceDraftKey === null || $this->imageSourceDraftKey === $this->draftKey()) {
+            return;
+        }
+
+        $sourceSessionKey = 'images.'.$this->imageSourceDraftKey;
+        $sourceImages = session()->get($sourceSessionKey, []);
+
+        if (! is_array($sourceImages) || $sourceImages === []) {
+            return;
+        }
+
+        /** @var array<int, mixed> $sourceImages */
+        session()->put('images.'.$this->draftKey(), collect($this->getSessionImages())
+            ->merge($sourceImages)
+            ->filter(fn (mixed $path): bool => is_string($path))
+            ->unique()
+            ->values()
+            ->all());
+        session()->forget($sourceSessionKey);
     }
 
     /**
@@ -438,8 +834,19 @@ final class Create extends Component
     private function getSessionImages(): array
     {
         /** @var array<int, string> $images */
-        $images = session()->get('images', []);
+        $images = session()->get('images.'.$this->draftKey(), []);
 
         return $images;
+    }
+
+    /**
+     * Creates a new image resizer.
+     */
+    private function resizer(): ImageManager
+    {
+        return new ImageManager(
+            new Drivers\Imagick\Driver(),
+            strip: true,
+        );
     }
 }

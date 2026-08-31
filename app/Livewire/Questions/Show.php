@@ -7,6 +7,7 @@ namespace App\Livewire\Questions;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
@@ -48,6 +49,12 @@ final class Show extends Component
      */
     #[Locked]
     public bool $commenting = false;
+
+    /**
+     * Render a bottom border for this post row.
+     */
+    #[Locked]
+    public bool $showBorder = false;
 
     /**
      * The previous question ID, where the user came from.
@@ -173,9 +180,9 @@ final class Show extends Component
     /**
      * Pin a question.
      */
-    public function pin(): void
+    public function pin(#[CurrentUser] ?User $user): void
     {
-        if (! auth()->check()) {
+        if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -184,8 +191,6 @@ final class Show extends Component
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
-
-        $user = type(auth()->user())->as(User::class);
 
         $question = Question::findOrFail($this->questionId);
 

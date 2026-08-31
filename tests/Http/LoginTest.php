@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('guest', function () {
+test('guest', function (): void {
     $response = $this->get('/login');
 
     $response->assertOk()
         ->assertSee('Log In');
 });
 
-test('users can authenticate', function () {
+test('users can authenticate', function (): void {
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
@@ -24,7 +24,7 @@ test('users can authenticate', function () {
     $response->assertRedirect(route('home.feed', absolute: false));
 });
 
-test('users are rate limited', function () {
+test('users are rate limited', function (): void {
     $user = User::factory()->create();
 
     for ($i = 0; $i < 5; $i++) {
@@ -42,7 +42,7 @@ test('users are rate limited', function () {
     ])->assertStatus(429);
 });
 
-test('users can not authenticate with invalid password', function () {
+test('users can not authenticate with invalid password', function (): void {
     $user = User::factory()->create();
 
     $this->post('/login', [

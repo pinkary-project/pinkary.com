@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Question;
 
-test('guest', function () {
+test('guest', function (): void {
     $question = Question::factory()->create([
         'answer' => 'This is the answer',
     ]);
@@ -17,13 +17,31 @@ test('guest', function () {
     $response->assertRedirect(route('login'));
 });
 
-test('notifications about answers are deleted', function () {
+test("another user's notification is not visible nor deleted", function (): void {
     $question = Question::factory()->create();
 
     $question->update(['answer' => 'Question answer']);
 
     $notification = $question->from->notifications()->first();
-    expect($notification->fresh())->not->toBe(null);
+    expect($notification->fresh())->not->toBeNull();
+
+    /** @var Illuminate\Testing\TestResponse $response */
+    $response = $this->actingAs($question->to)
+        ->get(route('notifications.show', [
+            'notification' => $notification,
+        ]));
+
+    $response->assertNotFound();
+    expect($notification->fresh())->not->toBeNull();
+});
+
+test('notifications about answers are deleted', function (): void {
+    $question = Question::factory()->create();
+
+    $question->update(['answer' => 'Question answer']);
+
+    $notification = $question->from->notifications()->first();
+    expect($notification->fresh())->not->toBeNull();
 
     /** @var Illuminate\Testing\TestResponse $response */
     $response = $this->actingAs($question->from)
@@ -35,7 +53,7 @@ test('notifications about answers are deleted', function () {
     expect($notification->fresh())->toBeNull();
 });
 
-test('notifications about questions are not deleted', function () {
+test('notifications about questions are not deleted', function (): void {
     $question = Question::factory()->create([
         'answer' => null,
     ]);

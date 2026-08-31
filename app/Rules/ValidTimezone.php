@@ -16,7 +16,7 @@ final readonly class ValidTimezone implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $value = type($value)->asString();
+        $value = is_scalar($value) ? (string) $value : '';
 
         if (! array_key_exists($value, $this->getTimezones())) {
             $fail(__('The :attribute must be a valid timezone.'));
@@ -354,6 +354,7 @@ final readonly class ValidTimezone implements ValidationRule
             'Asia/Tashkent' => 'Tashkent (UTC+05:00)',
             'Asia/Colombo' => 'Colombo (UTC+05:30)',
             'Asia/Kolkata' => 'Kolkata (UTC+05:30)',
+            'Asia/Calcutta' => 'Kolkata (UTC+05:30)',
             'Asia/Kathmandu' => 'Kathmandu (UTC+05:45)',
             'Asia/Almaty' => 'Almaty (UTC+06:00)',
             'Asia/Bishkek' => 'Bishkek (UTC+06:00)',

@@ -21,7 +21,7 @@ final readonly class CodeProviderParsable implements ParsableContentProvider
                 $code = $matches['code'];
                 $language = empty($matches['language'])
                     ? 'plaintext'
-                    : trim($matches['language']);
+                    : mb_trim($matches['language']);
 
                 $highlighter = new Highlighter();
 
@@ -33,8 +33,8 @@ final readonly class CodeProviderParsable implements ParsableContentProvider
                     $highlighted = $highlighter->highlight('plaintext', $code);
                 } // @codeCoverageIgnoreEnd
 
-                $highlightedCode = type($highlighted->value)->asString();
-                $highlightedLanguage = type($highlighted->language)->asString();
+                $highlightedCode = is_scalar($highlighted->value) ? $highlighted->value : '';
+                $highlightedLanguage = is_scalar($highlighted->language) ? $highlighted->language : 'plaintext';
 
                 return '<pre><code class="p-4 rounded-lg hljs '.$highlightedLanguage.' text-xs" style="background-color: #23262E">'.$highlightedCode.'</code></pre>';
             },

@@ -7,7 +7,7 @@ use App\Models\User;
 use Livewire\Component;
 use Livewire\Livewire;
 
-it('can check if the user does not have a verified email address', function () {
+it('can check if the user does not have a verified email address', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,
     ]);
@@ -20,7 +20,7 @@ it('can check if the user does not have a verified email address', function () {
     expect(session('flash-message'))->toBe('You must verify your email address before you can continue.');
 });
 
-it('can check if the user has a verified email address', function () {
+it('can check if the user has a verified email address', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(myComponentNeedsVerifiedEmail()::class);
@@ -38,7 +38,7 @@ function myComponentNeedsVerifiedEmail(): Component
 
         public bool $isConfirmed = false;
 
-        public function someMethod()
+        public function someMethod(): void
         {
             if ($this->doesNotHaveVerifiedEmail()) {
                 return;
@@ -47,7 +47,7 @@ function myComponentNeedsVerifiedEmail(): Component
             $this->isConfirmed = true;
         }
 
-        public function render()
+        public function render(): string
         {
             return <<<'HTML'
             <div>

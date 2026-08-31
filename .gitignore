@@ -21,3 +21,17 @@ package-lock.json
 /database/backups/*.sql
 debugbar
 .DS_Store
+.mcp.json
+boost.json
+CLAUDE.md
+AGENTS.md
+opencode.json
+/.claude/skills
+/.cursor
+/.junie
+/.agents
+/.codex
+/.grok
+/.github/skills
+
+storage/auditor-*

@@ -27,11 +27,11 @@ final class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::ignoreRoutes();
-        Fortify::loginView(fn () => view('auth.login'));
-        Fortify::twoFactorChallengeView(fn () => view('auth.two-factor-challenge'));
+        Fortify::loginView(fn (): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View => view('auth.login'));
+        Fortify::twoFactorChallengeView(fn (): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View => view('auth.two-factor-challenge'));
 
         RateLimiter::for('login', function (Request $request) {
-            $username = type($request->input(Fortify::username()))->asString();
+            $username = $request->string(Fortify::username())->toString();
             $throttleKey = Str::transliterate(Str::lower($username).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);

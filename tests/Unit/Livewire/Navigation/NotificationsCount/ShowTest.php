@@ -8,7 +8,7 @@ use App\Models\User;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-test('displays no notifications by default', function () {
+test('displays no notifications by default', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -22,7 +22,7 @@ test('displays no notifications by default', function () {
     ]);
 });
 
-test('displays the number of notifications', function () {
+test('displays the number of notifications', function (): void {
     $question = Question::factory()->create([
         'answer' => null,
     ]);
@@ -38,7 +38,7 @@ test('displays the number of notifications', function () {
     ]);
 });
 
-test('displays 20+ notifications when there are more than 20', function () {
+test('displays 20+ notifications when there are more than 20', function (): void {
     $user = User::factory()->create();
 
     Question::factory(21)->create([
@@ -57,7 +57,7 @@ test('displays 20+ notifications when there are more than 20', function () {
     ]);
 });
 
-test('is refreshable', function () {
+test('is refreshable', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */

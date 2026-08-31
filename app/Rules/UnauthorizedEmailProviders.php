@@ -3789,9 +3789,9 @@ final readonly class UnauthorizedEmailProviders implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $value = type($value)->asString();
+        $value = is_scalar($value) ? (string) $value : '';
 
-        if (mb_strpos($value, '@') !== false) {
+        if (str_contains($value, '@')) {
             [$emailAccount, $emailProvider] = explode('@', $value);
 
             if (in_array($emailProvider, $this->unauthorizedEmailProviders, true)) {

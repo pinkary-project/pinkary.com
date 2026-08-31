@@ -8,17 +8,19 @@ use App\Notifications\QuestionCreated;
 use App\Notifications\UserMentioned;
 use Illuminate\Support\Facades\Notification;
 
-test('created', function () {
+test('created', function (): void {
     Notification::fake();
 
     $question = Question::factory()->create();
 
-    Notification::assertSentTo($question->to, QuestionCreated::class, function ($notification) use ($question) {
-        return expect($notification->toDatabase($question->to))->toBe(['question_id' => $question->id]);
+    Notification::assertSentTo($question->to, QuestionCreated::class, function ($notification) use ($question): true {
+        expect($notification->toDatabase($question->to))->toBe(['question_id' => $question->id]);
+
+        return true;
     });
 });
 
-test('do not send notification if asked himself', function () {
+test('do not send notification if asked himself', function (): void {
     Notification::fake();
 
     $user = User::factory()->create();
@@ -31,7 +33,7 @@ test('do not send notification if asked himself', function () {
     Notification::assertNotSentTo($question->to, QuestionCreated::class);
 });
 
-test('send mentioned notification if shared update', function () {
+test('send mentioned notification if shared update', function (): void {
     Notification::fake();
 
     $user = User::factory()->create();
@@ -49,12 +51,14 @@ test('send mentioned notification if shared update', function () {
 
     expect($question->mentions()->count())->toBe(1);
 
-    Notification::assertSentTo($mentionedUser, UserMentioned::class, function ($notification) use ($question) {
-        return expect($notification->toDatabase($question->to))->toBe(['question_id' => $question->id]);
+    Notification::assertSentTo($mentionedUser, UserMentioned::class, function ($notification) use ($question): true {
+        expect($notification->toDatabase($question->to))->toBe(['question_id' => $question->id]);
+
+        return true;
     });
 });
 
-test('send comment notification', function () {
+test('send comment notification', function (): void {
     Notification::fake();
 
     $user = User::factory()->create();
@@ -76,12 +80,14 @@ test('send comment notification', function () {
         'answer_created_at' => now(),
     ]);
 
-    Notification::assertSentTo($question->from, QuestionCreated::class, function ($notification) use ($comment) {
-        return expect($notification->toDatabase($comment->to))->toBe(['question_id' => $comment->id]);
+    Notification::assertSentTo($question->from, QuestionCreated::class, function ($notification) use ($comment): true {
+        expect($notification->toDatabase($comment->to))->toBe(['question_id' => $comment->id]);
+
+        return true;
     });
 });
 
-test('do not send notification if comment to himself', function () {
+test('do not send notification if comment to himself', function (): void {
     Notification::fake();
 
     $user = User::factory()->create();
@@ -104,7 +110,7 @@ test('do not send notification if comment to himself', function () {
     Notification::assertNotSentTo($question->from, QuestionCreated::class);
 });
 
-test('updated', function () {
+test('updated', function (): void {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
     $question->update(['is_reported' => true]);
@@ -148,15 +154,15 @@ test('updated', function () {
     expect($user->notifications()->count())->toBe(1);
 });
 
-test('reported', function () {
+test('reported', function (): void {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
 
     $question->update(['is_reported' => true]);
 
-    expect($question->to->fresh()->notifications()->count())->toBe(0);
-    expect($question->from->fresh()->notifications()->count())->toBe(0);
-    expect($question->mentions()->count())->toBe(0);
+    expect($question->to->fresh()->notifications()->count())->toBe(0)
+        ->and($question->from->fresh()->notifications()->count())->toBe(0)
+        ->and($question->mentions()->count())->toBe(0);
 
     $mentionedUser = User::factory()->create([
         'username' => 'johndoe',
@@ -175,13 +181,13 @@ test('reported', function () {
 
     $question->update(['is_reported' => true]);
 
-    expect($question->to->fresh()->notifications()->count())->toBe(0);
-    expect($question->from->fresh()->notifications()->count())->toBe(0);
-    expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
-    expect($question->children()->count())->toBe(0);
+    expect($question->to->fresh()->notifications()->count())->toBe(0)
+        ->and($question->from->fresh()->notifications()->count())->toBe(0)
+        ->and($mentionedUser->fresh()->notifications()->count())->toBe(0)
+        ->and($question->children()->count())->toBe(0);
 });
 
-test('ignored', function () {
+test('ignored', function (): void {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
 
@@ -191,8 +197,8 @@ test('ignored', function () {
     $user = $question->to;
     $question->fresh()->update(['is_ignored' => true]);
     $question = $question->fresh();
-    expect($question->to->notifications()->count())->toBe(0);
-    expect($question->from->notifications()->count())->toBe(0);
+    expect($question->to->notifications()->count())->toBe(0)
+        ->and($question->from->notifications()->count())->toBe(0);
 
     $mentionedUser = User::factory()->create([
         'username' => 'johndoe',
@@ -211,21 +217,21 @@ test('ignored', function () {
         ->for($question, 'parent')
         ->create();
 
-    expect($question->children()->count())->toBe(3);
-    expect($question->descendants()->count())->toBe(3);
-    expect($question->to->notifications()->count())->toBe(0);
-    expect($question->from->notifications()->count())->toBe(1);
-    expect($mentionedUser->notifications()->count())->toBe(1);
+    expect($question->children()->count())->toBe(3)
+        ->and($question->descendants()->count())->toBe(3)
+        ->and($question->to->notifications()->count())->toBe(0)
+        ->and($question->from->notifications()->count())->toBe(1)
+        ->and($mentionedUser->notifications()->count())->toBe(1);
 
     $question->fresh()->update(['is_ignored' => true]);
-    expect($question->to->fresh()->notifications()->count())->toBe(0);
-    expect($question->from->fresh()->notifications()->count())->toBe(0);
-    expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
-    expect($question->children()->count())->toBe(0);
-    expect($question->descendants()->count())->toBe(0);
+    expect($question->to->fresh()->notifications()->count())->toBe(0)
+        ->and($question->from->fresh()->notifications()->count())->toBe(0)
+        ->and($mentionedUser->fresh()->notifications()->count())->toBe(0)
+        ->and($question->children()->count())->toBe(0)
+        ->and($question->descendants()->count())->toBe(0);
 });
 
-test('deleted', function () {
+test('deleted', function (): void {
     $question = Question::factory()->create();
     expect($question->to->notifications()->count())->toBe(1);
 
@@ -265,23 +271,23 @@ test('deleted', function () {
         ->for($question, 'parent')
         ->create();
 
-    expect($question->children()->count())->toBe(3);
-    expect(Question::where('answer', 'grandchild')->count())->toBe(9);
-    expect(Question::where('answer', 'descendant')->count())->toBe(3);
-    expect($question->to->notifications()->count())->toBe(0);
-    expect($question->from->notifications()->count())->toBe(1);
-    expect($mentionedUser->notifications()->count())->toBe(1);
+    expect($question->children()->count())->toBe(3)
+        ->and(Question::where('answer', 'grandchild')->count())->toBe(9)
+        ->and(Question::where('answer', 'descendant')->count())->toBe(3)
+        ->and($question->to->notifications()->count())->toBe(0)
+        ->and($question->from->notifications()->count())->toBe(1)
+        ->and($mentionedUser->notifications()->count())->toBe(1);
 
     $question->delete();
-    expect($question->to->fresh()->notifications()->count())->toBe(0);
-    expect($question->from->fresh()->notifications()->count())->toBe(0);
-    expect($mentionedUser->fresh()->notifications()->count())->toBe(0);
-    expect($question->children()->count())->toBe(0);
-    expect(Question::where('answer', 'grandchild')->count())->toBe(0);
-    expect(Question::where('answer', 'descendant')->count())->toBe(0);
+    expect($question->to->fresh()->notifications()->count())->toBe(0)
+        ->and($question->from->fresh()->notifications()->count())->toBe(0)
+        ->and($mentionedUser->fresh()->notifications()->count())->toBe(0)
+        ->and($question->children()->count())->toBe(0)
+        ->and(Question::where('answer', 'grandchild')->count())->toBe(0)
+        ->and(Question::where('answer', 'descendant')->count())->toBe(0);
 });
 
-test('hashtags are synced when created', function () {
+test('hashtags are synced when created', function (): void {
     $question = Question::factory()->create([
         'answer' => 'This answer has a #hashtag.',
     ]);
@@ -291,7 +297,7 @@ test('hashtags are synced when created', function () {
     ]);
 });
 
-test('hashtags are synced when updated and the content is dirty', function () {
+test('hashtags are synced when updated and the content is dirty', function (): void {
     $question = Question::factory()->create();
 
     expect($question->hashtags)->toBeEmpty();
@@ -305,7 +311,7 @@ test('hashtags are synced when updated and the content is dirty', function () {
     ]);
 });
 
-test('hashtags are synced when updated and the answer is dirty', function () {
+test('hashtags are synced when updated and the answer is dirty', function (): void {
     $question = Question::factory()->create();
 
     expect($question->hashtags)->toBeEmpty();
@@ -319,7 +325,7 @@ test('hashtags are synced when updated and the answer is dirty', function () {
     ]);
 });
 
-test('missing hashtags are detached when updated', function () {
+test('missing hashtags are detached when updated', function (): void {
     $question = Question::factory()->create([
         'answer' => '#hashtag1 #hashtag2',
     ]);
@@ -344,7 +350,7 @@ test('missing hashtags are detached when updated', function () {
     expect($question->refresh()->hashtags)->toBeEmpty();
 });
 
-test('hashtags are detached when reported', function () {
+test('hashtags are detached when reported', function (): void {
     $question = Question::factory()->create([
         'answer' => '#hashtag1',
     ]);
@@ -356,7 +362,7 @@ test('hashtags are detached when reported', function () {
     expect($question->hashtags)->toBeEmpty();
 });
 
-test('hashtags are detached when ignored', function () {
+test('hashtags are detached when ignored', function (): void {
     $question = Question::factory()->create([
         'answer' => '#hashtag1',
     ]);

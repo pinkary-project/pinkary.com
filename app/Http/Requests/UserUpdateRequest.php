@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -22,10 +24,8 @@ final class UserUpdateRequest extends FormRequest
      *
      * @return array<string, array<int, ValidatorAwareRule|ValidationRule|Stringable|string>>
      */
-    public function rules(): array
+    public function rules(#[CurrentUser] User $user): array
     {
-        $user = type($this->user())->as(User::class);
-
         return [
             'name' => ['required', 'string', 'max:255', new NoBlankCharacters],
             'username' => [
@@ -37,6 +37,7 @@ final class UserUpdateRequest extends FormRequest
                 new UnauthorizedEmailProviders(),
             ],
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
+            'default_feed' => [Rule::enum(UserDefaultFeed::class)],
             'bio' => ['nullable', 'string', 'max:255'],
             'prefers_anonymous_questions' => ['required', 'boolean'],
         ];

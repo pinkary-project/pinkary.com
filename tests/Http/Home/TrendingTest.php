@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Home\TrendingQuestions;
 
-it('can see the "trending" view', function () {
+it('can see the "trending" view', function (): void {
     $response = $this->get(route('home.trending'));
 
     $response->assertOk()

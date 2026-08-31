@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-test('only authenticated users can confirm their password', function () {
+test('only authenticated users can confirm their password', function (): void {
     $response = $this->get('/confirm-password');
 
     $response->assertRedirect('/login');
 });
 
-test('confirm password screen can be rendered', function () {
+test('confirm password screen can be rendered', function (): void {
     $user = User::factory()->create();
 
     $this->withoutExceptionHandling();
@@ -20,7 +20,7 @@ test('confirm password screen can be rendered', function () {
     $response->assertOk();
 });
 
-test('password can be confirmed', function () {
+test('password can be confirmed', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post('/confirm-password', [
@@ -32,7 +32,7 @@ test('password can be confirmed', function () {
         ->assertSessionHasNoErrors();
 });
 
-test('password is not confirmed with invalid password', function () {
+test('password is not confirmed with invalid password', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post('/confirm-password', [

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
 
-test('render', function () {
+test('render', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)->test(Index::class, [
@@ -19,13 +19,13 @@ test('render', function () {
     $component->assertOk();
 });
 
-test('render with wrong user id', function () {
+test('render with wrong user id', function (): void {
     $component = Livewire::test(Index::class, [
         'userId' => 123,
     ]);
 })->throws(ModelNotFoundException::class);
 
-test('only renders questions with answers if user is not auth user', function () {
+test('only renders questions with answers if user is not auth user', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -63,7 +63,20 @@ test('only renders questions with answers if user is not auth user', function ()
     $component->assertSee($question->content);
 });
 
-test('do not render reported questions', function () {
+test('renders unanswered questions for the profile owner', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'answer' => null,
+        'answer_created_at' => null,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Index::class, ['userId' => $user->id])
+        ->assertSee($question->content);
+});
+
+test('do not render reported questions', function (): void {
     $user = User::factory()->create([]);
 
     $questions = Question::factory(3)->create([
@@ -80,7 +93,7 @@ test('do not render reported questions', function () {
     }
 });
 
-test('ignore', function () {
+test('ignore', function (): void {
     $user = User::factory()->create();
 
     $question = Question::factory()->create([
@@ -100,7 +113,7 @@ test('ignore', function () {
     expect($question->fresh()->is_ignored)->toBeTrue();
 });
 
-test('ignore auth', function () {
+test('ignore auth', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
 
@@ -117,10 +130,10 @@ test('ignore auth', function () {
 
     $component->assertStatus(403);
 
-    expect($question->fresh()->is_ignored)->not->toBeTrue();
+    expect($question->fresh()->is_ignored)->toBeFalse();
 });
 
-test('load more', function () {
+test('load more', function (): void {
     $user = User::factory()->create();
 
     $questions = Question::factory(120)->create([
@@ -144,15 +157,25 @@ test('load more', function () {
     $component->assertSet('perPage', 100);
 });
 
-test('pinned question is displayed at the top', function () {
+test('pinned question is displayed at the top', function (): void {
     $user = User::factory()->create();
+
+    $question = Question::factory()->create(['to_id' => $user->id, 'answer_created_at' => now()]);
+
+    $this->travel(1)->seconds();
 
     $pinnedQuestion = Question::factory()->create([
         'pinned' => true,
         'to_id' => $user->id,
     ]);
 
-    $otherQuestions = Question::factory()->count(5)->create(['to_id' => $user->id, 'answer_created_at' => now()]);
+    $this->travel(1)->seconds();
+
+    $otherQuestion = Question::factory()->create(['to_id' => $user->id, 'answer_created_at' => now()]);
+
+    $this->travel(1)->seconds();
+
+    $anotherQuestion = Question::factory()->create(['to_id' => $user->id, 'answer_created_at' => now()]);
 
     $component = Livewire::actingAs($user)->test(Index::class, [
         'userId' => $user->id,
@@ -160,11 +183,13 @@ test('pinned question is displayed at the top', function () {
 
     $component->assertSeeInOrder([
         $pinnedQuestion->content,
-        ...$otherQuestions->reverse()->map->content->toArray(),
+        $anotherQuestion->content,
+        $otherQuestion->content,
+        $question->content,
     ]);
 });
 
-it('renders the threads in the right order', function () {
+it('renders the threads in the right order', function (): void {
     $anotherUser = User::factory()->create();
     $user = User::factory()->create();
 
@@ -187,11 +212,11 @@ it('renders the threads in the right order', function () {
 
     $questions = Question::factory()
         ->count(4)
-        ->sequence(fn (Sequence $sequence) => ['answer' => $answerForUser.' '.$sequence->index + 1])
+        ->sequence(fn (Sequence $sequence): array => ['answer' => $answerForUser.' '.$sequence->index + 1])
         ->create(['to_id' => $user->id]);
 
     // create a child for each following user's question
-    $questions->each(function (Question $question) {
+    $questions->each(function (Question $question): void {
 
         $this->travel(1)->seconds();
 

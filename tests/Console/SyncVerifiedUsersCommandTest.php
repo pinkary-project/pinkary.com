@@ -7,7 +7,7 @@ use App\Jobs\SyncVerifiedUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 
-test('sync verified users', function () {
+test('sync verified users', function (): void {
     User::factory(5)->create();
 
     User::factory(2)->create([

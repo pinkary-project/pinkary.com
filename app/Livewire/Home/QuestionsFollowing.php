@@ -7,9 +7,12 @@ namespace App\Livewire\Home;
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\User;
 use App\Queries\Feeds\QuestionsFollowingFeed;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
+#[On('question.created')]
 final class QuestionsFollowing extends Component
 {
     use HasLoadMore;
@@ -17,11 +20,9 @@ final class QuestionsFollowing extends Component
     /**
      * Renders the component.
      */
-    public function render(): View
+    public function render(#[CurrentUser] User $user): View
     {
-        $user = type(auth()->user())->as(User::class);
-
-        $questions = (new QuestionsFollowingFeed($user))->builder()->simplePaginate($this->perPage);
+        $questions = new QuestionsFollowingFeed($user)->builder()->simplePaginate($this->perPage);
 
         return view('livewire.home.questions-following', [
             'followingQuestions' => $questions,

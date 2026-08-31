@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Filament\Widgets\Analytics;
 use App\Models\User;
 
-it('does renders', function () {
+it('does renders', function (): void {
     $this->actingAs(User::factory()->create([
         'email' => 'enunomaduro@gmail.com',
     ]))

@@ -15,13 +15,14 @@ trait Followable
     #[Renderless]
     public function follow(int $id): void
     {
-        if (! auth()->check()) {
+        $user = auth()->user();
+
+        if ($user === null) {
             $this->redirectRoute('login', navigate: true);
 
             return;
         }
 
-        $user = type(auth()->user())->as(User::class);
         $user->following()->attach($id);
 
         if ($this->shouldHandleFollowingCount()) {
@@ -37,13 +38,14 @@ trait Followable
     #[Renderless]
     public function unfollow(int $id): void
     {
-        if (! auth()->check()) {
+        $user = auth()->user();
+
+        if ($user === null) {
             $this->redirectRoute('login', navigate: true);
 
             return;
         }
 
-        $user = type(auth()->user())->as(User::class);
         $user->following()->detach($id);
 
         if ($this->shouldHandleFollowingCount()) {

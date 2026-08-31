@@ -7,7 +7,7 @@ use App\Models\User;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-test('is confirmed with valid password', function () {
+test('is confirmed with valid password', function (): void {
     $user = User::factory()->create([
         'password' => 'password',
     ]);
@@ -29,7 +29,7 @@ test('is confirmed with valid password', function () {
     $component->assertDispatched('password-confirmed-id-to-confirm');
 });
 
-test('is not confirmed with invalid password', function () {
+test('is not confirmed with invalid password', function (): void {
     $user = User::factory()->create([
         'password' => 'password',
     ]);

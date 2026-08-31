@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,10 +25,8 @@ final readonly class ConfirmablePasswordController
     /**
      * Confirm the user's password.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, #[CurrentUser] User $user): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
-
         if (! Auth::guard('web')->validate([
             'email' => $user->email,
             'password' => $request->password,

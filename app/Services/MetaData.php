@@ -28,6 +28,16 @@ final readonly class MetaData
     public const int CARD_HEIGHT = 251;
 
     /**
+     * The oEmbed endpoints keyed by their supported hosts.
+     *
+     * @var array<string, list<string>>
+     */
+    private const array OEMBED_SERVICES = [
+        'https://www.youtube.com/oembed' => ['youtube.com', 'www.youtube.com', 'youtu.be', 'www.youtu.be'],
+        'https://vimeo.com/oembed' => ['vimeo.com', 'www.vimeo.com'],
+    ];
+
+    /**
      * Fetch the Open Graph data for a given URL.
      */
     public function __construct(private string $url)
@@ -62,6 +72,7 @@ final readonly class MetaData
         }
 
         $doc = new DOMDocument();
+        // @phpstan-ignore argument.type
         @$doc->loadHTML($value);
         $iframe = $doc->getElementsByTagName('iframe')->item(0);
 
@@ -88,7 +99,7 @@ final readonly class MetaData
         $min_width = self::CARD_WIDTH / 0.66;
         $min_height = self::CARD_HEIGHT / 0.66;
 
-        return ! ($dimensions && ($dimensions[0] < $min_width || $dimensions[1] < $min_height));
+        return ! $dimensions || $dimensions[0] >= $min_width && $dimensions[1] >= $min_height;
     }
 
     /**
@@ -98,25 +109,28 @@ final readonly class MetaData
      */
     private function getData(): Collection
     {
-        // If it’s a YouTube link, go straight to oEmbed
+        // If it’s a YouTube or Vimeo link, go straight to oEmbed
         // return early to bypass bot detection issues.
-        if (in_array(
-            needle: Uri::of($this->url)->host(),
-            haystack: ['youtube.com', 'www.youtube.com', 'youtu.be', 'www.youtu.be'],
-            strict: true
-        )) {
-            $oembed = $this->fetchOEmbed(
-                service: 'https://www.youtube.com/oembed',
-                options: [
-                    'maxwidth' => self::CARD_WIDTH,
-                    'maxheight' => self::CARD_HEIGHT,
-                ]
-            );
-            if ($oembed->isNotEmpty()) {
-                return $oembed;
+        $host = Uri::of($this->url)->host();
+
+        foreach (self::OEMBED_SERVICES as $service => $hosts) {
+            if (in_array(
+                needle: $host,
+                haystack: $hosts,
+                strict: true
+            )) {
+                $oembed = $this->fetchOEmbed(
+                    service: $service,
+                    options: [
+                        'maxwidth' => self::CARD_WIDTH,
+                        'maxheight' => self::CARD_HEIGHT,
+                    ]
+                );
+                if ($oembed->isNotEmpty()) {
+                    return $oembed;
+                }
             }
         }
-
         $data = collect();
 
         try {
@@ -163,6 +177,7 @@ final readonly class MetaData
     /**
      * Parse the response body for MetaData.
      *
+     * @param  non-empty-string  $content
      * @return Collection<string, non-empty-string>
      */
     private function parseContent(string $content): Collection
@@ -208,6 +223,7 @@ final readonly class MetaData
     /**
      * Parse the response body for MetaData.
      *
+     * @param  non-empty-string  $html
      * @return Collection<string, non-empty-string>
      *
      * @throws ConnectionException

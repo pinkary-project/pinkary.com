@@ -54,6 +54,7 @@ final class Users extends Component
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
+            ->orderBy('id')
             ->when(auth()->check(), function (Builder $query): void {
                 $query->withExists([
                     'following as is_follower' => function (Builder $query): void {
@@ -105,13 +106,14 @@ final class Users extends Component
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%')
-                    ->orWhere('url', 'like', '://x.com%');
+                    ->orWhere('url', 'like', '%://x.com%');
             })
             ->whereNotIn('id', $except->pluck('id'))
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
                 $query->whereNotNull('answer');
             }])
             ->orderBy('answered_questions_count', 'desc')
+            ->orderBy('id')
             ->limit(50)->pluck('id')->toArray()
         );
 
@@ -129,7 +131,8 @@ final class Users extends Component
      */
     private function verifiedUsers(int $limit = 2): Collection
     {
-        return User::query()
+        /** @var array<int, int> $verifiedUserIds */
+        $verifiedUserIds = Cache::remember('verified-user-ids', now()->endOfDay(), fn (): array => User::query()
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%')
@@ -142,8 +145,13 @@ final class Users extends Component
                         config()->array('sponsors.github_usernames', [])
                     ));
             })
-            ->limit($limit)
+            ->pluck('id')
+            ->toArray());
+
+        return User::query()
+            ->whereIn('id', $verifiedUserIds)
             ->inRandomOrder()
+            ->limit($limit)
             ->get();
     }
 }

@@ -12,7 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->trustHosts();
+
+        $middleware->alias([
+            'block.bots' => App\Http\Middleware\BlockBots::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

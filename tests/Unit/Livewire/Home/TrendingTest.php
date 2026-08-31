@@ -8,7 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('renders trending questions', function () {
+test('renders trending questions', function (): void {
     $user = User::factory()->create();
 
     $questionContent = 'This is a trending question!';
@@ -29,11 +29,11 @@ test('renders trending questions', function () {
     $component = Livewire::test(TrendingQuestions::class);
 
     $component
-        ->assertDontSee('There is no trending questions right now')
+        ->assertDontSee('There are no trending questions right now.')
         ->assertSee($questionContent);
 });
 
-test('do not renders trending questions', function () {
+test('do not renders trending questions', function (): void {
     $user = User::factory()->create();
 
     $questionContent = 'Is this a trending question?';
@@ -48,11 +48,11 @@ test('do not renders trending questions', function () {
     $component = Livewire::test(TrendingQuestions::class);
 
     $component
-        ->assertSee('There is no trending questions right now')
+        ->assertSee('There are no trending questions right now.')
         ->assertDontSee($questionContent);
 });
 
-test('renders trending questions order by trending score', function () {
+test('renders trending questions order by trending score', function (): void {
     $this->travelTo($date = now());
 
     // 0 likes, 0 comments, just posted

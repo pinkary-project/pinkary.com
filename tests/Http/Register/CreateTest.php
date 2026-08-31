@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Models\BlockedAccount;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->basePayload = [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -29,14 +30,16 @@ function mockTurnstileResponse(bool $status): void
     ]);
 }
 
-test('registration screen can be rendered', function () {
+test('registration screen can be rendered', function (): void {
     $response = $this->get('/register');
 
     $response->assertOk()
         ->assertSee('Register');
 });
 
-test('new users can register', function () {
+test('new users can register', function (): void {
+    Queue::fake();
+
     mockTurnstileResponse(true);
 
     $response = $this->from('/register')->post('/register', $this->basePayload);
@@ -48,7 +51,7 @@ test('new users can register', function () {
     ], absolute: false));
 });
 
-test('can not register with an invalid turnstile response', function () {
+test('can not register with an invalid turnstile response', function (): void {
 
     mockTurnstileResponse(false);
     $response = $this->from('/register')->post('/register', $this->basePayload);
@@ -56,7 +59,7 @@ test('can not register with an invalid turnstile response', function () {
     $response->assertSessionHasErrors('cf-turnstile-response');
 });
 
-test('required fields', function (string $field) {
+test('required fields', function (string $field): void {
     $payload = [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -75,7 +78,7 @@ test('required fields', function (string $field) {
         ]);
 })->with(['name', 'username', 'email', 'password', 'terms']);
 
-test('email must be valid', function () {
+test('email must be valid', function (): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -88,7 +91,7 @@ test('email must be valid', function () {
         ->assertSessionHasErrors(['email' => 'The email field must be a valid email address.']);
 });
 
-test('email provider must be authorized', function () {
+test('email provider must be authorized', function (): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Tomás López',
         'username' => 'tomloprod',
@@ -101,7 +104,7 @@ test('email provider must be authorized', function () {
         ->assertSessionHasErrors(['email' => 'The email belongs to an unauthorized email provider.']);
 });
 
-test('password must be confirmed', function () {
+test('password must be confirmed', function (): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -114,7 +117,7 @@ test('password must be confirmed', function () {
         ->assertSessionHasErrors(['password' => 'The password field confirmation does not match.']);
 });
 
-test('users must be at least 18 years old', function () {
+test('users must be at least 18 years old', function (): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -128,7 +131,7 @@ test('users must be at least 18 years old', function () {
         ->assertSessionHasErrors(['terms' => 'The terms field must be accepted.']);
 });
 
-test('username must be unique', function () {
+test('username must be unique', function (): void {
     User::factory()->create([
         'username' => 'testuser',
     ]);
@@ -145,7 +148,7 @@ test('username must be unique', function () {
         ->assertSessionHasErrors(['username' => 'The username has already been taken.']);
 });
 
-test('email must be unique', function () {
+test('email must be unique', function (): void {
     User::factory()->create([
         'email' => 'test@example.com',
     ]);
@@ -164,7 +167,7 @@ test('email must be unique', function () {
         ]);
 });
 
-test('password must be at least 8 characters', function () {
+test('password must be at least 8 characters', function (): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => 'testuser',
@@ -179,7 +182,7 @@ test('password must be at least 8 characters', function () {
         ]);
 });
 
-test('username must have 2 letters', function () {
+test('username must have 2 letters', function (): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => '1111a',
@@ -194,7 +197,7 @@ test('username must have 2 letters', function () {
         ]);
 });
 
-test('username can only have letters, numbers and underscores', function (string $username) {
+test('username can only have letters, numbers and underscores', function (string $username): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => $username,
@@ -240,7 +243,7 @@ test('username can only have letters, numbers and underscores', function (string
     'username#',
 ]);
 
-test('username is not reserved', function (string $username) {
+test('username is not reserved', function (string $username): void {
     $response = $this->from('/register')->post('/register', [
         'name' => 'Test User',
         'username' => $username,
@@ -272,7 +275,7 @@ test('username is not reserved', function (string $username) {
     'logout',
 ]);
 
-test('unique constraint validation is case insensitive', function (string $existing, $new) {
+test('unique constraint validation is case insensitive', function (string $existing, $new): void {
     User::factory()->create([
         'email' => '1@gmail.com',
         'username' => $existing,
@@ -296,7 +299,9 @@ test('unique constraint validation is case insensitive', function (string $exist
     ['aaaaa', 'aaaaA'],
 ]);
 
-test("user's name can contain blank characters", function (string $given, string $expected) {
+test("user's name can contain blank characters", function (string $given, string $expected): void {
+    Queue::fake();
+
     mockTurnstileResponse(true);
     $response = $this->from('/register')->post('/register', [
         ...$this->basePayload, 'name' => $given,
@@ -308,7 +313,7 @@ test("user's name can contain blank characters", function (string $given, string
 
     // Retrieve the user
     $user = User::where('email', 'test@example.com')->first();
-    $this->assertNotNull($user, 'User should have been created.');
+    expect($user)->not->toBeNull();
 
     // Assert the name matches expectations
     expect($user->name)->toBe($expected);
@@ -318,9 +323,29 @@ test("user's name can contain blank characters", function (string $given, string
     ["Test \u{200E}\u{200E} User", "Test \u{200E}\u{200E} User"],
 ]);
 
-test('anonymously preference is set to true by default', function () {
+test('anonymously preference is set to true by default', function (): void {
     mockTurnstileResponse(true);
     $this->from('/register')->post('/register', $this->basePayload);
 
     expect(User::first()->prefers_anonymous_questions)->toBeTrue();
+});
+
+test('cannot register with blocked email', function (): void {
+    $email = 'blocked@example.com';
+
+    BlockedAccount::factory()->create(['email' => $email]);
+
+    $response = $this->from('/register')->post('/register', [
+        'name' => 'Test User',
+        'username' => 'testuser',
+        'email' => $email,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'terms' => true,
+    ]);
+
+    $response->assertRedirect('/register')
+        ->assertSessionHasErrors(['email' => 'This email has been blocked.']);
+
+    $this->assertDatabaseMissing('users', ['email' => $email]);
 });

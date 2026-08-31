@@ -32,7 +32,7 @@ final readonly class QuestionObserver
             $question->to->notify(new QuestionCreated($question));
         }
 
-        (new UpdateQuestionHashtags($question))->handle();
+        new UpdateQuestionHashtags($question)->handle();
     }
 
     /**
@@ -53,7 +53,7 @@ final readonly class QuestionObserver
         }
 
         if ($question->isDirty(['answer', 'content'])) {
-            (new UpdateQuestionHashtags($question))->handle();
+            new UpdateQuestionHashtags($question)->handle();
         }
 
         if ($question->isDirty('answer') === false) {

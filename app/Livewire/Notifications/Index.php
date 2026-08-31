@@ -7,7 +7,10 @@ namespace App\Livewire\Notifications;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionCreated;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Pagination\Paginator;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -16,10 +19,8 @@ final class Index extends Component
     /**
      * Ignore all notifications.
      */
-    public function ignoreAll(string $untilDatetime): void
+    public function ignoreAll(string $untilDatetime, #[CurrentUser] User $user): void
     {
-        $user = type(auth()->user())->as(User::class);
-
         $questionsToIgnore = $user
             ->notifications()
             ->where('created_at', '<=', $untilDatetime)
@@ -44,13 +45,44 @@ final class Index extends Component
     /**
      * Render the component.
      */
-    public function render(Request $request): View
+    public function render(#[CurrentUser] User $user): View
     {
-        $user = type($request->user())->as(User::class);
+        /** @var Paginator<int, DatabaseNotification> $notifications */
+        $notifications = $user->notifications()->simplePaginate(10);
 
         return view('livewire.notifications.index', [
             'user' => $user,
-            'notifications' => $user->notifications()->get(),
+            'notifications' => $notifications,
+            'questions' => $this->questionsFor($notifications),
         ]);
+    }
+
+    /**
+     * Load the questions referenced by the given notifications in a single query.
+     *
+     * @param  Paginator<int, DatabaseNotification>  $notifications
+     * @return Collection<int|string, Question>
+     */
+    private function questionsFor(Paginator $notifications): Collection
+    {
+        $questionIds = collect($notifications->items())
+            ->map(function (DatabaseNotification $notification): ?string {
+                $questionId = $notification->data['question_id'] ?? null;
+
+                return is_string($questionId) ? $questionId : null;
+            })
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($questionIds->isEmpty()) {
+            return new Collection();
+        }
+
+        return Question::query()
+            ->with(['from', 'to', 'parent'])
+            ->whereIn('id', $questionIds)
+            ->get()
+            ->keyBy('id');
     }
 }

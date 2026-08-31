@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Mail\PendingNotifications;
 use App\Models\User;
 
-test('envelope', function () {
+test('envelope', function (): void {
     $user = User::factory()->create();
 
     $mail = new PendingNotifications($user, 1);
@@ -16,7 +16,7 @@ test('envelope', function () {
         ->toBe('🌸 Pinkary: You Have 1 Notification! - '.now()->format('F j, Y'));
 });
 
-test('content', function () {
+test('content', function (): void {
     $user = User::factory()->create();
 
     $mail = new PendingNotifications($user, 1);

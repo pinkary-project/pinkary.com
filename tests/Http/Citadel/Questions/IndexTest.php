@@ -6,14 +6,14 @@ use App\Filament\Resources\QuestionResource;
 use App\Filament\Resources\QuestionResource\Widgets\QuestionOverview;
 use App\Models\User;
 
-it('can render page', function () {
+it('can render page', function (): void {
     $this->actingAs(User::factory()->create([
         'email' => 'enunomaduro@gmail.com',
     ]));
     $this->get(QuestionResource::getUrl('index'))->assertSuccessful();
 });
 
-it('has a stats widget', function () {
+it('has a stats widget', function (): void {
     $this->actingAs(User::factory()->create([
         'email' => 'enunomaduro@gmail.com',
     ]));

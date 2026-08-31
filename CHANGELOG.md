@@ -1,3 +1,82 @@
+## Version 2.1.0
+> 30 August, 2026
+
+- Adds a thread composer to publish multiple connected posts at once, with per-post images and polls.
+- Replaces native browser alerts with the in-app confirmation modal when discarding drafts.
+- Blocks AI crawlers and agentic browsers with a friendly message.
+- Speeds up page rendering and feeds with Blaze.
+- Improves the avatar upload form with clearer submission states.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.0.0
+> 20 August, 2026
+
+- Major UI overhaul with modernized layout and styling across the application.
+- Adds People to Follow widget with direct follow/unfollow actions.
+- Adds dedicated Post buttons to desktop navigation sidebar and mobile floating action button.
+- Replaces link delete browser alert with a confirmation modal.
+- Adds email blocking functionality.
+- Adds MySQL database support, Docker MySQL service, and S3 file upload migration commands.
+- Update to Laravel 13, Livewire v4, Tailwind CSS v4.
+- Adds Laravel Boost integration and coding conventions.
+- Improves link preview UI and mobile links toggle.
+- Fixes default feed selection and recent feed display on subsequent visits.
+- Fixes Cloudflare Turnstile integration and image handling hooks.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 1.47.0
+> 31 March, 2026
+
+- Adds option to select default feed
+- Internal improvements and bug fixes.
+
+## Version 1.46.0
+> 23 December, 2025
+
+- Internal improvements and bug fixes.
+
+## Version 1.45.1
+> 4 August, 2025
+
+- Improves link previews for posts.
+- Internal improvements and bug fixes.
+
+## Version 1.45.0
+> 3 August, 2025
+
+- Adds view likes button to posts.
+- Update to Laravel 12.
+- minor improvements
+
+## Version 1.44.0
+> 27 July, 2025
+
+- Major speed improvements to the following feed.
+- Adds a page explaining what "verified" means and how to get verified.
+- Adds polls feature.
+- Adds link previews (OG images, video, oEmbed videos).
+- Adds actions for email-verified users.
+- Adds translate button for posts.
+- Adds light mode to question placeholders.
+- Adds "Asia/Calcutta" timezone for better international compatibility.
+- Makes "Bio" field optional.
+- Migrates bot protection from Google reCAPTCHA to Cloudflare Turnstile.
+- Improves design consistency on the verified page for light and dark mode.
+- Refactors model relationship annotations and type hints.
+- Refactors and improves Alpine.js code for clarity.
+- Updates dependencies: vite to 5.4.6, symfony/http-client to 7.1.8.
+- Improves and fixes link preview functionality and related tests.
+- Fixes overflowing issue with dropdown menus.
+- Fixes mentions list not showing in edit mode.
+- Fixes hashtag parsing to include `<br>` tags.
+- Fixes image security and client-side image deletion errors.
+- Fixes Youtube previews and ensures only the last URL per post gets a preview.
+- Fixes like and bookmark buttons with browser back key.
+- Removes tweet oEmbed previews.
+- Removes unused QR code dependency.
+- Internal improvements, code refactors, and bug fixes.
+- Adds and improves tests for new features.
+
 ## Version 1.43.1
 > 11 October, 2024
 

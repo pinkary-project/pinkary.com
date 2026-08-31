@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Links;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -25,10 +25,8 @@ final class Create extends Component
     /**
      * Store a new link.
      */
-    public function store(Request $request): void
+    public function store(#[CurrentUser] User $user): void
     {
-        $user = type($request->user())->as(User::class);
-
         $linksCount = $user->links()->count();
 
         if ($linksCount >= 10 && ! $user->is_verified) {
@@ -37,7 +35,7 @@ final class Create extends Component
             return;
         }
 
-        if ($linksCount >= 20 && $user->is_verified) {
+        if ($linksCount >= 20 && $user->is_verified) { // @phpstan-ignore-line booleanAnd.rightAlwaysTrue
             $this->addError('url', 'You can only have 20 links at a time.');
 
             return;
@@ -65,10 +63,10 @@ final class Create extends Component
     /**
      * Render the component.
      */
-    public function render(Request $request): View
+    public function render(#[CurrentUser] User $user): View
     {
         return view('livewire.links.create', [
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 }

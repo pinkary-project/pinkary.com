@@ -7,7 +7,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 
-test('email verification screen can be rendered', function () {
+test('email verification screen can be rendered', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,
     ]);
@@ -17,13 +17,13 @@ test('email verification screen can be rendered', function () {
     $response->assertOk();
 });
 
-test('email verification screen can be rendered only for authenticated users', function () {
+test('email verification screen can be rendered only for authenticated users', function (): void {
     $response = $this->get('/verify-email');
 
     $response->assertRedirect('/login');
 });
 
-test('email can be verified', function () {
+test('email can be verified', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,
     ]);
@@ -47,7 +47,7 @@ test('email can be verified', function () {
     $response->assertSessionHas('flash-message', 'Your email has been verified.');
 });
 
-test('email is not verified with invalid hash', function () {
+test('email is not verified with invalid hash', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,
     ]);
@@ -63,7 +63,7 @@ test('email is not verified with invalid hash', function () {
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });
 
-test('email is not verified with invalid user id', function () {
+test('email is not verified with invalid user id', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,
     ]);
@@ -79,7 +79,7 @@ test('email is not verified with invalid user id', function () {
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });
 
-test('notification message is show if email is already verified', function () {
+test('notification message is show if email is already verified', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => now(),
     ]);

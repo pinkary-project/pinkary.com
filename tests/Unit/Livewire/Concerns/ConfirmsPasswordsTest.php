@@ -8,7 +8,7 @@ use Livewire\Component;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
-it('ensures password is confirmed', function () {
+it('ensures password is confirmed', function (): void {
     $user = User::factory()->create();
 
     /** @var Testable $component */
@@ -19,7 +19,7 @@ it('ensures password is confirmed', function () {
     $component->assertNotSet('isConfirmed', true);
 });
 
-it('does not dispatch confirm-password when password is confirmed', function () {
+it('does not dispatch confirm-password when password is confirmed', function (): void {
     $user = User::factory()->create();
     session()->put('auth.password_confirmed_at', time());
 
@@ -39,12 +39,12 @@ function myComponent(): Component
 
         public bool $isConfirmed = false;
 
-        public function someMethod()
+        public function someMethod(): void
         {
             $this->isConfirmed = $this->ensurePasswordIsConfirmed('id-to-confirm');
         }
 
-        public function render()
+        public function render(): string
         {
             return <<<'HTML'
             <div>

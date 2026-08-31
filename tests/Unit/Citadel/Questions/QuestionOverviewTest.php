@@ -6,7 +6,7 @@ use App\Filament\Resources\QuestionResource\Widgets\QuestionOverview;
 use App\Models\Question;
 use Livewire\Livewire;
 
-it('displays the correct stats', function () {
+it('displays the correct stats', function (): void {
 
     Question::factory()->count(51)->create();
 

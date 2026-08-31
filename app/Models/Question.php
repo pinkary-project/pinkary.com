@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Contracts\Models\Viewable;
+use App\Models\Scopes\WhereNotModerated;
 use App\Observers\QuestionObserver;
 use App\Services\ParsableContent;
+use Carbon\CarbonImmutable;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @property string $id
@@ -28,13 +30,14 @@ use Illuminate\Support\Carbon;
  * @property string $content
  * @property bool $anonymously
  * @property string|null $answer
- * @property Carbon|null $answer_created_at
- * @property Carbon|null $answer_updated_at
+ * @property CarbonImmutable|null $answer_created_at
+ * @property CarbonImmutable|null $answer_updated_at
+ * @property CarbonImmutable|null $poll_expires_at
  * @property bool $is_reported
  * @property bool $is_ignored
  * @property int $views
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property CarbonImmutable $created_at
+ * @property CarbonImmutable $updated_at
  * @property-read User $from
  * @property-read User $to
  * @property-read Collection<int, Like> $likes
@@ -43,6 +46,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Question> $children
  * @property-read Collection<int, Question> $descendants
  * @property-read Collection<int, Hashtag> $hashtags
+ * @property-read Collection<int, PollOption> $pollOptions
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
@@ -70,7 +74,7 @@ final class Question extends Model implements Viewable
     {
         $content = new ParsableContent();
 
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
     }
 
     /**
@@ -80,7 +84,7 @@ final class Question extends Model implements Viewable
     {
         $content = new ParsableContent();
 
-        return $value !== null && $value !== '' && $value !== '0' ? $content->parse($value) : null;
+        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
     }
 
     /**
@@ -137,6 +141,7 @@ final class Question extends Model implements Viewable
             'updated_at' => 'datetime',
             'pinned' => 'boolean',
             'is_ignored' => 'boolean',
+            'poll_expires_at' => 'datetime',
             'views' => 'integer',
         ];
     }
@@ -182,6 +187,16 @@ final class Question extends Model implements Viewable
     }
 
     /**
+     * Get the likers for the question.
+     *
+     * @return HasManyThrough<User, Like, $this>
+     */
+    public function likers(): HasManyThrough
+    {
+        return $this->hasManyThrough(User::class, Like::class, 'question_id', 'id', 'id', 'user_id');
+    }
+
+    /**
      * Get the mentions for the question.
      *
      * @return Collection<int, User>
@@ -195,7 +210,7 @@ final class Question extends Model implements Viewable
             return $mentionedUsers;
         }
 
-        preg_match_all("/@([^\s,.?!\/@<]+)/i", type($this->content)->asString(), $contentMatches);
+        preg_match_all("/@([^\s,.?!\/@<]+)/i", (string) $this->content, $contentMatches);
         preg_match_all("/@([^\s,.?!\/@<]+)/i", $this->answer, $answerMatches);
 
         $mentions = array_unique(array_merge($contentMatches[1], $answerMatches[1]));
@@ -217,8 +232,7 @@ final class Question extends Model implements Viewable
     public function root(): BelongsTo
     {
         return $this->belongsTo(self::class, 'root_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -227,8 +241,7 @@ final class Question extends Model implements Viewable
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -237,8 +250,7 @@ final class Question extends Model implements Viewable
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -247,8 +259,7 @@ final class Question extends Model implements Viewable
     public function descendants(): HasMany
     {
         return $this->hasMany(self::class, 'root_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -257,5 +268,43 @@ final class Question extends Model implements Viewable
     public function hashtags(): BelongsToMany
     {
         return $this->belongsToMany(Hashtag::class);
+    }
+
+    /**
+     * Get the poll options for the question.
+     *
+     * @return HasMany<PollOption, $this>
+     */
+    public function pollOptions(): HasMany
+    {
+        return $this->hasMany(PollOption::class);
+    }
+
+    /**
+     * Check if this question is a poll.
+     */
+    public function isPoll(): bool
+    {
+        return $this->poll_expires_at !== null;
+    }
+
+    /**
+     * Check if the poll has expired.
+     */
+    public function isPollExpired(): bool
+    {
+        return (bool) $this->poll_expires_at?->isPast();
+    }
+
+    /**
+     * Get the time remaining for the poll.
+     */
+    public function getPollTimeRemaining(): ?string
+    {
+        if ($this->isPollExpired()) {
+            return null;
+        }
+
+        return $this->poll_expires_at?->diffForHumans();
     }
 }

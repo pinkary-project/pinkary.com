@@ -8,7 +8,7 @@ use App\Mail\PendingNotifications;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
-test('sends daily emails', function () {
+test('sends daily emails', function (): void {
     User::factory(5)->create();
 
     User::factory(2)->create([
@@ -41,7 +41,7 @@ test('sends daily emails', function () {
     Mail::assertQueued(PendingNotifications::class, 5);
 });
 
-test('sends weekly emails', function () {
+test('sends weekly emails', function (): void {
     User::factory(5)->create();
 
     User::factory(2)->create([
@@ -74,7 +74,7 @@ test('sends weekly emails', function () {
     Mail::assertQueued(PendingNotifications::class, 2);
 });
 
-test('mails getting notification count', function () {
+test('mails getting notification count', function (): void {
     $user = User::factory()->create([
         'mail_preference_time' => UserMailPreference::Daily,
     ]);
@@ -101,7 +101,5 @@ test('mails getting notification count', function () {
     $this->artisan(SendUnreadNotificationEmailsCommand::class)
         ->assertExitCode(0);
 
-    Mail::assertQueued(PendingNotifications::class, function (PendingNotifications $mail) {
-        return $mail->pendingNotificationsCount === 3;
-    });
+    Mail::assertQueued(PendingNotifications::class, fn (PendingNotifications $mail): bool => $mail->pendingNotificationsCount === 3);
 });

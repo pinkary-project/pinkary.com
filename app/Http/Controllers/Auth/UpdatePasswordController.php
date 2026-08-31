@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,10 +16,8 @@ final readonly class UpdatePasswordController
     /**
      * Update the user's password.
      */
-    public function __invoke(Request $request): RedirectResponse
+    public function __invoke(Request $request, #[CurrentUser] User $user): RedirectResponse
     {
-        $user = type($request->user())->as(User::class);
-
         /** @var array<string, string> $validated */
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],

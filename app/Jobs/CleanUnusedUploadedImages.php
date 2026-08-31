@@ -26,7 +26,7 @@ final class CleanUnusedUploadedImages implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private readonly string $disk = 'public')
+    public function __construct(private readonly ?string $disk = null)
     {
         //
     }
@@ -46,7 +46,6 @@ final class CleanUnusedUploadedImages implements ShouldQueue
 
         collect($this->getDateRange($lastRunTime, $fiveMinutesAgo))
             ->flatMap(fn (string $date): array => $disk->allFiles("images/{$date}"))
-            ->filter(fn (mixed $file): bool => is_string($file))
             ->filter(function (string $file) use ($disk, $lastRunTime, $fiveMinutesAgo): bool {
                 $lastModified = Carbon::createFromTimestamp($disk->lastModified($file));
 
