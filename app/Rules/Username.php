@@ -89,6 +89,8 @@ final readonly class Username implements ValidationRule
             'cgi',
             'cgi-bin',
             'changelog',
+            'channel',
+            'channels',
             'chat',
             'check',
             'checking',

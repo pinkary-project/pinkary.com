@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
+use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
@@ -27,6 +28,8 @@ Route::middleware('block.bots')->group(function () {
     Route::view('/following', 'home/following')->name('home.following');
     Route::view('/trending', 'home/trending-questions')->name('home.trending');
     Route::view('/users', 'home/users')->name('home.users');
+
+    Route::get('/channels/{channel:slug}', ChannelController::class)->name('channels.show');
 
     Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
 

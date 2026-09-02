@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
 use Database\Factories\Concerns\RefreshOnCreate;
@@ -63,6 +64,16 @@ final class QuestionFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'poll_expires_at' => now()->addDays(3),
+        ]);
+    }
+
+    /**
+     * Indicate that the question belongs to a channel.
+     */
+    public function forChannel(Channel $channel): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'channel_id' => $channel->id,
         ]);
     }
 }

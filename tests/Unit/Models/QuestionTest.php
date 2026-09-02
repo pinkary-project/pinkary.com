@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Channel;
 use App\Models\Hashtag;
 use App\Models\Like;
 use App\Models\PollOption;
@@ -29,7 +30,8 @@ test('to array', function (): void {
         'parent_id',
         'root_id',
         'poll_expires_at',
-    )->toHaveCount(17);
+        'channel_id',
+    )->toHaveCount(18);
 });
 
 test('content', function (): void {
@@ -68,6 +70,11 @@ test('relations', function (): void {
         ->and($question->descendants)->toContainOnlyInstancesOf(Question::class)
         ->and($question->pollOptions)->toContainOnlyInstancesOf(PollOption::class)
         ->and($question->pollOptions)->toHaveCount(2);
+
+    $channel = Channel::factory()->create();
+    $questionWithChannel = Question::factory()->forChannel($channel)->create();
+    expect($questionWithChannel->channel)->toBeInstanceOf(Channel::class)
+        ->and($questionWithChannel->channel->id)->toBe($channel->id);
 });
 
 test('mentions', function (): void {
