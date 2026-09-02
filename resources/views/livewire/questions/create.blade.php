@@ -427,6 +427,9 @@
                             <span x-show="threadPosts.length > 0" style="display: none">{{ __('Post thread') }}</span>
                         @endif
                     </button>
+                    @if (! $this->parentId && $this->isSharingUpdate)
+                        <x-channel-picker x-cloak x-show="showSecondaryControls()" x-transition />
+                    @endif
                 </div>
                 @if (! $this->parentId && ! $this->isSharingUpdate)
                     <div class="flex items-center border border-slate-200/70 bg-white px-3 py-2 dark:border-slate-800/30 dark:bg-[#10182b]">

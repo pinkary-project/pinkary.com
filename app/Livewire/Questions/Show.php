@@ -57,6 +57,12 @@ final class Show extends Component
     public bool $showBorder = false;
 
     /**
+     * Determine if this is currently being viewed in a channel feed.
+     */
+    #[Locked]
+    public bool $inChannel = false;
+
+    /**
      * The previous question ID, where the user came from.
      */
     #[Url]

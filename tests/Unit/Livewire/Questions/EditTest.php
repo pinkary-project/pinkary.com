@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Questions\Edit;
 use App\Livewire\Questions\Show;
+use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
 use Livewire\Livewire;
@@ -220,4 +221,44 @@ test('cannot answer a question that has been reported or ignored', function (): 
     $component->assertDispatched('notification.created', message: 'Sorry, something unexpected happened. Please try again.');
 
     $component->assertRedirect(route('profile.show', ['username' => $this->question->to->username]));
+});
+
+test('create channel validation in edit', function (): void {
+    Livewire::test(Edit::class, ['questionId' => $this->question->id])
+        ->call('createChannel', '')
+        ->assertHasErrors(['newChannel'])
+        ->call('createChannel', 'A')
+        ->assertHasErrors(['newChannel'])
+        ->call('createChannel', 'Invalid @ Name!')
+        ->assertHasErrors(['newChannel'])
+        ->call('createChannel', '---')
+        ->assertHasErrors(['newChannel']);
+});
+
+test('create channel reuses existing in edit', function (): void {
+    $existing = Channel::factory()->create(['name' => 'Laravel', 'slug' => 'laravel']);
+
+    Livewire::test(Edit::class, ['questionId' => $this->question->id])
+        ->call('createChannel', 'laravel')
+        ->assertHasNoErrors()
+        ->assertSet('channelId', $existing->id);
+});
+
+test('create channel is deferred in edit', function (): void {
+    expect(Channel::where('slug', 'brand-new-channel')->count())->toBe(0);
+
+    Livewire::test(Edit::class, ['questionId' => $this->question->id])
+        ->call('createChannel', 'Brand New Channel')
+        ->assertHasNoErrors()
+        ->assertSet('channelName', 'Brand New Channel');
+
+    expect(Channel::where('slug', 'brand-new-channel')->count())->toBe(0);
+});
+
+test('create channel unverified in edit', function (): void {
+    $this->question->to->update(['email_verified_at' => null]);
+
+    Livewire::test(Edit::class, ['questionId' => $this->question->id])
+        ->call('createChannel', 'Valid Name')
+        ->assertRedirect(route('verification.notice'));
 });

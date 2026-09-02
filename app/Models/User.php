@@ -63,6 +63,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  * @property-read Collection<int, User> $following
  * @property-read Collection<int, User> $followers
+ * @property-read Collection<int, Channel> $channels
  */
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
@@ -137,6 +138,16 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function questionsReceived(): HasMany
     {
         return $this->hasMany(Question::class, 'to_id');
+    }
+
+    /**
+     * Get the user's channels.
+     *
+     * @return HasMany<Channel, $this>
+     */
+    public function channels(): HasMany
+    {
+        return $this->hasMany(Channel::class);
     }
 
     /**

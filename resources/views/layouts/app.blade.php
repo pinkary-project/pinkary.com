@@ -4,7 +4,7 @@
     @include('layouts.components.head')
 </head>
 @php
-    $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show');
+    $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show') || request()->routeIs('channels.*');
     $showUtilityRail = request()->routeIs('bookmarks.*') || request()->routeIs('notifications.*');
     $showRightRail = $showDiscoverLayout || $showUtilityRail || request()->routeIs('profile.show') || request()->routeIs('questions.show');
     $globalSearchQuery = request()->routeIs('home.users')
@@ -153,7 +153,38 @@
                 class="flex max-h-[calc(100dvh-3rem)] flex-col"
                 x-init="
                     $watch('show', (value) => {
-                        if (value || window.__postJustPublished) {
+                        if (value) {
+                            const composer = $el.querySelector('[data-post-composer]');
+                            const picker = composer ? composer.querySelector('[data-channel-picker]') : null;
+                            const channelMeta = document.querySelector('[data-current-channel-id]');
+                            if (channelMeta) {
+                                const channelId = parseInt(channelMeta.getAttribute('data-current-channel-id'), 10);
+                                const channelName = channelMeta.getAttribute('data-current-channel-name');
+                                if (channelId && channelName) {
+                                    $nextTick(() => {
+                                        const pickerState = picker ? Alpine.$data(picker) : null;
+                                        if (pickerState) {
+                                            pickerState.select({ id: channelId, name: channelName });
+                                        }
+                                    });
+                                }
+                            } else {
+                                const state = composer ? Alpine.$data(composer) : null;
+                                const pickerHasChannel = picker && picker.hasAttribute('data-selected-id');
+                                if (state && ! state.hasDraft() && ! pickerHasChannel) {
+                                    $nextTick(() => {
+                                        const pickerState = picker ? Alpine.$data(picker) : null;
+                                        if (pickerState) {
+                                            pickerState.select(null);
+                                        }
+                                    });
+                                }
+                            }
+
+                            return;
+                        }
+
+                        if (window.__postJustPublished) {
                             window.__postJustPublished = false;
 
                             return;
@@ -167,7 +198,7 @@
 
                         const state = Alpine.$data(composer);
 
-                        if (! state.hasDraft()) {
+                        if (! state || ! state.hasDraft()) {
                             return;
                         }
 
@@ -207,8 +238,9 @@
                     <x-primary-button
                         x-on:click="
                             const composer = document.querySelector('[data-post-composer][data-draft-key=post_modal]');
-                            if (composer) {
-                                Alpine.$data(composer).discardDraft();
+                            const state = composer ? Alpine.$data(composer) : null;
+                            if (state) {
+                                state.discardDraft();
                             }
                             $dispatch('close-modal', 'discard-post-draft');
                         "
