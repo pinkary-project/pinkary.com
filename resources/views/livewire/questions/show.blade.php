@@ -1,4 +1,11 @@
-<article class="block space-y-1" id="q-{{ $questionId }}" x-data="copyCode">
+<article
+    @class([
+        'block',
+        'space-y-1' => ! $question->isSharedUpdate() || ($question->pinned && $pinnable),
+    ])
+    id="q-{{ $questionId }}"
+    x-data="copyCode"
+>
     @php
         $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
         $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
@@ -6,59 +13,61 @@
         $shareMenuContentClasses = 'flex flex-col space-y-1 rounded-2xl border border-slate-200/80 bg-white/95 p-2 text-slate-500 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-white/10 dark:bg-gray-900/95 dark:text-slate-300 dark:shadow-black/30';
         $shareMenuItemClasses = 'rounded-xl p-1 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950 focus:outline-none dark:text-slate-400 dark:hover:bg-gray-800 dark:hover:text-white';
     @endphp
-    <div @class([
-        'space-y-2 rounded-md border border-slate-200/70 bg-slate-50/70 px-3 py-2.5 dark:border-slate-800/40 dark:bg-[#0b1324]/80' => $question->answer && ! $question->isSharedUpdate(),
-        'space-y-1' => ! $question->answer || $question->isSharedUpdate(),
-    ])>
-        <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
-            @unless ($question->isSharedUpdate())
-                @if ($question->anonymously)
-                    <div class="inline-flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-slate-300 dark:border-slate-700">
-                            <span class="text-xs">?</span>
+    @if (! $question->isSharedUpdate() || ($question->pinned && $pinnable))
+        <div @class([
+            'space-y-2 rounded-md border border-slate-200/70 bg-slate-50/70 px-3 py-2.5 dark:border-slate-800/40 dark:bg-[#0b1324]/80' => $question->answer && ! $question->isSharedUpdate(),
+            'space-y-1' => ! $question->answer || $question->isSharedUpdate(),
+        ])>
+            <div class="flex items-start {{ $question->isSharedUpdate() ? 'justify-end' : 'justify-between gap-3' }}">
+                @unless ($question->isSharedUpdate())
+                    @if ($question->anonymously)
+                        <div class="inline-flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-slate-300 dark:border-slate-700">
+                                <span class="text-xs">?</span>
+                            </div>
+                            <p class="font-medium">Anonymously</p>
                         </div>
-                        <p class="font-medium">Anonymously</p>
+                    @else
+                        <div class="min-w-0">
+                            <x-avatar-with-name :user="$question->from" />
+                        </div>
+                    @endif
+
+                    <div class="flex items-center gap-2 self-start">
+                        <a
+                            class="{{ $interactiveChipClasses }}"
+                            href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
+                            target="_blank"
+                            data-navigate-ignore="true"
+                        >
+                            <x-heroicon-o-language class="h-4 w-4" />
+                            <span class="hidden sm:inline">Translate</span>
+                        </a>
+
+                        @if ($question->pinned && $pinnable)
+                            <div class="{{ $chipClasses }}">
+                                <x-icons.pin class="h-4 w-4" />
+                                <span>Pinned</span>
+                            </div>
+                        @endif
                     </div>
                 @else
-                    <div class="min-w-0">
-                        <x-avatar-with-name :user="$question->from" />
-                    </div>
-                @endif
-
-                <div class="flex items-center gap-2 self-start">
-                    <a
-                        class="{{ $interactiveChipClasses }}"
-                        href="{{ 'https://translate.google.com/?sl=auto&tl=en&text='.urlencode($question->sharable_content) }}"
-                        target="_blank"
-                        data-navigate-ignore="true"
-                    >
-                        <x-heroicon-o-language class="h-4 w-4" />
-                        <span class="hidden sm:inline">Translate</span>
-                    </a>
-
                     @if ($question->pinned && $pinnable)
                         <div class="{{ $chipClasses }}">
                             <x-icons.pin class="h-4 w-4" />
                             <span>Pinned</span>
                         </div>
                     @endif
-                </div>
-            @else
-                @if ($question->pinned && $pinnable)
-                    <div class="{{ $chipClasses }}">
-                        <x-icons.pin class="h-4 w-4" />
-                        <span>Pinned</span>
-                    </div>
-                @endif
+                @endunless
+            </div>
+
+            @unless ($question->isSharedUpdate())
+                <p class="text-sm leading-7 text-slate-700 sm:text-[0.95rem] dark:text-slate-200">
+                    {!! $question->content !!}
+                </p>
             @endunless
         </div>
-
-        @unless ($question->isSharedUpdate())
-            <p class="text-sm leading-7 text-slate-700 sm:text-[0.95rem] dark:text-slate-200">
-                {!! $question->content !!}
-            </p>
-        @endunless
-    </div>
+    @endif
 
     @if ($question->answer)
         @php
@@ -100,27 +109,54 @@
                     @endif
                 </div>
                 <div class="min-w-0 flex-1 py-0.5">
-                    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-                        <a
-                            href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                            class="group/profile flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 text-sm"
-                            data-navigate-ignore="true"
-                            wire:navigate
-                        >
-                            <p class="truncate font-medium text-slate-950 dark:text-white">{{ $question->to->name }}</p>
+                    <div class="flex items-center justify-between gap-x-2">
+                        <div class="flex min-w-0 flex-1 items-center gap-x-1.5 text-sm">
+                            <a
+                                href="{{ route('profile.show', ['username' => $question->to->username]) }}"
+                                class="group/profile flex min-w-0 shrink items-center gap-x-1.5"
+                                data-navigate-ignore="true"
+                                wire:navigate
+                            >
+                                <p class="font-medium whitespace-nowrap text-slate-950 dark:text-white">
+                                    {{ $question->to->name }}
+                                </p>
 
-                            @if ($question->to->is_verified && $question->to->is_company_verified)
-                                <x-icons.verified-company :color="$question->to->right_color" class="h-3.5 w-3.5" />
-                            @elseif ($question->to->is_verified)
-                                <x-icons.verified :color="$question->to->right_color" class="h-3.5 w-3.5" />
-                            @endif
+                                @if ($question->to->is_verified && $question->to->is_company_verified)
+                                    <x-icons.verified-company
+                                        :color="$question->to->right_color"
+                                        class="h-3.5 w-3.5 shrink-0"
+                                    />
+                                @elseif ($question->to->is_verified)
+                                    <x-icons.verified
+                                        :color="$question->to->right_color"
+                                        class="h-3.5 w-3.5 shrink-0"
+                                    />
+                                @endif
 
-                            <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
-                                {{ '@'.$question->to->username }}
-                            </p>
-                        </a>
+                                <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
+                                    {{ '@'.$question->to->username }}
+                                </p>
+                            </a>
+                        </div>
 
                         <div class="flex shrink-0 items-center gap-2 text-[0.82rem] text-slate-500">
+                            @if ($question->channel)
+                                <a
+                                    href="{{ route('channels.show', $question->channel) }}"
+                                    class="inline-flex shrink-0 items-center gap-1 rounded-md bg-slate-100/80 px-1.5 py-0.5 text-[0.72rem] font-medium whitespace-nowrap text-slate-600 transition hover:bg-pink-50 hover:text-pink-600 dark:bg-[#111a2d] dark:text-slate-400 dark:hover:bg-pink-500/10 dark:hover:text-pink-400"
+                                    data-navigate-ignore="true"
+                                    wire:navigate
+                                >
+                                    <x-heroicon-o-tag class="size-3 shrink-0 text-pink-500/80" />
+                                    <span>{{ $question->channel->name }}</span>
+                                </a>
+
+                                <span
+                                    class="size-1 shrink-0 rounded-full bg-slate-300 dark:bg-slate-700"
+                                    aria-hidden="true"
+                                ></span>
+                            @endif
+
                             <time
                                 class="inline-flex cursor-help items-center whitespace-nowrap"
                                 title="{{ $timestamp->timezone(session()->get('timezone', 'UTC'))->isoFormat('ddd, D MMMM YYYY HH:mm') }}"

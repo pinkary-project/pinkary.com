@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Questions;
 
 use App\Livewire\Concerns\NeedsVerifiedEmail;
+use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
 use App\Rules\MaxUploads;
@@ -12,8 +13,11 @@ use App\Rules\NoBlankCharacters;
 use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
@@ -33,6 +37,8 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
  * @property-read int $maxThreadPosts
  * @property-read int $needsCaptcha
  * @property-read string $turnstileId
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Channel> $availableChannels
+ * @property-read Channel|null $selectedChannel
  */
 final class Create extends Component
 {
@@ -78,6 +84,16 @@ final class Create extends Component
      */
     #[Locked]
     public ?string $customDraftKey = null;
+
+    /**
+     * Optional channel ID.
+     */
+    public ?int $channelId = null;
+
+    /**
+     * Optional newly created channel name (deferred until post creation).
+     */
+    public ?string $channelName = null;
 
     /**
      * The component's content.
@@ -439,6 +455,31 @@ final class Create extends Component
             $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
+        $finalChannelId = null;
+
+        if ($this->isSharingUpdate && blank($this->parentId)) {
+            if ($this->channelName !== null) {
+                $slug = Str::slug($this->channelName);
+                if (filled($slug)) {
+                    $channel = Channel::firstOrCreate(
+                        ['slug' => $slug],
+                        [
+                            'user_id' => $user->id,
+                            'name' => $this->channelName,
+                            'questions_count' => 0,
+                        ],
+                    );
+                    $finalChannelId = $channel->id;
+                }
+            } elseif ($this->channelId !== null) {
+                $finalChannelId = $this->channelId;
+            }
+        }
+
+        if ($finalChannelId !== null) {
+            $validated['channel_id'] = $finalChannelId;
+        }
+
         /** @var array<int, array<string, mixed>> $payloads */
         $payloads = [
             [
@@ -483,6 +524,11 @@ final class Create extends Component
 
         $question = $questions[0];
 
+        if ($finalChannelId !== null) {
+            Channel::whereKey($finalChannelId)->increment('questions_count');
+            Cache::forget('channels:popular');
+        }
+
         if ($this->isPoll) {
             $options = [];
 
@@ -514,7 +560,7 @@ final class Create extends Component
         $this->transferImagesFromSourceDraft();
         $this->deleteUnusedImages();
 
-        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey']);
+        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey', 'channelId', 'channelName']);
         $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
@@ -543,6 +589,131 @@ final class Create extends Component
                 Livewire.navigate(window.location.href);
             JS);
         }
+    }
+
+    /**
+     * Get available channels.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Channel>
+     */
+    #[Computed]
+    public function availableChannels(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Cache::remember(
+            'channels:popular',
+            3600,
+            fn (): \Illuminate\Database\Eloquent\Collection => Channel::query()
+                ->orderByDesc('questions_count')
+                ->orderBy('name')
+                ->limit(8)
+                ->get(),
+        );
+    }
+
+    /**
+     * Search channels by query.
+     *
+     * @return array<int, array{id: int, name: string}>
+     */
+    public function searchChannels(string $query): array
+    {
+        $q = mb_trim($query);
+
+        if ($q === '') {
+            return $this->availableChannels->map(fn (Channel $channel): array => [
+                'id' => $channel->id,
+                'name' => $channel->name,
+            ])->values()->all();
+        }
+
+        return Channel::query()
+            ->where('name', 'like', "%{$q}%")
+            ->orderByDesc('questions_count')
+            ->orderBy('name')
+            ->limit(8)
+            ->get()
+            ->map(fn (Channel $channel): array => [
+                'id' => $channel->id,
+                'name' => $channel->name,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Get the selected channel model.
+     */
+    #[Computed]
+    public function selectedChannel(): ?Channel
+    {
+        return $this->channelId !== null ? Channel::find($this->channelId) : null;
+    }
+
+    /**
+     * Select or clear the active channel.
+     */
+    public function selectChannel(?int $id): void
+    {
+        $this->channelId = $id;
+        $this->channelName = null;
+        unset($this->selectedChannel);
+    }
+
+    /**
+     * Validate and stage a new channel for creation upon posting.
+     *
+     * @return array{id: int|string, name: string}|null
+     */
+    public function createChannel(string $name): ?array
+    {
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return null;
+        }
+
+        $name = mb_trim($name);
+
+        $validator = Validator::make(
+            ['name' => $name],
+            ['name' => ['required', 'string', 'min:2', 'max:50', 'regex:/^[\pL\pN\s\-_]+$/u']],
+        );
+
+        if ($validator->fails()) {
+            $this->addError('newChannel', (string) $validator->errors()->first('name'));
+
+            return null;
+        }
+
+        $slug = Str::slug($name);
+
+        if (blank($slug)) {
+            $this->addError('newChannel', 'Please enter a valid channel name.');
+
+            return null;
+        }
+
+        $channel = Channel::where('slug', $slug)->first();
+
+        if ($channel) {
+            $this->channelId = $channel->id;
+            $this->channelName = null;
+            $this->resetValidation('newChannel');
+            unset($this->selectedChannel);
+
+            return [
+                'id' => $channel->id,
+                'name' => $channel->name,
+            ];
+        }
+
+        $this->channelId = null;
+        $this->channelName = $name;
+        $this->resetValidation('newChannel');
+        unset($this->selectedChannel);
+
+        return [
+            'id' => 'new:'.$slug,
+            'name' => $name,
+        ];
     }
 
     /**

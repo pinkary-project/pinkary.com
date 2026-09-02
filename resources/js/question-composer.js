@@ -69,6 +69,14 @@ const questionComposer = (config = {}) => ({
             this.threadPolls = event.detail.threadPolls || [];
             this.images = event.detail.images || [];
             this.$wire.$set('imageSourceDraftKey', event.detail.sourceDraftKey || null, false);
+            if (event.detail.channelId) {
+                this.$wire.$set('channelId', event.detail.channelId, false);
+                this.$nextTick(() => {
+                    window.dispatchEvent(new CustomEvent('channel-selected', {
+                        detail: { id: event.detail.channelId, name: event.detail.channelName || '' },
+                    }));
+                });
+            }
             this.ensureThreadPolls();
             this.resizeAllTextareas();
             this.scrollComposerToBottom();
@@ -114,7 +122,8 @@ const questionComposer = (config = {}) => ({
             || this.hasInteracted
             || this.hasDraft()
             || this.images.length > 0
-            || this.isPoll;
+            || this.isPoll
+            || Boolean(this.$wire.channelId);
     },
 
     discardDraft() {
@@ -129,6 +138,13 @@ const questionComposer = (config = {}) => ({
         this.threadPosts = [];
         this.threadPolls = [];
         this.images = [];
+        this.$wire.$set('channelId', null, false);
+        const channelComponent = this.$el ? this.$el.querySelector('[data-channel-picker]') : null;
+        if (channelComponent) {
+            channelComponent.removeAttribute('data-selected-id');
+            channelComponent.removeAttribute('data-selected-name');
+        }
+        window.dispatchEvent(new CustomEvent('channel-selected', { detail: null }));
         this.removeErrors();
     },
 
@@ -214,6 +230,36 @@ const questionComposer = (config = {}) => ({
 
         if (content !== '' || threadPosts.length > 0) {
             this.$wire.$errors.clear();
+
+            let channelId = this.$wire.channelId ? parseInt(this.$wire.channelId, 10) : null;
+            let channelName = '';
+
+            const channelComponent = this.$el ? this.$el.querySelector('[data-channel-picker]') : null;
+            if (channelComponent) {
+                const rawId = channelComponent.getAttribute('data-selected-id');
+                const rawName = channelComponent.getAttribute('data-selected-name');
+                if (rawId) {
+                    channelId = parseInt(rawId, 10);
+                }
+                if (rawName) {
+                    channelName = rawName;
+                }
+
+                if (window.Alpine) {
+                    const channelState = window.Alpine.$data ? window.Alpine.$data(channelComponent) : channelComponent._x_dataStack?.[0];
+                    if (channelState) {
+                        channelId = channelState.selectedChannelId ? parseInt(channelState.selectedChannelId, 10) : channelId;
+                        channelName = channelState.selectedChannelName || channelName;
+                        if (! channelName && channelId && channelState.channels) {
+                            const found = channelState.channels.find((c) => String(c.id) === String(channelId));
+                            if (found) {
+                                channelName = found.name;
+                            }
+                        }
+                    }
+                }
+            }
+
             window.dispatchEvent(new CustomEvent('post-modal-poll', {
                 detail: {
                     content,
@@ -224,6 +270,8 @@ const questionComposer = (config = {}) => ({
                     threadPolls,
                     images,
                     sourceDraftKey: this.draftKey,
+                    channelId,
+                    channelName,
                 },
             }));
 

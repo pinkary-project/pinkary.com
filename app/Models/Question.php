@@ -38,8 +38,10 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int $views
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
+ * @property int|null $channel_id
  * @property-read User $from
  * @property-read User $to
+ * @property-read Channel|null $channel
  * @property-read Collection<int, Like> $likes
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
@@ -143,6 +145,7 @@ final class Question extends Model implements Viewable
             'is_ignored' => 'boolean',
             'poll_expires_at' => 'datetime',
             'views' => 'integer',
+            'channel_id' => 'integer',
         ];
     }
 
@@ -268,6 +271,14 @@ final class Question extends Model implements Viewable
     public function hashtags(): BelongsToMany
     {
         return $this->belongsToMany(Hashtag::class);
+    }
+
+    /**
+     * @return BelongsTo<Channel, $this>
+     */
+    public function channel(): BelongsTo
+    {
+        return $this->belongsTo(Channel::class);
     }
 
     /**

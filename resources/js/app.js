@@ -7,6 +7,8 @@ import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.e
 window.Alpine = Alpine
 window.Sortable = Sortable
 
+Alpine.$data = (el) => (el && el._x_dataStack ? el._x_dataStack[0] : null)
+
 Alpine.plugin(notifications)
 
 Alpine.magic('clipboard', () => {
