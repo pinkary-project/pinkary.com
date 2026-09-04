@@ -37,6 +37,24 @@ test('registration screen can be rendered', function (): void {
         ->assertSee('Register');
 });
 
+test('registration passwords can be toggled, matched, and scored live', function (): void {
+    $response = $this->get('/register');
+
+    $response->assertOk()
+        ->assertSee('x-bind:type="showPassword ? \'text\' : \'password\'"', false)
+        ->assertSee('Show password', false)
+        ->assertSee('Show password confirmation', false)
+        ->assertSee('focus-visible:ring-4', false)
+        ->assertSee('passwordConfirmation.length > 0 && password !== passwordConfirmation', false)
+        ->assertSee('The password confirmation does not match.')
+        ->assertSee('Password strength')
+        ->assertSee('This password was found in a data breach. Try a stronger one.')
+        ->assertDontSee('Checking this password securely…')
+        ->assertDontSee('We could not check this password right now. It will be checked when you register.')
+        ->assertSee('password.length > 0 && passwordFocused', false)
+        ->assertSee('x-bind:disabled="! canSubmit()"', false);
+});
+
 test('new users can register', function (): void {
     Queue::fake();
 

@@ -72,6 +72,9 @@ Alpine.data('themeSwitch', themeSwitch);
 import { poll } from './poll.js';
 Alpine.data('poll', poll);
 
+import { passwordRegistration } from './password-registration.js'
+Alpine.data('passwordRegistration', passwordRegistration)
+
 import { questionComposer } from './question-composer.js';
 Alpine.data('questionComposer', questionComposer);
 
