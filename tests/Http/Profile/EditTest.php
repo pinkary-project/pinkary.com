@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
+use App\Rules\UnauthorizedEmailProviders;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -59,6 +60,8 @@ test('profile information can be updated', function (): void {
 });
 
 test('email provider must be authorized', function (): void {
+    File::put(storage_path(UnauthorizedEmailProviders::STORAGE_FILE_PATH), '0-mail.com');
+
     $user = User::factory()->create();
 
     $response = $this
@@ -76,6 +79,8 @@ test('email provider must be authorized', function (): void {
         ->assertSessionHasErrors([
             'email' => 'The email belongs to an unauthorized email provider.',
         ]);
+
+    File::delete(storage_path(UnauthorizedEmailProviders::STORAGE_FILE_PATH));
 });
 
 test('username can be updated to uppercase', function (): void {
