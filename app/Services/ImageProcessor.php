@@ -18,6 +18,9 @@ final readonly class ImageProcessor
      */
     public const ?string DISK = null;
 
+    /**
+     * Create a new image processor.
+     */
     public function __construct(
         private FilesystemManager $storage,
     ) {}
@@ -93,11 +96,17 @@ final readonly class ImageProcessor
         return $this->disk()->delete($path);
     }
 
+    /**
+     * Get the public storage disk.
+     */
     private function disk(): Filesystem
     {
         return $this->storage->disk(self::DISK);
     }
 
+    /**
+     * Create the image manager used for processing uploads.
+     */
     private function manager(): ImageManager
     {
         return new ImageManager(
