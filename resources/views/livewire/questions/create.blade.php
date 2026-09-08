@@ -418,7 +418,7 @@
                     <button
                         type="submit"
                         :disabled="uploading"
-                        class="inline-flex items-center border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-slate-800"
+                        class="inline-flex items-center rounded-md border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-slate-800"
                     >
                         @if ($this->parentId)
                             {{ __('Reply') }}

@@ -30,7 +30,7 @@
                 <div class="flex items-center gap-2">
                     <button
                         type="submit"
-                        class="inline-flex items-center border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white dark:hover:bg-slate-800"
+                        class="inline-flex items-center rounded-md border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white dark:hover:bg-slate-800"
                     >
                         {{ __('Send') }}
                     </button>
