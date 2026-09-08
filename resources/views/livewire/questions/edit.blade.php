@@ -52,6 +52,10 @@
                                 {{ __('Report') }}
                             </button>
                         @endif
+
+                        @if ($question->isSharedUpdate())
+                            <x-channel-picker />
+                        @endif
                     @endif
                 </div>
             </div>

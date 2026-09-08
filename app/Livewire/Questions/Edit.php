@@ -4,18 +4,27 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\HasChannelPicker;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
+use App\Models\Channel;
 use App\Models\Question;
 use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
+/**
+ * @property-read Collection<int, Channel> $availableChannels
+ * @property-read Channel|null $selectedChannel
+ */
 final class Edit extends Component
 {
+    use HasChannelPicker;
     use NeedsVerifiedEmail;
 
     /**
@@ -38,6 +47,7 @@ final class Edit extends Component
         $question = Question::findOrFail($questionId);
         $rawAnswer = $question->getRawOriginal('answer');
         $this->answer = is_string($rawAnswer) ? $rawAnswer : '';
+        $this->channelId = $question->channel_id;
     }
 
     /**
@@ -81,7 +91,39 @@ final class Edit extends Component
             $validated['answer_updated_at'] = now();
         }
 
-        $question->update($validated);
+        if ($question->isSharedUpdate() && blank($question->parent_id)) {
+            $finalChannelId = $this->resolveChannelId($user);
+
+            if ($finalChannelId === false) {
+                return;
+            }
+
+            $previousChannelId = $question->channel_id;
+            $validated['channel_id'] = $finalChannelId;
+
+            $question->update($validated);
+
+            if ($previousChannelId !== $finalChannelId) {
+                if ($previousChannelId !== null) {
+                    $previousChannel = Channel::find($previousChannelId);
+                    if ($previousChannel instanceof Channel) {
+                        $previousChannel->decrement('questions_count');
+                        $this->dispatch('channel-count-updated', channelId: $previousChannelId, count: $previousChannel->questions_count);
+                    }
+                }
+                if ($finalChannelId !== null) {
+                    $finalChannel = Channel::find($finalChannelId);
+                    if ($finalChannel instanceof Channel) {
+                        $finalChannel->increment('questions_count');
+                        $this->dispatch('channel-count-updated', channelId: $finalChannelId, count: $finalChannel->questions_count);
+                    }
+                }
+                Cache::forget('channels:popular');
+            }
+        } else {
+            // Non-root posts (e.g. comments, replies, Q&A) cannot have channels attached.
+            $question->update($validated);
+        }
 
         if ($originalAnswer !== null) {
             $question->likes()->delete();

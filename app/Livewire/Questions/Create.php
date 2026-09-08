@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Livewire\Concerns\HasChannelPicker;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
+use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
 use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -33,9 +37,12 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
  * @property-read int $maxThreadPosts
  * @property-read int $needsCaptcha
  * @property-read string $turnstileId
+ * @property-read Collection<int, Channel> $availableChannels
+ * @property-read Channel|null $selectedChannel
  */
 final class Create extends Component
 {
+    use HasChannelPicker;
     use NeedsVerifiedEmail;
     use WithFileUploads;
 
@@ -205,10 +212,15 @@ final class Create extends Component
     /**
      * Mount the component.
      */
-    public function mount(#[CurrentUser] ?User $user): void
+    public function mount(#[CurrentUser] ?User $user, ?int $channelId = null): void
     {
         if ($user instanceof User) {
             $this->anonymously = $user->prefers_anonymous_questions;
+        }
+
+        if ($channelId !== null) {
+            $this->channelId = $channelId;
+            $this->initialChannelId = $channelId;
         }
     }
 
@@ -439,6 +451,20 @@ final class Create extends Component
             $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
+        $finalChannelId = null;
+
+        if ($this->isSharingUpdate && blank($this->parentId)) {
+            $finalChannelId = $this->resolveChannelId($user);
+
+            if ($finalChannelId === false) {
+                return;
+            }
+        }
+
+        if ($finalChannelId !== null) {
+            $validated['channel_id'] = $finalChannelId;
+        }
+
         /** @var array<int, array<string, mixed>> $payloads */
         $payloads = [
             [
@@ -483,6 +509,15 @@ final class Create extends Component
 
         $question = $questions[0];
 
+        if ($finalChannelId !== null) {
+            $channel = Channel::find($finalChannelId);
+            if ($channel instanceof Channel) {
+                $channel->increment('questions_count');
+                Cache::forget('channels:popular');
+                $this->dispatch('channel-count-updated', channelId: $finalChannelId, count: $channel->questions_count);
+            }
+        }
+
         if ($this->isPoll) {
             $options = [];
 
@@ -514,7 +549,9 @@ final class Create extends Component
         $this->transferImagesFromSourceDraft();
         $this->deleteUnusedImages();
 
-        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey']);
+        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey', 'channelName']);
+        $this->channelId = $this->initialChannelId;
+        unset($this->selectedChannel);
         $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
