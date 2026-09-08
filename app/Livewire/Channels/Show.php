@@ -45,7 +45,7 @@ final class Show extends Component
         $question->update(['is_ignored' => true]);
 
         if ($this->channel->id === $question->channel_id) {
-            $this->channel->decrement('questions_count');
+            Channel::whereKey($this->channel->id)->where('questions_count', '>', 0)->decrement('questions_count');
             $this->channel->refresh();
             $this->dispatch('channel-count-updated', channelId: $this->channel->id, count: $this->channel->questions_count);
         }

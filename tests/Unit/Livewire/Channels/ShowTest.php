@@ -18,7 +18,7 @@ test('render', function (): void {
 
 test('ignore question', function (): void {
     $user = User::factory()->create();
-    $channel = Channel::factory()->create();
+    $channel = Channel::factory()->create(['questions_count' => 1]);
     $question = Question::factory()->for($channel)->create([
         'from_id' => $user->id,
         'to_id' => $user->id,
@@ -30,7 +30,8 @@ test('ignore question', function (): void {
         ->call('ignore', $question->id)
         ->assertDispatched('question.ignored');
 
-    expect($question->fresh()->is_ignored)->toBeTrue();
+    expect($question->fresh()->is_ignored)->toBeTrue()
+        ->and($channel->fresh()->questions_count)->toBe(0);
 });
 
 test('load more', function (): void {

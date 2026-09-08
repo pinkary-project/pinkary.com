@@ -105,9 +105,9 @@ final class Edit extends Component
 
             if ($previousChannelId !== $finalChannelId) {
                 if ($previousChannelId !== null) {
+                    Channel::whereKey($previousChannelId)->where('questions_count', '>', 0)->decrement('questions_count');
                     $previousChannel = Channel::find($previousChannelId);
                     if ($previousChannel instanceof Channel) {
-                        $previousChannel->decrement('questions_count');
                         $this->dispatch('channel-count-updated', channelId: $previousChannelId, count: $previousChannel->questions_count);
                     }
                 }
