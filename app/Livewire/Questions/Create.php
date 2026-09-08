@@ -35,7 +35,7 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
  * @property-read bool $canThread
  * @property-read int $maxContentLength
  * @property-read int $maxThreadPosts
- * @property-read int $needsCaptcha
+ * @property-read bool $needsCaptcha
  * @property-read string $turnstileId
  * @property-read Collection<int, Channel> $availableChannels
  * @property-read Channel|null $selectedChannel
@@ -149,14 +149,16 @@ final class Create extends Component
      */
     public function updated(mixed $property): void
     {
+        if ($property !== 'images') {
+            return;
+        }
+
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
 
-        if ($property === 'images') {
-            $this->runImageValidation();
-            $this->uploadImages();
-        }
+        $this->runImageValidation();
+        $this->uploadImages();
     }
 
     /**
@@ -305,7 +307,11 @@ final class Create extends Component
     #[Computed]
     public function needsCaptcha(): bool
     {
-        return app()->isProduction() && (int) auth()->user()?->followers()->count() === 0;
+        $user = auth()->user();
+
+        return app()->isProduction()
+            && $user instanceof User
+            && $user->followers()->count() === 0;
     }
 
     /**
