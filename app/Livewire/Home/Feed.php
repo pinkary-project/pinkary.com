@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Home;
 
+use App\Actions\Questions\UpdateQuestionStatus;
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Question;
 use App\Queries\Feeds\RecentQuestionsFeed;
@@ -24,13 +25,13 @@ final class Feed extends Component
      * Ignore the given question.
      */
     #[On('question.ignore')]
-    public function ignore(string $questionId): void
+    public function ignore(UpdateQuestionStatus $updateQuestionStatus, string $questionId): void
     {
         $question = Question::findOrFail($questionId);
 
         $this->authorize('ignore', $question);
 
-        $question->update(['is_ignored' => true]);
+        $updateQuestionStatus->handle($question, ignored: true);
 
         $this->dispatch('question.ignored');
     }

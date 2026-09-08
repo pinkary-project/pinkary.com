@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Links;
 
+use App\Actions\Links\CreateLink;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Support\Str;
@@ -25,7 +26,7 @@ final class Create extends Component
     /**
      * Store a new link.
      */
-    public function store(#[CurrentUser] User $user): void
+    public function store(#[CurrentUser] User $user, CreateLink $createLink): void
     {
         $linksCount = $user->links()->count();
 
@@ -51,7 +52,7 @@ final class Create extends Component
             'url' => ['required', 'max:100', 'url', 'starts_with:https'],
         ]);
 
-        $user->links()->create($validated);
+        $createLink->handle($user, $validated);
 
         $this->description = '';
         $this->url = '';

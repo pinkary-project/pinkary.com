@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Notifications;
 
+use App\Actions\Questions\UpdateQuestionStatus;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionCreated;
@@ -19,8 +20,11 @@ final class Index extends Component
     /**
      * Ignore all notifications.
      */
-    public function ignoreAll(string $untilDatetime, #[CurrentUser] User $user): void
-    {
+    public function ignoreAll(
+        string $untilDatetime,
+        #[CurrentUser] User $user,
+        UpdateQuestionStatus $updateQuestionStatus,
+    ): void {
         $questionsToIgnore = $user
             ->notifications()
             ->where('created_at', '<=', $untilDatetime)
@@ -30,8 +34,8 @@ final class Index extends Component
         $user
             ->questionsReceived()
             ->whereIn('id', $questionsToIgnore)
-            ->each(function (Question $question): void {
-                $question->update(['is_ignored' => true]);
+            ->each(function (Question $question) use ($updateQuestionStatus): void {
+                $updateQuestionStatus->handle($question, ignored: true);
             });
 
         $user->notifications()

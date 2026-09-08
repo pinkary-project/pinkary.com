@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Actions\Questions\UpdatePollVote;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\PollOption;
 use App\Models\PollVote;
@@ -12,8 +13,6 @@ use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -31,8 +30,11 @@ final class PollVoting extends Component
     /**
      * Vote for a poll option.
      */
-    public function vote(int $pollOptionId, #[CurrentUser] ?User $user): void
-    {
+    public function vote(
+        int $pollOptionId,
+        #[CurrentUser] ?User $user,
+        UpdatePollVote $updatePollVote,
+    ): void {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
@@ -54,37 +56,7 @@ final class PollVoting extends Component
         $pollOption = PollOption::where('question_id', $question->id)
             ->findOrFail($pollOptionId);
 
-        DB::transaction(function () use ($user, $question, $pollOption, $pollOptionId): void {
-            /** @var PollVote|null $existingVote */
-            $existingVote = PollVote::query()
-                ->where('user_id', $user->id)
-                ->where('question_id', $question->id)
-                ->lockForUpdate()
-                ->first();
-
-            if ($existingVote !== null) {
-                $existingVote->pollOption->decrement('votes_count');
-                $existingVote->delete();
-
-                if ($existingVote->poll_option_id === $pollOptionId) {
-                    return;
-                }
-            }
-
-            try {
-                PollVote::create([
-                    'user_id' => $user->id,
-                    'poll_option_id' => $pollOptionId,
-                    'question_id' => $question->id,
-                ]);
-            } catch (UniqueConstraintViolationException) {
-                // A concurrent first-time vote won the race; the vote
-                // already exists, so treat this request as idempotent.
-                return;
-            }
-
-            $pollOption->increment('votes_count');
-        });
+        $updatePollVote->handle($user, $question, $pollOption);
 
         $this->dispatch('poll.voted');
     }

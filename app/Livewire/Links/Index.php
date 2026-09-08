@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\Links;
 
-use App\Jobs\UpdateUserAvatar;
+use App\Actions\Links\DeleteLink;
+use App\Actions\Links\UpdateLinkClicks;
+use App\Actions\Links\UpdateLinkOrder;
+use App\Actions\Links\UpdateLinkVisibility;
+use App\Actions\Users\CreateFollow;
+use App\Actions\Users\DeleteFollow;
 use App\Models\Link;
 use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
@@ -32,7 +37,7 @@ final class Index extends Component
      * Increment the clicks counter.
      */
     #[Renderless]
-    public function click(int $linkId): void
+    public function click(UpdateLinkClicks $updateLinkClicks, int $linkId): void
     {
         $ipAddress = (string) request()->ip();
         $cacheKey = IpUtils::anonymize($ipAddress).'-clicked-'.$linkId;
@@ -41,11 +46,7 @@ final class Index extends Component
             return;
         }
 
-        Link::query()
-            ->whereKey($linkId)
-            ->increment('click_count');
-
-        Cache::put($cacheKey, true, now()->addDay());
+        $updateLinkClicks->handle($linkId, $cacheKey);
     }
 
     /**
@@ -53,18 +54,10 @@ final class Index extends Component
      *
      * @param  array<int, string>  $sort
      */
-    public function storeSort(array $sort, #[CurrentUser] User $user): void
+    public function storeSort(array $sort, #[CurrentUser] User $user, UpdateLinkOrder $updateLinkOrder): void
     {
 
-        $sort = collect($sort)
-            ->map(fn (string $linkId): ?int => $user->links->contains($linkId) ? ((int) $linkId) : null)
-            ->filter()
-            ->values()
-            ->toArray();
-
-        $user->update([
-            'links_sort' => count($sort) === 0 ? null : $sort,
-        ]);
+        $updateLinkOrder->handle($user, $sort);
     }
 
     /**
@@ -72,18 +65,14 @@ final class Index extends Component
      *
      * @throws AuthorizationException
      */
-    public function destroy(int $linkId, #[CurrentUser] User $user): void
+    public function destroy(int $linkId, #[CurrentUser] User $user, DeleteLink $deleteLink): void
     {
 
         $link = Link::findOrFail($linkId);
 
         $this->authorize('delete', $link);
 
-        $link->delete();
-
-        if (! $user->is_uploaded_avatar) {
-            UpdateUserAvatar::dispatchFor($user);
-        }
+        $deleteLink->handle($user, $link);
 
         $this->dispatch('close-modal', 'delete-link');
         $this->dispatch('notification.created', message: 'Link deleted.');
@@ -92,21 +81,19 @@ final class Index extends Component
     /**
      * Set visibility the given link.
      */
-    public function setVisibility(int $linkId): void
+    public function setVisibility(UpdateLinkVisibility $updateLinkVisibility, int $linkId): void
     {
         $link = Link::findOrFail($linkId);
 
         $this->authorize('update', $link);
 
-        $link->update([
-            'is_visible' => ! $link->is_visible,
-        ]);
+        $updateLinkVisibility->handle($link);
     }
 
     /**
      * Follow the given user.
      */
-    public function follow(int $targetId, #[CurrentUser] ?User $user): void
+    public function follow(int $targetId, #[CurrentUser] ?User $user, CreateFollow $createFollow): void
     {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
@@ -122,7 +109,7 @@ final class Index extends Component
             return;
         }
 
-        $user->following()->attach($targetId);
+        $createFollow->handle($user, $targetId);
 
         $this->dispatch('user.followed');
     }
@@ -130,7 +117,7 @@ final class Index extends Component
     /**
      * Unfollow the given user.
      */
-    public function unfollow(int $targetId, #[CurrentUser] ?User $user): void
+    public function unfollow(int $targetId, #[CurrentUser] ?User $user, DeleteFollow $deleteFollow): void
     {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
@@ -146,7 +133,7 @@ final class Index extends Component
             return;
         }
 
-        $user->following()->detach($targetId);
+        $deleteFollow->handle($user, $targetId);
 
         $this->dispatch('user.unfollowed');
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Users\UpdateUserGitHubUsername;
 use App\Jobs\SyncVerifiedUser;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
@@ -27,8 +28,10 @@ final readonly class UserGitHubUsernameController
     /**
      * Handles the GitHub connection update.
      */
-    public function update(#[CurrentUser] User $user): RedirectResponse
-    {
+    public function update(
+        #[CurrentUser] User $user,
+        UpdateUserGitHubUsername $updateUserGitHubUsername,
+    ): RedirectResponse {
         $githubUser = Socialite::driver('github')->user();
 
         try {
@@ -50,7 +53,7 @@ final readonly class UserGitHubUsernameController
             return to_route('profile.edit')->withErrors($e->errors(), 'verified');
         }
 
-        $user->update($validated);
+        $updateUserGitHubUsername->handle($user, $validated['github_username']);
 
         SyncVerifiedUser::dispatchSync($user);
 
@@ -70,9 +73,11 @@ final readonly class UserGitHubUsernameController
     /**
      * Handles the GitHub connection destroy.
      */
-    public function destroy(#[CurrentUser] User $user): RedirectResponse
-    {
-        $user->update(['github_username' => null]);
+    public function destroy(
+        #[CurrentUser] User $user,
+        UpdateUserGitHubUsername $updateUserGitHubUsername,
+    ): RedirectResponse {
+        $updateUserGitHubUsername->handle($user, null);
         SyncVerifiedUser::dispatchSync($user);
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 

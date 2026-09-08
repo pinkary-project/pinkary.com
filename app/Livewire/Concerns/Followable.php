@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use App\Actions\Users\CreateFollow;
+use App\Actions\Users\DeleteFollow;
 use App\Models\User;
 use Livewire\Attributes\Renderless;
 
@@ -13,7 +15,7 @@ trait Followable
      * Follows the given user.
      */
     #[Renderless]
-    public function follow(int $id): void
+    public function follow(CreateFollow $createFollow, int $id): void
     {
         $user = auth()->user();
 
@@ -23,7 +25,7 @@ trait Followable
             return;
         }
 
-        $user->following()->attach($id);
+        $createFollow->handle($user, $id);
 
         if ($this->shouldHandleFollowingCount()) {
             $this->dispatch('following.updated');
@@ -36,7 +38,7 @@ trait Followable
      * Unfollows the given user.
      */
     #[Renderless]
-    public function unfollow(int $id): void
+    public function unfollow(DeleteFollow $deleteFollow, int $id): void
     {
         $user = auth()->user();
 
@@ -46,7 +48,7 @@ trait Followable
             return;
         }
 
-        $user->following()->detach($id);
+        $deleteFollow->handle($user, $id);
 
         if ($this->shouldHandleFollowingCount()) {
             $this->dispatch('following.updated');

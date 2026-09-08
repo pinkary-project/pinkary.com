@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\LinkSettings;
 
+use App\Actions\Users\UpdateUserSettings;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
@@ -35,9 +36,10 @@ final class Edit extends Component
     /**
      * Update the user's link settings.
      */
-    public function update(#[CurrentUser] User $user): void
+    public function update(#[CurrentUser] User $user, UpdateUserSettings $updateUserSettings): void
     {
 
+        /** @var array<string, mixed> $validated */
         $validated = $this->validate([
             'link_shape' => 'required|in:rounded-none,rounded-lg,rounded-full',
             'gradient' => [
@@ -52,7 +54,7 @@ final class Edit extends Component
             ],
         ]);
 
-        $user->update(['settings' => $validated]);
+        $updateUserSettings->handle($user, $validated);
 
         $this->dispatch('link-settings.updated');
         $this->dispatch('notification.created', message: 'Link settings updated.');

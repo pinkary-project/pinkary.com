@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Users\DeleteUser;
+use App\Actions\Users\UpdateUser;
 use App\Http\Requests\UserUpdateRequest;
 use App\Jobs\IncrementViews;
-use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
@@ -40,23 +41,13 @@ final readonly class UserController
     /**
      * Update the user's profile information.
      */
-    public function update(UserUpdateRequest $request, #[CurrentUser] User $user): RedirectResponse
-    {
-        $user->fill($request->validated());
+    public function update(
+        UserUpdateRequest $request,
+        #[CurrentUser] User $user,
+        UpdateUser $updateUser,
+    ): RedirectResponse {
+        $updateUser->handle($user, $request->validated());
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
-
-        if ($user->wasChanged('email')) {
-            $user->sendEmailVerificationNotification();
-
-            if (! $user->is_uploaded_avatar) {
-                UpdateUserAvatar::dispatchFor($user);
-            }
-        }
         session()->flash('flash-message', 'Profile updated.');
 
         return to_route('profile.edit');
@@ -65,15 +56,18 @@ final readonly class UserController
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request, #[CurrentUser] User $user): RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        #[CurrentUser] User $user,
+        DeleteUser $deleteUser,
+    ): RedirectResponse {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
         auth()->logout();
 
-        $user->purge();
+        $deleteUser->handle($user);
 
         session()->invalidate();
         session()->regenerateToken();
