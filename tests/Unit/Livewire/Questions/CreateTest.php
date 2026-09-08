@@ -139,6 +139,52 @@ test('renders the captcha on replies, whose parent id contains characters turnst
         ->assertSeeHtml('data-callback="reply_'.str_replace('-', '_', $parent->id).'_turnstile_globalCallback"');
 });
 
+test('guests are not shown the captcha', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->create();
+
+    $component = Livewire::test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->assertOk()
+        ->assertDontSee('cf-turnstile', escape: false)
+        ->assertNoRedirect();
+
+    expect($component->instance()->needsCaptcha)->toBeFalse();
+});
+
+test('captcha completion does not redirect guests', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->create();
+
+    Livewire::test(Create::class, [
+        'toId' => $user->id,
+    ])
+        ->set('cfTurnstileResponse', Turnstile::dummy())
+        ->assertOk()
+        ->assertNoRedirect();
+});
+
+test('captcha completion does not redirect unverified users', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->unverified()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+        ])
+        ->set('cfTurnstileResponse', Turnstile::dummy())
+        ->assertOk()
+        ->assertNoRedirect();
+});
+
 test('store auth', function (): void {
     $user = User::factory()->create();
 

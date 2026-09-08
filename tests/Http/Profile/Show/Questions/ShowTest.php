@@ -70,6 +70,23 @@ test('auth without followers renders the captcha on the reply form', function ()
     $response->assertSee('cf-turnstile', escape: false);
 });
 
+test('guest does not render the captcha on the reply form', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $question = Question::factory()->create([
+        'answer' => 'This is the answer',
+    ]);
+
+    $response = $this->get(route('questions.show', [
+        'username' => $question->to->username,
+        'question' => $question->id,
+    ]));
+
+    $response->assertOk()
+        ->assertDontSee('cf-turnstile', escape: false);
+});
+
 test('answer translate action is visible before bookmarks', function (): void {
     $question = Question::factory()->create([
         'content' => 'Question content',
