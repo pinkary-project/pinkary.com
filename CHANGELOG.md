@@ -1,3 +1,14 @@
+## Version 2.2.0
+> 8 September, 2026
+
+- Adds channels for posts, allowing users to categorize updates and browse posts by topic.
+- Adds dedicated channel pages with live feeds and dynamic post count updates.
+- Adds channel picker to the composer and post modal with real-time channel search and creation.
+- Rounds composer submit buttons for design consistency.
+- Fixes thread composer autocomplete and notifications.
+- Refactors timezone update endpoint to return 204 No Content.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.1.0
 > 30 August, 2026
 
