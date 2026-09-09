@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Users\UpdateUserGitHubUsername;
-use App\Jobs\SyncVerifiedUser;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -53,11 +52,7 @@ final readonly class UserGitHubUsernameController
             return to_route('profile.edit')->withErrors($e->errors(), 'verified');
         }
 
-        $updateUserGitHubUsername->handle($user, $validated['github_username']);
-
-        SyncVerifiedUser::dispatchSync($user);
-
-        $user = User::findOrFail($user->id);
+        $user = $updateUserGitHubUsername->handle($user, $validated['github_username']);
 
         $user->is_verified
             ? session()->flash('flash-message', 'Your GitHub account has been connected and you are now verified.')
@@ -78,7 +73,6 @@ final readonly class UserGitHubUsernameController
         UpdateUserGitHubUsername $updateUserGitHubUsername,
     ): RedirectResponse {
         $updateUserGitHubUsername->handle($user, null);
-        SyncVerifiedUser::dispatchSync($user);
         session()->flash('flash-message', 'Your GitHub account has been disconnected.');
 
         return to_route('profile.edit');
