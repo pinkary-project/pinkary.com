@@ -5,9 +5,9 @@ declare(strict_types=1);
 use App\Livewire\Questions\Create;
 use App\Models\Question;
 use App\Models\User;
+use App\Services\ImageProcessor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use RyanChandler\LaravelCloudflareTurnstile\Facades\Turnstile;
@@ -1191,7 +1191,7 @@ test('updated lifecycle method', function (): void {
         ->test(Create::class, [
             'toId' => $user->id,
         ]);
-    expect($component->invade()->updated('images'))->toBeNull();
+    expect($component->invade()->updated('images', app(ImageProcessor::class)))->toBeNull();
 });
 
 test('updated method invokes handleUploads', function (): void {
@@ -1205,7 +1205,7 @@ test('updated method invokes handleUploads', function (): void {
     $component->set('images', [$file]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
     $sessionKey = 'images.'.$component->instance()->draftKey();
 
@@ -1229,7 +1229,7 @@ test('unused image cleanup when store is called', function (): void {
     $component->set('images', [$file]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
     Storage::disk()->assertExists($path);
 
@@ -1292,10 +1292,10 @@ test('posting one form does not delete another draft\'s tracked images', functio
     $method = new ReflectionMethod(Create::class, 'uploadImages');
 
     $componentA->set('images', [UploadedFile::fake()->image('photo-a.jpg')]);
-    $method->invoke($componentA->instance());
+    $method->invoke($componentA->instance(), app(ImageProcessor::class));
 
     $componentB->set('images', [UploadedFile::fake()->image('photo-b.jpg')]);
-    $method->invoke($componentB->instance());
+    $method->invoke($componentB->instance(), app(ImageProcessor::class));
 
     $sessionKeyA = 'images.reply_'.$parentQuestion->id;
     $sessionKeyB = 'images.'.$componentB->instance()->draftKey();
@@ -1333,69 +1333,14 @@ test('delete image', function (): void {
     Storage::disk()->assertExists($path);
 
     $method = new ReflectionMethod(Create::class, 'deleteImage');
-    $method->invoke($component->instance(), $path);
+    $method->invoke($component->instance(), $path, app(ImageProcessor::class));
 
     $pathAgain = $file->store('images', ['disk' => Create::IMAGE_DISK]);
     Storage::disk()->assertExists($pathAgain);
 
-    $method->invoke($component->instance(), $pathAgain);
+    $method->invoke($component->instance(), $pathAgain, app(ImageProcessor::class));
 
     Storage::disk()->assertMissing($pathAgain);
-});
-
-test('optimizeImage method resizes and saves the image', function (): void {
-
-    $user = User::factory()->create();
-    $testImage = UploadedFile::fake()->image('test.jpg', 1200, 1200); // Larger than 1000x1000
-
-    $component = Livewire::actingAs($user)->test(Create::class, [
-        'toId' => $user->id,
-    ]);
-
-    $method = new ReflectionMethod(Create::class, 'optimizeImage');
-    $path = $method->invoke($component->instance(), $testImage);
-
-    Storage::disk()->assertExists($path);
-
-    $optimizedImagePath = Storage::disk()->path($path);
-
-    $originalImageSize = filesize($testImage->getPathname());
-    $optimizedImageSize = filesize($optimizedImagePath);
-
-    expect($optimizedImageSize)->toBeLessThan($originalImageSize);
-
-    $manager = ImageManager::imagick();
-    $image = $manager->read($optimizedImagePath);
-
-    expect($image->width())->toBeLessThanOrEqual(1000)
-        ->and($image->height())->toBeLessThanOrEqual(1000);
-});
-
-test('it skips the optimization for gif', function (): void {
-
-    $user = User::factory()->create();
-
-    $testImage = UploadedFile::fake()->image('test.gif', 1200, 1200); // Larger than 1000x1000
-
-    $component = Livewire::actingAs($user)->test(Create::class, [
-        'toId' => $user->id,
-    ]);
-
-    $method = new ReflectionMethod(Create::class, 'optimizeImage');
-    $path = $method->invoke($component->instance(), $testImage);
-
-    Storage::disk()->assertExists($path);
-
-    // cross check the image
-    $optimizedImagePath = Storage::disk()->path($path);
-    $originalImageSize = filesize($testImage->getPathname());
-    $optimizedImageSize = filesize($optimizedImagePath);
-    expect($optimizedImageSize)->toBe($originalImageSize);
-
-    $manager = ImageManager::imagick();
-    $image = $manager->read($optimizedImagePath);
-    expect($image->width())->toBe(1200)
-        ->and($image->height())->toBe(1200);
 });
 
 test('maxFileSize and maxImages', function (): void {
@@ -1419,7 +1364,7 @@ test('non verified users can upload images', function (): void {
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
     $component->assertHasNoErrors();
 });
@@ -1436,7 +1381,7 @@ test('company verified users can upload images', function (): void {
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
     $component->assertHasNoErrors();
 });
@@ -1592,7 +1537,7 @@ test('delete image after validation ignores untracked or missing images', functi
     $method = new ReflectionMethod(Create::class, 'deleteImageAfterValidation');
 
     // An untracked path is never deleted.
-    $method->invoke($component->instance(), $untrackedPath);
+    $method->invoke($component->instance(), $untrackedPath, app(ImageProcessor::class));
 
     Storage::disk()->assertExists($untrackedPath);
 
@@ -1600,7 +1545,7 @@ test('delete image after validation ignores untracked or missing images', functi
     $sessionKey = 'images.'.$component->instance()->draftKey();
     session([$sessionKey => ['images/missing.png']]);
 
-    $method->invoke($component->instance(), 'images/missing.png');
+    $method->invoke($component->instance(), 'images/missing.png', app(ImageProcessor::class));
 
     expect(session($sessionKey))->toContain('images/missing.png');
 });
@@ -1618,7 +1563,7 @@ test('delete image after validation removes tracked images and guards other fold
     session([$sessionKey => [$trackedPath]]);
 
     new ReflectionMethod(Create::class, 'deleteImageAfterValidation')
-        ->invoke($component->instance(), $trackedPath);
+        ->invoke($component->instance(), $trackedPath, app(ImageProcessor::class));
 
     Storage::disk()->assertMissing($trackedPath);
 
@@ -1627,7 +1572,7 @@ test('delete image after validation removes tracked images and guards other fold
     session([$sessionKey => [$outsidePath]]);
 
     new ReflectionMethod(Create::class, 'deleteImage')
-        ->invoke($component->instance(), $outsidePath);
+        ->invoke($component->instance(), $outsidePath, app(ImageProcessor::class));
 
     Storage::disk()->assertExists($outsidePath);
 });

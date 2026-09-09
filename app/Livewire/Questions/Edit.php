@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Actions\Channels\CreateChannel;
+use App\Actions\Questions\UpdateQuestion;
+use App\Actions\Questions\UpdateQuestionStatus;
 use App\Livewire\Concerns\HasChannelPicker;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Channel;
@@ -13,7 +16,6 @@ use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -53,8 +55,11 @@ final class Edit extends Component
     /**
      * Updates the question with the given answer.
      */
-    public function update(#[CurrentUser] User $user): void
-    {
+    public function update(
+        #[CurrentUser] User $user,
+        CreateChannel $createChannel,
+        UpdateQuestion $updateQuestion,
+    ): void {
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
@@ -91,43 +96,36 @@ final class Edit extends Component
             $validated['answer_updated_at'] = now();
         }
 
-        if ($question->isSharedUpdate() && blank($question->parent_id)) {
-            $finalChannelId = $this->resolveChannelId($user);
+        $syncChannel = $question->isSharedUpdate() && blank($question->parent_id);
+        $previousChannelId = $question->channel_id;
+
+        if ($syncChannel) {
+            $finalChannelId = $this->resolveChannelId($user, $createChannel);
 
             if ($finalChannelId === false) {
                 return;
             }
 
-            $previousChannelId = $question->channel_id;
             $validated['channel_id'] = $finalChannelId;
+        }
 
-            $question->update($validated);
+        $channels = $updateQuestion->handle(
+            $question,
+            $validated,
+            $syncChannel,
+            $previousChannelId,
+            $originalAnswer !== null,
+        );
 
-            if ($previousChannelId !== $finalChannelId) {
-                if ($previousChannelId !== null) {
-                    Channel::whereKey($previousChannelId)->where('questions_count', '>', 0)->decrement('questions_count');
-                    $previousChannel = Channel::find($previousChannelId);
-                    if ($previousChannel instanceof Channel) {
-                        $this->dispatch('channel-count-updated', channelId: $previousChannelId, count: $previousChannel->questions_count);
-                    }
-                }
-                if ($finalChannelId !== null) {
-                    $finalChannel = Channel::find($finalChannelId);
-                    if ($finalChannel instanceof Channel) {
-                        $finalChannel->increment('questions_count');
-                        $this->dispatch('channel-count-updated', channelId: $finalChannelId, count: $finalChannel->questions_count);
-                    }
-                }
-                Cache::forget('channels:popular');
-            }
-        } else {
-            // Non-root posts (e.g. comments, replies, Q&A) cannot have channels attached.
-            $question->update($validated);
+        if ($channels['previousChannel'] instanceof Channel) {
+            $this->dispatch('channel-count-updated', channelId: $channels['previousChannel']->id, count: $channels['previousChannel']->questions_count);
+        }
+
+        if ($channels['channel'] instanceof Channel) {
+            $this->dispatch('channel-count-updated', channelId: $channels['channel']->id, count: $channels['channel']->questions_count);
         }
 
         if ($originalAnswer !== null) {
-            $question->likes()->delete();
-
             $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
         }
 
@@ -138,15 +136,13 @@ final class Edit extends Component
     /**
      * Reports the question.
      */
-    public function report(): void
+    public function report(UpdateQuestionStatus $updateQuestionStatus): void
     {
         $question = Question::findOrFail($this->questionId);
 
         $this->authorize('update', $question);
 
-        $question->update([
-            'is_reported' => true,
-        ]);
+        $updateQuestionStatus->handle($question, reported: true);
 
         $this->dispatch('notification.created', message: 'Question reported.');
         $this->dispatch('question.reported');

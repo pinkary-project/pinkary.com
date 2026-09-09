@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use App\Actions\Channels\CreateChannel;
 use App\Models\Channel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -178,7 +179,7 @@ trait HasChannelPicker
      *
      * Returns the resolved channel ID, null if none selected, or false if validation failed.
      */
-    protected function resolveChannelId(User $user): int|null|false
+    protected function resolveChannelId(User $user, CreateChannel $createChannel): int|null|false
     {
         if ($this->channelName !== null) {
             $channelName = mb_trim($this->channelName);
@@ -200,16 +201,7 @@ trait HasChannelPicker
                 return false;
             }
 
-            $channel = Channel::query()->createOrFirst(
-                ['slug' => $slug],
-                [
-                    'user_id' => $user->id,
-                    'name' => $channelName,
-                    'questions_count' => 0,
-                ],
-            );
-
-            return $channel->id;
+            return $createChannel->handle($user, $channelName, $slug)->id;
         }
 
         if ($this->channelId !== null) {

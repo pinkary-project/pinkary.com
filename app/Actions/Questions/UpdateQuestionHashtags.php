@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EventActions;
+namespace App\Actions\Questions;
 
 use App\Models\Hashtag;
 use App\Models\Question;
@@ -12,27 +12,18 @@ use Illuminate\Support\Str;
 final readonly class UpdateQuestionHashtags
 {
     /**
-     * Create a new class instance.
-     */
-    public function __construct(
-        public Question $question,
-    ) {
-        //
-    }
-
-    /**
      * @return array{attached: array<array-key, mixed>, detached: array<array-key, mixed>, updated: array<array-key, mixed>}
      */
-    public function handle(): array
+    public function handle(Question $question): array
     {
-        $parsedHashtags = $this->parsedHashtagNames();
+        $parsedHashtags = $this->parsedHashtagNames($question);
 
         $existingHashtags = Hashtag::query()->whereIn('name', $parsedHashtags->all())->get();
 
         $newHashtags = $parsedHashtags->diff($existingHashtags->pluck('name')) // @phpstan-ignore-line
             ->map(fn (string $name): Hashtag => Hashtag::query()->create(['name' => $name]));
 
-        return $this->question->hashtags()->sync($existingHashtags->merge($newHashtags));
+        return $question->hashtags()->sync($existingHashtags->merge($newHashtags));
     }
 
     /**
@@ -40,7 +31,7 @@ final readonly class UpdateQuestionHashtags
      *
      * @return Collection<int, string>
      */
-    private function parsedHashtagNames(): Collection
+    private function parsedHashtagNames(Question $question): Collection
     {
         $matches = [];
 
@@ -48,7 +39,7 @@ final readonly class UpdateQuestionHashtags
         // an <a> element, so we can specifically search for that.
         preg_match_all(
             '~<a\s+[^>]*href="/hashtag/([a-z0-9]+)"[^>]*>#\1</a>~i',
-            "{$this->question->answer} {$this->question->content}",
+            "{$question->answer} {$question->content}",
             $matches,
         );
 

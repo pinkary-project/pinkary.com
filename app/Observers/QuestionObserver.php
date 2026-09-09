@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
-use App\EventActions\UpdateQuestionHashtags;
+use App\Actions\Questions\UpdateQuestionHashtags;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
@@ -13,6 +13,13 @@ use App\Notifications\UserMentioned;
 
 final readonly class QuestionObserver
 {
+    /**
+     * Create a new observer instance.
+     */
+    public function __construct(
+        private UpdateQuestionHashtags $updateQuestionHashtags,
+    ) {}
+
     /**
      * Handle the question "created" event.
      */
@@ -32,7 +39,7 @@ final readonly class QuestionObserver
             $question->to->notify(new QuestionCreated($question));
         }
 
-        new UpdateQuestionHashtags($question)->handle();
+        $this->updateQuestionHashtags->handle($question);
     }
 
     /**
@@ -53,7 +60,7 @@ final readonly class QuestionObserver
         }
 
         if ($question->isDirty(['answer', 'content'])) {
-            new UpdateQuestionHashtags($question)->handle();
+            $this->updateQuestionHashtags->handle($question);
         }
 
         if ($question->isDirty('answer') === false) {

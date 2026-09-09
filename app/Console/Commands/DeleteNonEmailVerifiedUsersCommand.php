@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Actions\Users\DeleteUser;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,7 +28,7 @@ final class DeleteNonEmailVerifiedUsersCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(DeleteUser $deleteUser): void
     {
         User::where('email_verified_at', null)
             ->where('updated_at', '<', now()->subDay())
@@ -41,7 +42,8 @@ final class DeleteNonEmailVerifiedUsersCommand extends Command
                 $query->where('created_at', '<', now()->subDay());
             })
             ->get()
-            ->each
-            ->purge();
+            ->each(function (User $user) use ($deleteUser): void {
+                $deleteUser->handle($user);
+            });
     }
 }

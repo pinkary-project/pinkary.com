@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Actions\Channels\CreateChannel;
+use App\Actions\Questions\CreateQuestion;
 use App\Livewire\Concerns\HasChannelPicker;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Channel;
@@ -11,18 +13,15 @@ use App\Models\Question;
 use App\Models\User;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
+use App\Services\ImageProcessor;
 use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Intervention\Image\Drivers;
-use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -49,7 +48,7 @@ final class Create extends Component
     /**
      * The disk to store the images.
      */
-    public const ?string IMAGE_DISK = null;
+    public const ?string IMAGE_DISK = ImageProcessor::DISK;
 
     /**
      * Max number of posts allowed in a thread.
@@ -147,7 +146,7 @@ final class Create extends Component
     /**
      * The updated lifecycle hook.
      */
-    public function updated(mixed $property): void
+    public function updated(mixed $property, ImageProcessor $imageProcessor): void
     {
         if ($property !== 'images') {
             return;
@@ -158,7 +157,7 @@ final class Create extends Component
         }
 
         $this->runImageValidation();
-        $this->uploadImages();
+        $this->uploadImages($imageProcessor);
     }
 
     /**
@@ -329,8 +328,12 @@ final class Create extends Component
     /**
      * Stores a new question.
      */
-    public function store(#[CurrentUser] ?User $user): void
-    {
+    public function store(
+        #[CurrentUser] ?User $user,
+        CreateQuestion $createQuestion,
+        CreateChannel $createChannel,
+        ImageProcessor $imageProcessor,
+    ): void {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
@@ -393,6 +396,9 @@ final class Create extends Component
 
             return;
         }
+
+        /** @var array<int, string> $validOptions */
+        $validOptions = [];
 
         if ($this->isPoll) {
             $this->validate([
@@ -460,7 +466,7 @@ final class Create extends Component
         $finalChannelId = null;
 
         if ($this->isSharingUpdate && blank($this->parentId)) {
-            $finalChannelId = $this->resolveChannelId($user);
+            $finalChannelId = $this->resolveChannelId($user, $createChannel);
 
             if ($finalChannelId === false) {
                 return;
@@ -496,64 +502,34 @@ final class Create extends Component
             ];
         }
 
-        /** @var array<int, Question> $questions */
-        $questions = DB::transaction(function () use ($user, $payloads): array {
-            /** @var array<int, Question> $created */
-            $created = [];
+        /** @var list<string> $pollOptions */
+        $pollOptions = $this->isPoll ? array_values($validOptions) : [];
 
-            foreach ($payloads as $index => $payload) {
-                if ($index > 0) {
-                    $payload['parent_id'] = $created[$index - 1]->id;
-                    $payload['root_id'] = $created[0]->id;
-                }
+        /** @var array<int, array<int, string>> $normalizedThreadPollOptions */
+        $normalizedThreadPollOptions = [];
+        foreach ($threadPollOptions as $index => $options) {
+            $normalizedThreadPollOptions[$index] = $options ?? [];
+        }
 
-                $created[$index] = $user->questionsSent()->create($payload);
-            }
-
-            return $created;
-        });
+        $questions = $createQuestion->handle(
+            $user,
+            $payloads,
+            $pollOptions,
+            $normalizedThreadPollOptions,
+            $finalChannelId,
+        );
 
         $question = $questions[0];
 
         if ($finalChannelId !== null) {
             $channel = Channel::find($finalChannelId);
             if ($channel instanceof Channel) {
-                $channel->increment('questions_count');
-                Cache::forget('channels:popular');
                 $this->dispatch('channel-count-updated', channelId: $finalChannelId, count: $channel->questions_count);
             }
         }
 
-        if ($this->isPoll) {
-            $options = [];
-
-            foreach ($validOptions as $optionText) {
-                $options[] = [
-                    'text' => mb_trim($optionText),
-                    'votes_count' => 0,
-                ];
-            }
-
-            $question->pollOptions()->createMany($options);
-        }
-
-        foreach ($questions as $index => $createdQuestion) {
-            if ($index === 0) {
-                continue;
-            }
-
-            if (empty($threadPollOptions[$index - 1])) {
-                continue;
-            }
-
-            $createdQuestion->pollOptions()->createMany(array_map(
-                fn (string $option): array => ['text' => mb_trim($option), 'votes_count' => 0],
-                $threadPollOptions[$index - 1],
-            ));
-        }
-
         $this->transferImagesFromSourceDraft();
-        $this->deleteUnusedImages();
+        $this->deleteUnusedImages($imageProcessor);
 
         $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey', 'channelName']);
         $this->channelId = $this->initialChannelId;
@@ -607,19 +583,19 @@ final class Create extends Component
     /**
      * Validate and delete the image if it meets criteria.
      */
-    public function deleteImageAfterValidation(string $path): void
+    public function deleteImageAfterValidation(string $path, ImageProcessor $imageProcessor): void
     {
-        if (! $this->validateImagePath($path)) {
+        if (! $this->validateImagePath($path, $imageProcessor)) {
             return;
         }
 
-        $this->deleteImage($path);
+        $this->deleteImage($path, $imageProcessor);
     }
 
     /**
      * Delete images handed off from another composer when its draft is discarded.
      */
-    public function discardSourceImages(): void
+    public function discardSourceImages(ImageProcessor $imageProcessor): void
     {
         if ($this->imageSourceDraftKey === null || $this->imageSourceDraftKey === $this->draftKey()) {
             return;
@@ -630,8 +606,8 @@ final class Create extends Component
 
         if (is_array($sourceImages)) {
             collect($sourceImages)
-                ->filter(fn (mixed $path): bool => is_string($path) && str_starts_with($path, 'images/'))
-                ->each(fn (string $path): bool => Storage::disk(self::IMAGE_DISK)->delete($path));
+                ->filter(fn (mixed $path): bool => is_string($path) && Str::startsWith($path, 'images/'))
+                ->each(fn (string $path): bool => $imageProcessor->delete($path));
         }
 
         session()->forget($sourceSessionKey);
@@ -695,90 +671,40 @@ final class Create extends Component
     /**
      * Validate if the image path is eligible for deletion.
      */
-    private function validateImagePath(string $path): bool
+    private function validateImagePath(string $path, ImageProcessor $imageProcessor): bool
     {
         $images = $this->getSessionImages();
 
-        return in_array($path, $images, true) && $this->isValidImageFile($path);
-    }
-
-    /**
-     * Check if the path exists and is a valid image file.
-     */
-    private function isValidImageFile(string $path): bool
-    {
-        if (! Storage::disk(self::IMAGE_DISK)->exists($path)) {
-            return false;
-        }
-
-        $imageContent = Storage::disk(self::IMAGE_DISK)->get($path) ?: '';
-
-        return @getimagesizefromstring($imageContent) !== false;
-    }
-
-    /**
-     * Optimize the images.
-     */
-    private function optimizeImage(UploadedFile $image): string|false
-    {
-        $today = today()->format('Y-m-d');
-
-        $imagePath = 'images/'.$today;
-
-        if ($image->getMimeType() === 'image/gif') {
-            return $image->store(
-                $imagePath, [
-                    'disk' => self::IMAGE_DISK,
-                    'visibility' => 'public',
-                ]
-            );
-        }
-
-        $resizer = $this->resizer()->read($image)
-            ->scaleDown(750, 750);
-
-        $imagePath .= '/'.$image->hashName();
-
-        return Storage::disk(self::IMAGE_DISK)->put(
-            $imagePath,
-            $resizer->encodeByExtension(
-                $image->getClientOriginalExtension(),
-                quality: 80
-            )->toFilePointer(),
-            ['visibility' => 'public'],
-        ) ? $imagePath : false;
+        return in_array($path, $images, true) && $imageProcessor->isValid($path);
     }
 
     /**
      * Handle the image deletes.
      */
-    private function deleteImage(string $path): void
+    private function deleteImage(string $path, ImageProcessor $imageProcessor): void
     {
-        if (! str_starts_with($path, 'images/')) {
-            return;
+        if ($imageProcessor->delete($path)) {
+            $this->cleanSession($path);
         }
-
-        Storage::disk(self::IMAGE_DISK)->delete($path);
-        $this->cleanSession($path);
     }
 
     /**
      * Handle the image uploads.
      */
-    private function uploadImages(): void
+    private function uploadImages(ImageProcessor $imageProcessor): void
     {
         $sessionKey = 'images.'.$this->draftKey();
 
-        collect($this->images)->each(function (UploadedFile $image) use ($sessionKey): void {
+        collect($this->images)->each(function (UploadedFile $image) use ($imageProcessor, $sessionKey): void {
 
-            $path = $this->optimizeImage($image);
+            $path = $imageProcessor->process($image);
 
             if ($path) {
                 session()->push($sessionKey, $path);
 
                 $this->dispatch(
                     'image.uploaded',
-                    path: Storage::disk(self::IMAGE_DISK)->url($path),
+                    path: $imageProcessor->url($path),
                     originalName: $image->getClientOriginalName()
                 );
             } else { // @codeCoverageIgnoreStart
@@ -832,13 +758,13 @@ final class Create extends Component
     /**
      * Delete any unused images.
      */
-    private function deleteUnusedImages(): void
+    private function deleteUnusedImages(ImageProcessor $imageProcessor): void
     {
         $publishedContent = implode("\n", [$this->content, ...$this->threadPosts]);
 
         collect($this->getSessionImages())
             ->reject(fn (string $path): bool => str_contains($publishedContent, $path))
-            ->each(fn (string $path): ?bool => $this->deleteImage($path));
+            ->each(fn (string $path): ?bool => $this->deleteImage($path, $imageProcessor));
 
         session()->forget('images.'.$this->draftKey());
     }
@@ -880,16 +806,5 @@ final class Create extends Component
         $images = session()->get('images.'.$this->draftKey(), []);
 
         return $images;
-    }
-
-    /**
-     * Creates a new image resizer.
-     */
-    private function resizer(): ImageManager
-    {
-        return new ImageManager(
-            new Drivers\Imagick\Driver(),
-            strip: true,
-        );
     }
 }

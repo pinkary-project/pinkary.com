@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Channels;
 
+use App\Actions\Questions\UpdateQuestionStatus;
 use App\Livewire\Concerns\HasLoadMore;
 use App\Models\Channel;
 use App\Models\Question;
@@ -36,13 +37,13 @@ final class Show extends Component
      * Ignore the given question.
      */
     #[On('question.ignore')]
-    public function ignore(string $questionId): void
+    public function ignore(UpdateQuestionStatus $updateQuestionStatus, string $questionId): void
     {
         $question = Question::findOrFail($questionId);
 
         $this->authorize('ignore', $question);
 
-        $question->update(['is_ignored' => true]);
+        $updateQuestionStatus->handle($question, ignored: true);
 
         if ($this->channel->id === $question->channel_id) {
             Channel::whereKey($this->channel->id)->where('questions_count', '>', 0)->decrement('questions_count');
