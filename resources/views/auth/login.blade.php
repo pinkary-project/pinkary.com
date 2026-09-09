@@ -25,26 +25,13 @@
         <div>
             <x-input-label for="password" :value="__('Password')" class="text-slate-600 dark:text-slate-400" />
 
-            <div class="relative" x-data="{ showPassword: false }">
-                <x-text-input
-                    id="password"
-                    class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 pr-10 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
-                    x-bind:type="showPassword ? 'text' : 'password'"
-                    name="password"
-                    required
-                    autocomplete="current-password"
-                />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <button
-                        type="button"
-                        x-on:click="showPassword = ! showPassword"
-                        class="rounded-md text-slate-400 transition hover:text-slate-600 focus:ring-4 focus:ring-pink-500/20 focus:outline-none dark:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        <x-icons.eye x-show="showPassword" class="size-5" />
-                        <x-icons.eye-off x-show="! showPassword" class="size-5" />
-                    </button>
-                </div>
-            </div>
+            <x-password-input
+                id="password"
+                class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
+                name="password"
+                required
+                autocomplete="current-password"
+            />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
