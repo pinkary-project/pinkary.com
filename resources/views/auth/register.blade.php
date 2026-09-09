@@ -65,6 +65,7 @@
                 <x-text-input
                     id="password"
                     class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 pr-14 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
+                    type="password"
                     x-bind:type="showPassword ? 'text' : 'password'"
                     name="password"
                     required
@@ -77,8 +78,8 @@
                     x-bind:aria-pressed="showPassword"
                     class="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 transition hover:text-slate-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-500/20 dark:text-gray-500 dark:hover:text-gray-300"
                 >
-                    <x-icons.eye x-show="showPassword" class="size-5" />
-                    <x-icons.eye-off x-show="! showPassword" class="size-5" />
+                    <x-icons.eye x-cloak x-show="! showPassword" class="size-5" />
+                    <x-icons.eye-off x-cloak x-show="showPassword" class="size-5" />
                 </button>
             </div>
 
@@ -96,6 +97,7 @@
                 <x-text-input
                     id="password_confirmation"
                     class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 pr-14 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
+                    type="password"
                     x-bind:type="showPassword ? 'text' : 'password'"
                     name="password_confirmation"
                     required
@@ -108,8 +110,8 @@
                     x-bind:aria-pressed="showPassword"
                     class="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 transition hover:text-slate-600 focus:outline-none focus-visible:ring-4 focus-visible:ring-pink-500/20 dark:text-gray-500 dark:hover:text-gray-300"
                 >
-                    <x-icons.eye x-show="showPassword" class="size-5" />
-                    <x-icons.eye-off x-show="! showPassword" class="size-5" />
+                    <x-icons.eye x-cloak x-show="! showPassword" class="size-5" />
+                    <x-icons.eye-off x-cloak x-show="showPassword" class="size-5" />
                 </button>
             </div>
 
