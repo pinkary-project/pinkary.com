@@ -109,7 +109,17 @@
             </div>
 
             @if ($showRightRail)
-                <aside class="hidden lg:col-start-3 lg:block lg:pl-2 {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
+                <aside class="hidden lg:col-start-3 lg:block lg:pl-2 {{ $showDiscoverLayout ? '' : 'lg:pt-4' }}">
+                    @if (auth()->guest() && request()->routeIs('home.*'))
+                        <div class="flex h-[57px] items-center justify-end pr-1">
+                            <x-theme-toggle />
+                        </div>
+                    @else
+                        @if ($showDiscoverLayout)
+                            <div class="h-[57px]"></div>
+                        @endif
+                    @endif
+
                     <div class="lg:sticky lg:top-4">
                         <livewire:people-to-follow
                             :context="$peopleToFollowContext"
