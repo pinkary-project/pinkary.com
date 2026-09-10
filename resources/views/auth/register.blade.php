@@ -61,10 +61,9 @@
         <div>
             <x-input-label for="password" :value="__('Password')" class="text-slate-600 dark:text-slate-400" />
 
-            <x-text-input
+            <x-password-input
                 id="password"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
-                type="password"
                 name="password"
                 required
                 autocomplete="new-password"
@@ -80,10 +79,10 @@
                 class="text-slate-600 dark:text-slate-400"
             />
 
-            <x-text-input
+            <x-password-input
                 id="password_confirmation"
+                :label="__('password confirmation')"
                 class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
-                type="password"
                 name="password_confirmation"
                 required
                 autocomplete="new-password"
