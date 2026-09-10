@@ -1,3 +1,11 @@
+## Version 2.3.0
+> 10 September, 2026
+
+- Disallows email aliases on registration and profile updates.
+- Redesigns the changelog page.
+- Fixes hashtag page styling in light mode.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.2.1
 > 10 September, 2026
 
