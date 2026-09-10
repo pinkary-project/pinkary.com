@@ -349,3 +349,28 @@ test('cannot register with blocked email', function (): void {
 
     $this->assertDatabaseMissing('users', ['email' => $email]);
 });
+
+test('cannot register with an email alias', function (string $email): void {
+    $response = $this->from('/register')->post('/register', [
+        'name' => 'Test User',
+        'username' => 'testuser',
+        'email' => $email,
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'terms' => true,
+    ]);
+
+    $response->assertRedirect('/register')
+        ->assertSessionHasErrors([
+            'email' => 'The email cannot contain an email alias.',
+        ]);
+
+    $this->assertDatabaseMissing('users', ['email' => $email]);
+})->with([
+    'username+new@gmail.com',
+    'username+alias@example.com',
+    'taylor+test@laravel.com',
+    'user.name+tag@example.co.uk',
+    '+user@example.com',
+    'user+@example.com',
+]);
