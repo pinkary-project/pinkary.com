@@ -1,3 +1,12 @@
+## Version 2.2.1
+> 10 September, 2026
+
+- Adds reusable password input with show/hide toggle across auth and profile forms.
+- Fixes captcha display for guests and unverified users in profile and question creation.
+- Fixes flash notifications overlapping by correcting z-index.
+- Refactors business logic into dedicated Action classes and centralizes image handling.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.2.0
 > 8 September, 2026
 
