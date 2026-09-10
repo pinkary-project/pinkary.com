@@ -103,7 +103,7 @@
                     <x-checkbox
                         id="terms"
                         name="terms"
-                        class="mt-0.5 rounded border-slate-200/80 bg-white text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0 dark:border-white/10 dark:bg-white/5"
+                        class="mt-0.5 rounded border-slate-200/80 bg-white text-pink-500 shadow-none checked:border-pink-500! checked:bg-pink-500! focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0 dark:border-white/10 dark:bg-white/5 dark:checked:bg-pink-500!"
                     />
                     <span>
                         {{ __('By signing up, I confirm that I am at least 18 years old and accept the') }}
