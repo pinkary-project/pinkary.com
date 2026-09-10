@@ -21,9 +21,9 @@ final readonly class NoEmailAlias implements ValidationRule
             return;
         }
 
-        $atPosition = mb_strrpos($value, '@');
+        $localPart = mb_strstr($value, '@', true);
 
-        if ($atPosition !== false && str_contains(mb_substr($value, 0, $atPosition), '+')) {
+        if ($localPart !== false && str_contains($localPart, '+')) {
             $fail('The :attribute cannot contain an email alias.');
         }
     }
