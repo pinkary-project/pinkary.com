@@ -489,3 +489,48 @@ test('user can re-fetch avatar from GitHub', function (): void {
         ->and($user->is_uploaded_avatar)->toBeFalse()
         ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
 });
+
+test('cannot update email to an email alias', function (): void {
+    $user = User::factory()->create([
+        'username' => 'myuser',
+        'email' => 'myemail@gmail.com',
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => 'myemail+alias@gmail.com',
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response
+        ->assertStatus(302)
+        ->assertSessionHasErrors([
+            'email' => 'The email cannot contain an email alias.',
+        ]);
+
+    expect($user->fresh()->email)->toBe('myemail@gmail.com');
+});
+
+test('user can update profile while keeping their email', function (): void {
+    $user = User::factory()->create([
+        'username' => 'myuser',
+        'email' => 'myemail@gmail.com',
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Updated Name',
+            'username' => $user->username,
+            'email' => 'myemail@gmail.com',
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response->assertSessionHasNoErrors();
+    expect($user->fresh()->name)->toBe('Updated Name');
+});
