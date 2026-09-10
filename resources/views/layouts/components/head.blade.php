@@ -88,6 +88,16 @@
             data-rh="true"
         />
     @endif
+@elseif (request()->routeIs('changelog'))
+    <title>Changelog / Pinkary</title>
+    <meta property="og:type" content="website" data-rh="true" />
+    <meta property="og:title" content="Changelog / {{ config('app.name', 'Pinkary') }}" data-rh="true" />
+    <meta
+        property="og:description"
+        content="A changelog of the latest Pinkary feature releases, product updates and important bug fixes."
+        data-rh="true"
+    />
+    <meta property="og:image" content="https://pinkary.com/img/logo-mid.png" data-rh="true" />
 @else
     <title>{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials.</title>
     <meta property="og:type" content="website" data-rh="true" />
