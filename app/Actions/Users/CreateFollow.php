@@ -13,6 +13,6 @@ final readonly class CreateFollow
      */
     public function handle(User $user, int $targetId): void
     {
-        $user->following()->attach($targetId);
+        $user->following()->syncWithoutDetaching($targetId);
     }
 }
