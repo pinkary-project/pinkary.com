@@ -127,6 +127,20 @@ test('autocompleteResults ignores unknown types', function (): void {
         ->and($result->isEmpty())->toBeTrue();
 });
 
+test('autocompleteResults ignores non-string types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    // @phpstan-ignore-next-line
+    $component->set('matchedTypes', [1]);
+    $component->set('query', 'username');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->isEmpty())->toBeTrue();
+});
+
 test('autocompleteResults ignores unknown types but keeps valid ones', function (): void {
     $user = App\Models\User::factory()->create(['username' => 'bazz']);
 
