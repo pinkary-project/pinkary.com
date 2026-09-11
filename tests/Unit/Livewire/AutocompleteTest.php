@@ -114,6 +114,34 @@ test('autocompleteResults returns empty collection when no matched types are set
         ->and($result->isEmpty())->toBeTrue();
 });
 
+test('autocompleteResults ignores unknown types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    $component->set('matchedTypes', ['invalid_type']);
+    $component->set('query', 'username');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->isEmpty())->toBeTrue();
+});
+
+test('autocompleteResults ignores unknown types but keeps valid ones', function (): void {
+    $user = App\Models\User::factory()->create(['username' => 'bazz']);
+
+    $component = Livewire::test(Autocomplete::class);
+    $component->set('matchedTypes', ['mentions', 'invalid_type']);
+    $component->set('query', 'baz');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->count())->toBe(1)
+        ->and($result->first()->id)->toBe($user->id);
+});
+
 test('component properties are initialized correctly', function (): void {
     $component = Livewire::test(Autocomplete::class);
 

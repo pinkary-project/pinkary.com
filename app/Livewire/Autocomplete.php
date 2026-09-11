@@ -82,8 +82,8 @@ final class Autocomplete extends Component
     #[Computed]
     public function autocompleteResults(): Collection
     {
-        // @phpstan-ignore-next-line
         return collect($this->matchedTypes)
+            ->filter(fn (mixed $typeAlias): bool => is_string($typeAlias) && isset($this->autocompleteService::types()[$typeAlias]))
             ->map(fn (string $typeAlias): Collection => $this->autocompleteService
                 ->search($typeAlias, $this->query)
             )
