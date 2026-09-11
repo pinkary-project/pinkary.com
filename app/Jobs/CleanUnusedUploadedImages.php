@@ -68,12 +68,14 @@ final class CleanUnusedUploadedImages implements ShouldQueue
         /** @var array<int, string> $images */
         $images = $questions
             ->map(function (Question $question): array {
-                $questionContent = (string) ($question->getRawOriginal('content') ?? '');
+                $rawContent = $question->getRawOriginal('content');
+                $questionContent = is_string($rawContent) ? $rawContent : '';
                 preg_match_all(
                     '/!\[.*?]\((.*?)\)/',
                     $questionContent, $contentMatches
                 );
-                $answerContent = (string) ($question->getRawOriginal('answer') ?? '');
+                $rawAnswer = $question->getRawOriginal('answer');
+                $answerContent = is_string($rawAnswer) ? $rawAnswer : '';
                 preg_match_all(
                     '/!\[.*?]\((.*?)\)/',
                     $answerContent, $answerMatches
