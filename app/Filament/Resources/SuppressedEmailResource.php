@@ -30,6 +30,11 @@ final class SuppressedEmailResource extends Resource
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-no-symbol';
 
     /**
+     * The navigation sort order for the resource.
+     */
+    protected static ?int $navigationSort = 100;
+
+    /**
      * Configures the table for the resource.
      */
     public static function table(Table $table): Table
