@@ -83,6 +83,8 @@
                         <x-heroicon-o-code-bracket class="h-5 w-5" />
                         <span>Source code</span>
                     </a>
+
+                    <x-changelog-link :classes="$desktopItemClasses.' '.$desktopIdleClasses" />
                 @else
                     <a
                         title="Feed"
@@ -113,6 +115,8 @@
                         <x-heroicon-o-code-bracket class="h-5 w-5" />
                         <span>Source code</span>
                     </a>
+
+                    <x-changelog-link :classes="$desktopItemClasses.' '.$desktopIdleClasses" />
 
                     <a
                         title="Log in"
@@ -378,6 +382,8 @@
                 >
                     {{ __('Source code') }}
                 </x-dropdown-link>
+
+                <x-changelog-link dropdown />
 
                 @auth
                     <x-dropdown-link :href="route('profile.edit')"> {{ __('Settings') }} </x-dropdown-link>

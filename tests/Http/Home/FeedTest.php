@@ -17,6 +17,14 @@ it('can see the "feed" view', function (): void {
         ->assertSeeLivewire(Feed::class);
 });
 
+it('shows the changelog link to guests', function (): void {
+    $response = $this->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertSee('Changelog')
+        ->assertSee(route('changelog'));
+});
+
 it('can see the question create component when logged in with recent default feed', function (): void {
     $user = User::factory()->create(['default_feed' => UserDefaultFeed::Recent]);
 
@@ -25,6 +33,17 @@ it('can see the question create component when logged in with recent default fee
 
     $response->assertOk()
         ->assertSeeLivewire(Create::class);
+});
+
+it('shows the changelog link to authenticated users', function (): void {
+    $user = User::factory()->create(['default_feed' => UserDefaultFeed::Recent]);
+
+    $response = $this->actingAs($user)
+        ->get(route('home.feed'));
+
+    $response->assertOk()
+        ->assertSee('Changelog')
+        ->assertSee(route('changelog'));
 });
 
 it('redirects authenticated user with following default feed to the following page on fresh load', function (): void {
