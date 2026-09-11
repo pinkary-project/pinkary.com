@@ -133,6 +133,12 @@
                     </a>
                 @endauth
             </div>
+
+            @if (auth()->guest() && request()->routeIs('home.*'))
+                <div class="mt-6">
+                    <x-theme-toggle />
+                </div>
+            @endif
         </div>
 
         @auth
