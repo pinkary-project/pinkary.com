@@ -93,7 +93,7 @@ final class AppServiceProvider extends ServiceProvider
             $name = $notifiable instanceof User ? $notifiable->name : __('there');
 
             return (new MailMessage)
-                ->subject(__('Verify your email address'))
+                ->subject(__('Verify Email Address'))
                 ->greeting(__('Hello, :name!', ['name' => $name]))
                 ->line(__('Please click the button below to verify your email address.'))
                 ->action(__('Verify Email Address'), $url)
