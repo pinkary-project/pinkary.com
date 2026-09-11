@@ -62,17 +62,9 @@ final class SuppressedEmailResource extends Resource
                 Action::make('visit_profile')
                     ->label('Visit Profile')
                     ->visible(fn (SuppressedEmail $record): bool => $record->user instanceof User)
-                    ->url(function (SuppressedEmail $record): string {
-                        $user = $record->user;
-
-                        if (! $user instanceof User) {
-                            return route('home.feed');
-                        }
-
-                        return route('profile.show', [
-                            'username' => $user->username,
-                        ]);
-                    })
+                    ->url(fn (SuppressedEmail $record): string => route('profile.show', [
+                        'username' => $record->user()->firstOrFail()->username,
+                    ]))
                     ->openUrlInNewTab(),
 
                 Action::make('delete_user')
@@ -81,18 +73,12 @@ final class SuppressedEmailResource extends Resource
                     ->color(Color::Red)
                     ->visible(fn (SuppressedEmail $record): bool => $record->user instanceof User)
                     ->action(function (SuppressedEmail $record, DeleteUser $deleteUser): void {
-                        $user = $record->user;
-
-                        if (! $user instanceof User) {
-                            return;
-                        }
-
-                        DB::transaction(function () use ($record, $user, $deleteUser): void {
+                        DB::transaction(function () use ($record, $deleteUser): void {
                             BlockedAccount::firstOrCreate([
                                 'email' => $record->email,
                             ]);
 
-                            $deleteUser->handle($user);
+                            $deleteUser->handle($record->user()->firstOrFail());
                         });
                     }),
 
