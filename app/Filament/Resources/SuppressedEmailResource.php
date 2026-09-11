@@ -1,0 +1,92 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Resources;
+
+use App\Actions\Users\DeleteUser;
+use App\Filament\Resources\SuppressedEmailResource\Pages;
+use App\Models\BlockedAccount;
+use App\Models\SuppressedEmail;
+use App\Models\User;
+use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
+
+final class SuppressedEmailResource extends Resource
+{
+    /**
+     * The model the resource corresponds to.
+     */
+    protected static ?string $model = SuppressedEmail::class;
+
+    /**
+     * The navigation icon for the resource.
+     */
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-no-symbol';
+
+    /**
+     * Configures the table for the resource.
+     */
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.username')
+                    ->label('User'),
+                Tables\Columns\TextColumn::make('reason'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime(),
+            ])
+            ->actions([
+                Action::make('visit_profile')
+                    ->label('Visit Profile')
+                    ->url(fn (SuppressedEmail $record): ?string => $record->user instanceof User
+                        ? route('profile.show', ['username' => $record->user->username])
+                        : null)
+                    ->openUrlInNewTab(),
+
+                Action::make('delete_user')
+                    ->label('Delete User')
+                    ->requiresConfirmation()
+                    ->color(Color::Red)
+                    ->visible(fn (SuppressedEmail $record): bool => $record->user instanceof User)
+                    ->action(function (SuppressedEmail $record, DeleteUser $deleteUser): void {
+                        $user = $record->user;
+
+                        if (! $user instanceof User) {
+                            return;
+                        }
+
+                        DB::transaction(function () use ($record, $user, $deleteUser): void {
+                            BlockedAccount::firstOrCreate([
+                                'email' => $record->email,
+                            ]);
+
+                            $deleteUser->handle($user);
+                        });
+                    }),
+
+                Action::make('remove')
+                    ->label('Remove Suppression')
+                    ->requiresConfirmation()
+                    ->action(fn (SuppressedEmail $record): ?bool => $record->delete()),
+            ]);
+    }
+
+    /**
+     * Configures the pages for the resource.
+     */
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\Index::route('/'),
+        ];
+    }
+}

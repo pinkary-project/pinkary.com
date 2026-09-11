@@ -103,3 +103,36 @@ test('mails getting notification count', function (): void {
 
     Mail::assertQueued(PendingNotifications::class, fn (PendingNotifications $mail): bool => $mail->pendingNotificationsCount === 3);
 });
+
+test('skips suppressed emails', function (): void {
+    $suppressed = User::factory()->create([
+        'mail_preference_time' => UserMailPreference::Daily,
+    ]);
+
+    $recipient = User::factory()->create([
+        'mail_preference_time' => UserMailPreference::Daily,
+    ]);
+
+    $questioner = User::factory()->create([
+        'mail_preference_time' => UserMailPreference::Never,
+    ]);
+
+    foreach ([$suppressed, $recipient] as $user) {
+        $questioner->questionsSent()->create([
+            'to_id' => $user->id,
+            'content' => 'What is the meaning of life?',
+        ]);
+    }
+
+    App\Models\SuppressedEmail::factory()->create([
+        'email' => $suppressed->email,
+    ]);
+
+    Mail::fake();
+
+    $this->artisan(SendUnreadNotificationEmailsCommand::class)
+        ->assertExitCode(0);
+
+    Mail::assertQueued(PendingNotifications::class, 1);
+    Mail::assertQueued(PendingNotifications::class, fn (PendingNotifications $mail): bool => $mail->user->is($recipient));
+});

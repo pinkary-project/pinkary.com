@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Enums\UserMailPreference;
 use App\Mail\PendingNotifications;
+use App\Models\SuppressedEmail;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,6 +41,7 @@ final class SendUnreadNotificationEmailsCommand extends Command
                 $query->where('mail_preference_time', UserMailPreference::Daily);
             })
             ->whereHas('notifications')
+            ->whereNotIn('email', SuppressedEmail::query()->select('email'))
             ->withCount('notifications')
             ->each(fn (User $user) => Mail::to($user)->queue(new PendingNotifications($user, $user->notifications_count)));
     }
