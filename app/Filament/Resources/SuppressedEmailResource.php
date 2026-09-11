@@ -46,9 +46,10 @@ final class SuppressedEmailResource extends Resource
                     ->searchable()
                     ->copyable()
                     ->formatStateUsing(function (string $state): string {
-                        $visible = mb_strlen($state) > 8 ? 2 : 1;
+                        [$local, $domain] = array_pad(explode('@', $state, 2), 2, '');
+                        $visible = mb_strlen($local) > 4 ? 2 : 1;
 
-                        return Str::mask($state, '*', $visible, -$visible);
+                        return Str::mask($local, '*', $visible, -$visible).'@'.$domain;
                     }),
                 Tables\Columns\TextColumn::make('user.username')
                     ->label('User'),
