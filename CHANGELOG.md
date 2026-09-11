@@ -1,3 +1,12 @@
+## Version 2.4.0
+> 11 September, 2026
+
+- Adds automatic email suppression for permanently undeliverable addresses.
+- Fixes an error when following the same person twice in quick succession.
+- Fixes background cleanup of unused images failing on unanswered questions.
+- Fixes password input width alignment on the account deletion form.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.3.0
 > 10 September, 2026
 
