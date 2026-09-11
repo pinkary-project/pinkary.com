@@ -8,6 +8,7 @@ use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
+use App\Rules\NoEmailAlias;
 use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -34,6 +35,7 @@ final class UserUpdateRequest extends FormRequest
             ],
             'email' => [
                 'required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id),
+                new NoEmailAlias(),
                 new UnauthorizedEmailProviders(),
             ],
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
