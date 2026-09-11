@@ -3,7 +3,6 @@
     "type": "project",
     "require": {
         "php": "^8.4",
-        "ext-imagick": "^3.7.0",
         "bacon/bacon-qr-code": "^3.1.1",
         "filament/filament": "^5.8.1",
         "intervention/image": "^3.11.8",
