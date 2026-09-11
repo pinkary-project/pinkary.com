@@ -45,6 +45,7 @@ final class SuppressedEmailResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->copyable()
+                    ->copyableState(fn (string $state): string => $state)
                     ->formatStateUsing(function (string $state): string {
                         [$local, $domain] = array_pad(explode('@', $state, 2), 2, '');
                         $visible = mb_strlen($local) > 4 ? 2 : 1;
