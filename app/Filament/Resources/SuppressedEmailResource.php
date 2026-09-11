@@ -47,9 +47,18 @@ final class SuppressedEmailResource extends Resource
             ->actions([
                 Action::make('visit_profile')
                     ->label('Visit Profile')
-                    ->url(fn (SuppressedEmail $record): ?string => $record->user instanceof User
-                        ? route('profile.show', ['username' => $record->user->username])
-                        : null)
+                    ->visible(fn (SuppressedEmail $record): bool => $record->user instanceof User)
+                    ->url(function (SuppressedEmail $record): string {
+                        $user = $record->user;
+
+                        if (! $user instanceof User) {
+                            return route('home.feed');
+                        }
+
+                        return route('profile.show', [
+                            'username' => $user->username,
+                        ]);
+                    })
                     ->openUrlInNewTab(),
 
                 Action::make('delete_user')
