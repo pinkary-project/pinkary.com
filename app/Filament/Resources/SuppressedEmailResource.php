@@ -16,6 +16,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 final class SuppressedEmailResource extends Resource
 {
@@ -42,7 +43,13 @@ final class SuppressedEmailResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->formatStateUsing(function (string $state): string {
+                        $visible = mb_strlen($state) > 8 ? 2 : 1;
+
+                        return Str::mask($state, '*', $visible, -$visible);
+                    }),
                 Tables\Columns\TextColumn::make('user.username')
                     ->label('User'),
                 Tables\Columns\TextColumn::make('reason'),
