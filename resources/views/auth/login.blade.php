@@ -41,7 +41,7 @@
                 <x-checkbox
                     id="remember_me"
                     name="remember"
-                    class="rounded border-slate-200/80 bg-white text-pink-500 shadow-none checked:border-pink-500! checked:bg-pink-500! focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0 dark:border-white/10 dark:bg-white/5 dark:checked:bg-pink-500!"
+                    class="rounded border-slate-200/80 bg-white text-pink-500 shadow-none focus:ring-4 focus:ring-pink-500/20 focus:ring-offset-0 dark:border-white/10 dark:bg-white/5"
                 />
                 <span class="ml-2 text-sm text-slate-500 dark:text-slate-400"> {{ __('Remember me') }} </span>
             </label>
