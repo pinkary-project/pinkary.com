@@ -26,6 +26,19 @@ it('follows the given user', function (): void {
     );
 });
 
+it('does not fail when following the same user twice', function (): void {
+    $user = User::factory()->create();
+    $anotherUser = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(supportsFollow()::class);
+
+    $component->call('follow', $anotherUser->id);
+    $component->call('follow', $anotherUser->id);
+
+    expect($user->following()->whereKey($anotherUser->id)->count())->toBe(1);
+});
+
 it('unfollows the given user', function (): void {
     $user = User::factory()->create();
     $anotherUser = User::factory()->create();
