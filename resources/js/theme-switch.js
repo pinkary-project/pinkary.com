@@ -43,11 +43,6 @@ const themeSwitch = () => ({
         return this.theme;
     },
 
-    toggle() {
-        const next = this.getCurrentTheme() === 'dark' ? 'light' : 'dark';
-        this.setTheme(next);
-    },
-
     updateTheme() {
         const newTheme = this.getCurrentTheme();
 
