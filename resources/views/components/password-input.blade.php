@@ -1,6 +1,6 @@
-@props(['disabled' => false, 'label' => __('password')])
+@props(['disabled' => false, 'label' => __('password'), 'wrapperClasses' => ''])
 
-<div class="relative" x-data="{ showPassword: false }">
+<div class="relative {{ $wrapperClasses }}" x-data="{ showPassword: false }">
     <x-text-input
         type="password"
         x-bind:type="showPassword ? 'text' : 'password'"

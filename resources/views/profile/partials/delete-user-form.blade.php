@@ -30,7 +30,8 @@
                 <x-password-input
                     id="password"
                     name="password"
-                    class="mt-1 block w-3/4"
+                    wrapper-classes="w-3/4"
+                    class="mt-1 block w-full"
                     placeholder="{{ __('Password') }}"
                 />
 
