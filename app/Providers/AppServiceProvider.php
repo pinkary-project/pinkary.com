@@ -7,8 +7,10 @@ namespace App\Providers;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +31,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->configurePasswordValidation();
         $this->configureDates();
+        $this->configureEmailVerification();
         $this->configurePasswordResetUrl();
         $this->configureBlaze();
 
@@ -78,6 +81,23 @@ final class AppServiceProvider extends ServiceProvider
                 'token' => $token,
                 'email' => $notifiable->getEmailForPasswordReset(),
             ], absolute: false);
+        });
+    }
+
+    /**
+     * Personalize the verification email without changing Laravel's signed URL or expiry.
+     */
+    private function configureEmailVerification(): void
+    {
+        VerifyEmail::toMailUsing(function (mixed $notifiable, string $url): MailMessage {
+            $name = $notifiable instanceof User ? $notifiable->name : __('there');
+
+            return (new MailMessage)
+                ->subject(__('Verify your email address'))
+                ->greeting(__('Hello, :name!', ['name' => $name]))
+                ->line(__('Please click the button below to verify your email address.'))
+                ->action(__('Verify Email Address'), $url)
+                ->line(__('If you did not create an account, no further action is required.'));
         });
     }
 
