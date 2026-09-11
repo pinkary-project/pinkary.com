@@ -15,6 +15,24 @@ it('caches the last run time', function (): void {
         ->toBeInstanceOf(CarbonImmutable::class);
 });
 
+it('ignores questions with a null answer', function (): void {
+    Storage::fake();
+    $day = now()->format('Y-m-d');
+
+    $file = UploadedFile::fake()->image('image.jpg');
+    $path = $file->store("images/{$day}");
+
+    Question::factory()->create([
+        'content' => "![Image]({$path})",
+        'answer' => null,
+        'created_at' => now()->subMinutes(10),
+    ]);
+
+    CleanUnusedUploadedImages::dispatchSync();
+
+    Storage::disk()->assertExists($path);
+});
+
 it('cleans up unused images', function (): void {
     Storage::fake();
     $day = now()->format('Y-m-d');
