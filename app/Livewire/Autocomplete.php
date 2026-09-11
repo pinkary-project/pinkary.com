@@ -82,8 +82,11 @@ final class Autocomplete extends Component
     #[Computed]
     public function autocompleteResults(): Collection
     {
-        // @phpstan-ignore-next-line
+        $knownTypes = $this->autocompleteService::types();
+
+        // $matchedTypes is public, so a tampered Livewire payload can bypass setAutocompleteSearchParams().
         return collect($this->matchedTypes)
+            ->filter(fn (mixed $typeAlias): bool => is_string($typeAlias) && isset($knownTypes[$typeAlias]))
             ->map(fn (string $typeAlias): Collection => $this->autocompleteService
                 ->search($typeAlias, $this->query)
             )
