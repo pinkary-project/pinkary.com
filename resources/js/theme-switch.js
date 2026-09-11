@@ -9,18 +9,11 @@ const themeSwitch = () => ({
             }
         });
 
-        window.addEventListener('theme-changed', (event) => {
-            if (event.detail?.theme && this.theme !== event.detail.theme) {
-                this.theme = event.detail.theme;
-                this.updateTheme();
-            }
-        });
-
         const savedTheme = localStorage.getItem('theme') || this.theme;
-        this.setTheme(savedTheme, false);
+        this.setTheme(savedTheme);
     },
 
-    setTheme(theme, broadcast = true) {
+    setTheme(theme) {
         this.theme = theme;
 
         if (theme === 'dark' || theme === 'light') {
@@ -30,10 +23,6 @@ const themeSwitch = () => ({
         }
 
         this.updateTheme();
-
-        if (broadcast) {
-            window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme } }));
-        }
     },
 
     getCurrentTheme() {
@@ -41,11 +30,6 @@ const themeSwitch = () => ({
             return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         return this.theme;
-    },
-
-    toggle() {
-        const next = this.getCurrentTheme() === 'dark' ? 'light' : 'dark';
-        this.setTheme(next);
     },
 
     updateTheme() {
