@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Jobs\SendEmailVerification;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 
-test('sends verification notification', function (): void {
-    Notification::fake();
+test('queues verification notification', function (): void {
+    Queue::fake();
 
     $user = User::factory()->create([
         'email_verified_at' => null,
@@ -16,6 +18,21 @@ test('sends verification notification', function (): void {
     $this->actingAs($user)
         ->post('email/verification-notification')
         ->assertRedirect('/');
+
+    Queue::assertPushed(
+        SendEmailVerification::class,
+        fn (SendEmailVerification $job): bool => true,
+    );
+});
+
+test('sends verification notification from the queue', function (): void {
+    Notification::fake();
+
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+    ]);
+
+    new SendEmailVerification($user)->handle();
 
     Notification::assertSentTo(
         $user,
@@ -30,7 +47,7 @@ test('sends verification notification', function (): void {
 });
 
 test('does not send verification notification if email is verified', function (): void {
-    Notification::fake();
+    Queue::fake();
 
     $user = User::factory()->create([
         'email_verified_at' => now(),
@@ -42,5 +59,5 @@ test('does not send verification notification if email is verified', function ()
             'username' => $user->username,
         ]));
 
-    Notification::assertNothingSent();
+    Queue::assertNothingPushed();
 });

@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
+use App\Jobs\SendEmailVerification;
 use App\Services\ParsableBio;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
@@ -90,6 +91,14 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
                 ->whereIn('id', $ids)
                 ->increment('views');
         });
+    }
+
+    /**
+     * Queue email verification so registration does not wait for mail delivery.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        SendEmailVerification::dispatch($this);
     }
 
     /**

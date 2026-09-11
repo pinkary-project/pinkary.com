@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Jobs\SendEmailVerification;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -148,8 +148,8 @@ test('email verification status is unchanged when the email address is unchanged
     expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
-test('email verification job sent & status reset when the email address is changed', function (): void {
-    Notification::fake();
+test('email verification job is queued and status resets when the email address is changed', function (): void {
+    Queue::fake();
     $user = User::factory()->create();
 
     $this->actingAs($user)
@@ -163,7 +163,7 @@ test('email verification job sent & status reset when the email address is chang
 
     expect($user->email_verified_at)->toBeNull();
 
-    Notification::assertSentTo($user, VerifyEmail::class);
+    Queue::assertPushed(SendEmailVerification::class);
 });
 
 test('only updates avatar if email changes & avatar not been uploaded', function (): void {
