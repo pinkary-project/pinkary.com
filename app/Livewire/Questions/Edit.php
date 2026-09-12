@@ -49,7 +49,7 @@ final class Edit extends Component
         $question = Question::findOrFail($questionId);
         $rawAnswer = $question->getRawOriginal('answer');
         $this->answer = is_string($rawAnswer) ? $rawAnswer : '';
-        $this->channelId = $question->channel_id;
+        $this->channelId = blank($question->parent_id) ? $question->channel_id : null;
     }
 
     /**
