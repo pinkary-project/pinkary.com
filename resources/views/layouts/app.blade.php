@@ -23,7 +23,7 @@
     </div>
 
     <div class="relative flex min-h-screen flex-col">
-        <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 pb-28 lg:grid lg:pb-0 {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_22.5rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
+        <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 lg:grid {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_22.5rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
             <aside class="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
                 @include('layouts.navigation')
             </aside>
