@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
+use App\Notifications\UserMentioned;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -182,4 +183,26 @@ test('ignores all notifications viewed by user', function (): void {
         ->and($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
 
     $component->assertSee('Ignore all');
+});
+
+test('displays mention notifications with author avatar and username', function (): void {
+    $userA = User::factory()->create(['username' => 'alice']);
+    $userB = User::factory()->create(['username' => 'bob']);
+
+    $question = Question::factory()->create([
+        'to_id' => $userB->id,
+        'from_id' => $userA->id,
+        'content' => 'Hello @bob',
+        'answer' => null,
+    ]);
+
+    $userB->notify(new UserMentioned($question));
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userB->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('@alice')
+        ->assertSee('Hello')
+        ->assertSee('@bob');
 });

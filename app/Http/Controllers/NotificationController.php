@@ -29,16 +29,26 @@ final readonly class NotificationController
         /** @var DatabaseNotification $notification */
         $notification = $user->notifications()->findOrFail($notification->id);
 
-        /** @var Question $question */
-        $question = Question::findOrFail($notification->data['question_id']);
+        if (isset($notification->data['question_id'])) {
+            /** @var Question|null $question */
+            $question = Question::find($notification->data['question_id']);
 
-        if ($question->answer !== null) {
-            $notification->delete();
+            if ($question === null) {
+                $notification->delete();
+
+                return to_route('notifications.index');
+            }
+
+            if ($question->answer !== null) {
+                $notification->delete();
+            }
+
+            return to_route('questions.show', [
+                'username' => $question->to->username,
+                'question' => $question,
+            ]);
         }
 
-        return to_route('questions.show', [
-            'username' => $question->to->username,
-            'question' => $question,
-        ]);
+        return to_route('notifications.index');
     }
 }
