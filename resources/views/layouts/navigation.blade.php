@@ -196,6 +196,8 @@
 
                                 <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
 
+                                <x-switch-account />
+
                                 <form method="POST" action="{{ route('logout') }}" x-data>
                                     @csrf
 
@@ -307,6 +309,8 @@
 
                 @auth
                     <x-dropdown-link :href="route('profile.edit')"> {{ __('Settings') }} </x-dropdown-link>
+
+                    <x-switch-account />
 
                     <form method="POST" action="{{ route('logout') }}" x-data>
                         @csrf
