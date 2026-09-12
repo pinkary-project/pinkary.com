@@ -71,3 +71,23 @@ test('notifications about questions are not deleted', function (): void {
     $response->assertRedirectToRoute('questions.show', ['question' => $question, 'username' => $question->to->username]);
     expect($notification->fresh())->not->toBeNull();
 });
+
+test('orphan notification is deleted and redirects to notifications index', function (): void {
+    $user = App\Models\User::factory()->create();
+
+    $notification = Illuminate\Notifications\DatabaseNotification::query()->create([
+        'id' => Illuminate\Support\Str::uuid()->toString(),
+        'type' => App\Notifications\QuestionCreated::class,
+        'notifiable_type' => $user::class,
+        'notifiable_id' => $user->getKey(),
+        'data' => ['question_id' => Illuminate\Support\Str::uuid()->toString()],
+    ]);
+
+    $response = $this->actingAs($user)
+        ->get(route('notifications.show', [
+            'notification' => $notification,
+        ]));
+
+    $response->assertRedirectToRoute('notifications.index');
+    expect($notification->fresh())->toBeNull();
+});
