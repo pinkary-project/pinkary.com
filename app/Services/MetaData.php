@@ -58,7 +58,7 @@ final readonly class MetaData
     public function fetch(): Collection
     {
         /** @var Collection<string, string> $cachedData */
-        $cachedData = Cache::remember(
+        $cachedData = Cache::memo()->remember(
             Str::of($this->url)->slug()->prepend('preview_')->value(),
             now()->addYear(),
             fn (): Collection => $this->getData()

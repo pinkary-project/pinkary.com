@@ -6,11 +6,14 @@ use App\Services\MetaData;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\RejectedPromise;
 use GuzzleHttp\Psr7\Exception\MalformedUriException;
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -377,4 +380,35 @@ it('restores the default socket timeout after checking image size', function ():
     } finally {
         ini_set('default_socket_timeout', $previous);
     }
+});
+
+it('serves repeated previews from memo with a single store hit', function (): void {
+    $url = 'https://example.com/memoized-preview';
+
+    Event::fake([
+        CacheHit::class,
+        CacheMissed::class,
+    ]);
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta property="og:title" content="Memoized preview">
+                </head>
+            </html>
+        ', 200),
+    ]);
+    Http::preventStrayRequests();
+
+    $first = new MetaData($url)->fetch();
+    $second = new MetaData($url)->fetch();
+    $third = new MetaData($url)->fetch();
+
+    expect($second->toArray())->toBe($first->toArray())
+        ->and($third->toArray())->toBe($first->toArray())
+        ->and($first->get('title'))->toBe('Memoized preview');
+
+    Event::assertDispatched(CacheMissed::class, 1);
+    Event::assertDispatched(CacheHit::class, 1);
 });
