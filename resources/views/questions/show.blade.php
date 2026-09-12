@@ -3,7 +3,11 @@
     :people-to-follow-user-id="$question->to_id"
     :people-to-follow-question-id="$question->id"
 >
-    <div class="py-0" x-data x-init="document.getElementById('q-{{ $question->id }}').scrollIntoView();">
+    <div
+        class="flex flex-1 flex-col py-0"
+        x-data
+        x-init="document.getElementById('q-{{ $question->id }}').scrollIntoView();"
+    >
         <section class="overflow-hidden border-x border-b border-slate-200 bg-white dark:border-slate-700/50 dark:bg-[#07101f]/95">
             <div class="flex px-6 py-5">
                 <a
@@ -27,7 +31,7 @@
             </div>
         </section>
 
-        <section class="border-x border-b border-slate-200 bg-white px-2 py-2 dark:border-slate-700/50 dark:bg-[#07101f]/95">
+        <section class="flex-1 border-x border-b border-slate-200 bg-white px-2 py-2 dark:border-slate-700/50 dark:bg-[#07101f]/95">
             @foreach ($parentQuestions as $parentQuestion)
                 <livewire:questions.show
                     :questionId="$parentQuestion->id"

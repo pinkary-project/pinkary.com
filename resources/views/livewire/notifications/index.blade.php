@@ -1,4 +1,4 @@
-<div>
+<div class="flex flex-1 flex-col">
     <div class="sticky -top-1 z-30 flex items-center justify-between border-b border-slate-200/70 bg-white px-6 py-4 sm:bg-white/90 sm:py-6 sm:backdrop-blur dark:border-slate-800/30 dark:bg-[#07101f] dark:sm:bg-[#07101f]/95">
         <h2 class="text-[2rem] font-semibold tracking-tight text-slate-950 dark:text-white">Notifications</h2>
 
@@ -12,7 +12,7 @@
         @endif
     </div>
 
-    <section class="space-y-0">
+    <section class="flex-1 space-y-0">
         @foreach ($notifications as $notification)
             @if ($notification->type === 'App\Notifications\UserMentioned')
                 @php

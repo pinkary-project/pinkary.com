@@ -1,5 +1,5 @@
-<div>
-    <section class="min-h-screen space-y-0">
+<div class="flex flex-1 flex-col">
+    <section class="flex-1 space-y-0">
         @forelse ($questions as $question)
             <div
                 wire:key="thread-{{ $question->id }}"

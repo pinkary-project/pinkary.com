@@ -23,12 +23,12 @@
     </div>
 
     <div class="relative flex min-h-screen flex-col">
-        <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 lg:grid {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_22.5rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
+        <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col px-0 lg:grid {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_22.5rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
             <aside class="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
                 @include('layouts.navigation')
             </aside>
 
-            <div class="min-w-0 flex-1 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-2' : '' }}">
+            <div class="flex min-w-0 flex-1 flex-col {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-2' : '' }}">
                 @if ($showDiscoverLayout)
                     <form
                         x-data="{ query: @js($globalSearchQuery) }"
@@ -103,7 +103,7 @@
                     </div>
                 @endif
 
-                <main class="w-full">{{ $slot }}</main>
+                <main class="[&>*]:flex [&>*]:flex-1 [&>*]:flex-col flex w-full flex-1 flex-col">{{ $slot }}</main>
 
                 <x-image-lightbox />
             </div>

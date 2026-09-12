@@ -2,7 +2,7 @@
     <section
         data-current-channel-id="{{ $channel->id }}"
         data-current-channel-name="{{ $channel->name }}"
-        class="border-x border-b border-slate-200 bg-white/80 dark:border-slate-700/50 dark:bg-[#07101f]/95"
+        class="flex flex-1 flex-col border-x border-b border-slate-200 bg-white/80 dark:border-slate-700/50 dark:bg-[#07101f]/95"
     >
         <div
             class="sticky -top-1 z-30 flex items-center justify-between border-b border-slate-200/70 bg-white px-4 py-3.5 sm:bg-white/90 sm:px-6 sm:py-4 sm:backdrop-blur dark:border-slate-800/30 dark:bg-[#07101f] dark:sm:bg-[#07101f]/95"
@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <div class="space-y-0">
+        <div class="flex flex-1 flex-col space-y-0">
             @auth
                 <div class="hidden border-b border-slate-200/70 px-4 py-4 sm:block dark:border-slate-800/30">
                     <livewire:questions.create
@@ -38,7 +38,7 @@
                 </div>
             @endauth
 
-            <div class="min-h-screen">
+            <div class="flex-1">
                 <livewire:channels.show :channel="$channel" />
             </div>
         </div>
