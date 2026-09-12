@@ -5,7 +5,7 @@
 ])
 
 @if ($question->parent_id !== null)
-    <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+    <div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
         <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
             <img
                 src="{{ $question->from->avatar_url }}"
@@ -19,7 +19,7 @@
         </p>
     </div>
 @elseif ($question->from->is($user) && $question->answer !== null)
-    <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+    <div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
         <figure class="{{ $question->to->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
             <img
                 src="{{ $question->to->avatar_url }}"
@@ -34,14 +34,14 @@
     </div>
 @else
     @if ($question->anonymously)
-        <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+        <div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-slate-400">
                 <span>?</span>
             </div>
             <p>Someone asked you anonymously:</p>
         </div>
     @else
-        <div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+        <div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
             <figure class="{{ $question->from->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
                 <img
                     src="{{ $question->from->avatar_url }}"

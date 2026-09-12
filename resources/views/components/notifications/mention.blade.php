@@ -9,7 +9,7 @@
         : $question->to;
 @endphp
 
-<div class="mt-3 flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
     <figure class="{{ $author->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0 bg-slate-100 transition-opacity group-hover:opacity-90 dark:bg-slate-800">
         <img
             src="{{ $author->avatar_url }}"
