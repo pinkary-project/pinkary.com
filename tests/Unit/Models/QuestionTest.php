@@ -241,3 +241,22 @@ test('does not persist parses for unsaved changes', function (): void {
     expect($question->content)->toContain('/hashtag/laravel')
         ->and($question->getAttributes()['parsed'])->toBeNull();
 });
+
+test('parsed backfill does not touch timestamps', function (): void {
+    $question = Question::factory()->create([
+        'content' => 'Hello #pinkary!',
+    ]);
+
+    $old = now()->subYear();
+
+    Question::withoutTimestamps(function () use ($question, $old): void {
+        Question::query()->whereKey($question->getKey())->update([
+            'updated_at' => $old,
+            'created_at' => $old,
+        ]);
+    });
+
+    $question->fresh()->content;
+
+    expect($question->fresh()->updated_at->toDateTimeString())->toBe($old->toDateTimeString());
+});

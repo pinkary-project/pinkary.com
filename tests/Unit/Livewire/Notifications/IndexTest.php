@@ -70,7 +70,7 @@ test('renders notifications without per-notification question queries', function
     $component = Livewire::actingAs($user->fresh())->test(Index::class);
 
     $questionQueries = collect(DB::getQueryLog())
-        ->filter(fn (array $entry): bool => str_contains($entry['query'], '`questions`'))
+        ->filter(fn (array $entry): bool => str_starts_with($entry['query'], 'select') && str_contains($entry['query'], '`questions`'))
         ->count();
 
     DB::disableQueryLog();

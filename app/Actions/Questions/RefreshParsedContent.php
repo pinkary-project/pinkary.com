@@ -49,7 +49,7 @@ final readonly class RefreshParsedContent
             return null;
         }
 
-        if (($stored[$hashKey] ?? null) !== sha1($value)) {
+        if (($stored[$hashKey] ?? null) !== hash('sha256', $value)) {
             return null;
         }
 
@@ -71,8 +71,8 @@ final readonly class RefreshParsedContent
 
         $payload = [
             'f' => $this->parsableContent->fingerprint(),
-            'c' => is_string($content) ? sha1($content) : null,
-            'a' => is_string($answer) ? sha1($answer) : null,
+            'c' => is_string($content) ? hash('sha256', $content) : null,
+            'a' => is_string($answer) ? hash('sha256', $answer) : null,
             'content' => $this->parseRaw($content),
             'answer' => $this->parseRaw($answer),
         ];

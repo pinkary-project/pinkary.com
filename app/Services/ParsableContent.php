@@ -12,19 +12,17 @@ use App\Services\ParsableContentProviders\ImageProviderParsable;
 use App\Services\ParsableContentProviders\LinkProviderParsable;
 use App\Services\ParsableContentProviders\MentionProviderParsable;
 use App\Services\ParsableContentProviders\StripProviderParsable;
+use Illuminate\Support\Facades\Cache;
 use ReflectionClass;
 
-final class ParsableContent
+final readonly class ParsableContent
 {
-    /** @var array<string, string> */
-    private static array $fingerprints = [];
-
     /**
      * Creates a new parsable content instance.
      *
      * @param  array<int, class-string<ParsableContentProvider>>  $providers
      */
-    public function __construct(private readonly array $providers = [
+    public function __construct(private array $providers = [
         StripProviderParsable::class,
         CodeProviderParsable::class,
         ImageProviderParsable::class,
@@ -62,29 +60,34 @@ final class ParsableContent
     {
         $key = implode(',', $this->providers);
 
-        if (! isset(self::$fingerprints[$key])) {
-            $hashes = [];
+        /** @var string $fingerprint */
+        $fingerprint = Cache::memo()->remember(
+            'parsable-fingerprint-'.hash('sha256', $key),
+            now()->addYear(),
+            function (): string {
+                $hashes = [];
 
-            /** @var list<class-string> $classes */
-            $classes = [...$this->providers, MetaData::class, self::class];
+                /** @var list<class-string> $classes */
+                $classes = [...$this->providers, MetaData::class, self::class];
 
-            foreach ($classes as $class) {
-                $file = new ReflectionClass($class)->getFileName();
+                foreach ($classes as $class) {
+                    $file = new ReflectionClass($class)->getFileName();
 
-                if (is_string($file)) {
-                    $hashes[] = md5_file($file);
+                    if (is_string($file)) {
+                        $hashes[] = md5_file($file);
+                    }
                 }
+
+                $blade = md5_file(resource_path('views/components/link-preview-card.blade.php'));
+
+                if (is_string($blade)) {
+                    $hashes[] = $blade;
+                }
+
+                return hash('sha256', (string) json_encode($hashes));
             }
+        );
 
-            $blade = md5_file(resource_path('views/components/link-preview-card.blade.php'));
-
-            if (is_string($blade)) {
-                $hashes[] = $blade;
-            }
-
-            self::$fingerprints[$key] = sha1((string) json_encode($hashes));
-        }
-
-        return self::$fingerprints[$key];
+        return $fingerprint;
     }
 }
