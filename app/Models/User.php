@@ -93,11 +93,19 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Determine if the user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->email === 'enunomaduro@gmail.com' || $this->email === 'mrpunyapal@gmail.com';
+    }
+
+    /**
      * Determine if the user can access the admin given panel.
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasVerifiedEmail() && ($this->email === 'enunomaduro@gmail.com' || $this->email === 'mrpunyapal@gmail.com');
+        return $this->hasVerifiedEmail() && $this->isAdmin();
     }
 
     /**

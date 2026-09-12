@@ -49,7 +49,7 @@ trait HasChannelPicker
     #[Computed]
     public function availableChannels(): Collection
     {
-        return Cache::remember(
+        $channels = Cache::remember(
             'channels:popular',
             3600,
             fn (): Collection => Channel::query()
@@ -58,6 +58,12 @@ trait HasChannelPicker
                 ->limit(8)
                 ->get(),
         );
+
+        if ($this->isCurrentUserAdmin()) {
+            return $channels;
+        }
+
+        return $channels->reject(fn (Channel $channel): bool => $channel->isAdminOnly())->values();
     }
 
     /**
@@ -76,11 +82,17 @@ trait HasChannelPicker
             ])->values()->all();
         }
 
-        return Channel::query()
+        $channelQuery = Channel::query()
             ->where('name', 'like', "%{$q}%")
             ->orderByDesc('questions_count')
             ->orderBy('name')
-            ->limit(8)
+            ->limit(8);
+
+        if (! $this->isCurrentUserAdmin()) {
+            $channelQuery->whereNotIn('slug', Channel::ADMIN_ONLY_SLUGS);
+        }
+
+        return $channelQuery
             ->get()
             ->map(fn (Channel $channel): array => [
                 'id' => $channel->id,
@@ -149,6 +161,10 @@ trait HasChannelPicker
             return null;
         }
 
+        if (in_array($slug, Channel::ADMIN_ONLY_SLUGS, true) && ! $this->isCurrentUserAdmin()) {
+            return null;
+        }
+
         $channel = Channel::where('slug', $slug)->first();
 
         if ($channel) {
@@ -201,19 +217,39 @@ trait HasChannelPicker
                 return false;
             }
 
+            if (in_array($slug, Channel::ADMIN_ONLY_SLUGS, true) && ! $user->isAdmin()) {
+                return null;
+            }
+
             return $createChannel->handle($user, $channelName, $slug)->id;
         }
 
         if ($this->channelId !== null) {
-            if (Channel::whereKey($this->channelId)->exists()) {
-                return $this->channelId;
+            $slug = Channel::whereKey($this->channelId)->value('slug');
+
+            if (! is_string($slug)) {
+                $this->addError('channelId', 'Selected channel does not exist.');
+
+                return false;
             }
 
-            $this->addError('channelId', 'Selected channel does not exist.');
+            if (in_array($slug, Channel::ADMIN_ONLY_SLUGS, true) && ! $user->isAdmin()) {
+                return null;
+            }
 
-            return false;
+            return $this->channelId;
         }
 
         return null;
+    }
+
+    /**
+     * Determine if the current user is an admin.
+     */
+    private function isCurrentUserAdmin(): bool
+    {
+        $user = auth()->user();
+
+        return $user instanceof User && $user->isAdmin();
     }
 }

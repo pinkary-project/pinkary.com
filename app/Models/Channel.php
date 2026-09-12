@@ -30,6 +30,15 @@ final class Channel extends Model
     use HasFactory;
 
     /**
+     * Slugs only admins may create channels for or post to.
+     *
+     * @var list<string>
+     */
+    public const array ADMIN_ONLY_SLUGS = [
+        'announcements',
+    ];
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string
@@ -43,6 +52,14 @@ final class Channel extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Determine if the channel is restricted to admins.
+     */
+    public function isAdminOnly(): bool
+    {
+        return in_array($this->slug, self::ADMIN_ONLY_SLUGS, true);
     }
 
     /**

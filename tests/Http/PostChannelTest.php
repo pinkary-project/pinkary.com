@@ -385,3 +385,88 @@ it('validates channelName tampering and non-existent channelId on update', funct
         ->call('update')
         ->assertHasErrors(['channelId']);
 });
+
+it('hides admin-only channels from the dropdown for non-admins', function (): void {
+    $user = User::factory()->create();
+    Channel::factory()->create(['name' => 'Announcements', 'slug' => 'announcements']);
+    Channel::factory()->create(['name' => 'Laravel', 'slug' => 'laravel']);
+
+    $component = Livewire::actingAs($user)->test(Create::class, ['toId' => $user->id]);
+
+    expect($component->instance()->availableChannels->pluck('slug')->all())
+        ->not->toContain('announcements')
+        ->toContain('laravel');
+});
+
+it('shows admin-only channels in the dropdown for admins', function (): void {
+    $admin = User::factory()->admin()->create();
+    Channel::factory()->create(['name' => 'Announcements', 'slug' => 'announcements']);
+
+    $component = Livewire::actingAs($admin)->test(Create::class, ['toId' => $admin->id]);
+
+    expect($component->instance()->availableChannels->pluck('slug')->all())
+        ->toContain('announcements');
+});
+
+it('excludes admin-only channels from search for non-admins', function (): void {
+    $user = User::factory()->create();
+    Channel::factory()->create(['name' => 'Announcements', 'slug' => 'announcements']);
+
+    $component = Livewire::actingAs($user)->test(Create::class, ['toId' => $user->id]);
+
+    expect($component->instance()->searchChannels('Announce'))->toBeEmpty();
+});
+
+it('silently ignores admin-only channel names for non-admins', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->call('createChannel', 'Announcements')
+        ->assertHasNoErrors()
+        ->assertSet('channelName', null);
+
+    expect(Channel::where('slug', 'announcements')->exists())->toBeFalse();
+});
+
+it('strips the admin-only channel when non-admins post', function (): void {
+    $user = User::factory()->create();
+    $channel = Channel::factory()->create(['name' => 'Announcements', 'slug' => 'announcements']);
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Posting past announcements')
+        ->set('channelId', $channel->id)
+        ->call('store')
+        ->assertHasNoErrors();
+
+    expect(Question::where('answer', 'Posting past announcements')->first()?->channel_id)->toBeNull();
+});
+
+it('strips admin-only channel names claimed via channel name', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Claiming announcements quietly')
+        ->set('channelName', 'Announcements')
+        ->call('store')
+        ->assertHasNoErrors();
+
+    expect(Channel::where('slug', 'announcements')->exists())->toBeFalse()
+        ->and(Question::where('answer', 'Claiming announcements quietly')->first()?->channel_id)->toBeNull();
+});
+
+it('allows admins to post to an admin-only channel', function (): void {
+    $admin = User::factory()->admin()->create();
+    $channel = Channel::factory()->create(['name' => 'Announcements', 'slug' => 'announcements', 'questions_count' => 0]);
+
+    Livewire::actingAs($admin)
+        ->test(Create::class, ['toId' => $admin->id])
+        ->set('content', 'Admin announcement')
+        ->set('channelId', $channel->id)
+        ->call('store')
+        ->assertHasNoErrors();
+
+    expect(Question::where('answer', 'Admin announcement')->first()?->channel_id)->toBe($channel->id);
+});
