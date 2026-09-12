@@ -7,6 +7,7 @@ arch('notifications')
     ->toHaveConstructor()
     ->toExtend(Illuminate\Notifications\Notification::class)
     ->toOnlyBeUsedIn([
+        'App\Actions\Users',
         'App\Console\Commands',
         'App\Http\Controllers',
         'App\Observers',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Concerns\Followable;
 use App\Models\User;
+use App\Notifications\UserFollowed;
 use Livewire\Component;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -17,7 +18,8 @@ it('follows the given user', function (): void {
 
     $component->call('follow', $anotherUser->id);
 
-    expect($user->following->contains($anotherUser))->toBeTrue();
+    expect($user->following->contains($anotherUser))->toBeTrue()
+        ->and($anotherUser->notifications()->count())->toBe(1);
 
     $component->assertDispatched('following.updated');
 
@@ -36,7 +38,8 @@ it('does not fail when following the same user twice', function (): void {
     $component->call('follow', $anotherUser->id);
     $component->call('follow', $anotherUser->id);
 
-    expect($user->following()->whereKey($anotherUser->id)->count())->toBe(1);
+    expect($user->following()->whereKey($anotherUser->id)->count())->toBe(1)
+        ->and($anotherUser->notifications()->count())->toBe(1);
 });
 
 it('unfollows the given user', function (): void {
@@ -44,13 +47,16 @@ it('unfollows the given user', function (): void {
     $anotherUser = User::factory()->create();
 
     $user->following()->attach($anotherUser);
+    $anotherUser->notify(new UserFollowed($user));
+    expect($anotherUser->notifications()->count())->toBe(1);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($user)->test(supportsFollow()::class);
 
     $component->call('unfollow', $anotherUser->id);
 
-    expect($user->following->contains($anotherUser))->toBeFalse();
+    expect($user->following->contains($anotherUser))->toBeFalse()
+        ->and($anotherUser->notifications()->count())->toBe(0);
 
     $component->assertDispatched('following.updated');
 
