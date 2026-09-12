@@ -19,6 +19,11 @@ final readonly class RefreshParsedContent
 
     /**
      * Get the parsed output for the field, refreshing the stored payload when stale.
+     *
+     * Read-repair: a miss parses both content and answer together so a
+     * stale row self-heals in a single UPDATE. This means reading one
+     * field can also pay the parse cost of the other, including its
+     * link-preview HTTP work, and may issue a write behind this read.
      */
     public function handle(Question $question, string $field, string $hashKey, string $value): string
     {

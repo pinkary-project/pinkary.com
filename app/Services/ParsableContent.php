@@ -53,9 +53,10 @@ final class ParsableContent
     /**
      * Fingerprint of the parser pipeline.
      *
-     * Derived from the source of every provider, the link metadata
-     * parsing, and the preview card markup, so any rendering change
-     * automatically stale-marks previously stored parses.
+     * Derived from the source of every provider, the orchestration
+     * itself, the link metadata parsing, and the preview card markup,
+     * so any rendering change automatically stale-marks previously
+     * stored parses.
      */
     public function fingerprint(): string
     {
@@ -65,7 +66,7 @@ final class ParsableContent
             $hashes = [];
 
             /** @var list<class-string> $classes */
-            $classes = [...$this->providers, MetaData::class];
+            $classes = [...$this->providers, MetaData::class, self::class];
 
             foreach ($classes as $class) {
                 $file = new ReflectionClass($class)->getFileName();
