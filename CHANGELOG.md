@@ -1,3 +1,13 @@
+## Version 2.6.0
+> 12 September, 2026
+
+- Adds real-time notifications when someone follows you.
+- Redesigns the notifications feed to match the post layout with reactive Livewire pagination.
+- Adds a theme toggle component with system, light, and dark mode for guests.
+- Restricts creation and usage of reserved channel slugs to administrators.
+- Fixes autocomplete handling for non-string query inputs.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.5.0
 > 12 September, 2026
 
