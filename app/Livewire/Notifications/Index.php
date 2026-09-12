@@ -14,9 +14,12 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Pagination\Paginator;
 use Illuminate\View\View;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 final class Index extends Component
 {
+    use WithPagination;
+
     /**
      * Ignore all notifications.
      */
