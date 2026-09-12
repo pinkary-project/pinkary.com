@@ -1,3 +1,11 @@
+## Version 2.5.0
+> 12 September, 2026
+
+- Personalizes the verification email greeting.
+- Speeds up feeds and posts with cached rendering and bounded link previews.
+- Fixes light mode checkbox visibility.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.4.0
 > 11 September, 2026
 
