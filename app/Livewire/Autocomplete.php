@@ -69,7 +69,9 @@ final class Autocomplete extends Component
      */
     public function setAutocompleteSearchParams(array $matchedTypes, string $query): void
     {
-        $this->matchedTypes = array_intersect($matchedTypes, array_keys($this->autocompleteTypes));
+        $matchedTypes = array_filter($matchedTypes, is_string(...));
+
+        $this->matchedTypes = array_values(array_intersect($matchedTypes, array_keys($this->autocompleteTypes)));
         $this->query = $this->matchedTypes === [] ? '' : $query;
     }
 
@@ -87,6 +89,8 @@ final class Autocomplete extends Component
         // $matchedTypes is public, so a tampered Livewire payload can bypass setAutocompleteSearchParams().
         // @phpstan-ignore-next-line
         return collect($this->matchedTypes)
+            // @phpstan-ignore-next-line
+            ->filter(fn (mixed $value): bool => is_string($value))
             ->intersect(array_keys($knownTypes))
             ->map(fn (string $typeAlias): Collection => $this->autocompleteService
                 ->search($typeAlias, $this->query)
