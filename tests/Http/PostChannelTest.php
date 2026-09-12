@@ -470,3 +470,54 @@ it('allows admins to post to an admin-only channel', function (): void {
 
     expect(Question::where('answer', 'Admin announcement')->first()?->channel_id)->toBe($channel->id);
 });
+
+it('does not show channel picker or update channel for replies', function (): void {
+    $user = User::factory()->create();
+    $channel = Channel::factory()->create(['questions_count' => 0]);
+
+    $parent = Question::factory()->sharedUpdate()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => 'Parent update',
+        'answer_created_at' => now(),
+    ]);
+
+    $reply = Question::factory()->sharedUpdate()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => 'Child reply',
+        'answer_created_at' => now(),
+        'parent_id' => $parent->id,
+        'root_id' => $parent->id,
+        'channel_id' => null,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Edit::class, ['questionId' => $reply->id])
+        ->assertSet('channelId', null)
+        ->assertDontSeeHtml('data-channel-picker')
+        ->set('answer', 'Edited reply')
+        ->set('channelId', $channel->id)
+        ->call('update')
+        ->assertHasNoErrors();
+
+    expect($reply->fresh()->channel_id)->toBeNull()
+        ->and($channel->fresh()->questions_count)->toBe(0);
+});
+
+it('shows channel picker for root shared updates', function (): void {
+    $user = User::factory()->create();
+    $channel = Channel::factory()->create();
+
+    $question = Question::factory()->sharedUpdate()->for($channel)->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => 'Root update',
+        'answer_created_at' => now(),
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(Edit::class, ['questionId' => $question->id])
+        ->assertSet('channelId', $channel->id)
+        ->assertSeeHtml('data-channel-picker');
+});

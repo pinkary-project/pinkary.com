@@ -53,7 +53,7 @@
                             </button>
                         @endif
 
-                        @if ($question->isSharedUpdate())
+                        @if ($question->isSharedUpdate() && blank($question->parent_id))
                             <x-channel-picker />
                         @endif
                     @endif
