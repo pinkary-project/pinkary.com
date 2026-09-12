@@ -46,7 +46,7 @@
             <div class="grid w-full gap-4 md:grid-cols-2">
                 <div class="rounded-2xl border-none bg-slate-50 p-4 shadow-sm transition-colors md:aspect-video dark:border-t dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
                     <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-950">
-                        <x-heroicon-o-bolt class="h-5 w-5" />
+                        <x-heroicon-o-user-circle class="h-5 w-5" />
                     </div>
 
                     <h3>Create a profile</h3>

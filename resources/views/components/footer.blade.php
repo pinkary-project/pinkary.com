@@ -1,7 +1,10 @@
 <footer class="border-t border-slate-200/70 bg-white/75 pb-24 backdrop-blur lg:pb-0 dark:border-white/5 dark:bg-black/20">
     <div class="mx-auto flex w-full max-w-328 flex-col gap-6 px-4 py-8 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div>
-            <p class="font-mona text-lg font-semibold text-slate-950 dark:text-white">{{ config('app.name') }}</p>
+            <a
+                href="{{ route('home.feed') }}"
+                class="font-mona text-lg font-semibold text-slate-950 transition hover:text-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 dark:text-white"
+            >{{ config('app.name') }}</a>
             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">One link. All your socials.</p>
             <p class="mt-2 text-xs text-slate-500">&copy; {{ date('Y') }} {{ config('app.name') }}. {{ $version }}</p>
         </div>
