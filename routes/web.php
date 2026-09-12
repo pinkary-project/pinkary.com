@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AccountLogoutAllController;
+use App\Http\Controllers\AccountRemoveController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\ChannelController;
@@ -92,6 +95,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/profile/verified', [UserIsVerifiedController::class, 'update'])
         ->name('profile.verified.update');
+
+    Route::post('/accounts/switch/{username}', AccountController::class)
+        ->name('accounts.switch');
+
+    Route::post('/accounts/remove/{username}', AccountRemoveController::class)
+        ->name('accounts.remove');
+
+    Route::post('/accounts/logout-all', AccountLogoutAllController::class)
+        ->name('accounts.logout-all');
 });
 
 require __DIR__.'/auth.php';
