@@ -28,6 +28,11 @@ final readonly class MetaData
     public const int CARD_HEIGHT = 251;
 
     /**
+     * Timeout in seconds for the outbound requests made while rendering previews.
+     */
+    private const int HTTP_TIMEOUT_SECONDS = 3;
+
+    /**
      * The oEmbed endpoints keyed by their supported hosts.
      *
      * @var array<string, list<string>>
@@ -53,7 +58,7 @@ final readonly class MetaData
     public function fetch(): Collection
     {
         /** @var Collection<string, string> $cachedData */
-        $cachedData = Cache::remember(
+        $cachedData = Cache::memo()->remember(
             Str::of($this->url)->slug()->prepend('preview_')->value(),
             now()->addYear(),
             fn (): Collection => $this->getData()
@@ -91,11 +96,19 @@ final readonly class MetaData
      */
     public function checkExistsAndSize(string $image): bool
     {
-        if (! (Http::head($image)->ok())) {
+        if (! (Http::timeout(self::HTTP_TIMEOUT_SECONDS)->head($image)->ok())) {
             return false;
         }
 
-        $dimensions = @getimagesize($image);
+        $previousTimeout = ini_get('default_socket_timeout');
+
+        ini_set('default_socket_timeout', (string) self::HTTP_TIMEOUT_SECONDS);
+
+        try {
+            $dimensions = @getimagesize($image);
+        } finally {
+            ini_set('default_socket_timeout', $previousTimeout);
+        }
         $min_width = self::CARD_WIDTH / 0.66;
         $min_height = self::CARD_HEIGHT / 0.66;
 
@@ -134,7 +147,7 @@ final readonly class MetaData
         $data = collect();
 
         try {
-            $response = Http::get($this->url);
+            $response = Http::timeout(self::HTTP_TIMEOUT_SECONDS)->get($this->url);
 
             if ($response->ok() && $response->body() !== '') {
                 $data = $this->parse(
@@ -160,7 +173,7 @@ final readonly class MetaData
         $data = collect();
 
         try {
-            $response = Http::get(
+            $response = Http::timeout(self::HTTP_TIMEOUT_SECONDS)->get(
                 url: $service.'?url='.urlencode($this->url).'&'.http_build_query($options)
             );
 
@@ -240,7 +253,7 @@ final readonly class MetaData
         }
 
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
-            $response = Http::withHeader('User-Agent', 'Twitterbot')->get($this->url);
+            $response = Http::withHeader('User-Agent', 'Twitterbot')->timeout(self::HTTP_TIMEOUT_SECONDS)->get($this->url);
 
             if ($response->ok() && $response->body() !== '') {
                 $data = $this->parseContent($response->body());

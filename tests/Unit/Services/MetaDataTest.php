@@ -6,10 +6,14 @@ use App\Services\MetaData;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\RejectedPromise;
 use GuzzleHttp\Psr7\Exception\MalformedUriException;
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -296,4 +300,115 @@ it('handles empty content', function (): void {
     $data = $service->fetch();
 
     expect($data->isEmpty())->toBeTrue();
+});
+
+it('bounds page, image and twitter requests with a short timeout', function (): void {
+    $url = 'https://x.com/example/status/123';
+    $imagePath = storage_path('app/'.UploadedFile::fake()->image('timeout.jpg', 1000, 600)->store('images'));
+
+    $html = '
+        <html>
+            <head>
+                <meta property="og:site_name" content="X (formerly Twitter)">
+                <meta property="og:url" content="'.$url.'">
+                <meta property="og:image" content="'.$imagePath.'">
+            </head>
+        </html>
+    ';
+
+    /** @var array<int, mixed> $timeouts */
+    $timeouts = [];
+
+    Http::fake([
+        $url => function (Request $request, array $options) use (&$timeouts, $html): mixed {
+            $timeouts[] = $options['timeout'] ?? null;
+
+            return Http::response($html, 200);
+        },
+        '*' => function (Request $request, array $options) use (&$timeouts): mixed {
+            $timeouts[] = $options['timeout'] ?? null;
+
+            return Http::response(null, 200);
+        },
+    ]);
+    Http::preventStrayRequests();
+
+    $data = new MetaData($url)->fetch();
+
+    expect($data->get('image'))->toBe($imagePath)
+        ->and($timeouts)->not->toBeEmpty()
+        ->and($timeouts)->each->toBe(3);
+});
+
+it('bounds oembed requests with a short timeout', function (): void {
+    $url = 'https://youtu.be/dQw4w9WgXcQ';
+
+    /** @var array<int, mixed> $timeouts */
+    $timeouts = [];
+
+    Http::fake([
+        'www.youtube.com/oembed?url=*' => function (Request $request, array $options) use (&$timeouts): mixed {
+            $timeouts[] = $options['timeout'] ?? null;
+
+            return Http::response(['title' => 'Some video', 'type' => 'video'], 200);
+        },
+    ]);
+    Http::preventStrayRequests();
+
+    $data = new MetaData($url)->fetch();
+
+    expect($data->get('title'))->toBe('Some video')
+        ->and($timeouts)->not->toBeEmpty()
+        ->and($timeouts)->each->toBe(3);
+});
+
+it('restores the default socket timeout after checking image size', function (): void {
+    $imagePath = storage_path('app/'.UploadedFile::fake()->image('socket.jpg', 1000, 600)->store('images'));
+
+    Http::fake(['*' => Http::response(null, 200)]);
+    Http::preventStrayRequests();
+
+    $previous = ini_get('default_socket_timeout');
+    ini_set('default_socket_timeout', '123');
+
+    try {
+        $service = new MetaData('https://example.com');
+        $suitable = $service->checkExistsAndSize($imagePath);
+
+        expect($suitable)->toBeTrue()
+            ->and(ini_get('default_socket_timeout'))->toBe('123');
+    } finally {
+        ini_set('default_socket_timeout', $previous);
+    }
+});
+
+it('serves repeated previews from memo with a single store hit', function (): void {
+    $url = 'https://example.com/memoized-preview';
+
+    Event::fake([
+        CacheHit::class,
+        CacheMissed::class,
+    ]);
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta property="og:title" content="Memoized preview">
+                </head>
+            </html>
+        ', 200),
+    ]);
+    Http::preventStrayRequests();
+
+    $first = new MetaData($url)->fetch();
+    $second = new MetaData($url)->fetch();
+    $third = new MetaData($url)->fetch();
+
+    expect($second->toArray())->toBe($first->toArray())
+        ->and($third->toArray())->toBe($first->toArray())
+        ->and($first->get('title'))->toBe('Memoized preview');
+
+    Event::assertDispatched(CacheMissed::class, 1);
+    Event::assertDispatched(CacheHit::class, 1);
 });
