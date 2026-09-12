@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
+use App\Services\Accounts;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -20,11 +23,9 @@ final readonly class AuthenticatedSessionController
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(): RedirectResponse
+    public function destroy(#[CurrentUser] User $user, Accounts $accounts): RedirectResponse
     {
-        auth()->guard('web')->logout();
-        session()->invalidate();
-        session()->regenerateToken();
+        $accounts->logoutAccount($user);
 
         return back();
     }
