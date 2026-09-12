@@ -8,6 +8,9 @@ use App\Models\Like;
 use App\Models\PollOption;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 test('to array', function (): void {
     $question = Question::factory()->create()->fresh();
@@ -176,4 +179,65 @@ test('get sharable text', function (): void {
         ->and($question->getSharableText('Hello <pre><code>Code</code></pre>'))->toBe('Hello  [👀 see the code on Pinkary 👀] ')
         ->and($question->getSharableText('Hello<br>World'))->toBe('Hello World')
         ->and($question->getSharableText('hello<div id="link-preview-card">Preview</div>'))->toBe('hello');
+});
+
+test('writes back the parse once and serves it afterwards', function (): void {
+    $question = Question::factory()->create([
+        'content' => 'Hello #pinkary!',
+        'answer' => 'Hi @johndoe!',
+    ]);
+
+    $updates = 0;
+
+    DB::listen(function (QueryExecuted $query) use (&$updates): void {
+        if (Str::startsWith($query->sql, 'update')) {
+            $updates++;
+        }
+    });
+
+    $first = $question->content;
+
+    expect($first)->toContain('/hashtag/pinkary')
+        ->and($question->answer)->toContain('@johndoe')
+        ->and($updates)->toBe(1);
+
+    $fresh = $question->fresh();
+
+    expect($fresh->content)->toBe($first)
+        ->and($updates)->toBe(1)
+        ->and($fresh->getAttributes()['parsed'])->not->toBeNull();
+});
+
+test('repairs stale parses', function (): void {
+    $question = Question::factory()->create([
+        'content' => 'Hello #pinkary!',
+    ]);
+
+    Question::query()->whereKey($question->getKey())->update(['parsed' => '{"f":"stale"}']);
+
+    expect($question->fresh()->content)->toContain('/hashtag/pinkary')
+        ->and($question->fresh()->getAttributes()['parsed'])->not->toBe('{"f":"stale"}');
+});
+
+test('repairs corrupt parses', function (): void {
+    $question = Question::factory()->create([
+        'content' => 'Hello #pinkary!',
+    ]);
+
+    Question::query()->whereKey($question->getKey())->update(['parsed' => 'not-json{{{']);
+
+    expect($question->fresh()->content)->toContain('/hashtag/pinkary');
+});
+
+test('does not persist parses for unsaved changes', function (): void {
+    $question = Question::factory()->create([
+        'content' => 'Hello #pinkary!',
+    ]);
+
+    expect($question->getAttributes()['parsed'])->toBeNull();
+
+    $question->content = 'Hello #laravel!';
+
+    expect($question->content)->toContain('/hashtag/laravel')
+        ->and($question->getAttributes()['parsed'])->toBeNull();
 });

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\Questions\RefreshParsedContent;
 use App\Contracts\Models\Viewable;
 use App\Models\Scopes\WhereNotModerated;
 use App\Observers\QuestionObserver;
-use App\Services\ParsableContent;
 use Carbon\CarbonImmutable;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int $to_id
  * @property bool $pinned
  * @property string $content
+ * @property string|null $parsed
  * @property bool $anonymously
  * @property string|null $answer
  * @property CarbonImmutable|null $answer_created_at
@@ -57,6 +58,13 @@ final class Question extends Model implements Viewable
     use HasFactory, HasUuids;
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = ['parsed'];
+
+    /**
      * Increment the views for the given question IDs.
      */
     public static function incrementViews(array $ids): void
@@ -74,9 +82,11 @@ final class Question extends Model implements Viewable
      */
     public function getContentAttribute(?string $value): ?string
     {
-        $content = new ParsableContent();
+        if (in_array($value, [null, '', '0'], true)) {
+            return null;
+        }
 
-        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
+        return app(RefreshParsedContent::class)->handle($this, 'content', 'c', $value);
     }
 
     /**
@@ -84,9 +94,11 @@ final class Question extends Model implements Viewable
      */
     public function getAnswerAttribute(?string $value): ?string
     {
-        $content = new ParsableContent();
+        if (in_array($value, [null, '', '0'], true)) {
+            return null;
+        }
 
-        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
+        return app(RefreshParsedContent::class)->handle($this, 'answer', 'a', $value);
     }
 
     /**
