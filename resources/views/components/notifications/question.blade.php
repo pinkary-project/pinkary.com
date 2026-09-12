@@ -57,6 +57,10 @@
     @endif
 @endif
 
-@if (! $question->isSharedUpdate())
-    <p class="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-200">{!! $question->content !!}</p>
+@php
+    $snippet = $question->content === '__UPDATE__' ? $question->answer : $question->content;
+@endphp
+
+@if (filled($snippet))
+    <p class="mt-3 text-sm leading-6 text-slate-700 dark:text-slate-200">{!! $snippet !!}</p>
 @endif
