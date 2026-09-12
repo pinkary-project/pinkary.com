@@ -1,3 +1,10 @@
+## Version 2.6.1
+> 12 September, 2026
+
+- Fixes feed, notifications, and bookmark containers not stretching to the footer.
+- Fixes channel picker showing when editing comments and replies; channels are now only available for root posts.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.6.0
 > 12 September, 2026
 
