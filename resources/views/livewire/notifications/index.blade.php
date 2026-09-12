@@ -41,6 +41,17 @@
                             />
                         </x-notifications.item>
                     @endif
+                @elseif ($notification->type === 'App\Notifications\UserFollowed')
+                    @php
+                        /** @var User|null $follower */
+                        $follower = $followers->get($notification->data['follower_id'] ?? null);
+                    @endphp
+
+                    @if ($follower !== null)
+                        <x-notifications.item :notification="$notification">
+                            <x-notifications.user-followed :notification="$notification" :follower="$follower" />
+                        </x-notifications.item>
+                    @endif
                 @endif
             @endforeach
 
@@ -53,7 +64,7 @@
                     <div>
                         <p class="text-lg font-medium text-slate-950 dark:text-white">No pending notifications.</p>
                         <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                            New replies, mentions, and questions will show up here.
+                            New replies, mentions, followers, and questions will show up here.
                         </p>
                     </div>
                 </div>

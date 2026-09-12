@@ -91,3 +91,42 @@ test('orphan notification is deleted and redirects to notifications index', func
     $response->assertRedirectToRoute('notifications.index');
     expect($notification->fresh())->toBeNull();
 });
+
+test('follow notifications redirect to follower profile and are deleted', function (): void {
+    $follower = App\Models\User::factory()->create();
+    $user = App\Models\User::factory()->create();
+
+    $user->notify(new App\Notifications\UserFollowed($follower));
+
+    $notification = $user->notifications()->first();
+    expect($notification)->not->toBeNull();
+
+    /** @var Illuminate\Testing\TestResponse $response */
+    $response = $this->actingAs($user)
+        ->get(route('notifications.show', [
+            'notification' => $notification,
+        ]));
+
+    $response->assertRedirectToRoute('profile.show', ['username' => $follower->username]);
+    expect($notification->fresh())->toBeNull();
+});
+
+test('orphan follow notification is deleted and redirects to notifications index', function (): void {
+    $user = App\Models\User::factory()->create();
+
+    $notification = Illuminate\Notifications\DatabaseNotification::query()->create([
+        'id' => Illuminate\Support\Str::uuid()->toString(),
+        'type' => App\Notifications\UserFollowed::class,
+        'notifiable_type' => $user::class,
+        'notifiable_id' => $user->getKey(),
+        'data' => ['follower_id' => 999999],
+    ]);
+
+    $response = $this->actingAs($user)
+        ->get(route('notifications.show', [
+            'notification' => $notification,
+        ]));
+
+    $response->assertRedirectToRoute('notifications.index');
+    expect($notification->fresh())->toBeNull();
+});

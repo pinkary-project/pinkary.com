@@ -29,6 +29,21 @@ final readonly class NotificationController
         /** @var DatabaseNotification $notification */
         $notification = $user->notifications()->findOrFail($notification->id);
 
+        if (isset($notification->data['follower_id'])) {
+            /** @var User|null $follower */
+            $follower = User::find($notification->data['follower_id']);
+
+            $notification->delete();
+
+            if ($follower === null) {
+                return to_route('notifications.index');
+            }
+
+            return to_route('profile.show', [
+                'username' => $follower->username,
+            ]);
+        }
+
         if (isset($notification->data['question_id'])) {
             /** @var Question|null $question */
             $question = Question::find($notification->data['question_id']);

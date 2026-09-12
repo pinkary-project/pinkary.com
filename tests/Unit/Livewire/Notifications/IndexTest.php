@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
+use App\Notifications\UserFollowed;
 use App\Notifications\UserMentioned;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
@@ -205,4 +206,41 @@ test('displays mention notifications with author avatar and username', function 
         ->assertSee('@alice')
         ->assertSee('Hello')
         ->assertSee('@bob');
+});
+
+test('displays user followed notification with follower username', function (): void {
+    $follower = User::factory()->create(['username' => 'alice']);
+    $user = User::factory()->create(['username' => 'bob']);
+
+    $user->notify(new UserFollowed($follower));
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('@alice')
+        ->assertSee('followed you');
+});
+
+test('orphan follower notifications are skipped and can be cleaned up', function (): void {
+    $user = User::factory()->create();
+
+    DatabaseNotification::query()->create([
+        'id' => Str::uuid()->toString(),
+        'type' => UserFollowed::class,
+        'notifiable_type' => $user::class,
+        'notifiable_id' => $user->getKey(),
+        'data' => ['follower_id' => 999999],
+    ]);
+
+    expect($user->notifications()->count())->toBe(1);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    expect($component->viewData('followers')->count())->toBe(0);
+
+    new DeleteOrphanNotifications()->handle();
+
+    expect($user->notifications()->count())->toBe(0);
 });

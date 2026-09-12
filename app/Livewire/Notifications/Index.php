@@ -58,6 +58,7 @@ final class Index extends Component
             'user' => $user,
             'notifications' => $notifications,
             'questions' => $this->questionsFor($notifications),
+            'followers' => $this->followersFor($notifications),
         ]);
     }
 
@@ -86,6 +87,34 @@ final class Index extends Component
         return Question::query()
             ->with(['from', 'to', 'parent'])
             ->whereIn('id', $questionIds)
+            ->get()
+            ->keyBy('id');
+    }
+
+    /**
+     * Load the followers referenced by the given notifications in a single query.
+     *
+     * @param  Paginator<int, DatabaseNotification>  $notifications
+     * @return Collection<int|string, User>
+     */
+    private function followersFor(Paginator $notifications): Collection
+    {
+        $followerIds = collect($notifications->items())
+            ->map(function (DatabaseNotification $notification): ?int {
+                $followerId = $notification->data['follower_id'] ?? null;
+
+                return is_int($followerId) ? $followerId : (is_numeric($followerId) ? (int) $followerId : null);
+            })
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($followerIds->isEmpty()) {
+            return new Collection();
+        }
+
+        return User::query()
+            ->whereIn('id', $followerIds)
             ->get()
             ->keyBy('id');
     }
