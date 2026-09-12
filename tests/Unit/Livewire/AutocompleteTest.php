@@ -141,6 +141,29 @@ test('autocompleteResults ignores non-string types', function (): void {
         ->and($result->isEmpty())->toBeTrue();
 });
 
+test('setAutocompleteSearchParams ignores nested array types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    $component->call('setAutocompleteSearchParams', [['mentions'], 'mentions'], 'username');
+
+    $component->assertSet('matchedTypes', ['mentions'])
+        ->assertSet('query', 'username');
+});
+
+test('autocompleteResults ignores nested array types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    // @phpstan-ignore-next-line
+    $component->set('matchedTypes', [['mentions']]);
+    $component->set('query', 'username');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->isEmpty())->toBeTrue();
+});
+
 test('autocompleteResults ignores unknown types but keeps valid ones', function (): void {
     $user = App\Models\User::factory()->create(['username' => 'bazz']);
 
