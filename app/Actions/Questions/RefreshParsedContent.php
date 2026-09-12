@@ -80,7 +80,9 @@ final readonly class RefreshParsedContent
         if ($question->exists && ! $question->isDirty(['content', 'answer'])) {
             $json = json_encode($payload, JSON_THROW_ON_ERROR);
 
-            $question->newQuery()->whereKey($question->getKey())->update(['parsed' => $json]);
+            Question::withoutTimestamps(function () use ($question, $json): void {
+                $question->newQuery()->whereKey($question->getKey())->update(['parsed' => $json]);
+            });
             $question->setRawAttributes(array_merge($attributes, ['parsed' => $json]), true);
         }
 
