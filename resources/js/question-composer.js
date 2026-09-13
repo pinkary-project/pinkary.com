@@ -39,13 +39,8 @@ const questionComposer = (config = {}) => ({
         this.ensureThreadPolls();
         this.resizeAllTextareas();
 
-        Livewire.on('question.created', () => {
-            this.content = '';
-            this.threadPosts = [];
-            this.threadPolls = [];
-            this.images = [];
-            this.hasInteracted = !this.compactComposer;
-            this.$wire.$errors.clear();
+        this.$wire.on('question.created', () => {
+            this.resetAfterStore();
         });
 
         this.$wire.interceptMessage(({ onSuccess }) => {
@@ -111,6 +106,24 @@ const questionComposer = (config = {}) => ({
         }
 
         return (this.threadPosts || []).some((post) => (post || '').trim() !== '');
+    },
+
+    isOverContentLimit(value) {
+        return (typeof value === 'string' ? value : '').length > this.maxContentLength;
+    },
+
+    hasExceededContentLimit() {
+        return this.isOverContentLimit(this.content)
+            || this.threadPosts.some((post) => this.isOverContentLimit(post));
+    },
+
+    resetAfterStore() {
+        this.content = '';
+        this.threadPosts = [];
+        this.threadPolls = [];
+        this.images = [];
+        this.hasInteracted = !this.compactComposer;
+        this.$wire.$errors.clear();
     },
 
     expandComposer() {

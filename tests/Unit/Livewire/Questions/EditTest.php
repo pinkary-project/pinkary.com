@@ -38,6 +38,15 @@ test('update', function (): void {
     expect($this->question->fresh()->answer)->toBe('Hello World');
 });
 
+test('cannot update with an answer longer than 1000 characters', function (): void {
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->set('answer', str_repeat('a', 1001))
+        ->call('update')
+        ->assertHasErrors(['answer' => 'max']);
+});
+
 test('update auth', function (): void {
     $component = Livewire::test(Edit::class, [
         'questionId' => $this->question->id,

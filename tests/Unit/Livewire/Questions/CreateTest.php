@@ -79,6 +79,16 @@ test('store', function (): void {
         ->and($question->root_id)->toBeNull();
 });
 
+test('cannot store a shared update longer than 1000 characters', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', str_repeat('a', 1001))
+        ->call('store')
+        ->assertHasErrors(['content' => 'max']);
+});
+
 test('accepts custom draft key for isolated drafting', function (): void {
     $user = User::factory()->create();
 

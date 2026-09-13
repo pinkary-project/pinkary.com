@@ -1,5 +1,14 @@
-<div>
-    <form wire:submit="update" wire:keydown.cmd.enter="update" wire:keydown.ctrl.enter="update" class="pb-0">
+<div
+    x-data="{ answer: $wire.answer, maxContentLength: 1000 }"
+    x-init="$watch('answer', (value) => $wire.$set('answer', value, false))"
+>
+    <form
+        wire:submit="update"
+        wire:keydown.cmd.enter="update"
+        wire:keydown.ctrl.enter="update"
+        x-on:submit="if ((answer || '').length > maxContentLength) $event.preventDefault();"
+        class="pb-0"
+    >
         <div class="min-w-0">
             <div class="group/menu relative">
                 <div class="p-0">
@@ -7,18 +16,17 @@
 
                     <x-textarea
                         id="{{ 'answer_question_'.$question->id }}"
-                        wire:model="answer"
+                        x-model="answer"
                         x-autosize
                         class="min-h-20! resize-none rounded-none! border-slate-200/70! bg-white! px-3.5! py-3! text-[0.95rem]! leading-7! text-slate-950! shadow-sm placeholder:text-slate-400! dark:border-slate-800/30! dark:bg-[#10182b]! dark:text-white! dark:placeholder:text-slate-500!"
                         placeholder="Write your answer..."
-                        maxlength="1000"
                         rows="3"
                         autocomplete
                     ></x-textarea>
 
-                    <p class="mt-2 text-right text-sm text-slate-500 dark:text-slate-400">
-                        <span x-text="$wire.answer.length"></span> / 1000
-                    </p>
+                    <div class="mt-2 flex justify-end">
+                        <x-character-counter count="(answer || '').length" :limit="1000" />
+                    </div>
 
                     @error('answer')
                         <x-input-error :messages="$message" class="mt-2" />
@@ -30,6 +38,7 @@
                 <div class="flex items-center gap-2">
                     <button
                         type="submit"
+                        :disabled="(answer || '').length > maxContentLength"
                         class="inline-flex items-center rounded-md border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white dark:hover:bg-slate-800"
                     >
                         {{ __('Send') }}
