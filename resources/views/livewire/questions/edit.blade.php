@@ -6,7 +6,7 @@
         wire:submit="update"
         wire:keydown.cmd.enter="update"
         wire:keydown.ctrl.enter="update"
-        x-on:submit="if (answer.length > maxContentLength) $event.preventDefault();"
+        x-on:submit="if ((answer || '').length > maxContentLength) $event.preventDefault();"
         class="pb-0"
     >
         <div class="min-w-0">
@@ -24,11 +24,9 @@
                         autocomplete
                     ></x-textarea>
 
-                    @if ($question->isSharedUpdate() && blank($question->parent_id))
-                        <div class="mt-2 flex justify-end">
-                            <x-character-counter count="(answer || '').length" :limit="1000" />
-                        </div>
-                    @endif
+                    <div class="mt-2 flex justify-end">
+                        <x-character-counter count="(answer || '').length" :limit="1000" />
+                    </div>
 
                     @error('answer')
                         <x-input-error :messages="$message" class="mt-2" />
@@ -40,7 +38,7 @@
                 <div class="flex items-center gap-2">
                     <button
                         type="submit"
-                        :disabled="answer.length > maxContentLength"
+                        :disabled="(answer || '').length > maxContentLength"
                         class="inline-flex items-center rounded-md border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white dark:hover:bg-slate-800"
                     >
                         {{ __('Send') }}

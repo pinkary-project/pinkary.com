@@ -15,7 +15,12 @@
         x-text="{{ $limit }} - {{ $count }}"
     ></span>
 
-    <svg x-show="{{ $count }} <= {{ $limit }}" class="size-8 -rotate-90" viewBox="0 0 32 32" aria-hidden="true">
+    <svg
+        x-show="{{ $count }} > 0 && {{ $count }} <= {{ $limit }}"
+        class="size-8 -rotate-90"
+        viewBox="0 0 32 32"
+        aria-hidden="true"
+    >
         <circle class="stroke-slate-200 dark:stroke-slate-700" cx="16" cy="16" fill="none" r="11" stroke-width="3" />
         <circle
             class="stroke-pink-500 transition-[stroke-dashoffset] duration-150 dark:stroke-pink-400"

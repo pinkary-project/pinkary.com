@@ -108,14 +108,12 @@
                                 >
                                     <x-heroicon-o-chart-bar class="size-4" />
                                 </button>
-                                @if ($this->isSharingUpdate)
-                                    <div class="ml-auto">
-                                        <x-character-counter
-                                            count="(content || '').length"
-                                            :limit="$this->maxContentLength"
-                                        />
-                                    </div>
-                                @endif
+                                <div class="ml-auto">
+                                    <x-character-counter
+                                        count="(content || '').length"
+                                        :limit="$this->maxContentLength"
+                                    />
+                                </div>
                             </div>
                             <div
                                 x-cloak
@@ -351,14 +349,12 @@
                                             >
                                                 <x-heroicon-o-chart-bar class="size-4" />
                                             </button>
-                                            @if ($this->isSharingUpdate)
-                                                <div class="ml-auto">
-                                                    <x-character-counter
-                                                        count="(threadPosts[index] || '').length"
-                                                        :limit="$this->maxContentLength"
-                                                    />
-                                                </div>
-                                            @endif
+                                            <div class="ml-auto">
+                                                <x-character-counter
+                                                    count="(threadPosts[index] || '').length"
+                                                    :limit="$this->maxContentLength"
+                                                />
+                                            </div>
                                         </div>
                                         <p
                                             x-show="($wire.errors['threadPosts.' + index] || []).length > 0"
