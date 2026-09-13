@@ -19,6 +19,7 @@
         data-draft-key="{{ $this->draftKey }}"
         x-data="questionComposer({ draftKey: '{{ $this->draftKey }}', maxThreadPosts: {{ $this->maxThreadPosts }}, uploadLimit: {{ $this->uploadLimit }}, maxFileSize: {{ $this->maxFileSize }}, maxContentLength: {{ $this->maxContentLength }}, compact: {{ $isModalComposer ? 'false' : 'true' }} })"
         x-on:focusin="expandComposer()"
+        x-on:submit="if (hasExceededContentLimit()) $event.preventDefault();"
         class="{{ $isModalComposer ? 'flex min-h-0 flex-1 flex-col' : '' }} pb-0"
     >
         <div x-ref="composerScroll" class="{{ $isModalComposer ? 'min-h-0 flex-1 overflow-y-auto' : '' }}">
@@ -45,7 +46,6 @@
                                 x-model="content"
                                 id="mention-main-{{ $this->getId() }}"
                                 placeholder="{{ $this->placeholder }}"
-                                maxlength="{{ $this->maxContentLength }}"
                                 rows="1"
                                 required
                                 x-autosize
@@ -53,19 +53,6 @@
                                 autocomplete
                                 class="{{ $mainTextareaClasses }}"
                             />
-
-                            <p
-                                x-show="(content || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
-                                style="display: none"
-                                :class="
-                                (content || '').length >= {{ $this->maxContentLength }}
-                                    ? 'text-red-500 dark:text-red-400'
-                                    : 'text-slate-500 dark:text-slate-400'
-                            "
-                                class="mt-2 text-right text-sm"
-                            >
-                                <span x-text="(content || '').length"></span> / {{ $this->maxContentLength }}
-                            </p>
 
                             <x-input-error :messages="$errors->get('content')" class="mt-2" />
                             <div
@@ -121,6 +108,14 @@
                                 >
                                     <x-heroicon-o-chart-bar class="size-4" />
                                 </button>
+                                @if ($this->isSharingUpdate)
+                                    <div class="ml-auto">
+                                        <x-character-counter
+                                            count="(content || '').length"
+                                            :limit="$this->maxContentLength"
+                                        />
+                                    </div>
+                                @endif
                             </div>
                             <div
                                 x-cloak
@@ -227,7 +222,6 @@
                                             x-data="usesDynamicAutocomplete('mention-main-{{ $this->getId() }}')"
                                             x-bind="autocompleteInputBindings"
                                             placeholder="Say more..."
-                                            maxlength="{{ $this->maxContentLength }}"
                                             rows="1"
                                             x-autosize
                                             class="resize-none rounded-none! border-0! bg-transparent! px-3.5! py-1.5! pr-9! text-[0.95rem]! leading-7! text-slate-950! shadow-none! placeholder:text-slate-500! focus:ring-0! dark:text-white! dark:placeholder:text-slate-500!"
@@ -357,19 +351,14 @@
                                             >
                                                 <x-heroicon-o-chart-bar class="size-4" />
                                             </button>
-                                            <p
-                                                x-show="(threadPosts[index] || '').length > {{ (int) round($this->maxContentLength * 0.8) }}"
-                                                style="display: none"
-                                                :class="
-                                                (threadPosts[index] || '').length >= {{ $this->maxContentLength }}
-                                                    ? 'text-red-500 dark:text-red-400'
-                                                    : 'text-slate-500 dark:text-slate-400'
-                                            "
-                                                class="ml-auto text-right text-xs"
-                                            >
-                                                <span x-text="(threadPosts[index] || '').length"></span>
-                                                / {{ $this->maxContentLength }}
-                                            </p>
+                                            @if ($this->isSharingUpdate)
+                                                <div class="ml-auto">
+                                                    <x-character-counter
+                                                        count="(threadPosts[index] || '').length"
+                                                        :limit="$this->maxContentLength"
+                                                    />
+                                                </div>
+                                            @endif
                                         </div>
                                         <p
                                             x-show="($wire.errors['threadPosts.' + index] || []).length > 0"
@@ -417,7 +406,7 @@
                 <div class="flex items-center gap-2">
                     <button
                         type="submit"
-                        :disabled="uploading"
+                        :disabled="uploading || hasExceededContentLimit()"
                         class="inline-flex items-center rounded-md border border-{{ $user->left_color }} px-5 py-2.5 text-sm font-semibold text-{{ $user->left_color }} transition hover:bg-slate-950 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-slate-800"
                     >
                         @if ($this->parentId)
