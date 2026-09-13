@@ -21,10 +21,10 @@
     x-on:notification-created.dot.window="notify($event.detail.message, $event.detail.url, $event.detail.actionText)"
     @session('flash-message') x-init="notify('{{ $value }}')" @endsession
 >
-    <div id="flashMessageWrapper" class="fixed top-4 right-4 z-120 w-64 space-y-2 lg:top-auto lg:bottom-4"></div>
+    <div id="flashMessageWrapper" class="fixed top-16 right-4 z-120 w-64 space-y-2 lg:top-auto lg:bottom-4"></div>
 
     <template id="flashMessageTemplate">
-        <div role="alert" class="mt-12 rounded-lg bg-pink-500 px-4 py-3 text-white">
+        <div role="alert" class="rounded-lg bg-pink-500 px-4 py-3 text-white">
             <span>{notificationText}</span>
             <a
                 data-notification-action
