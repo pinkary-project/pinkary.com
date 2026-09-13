@@ -3,7 +3,7 @@
         <div>
             <a
                 href="{{ route('home.feed') }}"
-                class="font-mona text-lg font-semibold text-slate-950 transition hover:text-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 dark:text-white"
+                class="font-mona text-lg font-semibold text-slate-950 dark:text-white"
             >{{ config('app.name') }}</a>
             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">One link. All your socials.</p>
             <p class="mt-2 text-xs text-slate-500">&copy; {{ date('Y') }} {{ config('app.name') }}. {{ $version }}</p>
