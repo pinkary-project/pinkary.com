@@ -47,6 +47,61 @@ test('email can be verified', function (): void {
     $response->assertSessionHas('flash-message', 'Your email has been verified.');
 });
 
+test('valid verification links redirect guests to login and preserve the intended destination', function (): void {
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+    ]);
+
+    $verificationUrl = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        ['id' => $user->id, 'hash' => sha1($user->email)]
+    );
+
+    $this->get($verificationUrl)
+        ->assertRedirect(route('login'))
+        ->assertSessionHas('url.intended', $verificationUrl);
+});
+
+test('users can verify their email after logging in from a valid verification link', function (): void {
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+    ]);
+
+    $verificationUrl = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        ['id' => $user->id, 'hash' => sha1($user->email)]
+    );
+
+    $this->get($verificationUrl)->assertRedirect(route('login'));
+
+    $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->assertRedirect($verificationUrl);
+
+    $this->get($verificationUrl);
+
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+});
+
+test('expired verification links redirect guests to login with a recovery message', function (): void {
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+    ]);
+
+    $verificationUrl = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->subMinute(),
+        ['id' => $user->id, 'hash' => sha1($user->email)]
+    );
+
+    $this->get($verificationUrl)
+        ->assertRedirect(route('login'))
+        ->assertSessionHas('flash-message', 'This verification link has expired or is invalid. Please log in to request a new one.');
+});
+
 test('email is not verified with invalid hash', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,
