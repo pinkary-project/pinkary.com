@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\ChannelController;
@@ -92,6 +93,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/profile/verified', [UserIsVerifiedController::class, 'update'])
         ->name('profile.verified.update');
+
+    Route::post('/accounts/switch/{username}', AccountController::class)
+        ->name('accounts.switch');
 });
 
 require __DIR__.'/auth.php';
