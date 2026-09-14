@@ -30,6 +30,7 @@
         "laravel/pao": "^1.1.5",
         "laravel/pint": "^1.32.1",
         "laravel/sail": "^1.67.0",
+        "laravel/vet": "^0.1.1",
         "mockery/mockery": "^1.6.15",
         "nunomaduro/collision": "^8.9.5",
         "pestphp/pest": "^5.1.4",
@@ -109,6 +110,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "laravel/vet": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }

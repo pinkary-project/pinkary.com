@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38947cd71b476181172081d439c95e41",
+    "content-hash": "cf7e81473bdd03d2a3255f0cbb9a72f8",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -12400,6 +12400,81 @@
                 "source": "https://github.com/laravel/sail"
             },
             "time": "2026-08-12T13:55:56+00:00"
+        },
+        {
+            "name": "laravel/vet",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/vet.git",
+                "reference": "4a089c9480ff5863c045893b317db63f163ade74"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/vet/zipball/4a089c9480ff5863c045893b317db63f163ade74",
+                "reference": "4a089c9480ff5863c045893b317db63f163ade74",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.0",
+                "ext-dom": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "ext-phar": "*",
+                "ext-zip": "*",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^7.15.5|^8.0",
+                "laravel-zero/foundation": "^13.25",
+                "laravel-zero/framework": "^13.0",
+                "laravel/pint": "^1.32.1",
+                "mockery/mockery": "^1.6.15",
+                "pestphp/pest": "^5.1.4",
+                "pestphp/pest-plugin-phpstan": "^5.2.1",
+                "pestphp/pest-plugin-rector": "^5.0.4",
+                "phpstan/phpstan": "^2.2.14",
+                "rector/rector": "^2.6.7"
+            },
+            "bin": [
+                "builds/vet"
+            ],
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Laravel\\Vet\\Composer\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "App\\": "app/",
+                    "Laravel\\Vet\\Composer\\": "src/Composer/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "A dependency audit trust file for PHP.",
+            "keywords": [
+                "Audit",
+                "cli",
+                "composer",
+                "console",
+                "dev",
+                "php",
+                "security",
+                "supply chain"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/vet/issues",
+                "source": "https://github.com/laravel/vet/tree/v0.1.1"
+            },
+            "time": "2026-09-14T14:09:29+00:00"
         },
         {
             "name": "mockery/mockery",
