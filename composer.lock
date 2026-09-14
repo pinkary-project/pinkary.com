@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf7e81473bdd03d2a3255f0cbb9a72f8",
+    "content-hash": "aad4923a8fa92393726cb7c04b0e43cb",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -11983,16 +11983,16 @@
         },
         {
             "name": "laravel/boost",
-            "version": "v2.8.1",
+            "version": "v2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/boost.git",
-                "reference": "820bc93b7826c456ca591cfecca463b4dc794a72"
+                "reference": "ebe59d97cbc66b66f735e6ec7ff859233e7934e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/boost/zipball/820bc93b7826c456ca591cfecca463b4dc794a72",
-                "reference": "820bc93b7826c456ca591cfecca463b4dc794a72",
+                "url": "https://api.github.com/repos/laravel/boost/zipball/ebe59d97cbc66b66f735e6ec7ff859233e7934e0",
+                "reference": "ebe59d97cbc66b66f735e6ec7ff859233e7934e0",
                 "shasum": ""
             },
             "require": {
@@ -12001,7 +12001,7 @@
                 "illuminate/contracts": "^11.45.3|^12.41.1|^13.0",
                 "illuminate/routing": "^11.45.3|^12.41.1|^13.0",
                 "illuminate/support": "^11.45.3|^12.41.1|^13.0",
-                "laravel/mcp": "^0.7.1|^0.8.0|^0.9.0",
+                "laravel/mcp": "^0.7.1|^0.8.0|^0.9.0|^1.0",
                 "laravel/prompts": "^0.3.10",
                 "laravel/roster": "^1.0.0",
                 "php": "^8.2"
@@ -12045,20 +12045,20 @@
                 "issues": "https://github.com/laravel/boost/issues",
                 "source": "https://github.com/laravel/boost"
             },
-            "time": "2026-09-10T15:25:39+00:00"
+            "time": "2026-09-14T14:40:10+00:00"
         },
         {
             "name": "laravel/mcp",
-            "version": "v0.9.5",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/mcp.git",
-                "reference": "923d8d8cd9ed46766d1a8b5269f8b4afc4c91c53"
+                "reference": "cfa4f38f82873eeb6848527883545f98f871e229"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/mcp/zipball/923d8d8cd9ed46766d1a8b5269f8b4afc4c91c53",
-                "reference": "923d8d8cd9ed46766d1a8b5269f8b4afc4c91c53",
+                "url": "https://api.github.com/repos/laravel/mcp/zipball/cfa4f38f82873eeb6848527883545f98f871e229",
+                "reference": "cfa4f38f82873eeb6848527883545f98f871e229",
                 "shasum": ""
             },
             "require": {
@@ -12119,7 +12119,7 @@
                 "issues": "https://github.com/laravel/mcp/issues",
                 "source": "https://github.com/laravel/mcp"
             },
-            "time": "2026-09-09T12:56:57+00:00"
+            "time": "2026-09-14T14:35:19+00:00"
         },
         {
             "name": "laravel/pao",
@@ -12403,16 +12403,16 @@
         },
         {
             "name": "laravel/vet",
-            "version": "v0.1.1",
+            "version": "v0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/vet.git",
-                "reference": "4a089c9480ff5863c045893b317db63f163ade74"
+                "reference": "4bc52d8aed7cfeeeb46c1f5e58b22ada3d79d074"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/vet/zipball/4a089c9480ff5863c045893b317db63f163ade74",
-                "reference": "4a089c9480ff5863c045893b317db63f163ade74",
+                "url": "https://api.github.com/repos/laravel/vet/zipball/4bc52d8aed7cfeeeb46c1f5e58b22ada3d79d074",
+                "reference": "4bc52d8aed7cfeeeb46c1f5e58b22ada3d79d074",
                 "shasum": ""
             },
             "require": {
@@ -12472,9 +12472,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/vet/issues",
-                "source": "https://github.com/laravel/vet/tree/v0.1.1"
+                "source": "https://github.com/laravel/vet/tree/v0.1.2"
             },
-            "time": "2026-09-14T14:09:29+00:00"
+            "time": "2026-09-14T15:19:20+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -12795,16 +12795,16 @@
         },
         {
             "name": "pestphp/pest",
-            "version": "v5.1.4",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "e68976ea9da26e57ce74bf6ac4d638ded9151771"
+                "reference": "942d6aead1c5ae407998eaf4964667423e77fd43"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/e68976ea9da26e57ce74bf6ac4d638ded9151771",
-                "reference": "e68976ea9da26e57ce74bf6ac4d638ded9151771",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/942d6aead1c5ae407998eaf4964667423e77fd43",
+                "reference": "942d6aead1c5ae407998eaf4964667423e77fd43",
                 "shasum": ""
             },
             "require": {
@@ -12816,13 +12816,13 @@
                 "pestphp/pest-plugin-mutate": "^5.0.2",
                 "pestphp/pest-plugin-profanity": "^5.0.0",
                 "php": "^8.4",
-                "phpunit/phpunit": "^13.3.2",
+                "phpunit/phpunit": "^13.3.3",
                 "symfony/process": "^8.1.6"
             },
             "conflict": {
                 "filp/whoops": "<2.18.3",
                 "laravel/boost": "<2.6.0",
-                "phpunit/phpunit": ">13.3.2",
+                "phpunit/phpunit": ">13.3.3",
                 "sebastian/exporter": "<7.0.0",
                 "webmozart/assert": "<1.11.0"
             },
@@ -12899,7 +12899,7 @@
             ],
             "support": {
                 "issues": "https://github.com/pestphp/pest/issues",
-                "source": "https://github.com/pestphp/pest/tree/v5.1.4"
+                "source": "https://github.com/pestphp/pest/tree/v5.2.0"
             },
             "funding": [
                 {
@@ -12911,7 +12911,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-07T11:01:12+00:00"
+            "time": "2026-09-14T14:41:18+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -14165,16 +14165,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.3.2",
+            "version": "13.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "22104a5ceb8d642e6b30ab00211d53d88e2db368"
+                "reference": "0d8711067516c1f6ba1a66f762e16c2fb1a8ccd1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/22104a5ceb8d642e6b30ab00211d53d88e2db368",
-                "reference": "22104a5ceb8d642e6b30ab00211d53d88e2db368",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0d8711067516c1f6ba1a66f762e16c2fb1a8ccd1",
+                "reference": "0d8711067516c1f6ba1a66f762e16c2fb1a8ccd1",
                 "shasum": ""
             },
             "require": {
@@ -14188,14 +14188,14 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.4.1",
-                "phpunit/php-code-coverage": "^14.3.1",
+                "phpunit/php-code-coverage": "^14.3.2",
                 "phpunit/php-file-iterator": "^7.0.2",
                 "phpunit/php-invoker": "^7.0.0",
                 "phpunit/php-text-template": "^6.0.0",
                 "phpunit/php-timer": "^9.0.0",
                 "sebastian/cli-parser": "^5.0.1",
                 "sebastian/comparator": "^8.4",
-                "sebastian/diff": "^9.0",
+                "sebastian/diff": "^9.0.1",
                 "sebastian/environment": "^9.3.2",
                 "sebastian/exporter": "^8.2.1",
                 "sebastian/file-filter": "^1.0",
@@ -14245,7 +14245,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.3.2"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.3.3"
             },
             "funding": [
                 {
@@ -14253,7 +14253,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-08-27T08:40:49+00:00"
+            "time": "2026-09-09T04:50:32+00:00"
         },
         {
             "name": "rector/rector",
