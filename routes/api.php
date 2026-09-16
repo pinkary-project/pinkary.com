@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,8 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
     Route::get('profile', [ProfileController::class, 'show'])
         ->middleware('auth:sanctum')
         ->name('profile.show');
+
+    Route::get('feed', [FeedController::class, 'index'])
+        ->middleware('auth:sanctum')
+        ->name('feed.index');
 });
