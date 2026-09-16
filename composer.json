@@ -10,6 +10,7 @@
         "laravel/framework": "^13.31",
         "laravel/nightwatch": "^1.30.0",
         "laravel/pennant": "^1.26.0",
+        "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.31.0",
         "laravel/tinker": "^3.0.2",
         "league/flysystem-aws-s3-v3": "^3.35.3",
