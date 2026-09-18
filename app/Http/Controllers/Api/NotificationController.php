@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Api\ReadNotificationRequest;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
@@ -57,11 +58,9 @@ final readonly class NotificationController
     /**
      * Mark one notification (or all) as read.
      */
-    public function read(Request $request): JsonResponse
+    public function read(ReadNotificationRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'id' => ['sometimes', 'string'],
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['id'])) {
             $request->user()->notifications()->whereKey($validated['id'])->first()?->markAsRead();

@@ -6,8 +6,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Users\CreateFollow;
 use App\Actions\Users\DeleteFollow;
+use App\Actions\Users\LoadProfile;
 use App\Http\Resources\UserResource;
-use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,9 +19,9 @@ final readonly class UserController
     /**
      * Show any user's public profile card, mirroring the web profile page.
      */
-    public function show(Request $request, User $user): JsonResource
+    public function show(Request $request, User $user, LoadProfile $loadProfile): JsonResource
     {
-        return new UserResource($this->hydrate($user));
+        return new UserResource($loadProfile->handle($user));
     }
 
     /**
@@ -62,18 +62,5 @@ final readonly class UserController
             'followed' => false,
             'followers' => $user->followers()->count(),
         ]]);
-    }
-
-    private function hydrate(User $user): User
-    {
-        $user->loadMissing(['links' => fn ($query) => $query->where('is_visible', true)]);
-        $user->loadCount(['followers', 'following']);
-
-        $user->setAttribute(
-            'posts_count',
-            $user->questionsReceived()->tap(new WhereNotModerated)->where('answer', '!=', '')->count()
-        );
-
-        return $user;
     }
 }

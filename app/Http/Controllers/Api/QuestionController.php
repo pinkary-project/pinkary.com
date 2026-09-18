@@ -11,12 +11,14 @@ use App\Actions\Questions\CreateQuestion;
 use App\Actions\Questions\DeleteBookmark;
 use App\Actions\Questions\DeleteLike;
 use App\Actions\Questions\UpdatePollVote;
+use App\Http\Requests\Api\StoreCommentRequest;
+use App\Http\Requests\Api\StoreQuestionRequest;
+use App\Http\Requests\Api\VotePollRequest;
 use App\Http\Resources\QuestionResource;
 use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
 use App\Queries\Feeds\FeedQuestion;
-use App\Rules\NoBlankCharacters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,21 +33,11 @@ final readonly class QuestionController
      * The main post plus up to 9 chained follow-ups are stored as
      * self-addressed questions, mirroring the web composer's threads.
      */
-    public function store(Request $request, CreateQuestion $createQuestion, CreateChannel $createChannel): JsonResponse
+    public function store(StoreQuestionRequest $request, CreateQuestion $createQuestion, CreateChannel $createChannel): JsonResponse
     {
         $user = $request->user();
 
-        $validated = $request->validate([
-            'content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters],
-            'thread_posts' => ['sometimes', 'array', 'max:9'],
-            'thread_posts.*' => ['nullable', 'string', 'min:1', 'max:1000', new NoBlankCharacters],
-            'channel_id' => ['sometimes', 'nullable', 'integer', 'exists:channels,id'],
-            'channel_name' => ['sometimes', 'nullable', 'string', 'min:2', 'max:50', 'regex:/^[\pL\pN\s\-_]+$/u'],
-            'poll_options' => ['sometimes', 'array', 'min:2', 'max:4'],
-            'poll_options.*' => ['required', 'string', 'min:1', 'max:40'],
-            'poll_duration' => ['required_with:poll_options', 'integer', 'min:1', 'max:7'],
-            'thread_polls' => ['sometimes', 'array', 'max:9'],
-        ]);
+        $validated = $request->validated();
 
         // Blank follow-ups are skipped, keeping each row's poll state
         // aligned with its post like the web composer does.
@@ -178,13 +170,11 @@ final readonly class QuestionController
      * Comments are self-addressed questions linked through parent/root ids,
      * mirroring the web composer's reply flow.
      */
-    public function storeComment(Request $request, Question $question): JsonResponse
+    public function storeComment(StoreCommentRequest $request, Question $question): JsonResponse
     {
         $user = $request->user();
 
-        $validated = $request->validate([
-            'content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters],
-        ]);
+        $validated = $request->validated();
 
         if ($limited = $this->rateLimited($user)) {
             return $limited;
@@ -260,7 +250,7 @@ final readonly class QuestionController
      * Vote in the question's poll (toggling — voting the same option
      * again removes the vote, mirroring the web poll component).
      */
-    public function votePoll(Request $request, Question $question, UpdatePollVote $updatePollVote): JsonResponse
+    public function votePoll(VotePollRequest $request, Question $question, UpdatePollVote $updatePollVote): JsonResponse
     {
         if ($question->poll_expires_at === null) {
             return response()->json(['message' => 'This question is not a poll.'], 422);
@@ -270,9 +260,7 @@ final readonly class QuestionController
             return response()->json(['message' => 'This poll has expired and voting is no longer allowed.'], 422);
         }
 
-        $validated = $request->validate([
-            'option_id' => ['required', 'integer'],
-        ]);
+        $validated = $request->validated();
 
         $option = $question->pollOptions()->whereKey($validated['option_id'])->first();
 
