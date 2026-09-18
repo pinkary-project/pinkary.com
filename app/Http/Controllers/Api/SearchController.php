@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Api\SearchRequest;
 use App\Models\Hashtag;
 use App\Models\User;
 use App\Support\AbsoluteUrl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 final readonly class SearchController
@@ -18,11 +18,9 @@ final readonly class SearchController
      * Search verified users and hashtags by prefix — the same sources
      * the web autocomplete draws from.
      */
-    public function index(Request $request): JsonResponse
+    public function index(SearchRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'q' => ['required', 'string', 'min:1', 'max:50'],
-        ]);
+        $validated = $request->validated();
 
         $query = mb_trim($validated['q'], "@# \t\n\r\0\x0B");
 

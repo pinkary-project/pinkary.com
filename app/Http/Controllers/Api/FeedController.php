@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Api\FeedRequest;
 use App\Http\Resources\QuestionResource;
 use App\Models\Question;
 use App\Queries\Feeds\FeedQuestion;
@@ -12,16 +13,13 @@ use App\Queries\Feeds\QuestionsFollowingFeed;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use App\Queries\Feeds\TrendingQuestionsFeed;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final readonly class FeedController
 {
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(FeedRequest $request): AnonymousResourceCollection
     {
-        $tab = $request->validate([
-            'tab' => ['sometimes', 'string', 'in:recent,following,trending'],
-        ])['tab'] ?? 'recent';
+        $tab = $request->validated()['tab'] ?? 'recent';
 
         $perPage = min(max($request->integer('per_page', 20), 1), 50);
         $user = $request->user();
