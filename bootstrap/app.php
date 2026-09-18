@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'block.bots' => App\Http\Middleware\BlockBots::class,
+            'optional.sanctum' => App\Http\Middleware\OptionalSanctum::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

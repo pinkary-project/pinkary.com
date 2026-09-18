@@ -202,6 +202,16 @@ final class Question extends Model implements Viewable
     }
 
     /**
+     * Get the poll votes for the question.
+     *
+     * @return HasMany<PollVote, $this>
+     */
+    public function pollVotes(): HasMany
+    {
+        return $this->hasMany(PollVote::class);
+    }
+
+    /**
      * Get the likers for the question.
      *
      * @return HasManyThrough<User, Like, $this>
