@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\QuestionResource;
 use App\Models\Question;
+use App\Queries\Feeds\FeedQuestion;
+use App\Queries\Feeds\FeedThread;
 use App\Queries\Feeds\QuestionsFollowingFeed;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use App\Queries\Feeds\TrendingQuestionsFeed;
@@ -22,19 +24,32 @@ final readonly class FeedController
         ])['tab'] ?? 'recent';
 
         $perPage = min(max($request->integer('per_page', 20), 1), 50);
-        $userId = $request->user()?->id;
+        $user = $request->user();
+        $userId = $user?->id;
 
-        if ($tab === 'trending') {
-            return QuestionResource::collection($this->trendingQuestions($perPage, $userId));
+        // Guests read the public tabs like the web; the following feed
+        // needs a user, so it comes back empty for them.
+        if ($tab === 'following' && $user === null) {
+            $paginator = $this->withFeedRelations(
+                Question::query()->whereRaw('1 = 0'),
+                null,
+            )->simplePaginate($perPage);
+
+            return QuestionResource::collection($paginator);
         }
 
-        $builder = $tab === 'following'
-            ? (new QuestionsFollowingFeed($request->user()))->builder()
-            : (new RecentQuestionsFeed)->builder();
+        $paginator = $tab === 'trending'
+            ? $this->trendingQuestions($perPage, $userId)
+            : $this->withFeedRelations(
+                $tab === 'following'
+                    ? (new QuestionsFollowingFeed($user))->builder()
+                    : (new RecentQuestionsFeed)->builder(),
+                $userId,
+            )->simplePaginate($perPage);
 
-        return QuestionResource::collection(
-            $this->withFeedRelations($builder, $userId)->simplePaginate($perPage)
-        );
+        $this->attachThreads($paginator->getCollection(), $userId);
+
+        return QuestionResource::collection($paginator);
     }
 
     /**
@@ -57,6 +72,25 @@ final readonly class FeedController
     }
 
     /**
+     * Attach each item's visible thread context (root + parent above it),
+     * mirroring the web feed's x-thread rows.
+     *
+     * @param  \Illuminate\Support\Collection<int, Question>  $items
+     */
+    private function attachThreads(\Illuminate\Support\Collection $items, ?int $userId): void
+    {
+        $threads = (new FeedThread)->forItems($items, $userId);
+
+        foreach ($items as $item) {
+            $thread = $threads[$item->id] ?? null;
+
+            $item->setRelation('threadChain', $thread['posts'] ?? collect());
+            $item->setAttribute('threadMore', $thread['more'] ?? false);
+            $item->setAttribute('threadMoreId', $thread['more_id'] ?? null);
+        }
+    }
+
+    /**
      * Apply the columns and relations the mobile feed renders.
      *
      * @param  Builder<Question>  $query
@@ -64,16 +98,6 @@ final readonly class FeedController
      */
     private function withFeedRelations(Builder $query, ?int $userId): Builder
     {
-        return $query
-            ->addSelect('questions.from_id', 'questions.to_id', 'questions.content', 'questions.answer', 'questions.anonymously', 'questions.views', 'questions.created_at', 'questions.answer_created_at', 'questions.answer_updated_at')
-            ->with([
-                'from:id,name,username,avatar,is_verified,is_company_verified',
-                'to:id,name,username,avatar,is_verified,is_company_verified',
-            ])
-            ->withExists([
-                'likes as is_liked' => fn ($query) => $query->when($userId, fn ($query) => $query->where('user_id', $userId)),
-                'bookmarks as is_bookmarked' => fn ($query) => $query->when($userId, fn ($query) => $query->where('user_id', $userId)),
-            ])
-            ->withCount(['likes', 'children']);
+        return (new FeedQuestion)($query, $userId);
     }
 }

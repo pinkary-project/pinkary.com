@@ -7,8 +7,33 @@ use App\Models\User;
 
 use function Pest\Laravel\getJson;
 
-test('a guest cannot view the API feed', function (): void {
-    getJson(route('api.v1.feed.index'))->assertUnauthorized();
+test('a guest can read the recent feed without logging in', function (): void {
+    $user = User::factory()->create();
+    $liker = User::factory()->create();
+    $question = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'content' => 'What are you building?',
+        'answer' => 'A thoughtful mobile experience.',
+        'anonymously' => false,
+    ]);
+    App\Models\Like::factory()->create(['user_id' => $liker->id, 'question_id' => $question->id]);
+
+    getJson(route('api.v1.feed.index'))
+        ->assertOk()
+        ->assertJsonPath('data.0.id', $question->id)
+        ->assertJsonPath('data.0.answer', 'A thoughtful mobile experience.')
+        ->assertJsonPath('data.0.metrics.liked', false)
+        ->assertJsonPath('data.0.metrics.bookmarked', false)
+        ->assertJsonPath('data.0.poll.user_vote_option_id', null);
+});
+
+test('a guest gets an empty following feed', function (): void {
+    Question::factory()->create(['answer' => 'Hello.']);
+
+    getJson(route('api.v1.feed.index', ['tab' => 'following']))
+        ->assertOk()
+        ->assertJsonCount(0, 'data');
 });
 
 test('an authenticated user can view the following API feed', function (): void {
