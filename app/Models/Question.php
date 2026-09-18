@@ -340,4 +340,23 @@ final class Question extends Model implements Viewable
 
         return $this->poll_expires_at?->diffForHumans();
     }
+
+    /**
+     * Walk the parent chain upward and return the ancestor question IDs,
+     * oldest-first, up to the given limit.
+     *
+     * @return \Illuminate\Support\Collection<int, string>
+     */
+    public function ancestorIds(int $limit = 10): \Illuminate\Support\Collection
+    {
+        $ids = [];
+        $parentId = $this->parent_id;
+
+        while ($parentId !== null && count($ids) < $limit) {
+            $ids[] = $parentId;
+            $parentId = self::query()->whereKey($parentId)->value('parent_id');
+        }
+
+        return collect(array_reverse($ids));
+    }
 }

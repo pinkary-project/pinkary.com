@@ -294,24 +294,18 @@ final readonly class QuestionController
      */
     private function ancestors(Request $request, Question $question): \Illuminate\Support\Collection
     {
-        $ids = [];
-        $parentId = $question->parent_id;
+        $ids = $question->ancestorIds();
 
-        while ($parentId !== null && count($ids) < 10) {
-            $ids[] = $parentId;
-            $parentId = Question::query()->whereKey($parentId)->value('parent_id');
-        }
-
-        if ($ids === []) {
+        if ($ids->isEmpty()) {
             return collect();
         }
 
         $hydrated = (new FeedQuestion)(
-            Question::query()->whereIn('id', $ids),
+            Question::query()->whereIn('id', $ids->all()),
             $request->user()?->id,
         )->get()->keyBy('id');
 
-        return collect(array_reverse($ids))
+        return $ids
             ->map(fn (string $id) => $hydrated->get($id))
             ->filter()
             ->values();

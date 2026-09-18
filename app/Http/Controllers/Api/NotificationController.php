@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Api\ReadNotificationRequest;
+use App\Livewire\Concerns\HasNotificationLoaders;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
@@ -17,8 +18,10 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Collection;
 
-final readonly class NotificationController
+final class NotificationController
 {
+    use HasNotificationLoaders;
+
     /**
      * List the authenticated user's notifications, newest first, shaped
      * like the web's notification rows (actor, action line, snippet,
@@ -71,68 +74,6 @@ final readonly class NotificationController
         return response()->json(['data' => [
             'unread_count' => $request->user()->unreadNotifications()->count(),
         ]]);
-    }
-
-    /**
-     * @param  Collection<int, DatabaseNotification>  $notifications
-     * @return Collection<string, Question>
-     */
-    private function questionsFor(Collection $notifications): Collection
-    {
-        /** @var list<string> $ids */
-        $ids = $notifications
-            ->map(fn (DatabaseNotification $notification): ?string => $this->questionId($notification))
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
-
-        if ($ids === []) {
-            return collect();
-        }
-
-        return Question::query()
-            ->whereIn('id', $ids)
-            ->with(['from:id,name,username,avatar,is_verified,is_company_verified', 'to:id,name,username,avatar,is_verified,is_company_verified', 'parent:id,parent_id,content,from_id,to_id'])
-            ->get()
-            ->keyBy('id');
-    }
-
-    /**
-     * @param  Collection<int, DatabaseNotification>  $notifications
-     * @return Collection<int, User>
-     */
-    private function followersFor(Collection $notifications): Collection
-    {
-        /** @var list<int> $ids */
-        $ids = $notifications
-            ->filter(fn (DatabaseNotification $notification): bool => $notification->type === UserFollowed::class)
-            ->map(fn (DatabaseNotification $notification): mixed => $notification->data['follower_id'] ?? null)
-            ->filter(fn (mixed $id): bool => is_int($id))
-            ->unique()
-            ->values()
-            ->all();
-
-        if ($ids === []) {
-            return collect();
-        }
-
-        return User::query()
-            ->whereIn('id', $ids)
-            ->select('id', 'name', 'username', 'avatar', 'is_verified', 'is_company_verified')
-            ->get()
-            ->keyBy('id');
-    }
-
-    private function questionId(DatabaseNotification $notification): ?string
-    {
-        if (! in_array($notification->type, [UserMentioned::class, QuestionCreated::class, QuestionAnswered::class], true)) {
-            return null;
-        }
-
-        $id = $notification->data['question_id'] ?? null;
-
-        return is_string($id) ? $id : null;
     }
 
     /**
@@ -267,7 +208,7 @@ final readonly class NotificationController
      */
     private function findQuestion(DatabaseNotification $notification, Collection $questions): ?Question
     {
-        $id = $this->questionId($notification);
+        $id = $this->questionIdFrom($notification);
 
         if ($id === null) {
             return null;

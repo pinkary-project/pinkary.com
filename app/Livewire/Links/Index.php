@@ -17,13 +17,11 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 use Livewire\Component;
-use Symfony\Component\HttpFoundation\IpUtils;
 
 final class Index extends Component
 {
@@ -39,14 +37,9 @@ final class Index extends Component
     #[Renderless]
     public function click(UpdateLinkClicks $updateLinkClicks, int $linkId): void
     {
-        $ipAddress = (string) request()->ip();
-        $cacheKey = IpUtils::anonymize($ipAddress).'-clicked-'.$linkId;
+        $link = Link::findOrFail($linkId);
 
-        if (auth()->id() === $this->userId || Cache::has($cacheKey)) {
-            return;
-        }
-
-        $updateLinkClicks->handle($linkId, $cacheKey);
+        $updateLinkClicks->handle($link, (string) request()->ip(), auth()->id());
     }
 
     /**
