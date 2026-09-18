@@ -31,13 +31,7 @@ final readonly class UserController
     {
         Gate::authorize('follow', $user);
 
-        $me = $request->user();
-
-        $followed = $user->followers()->where('follower_id', $me->id)->exists();
-
-        if (! $followed) {
-            $createFollow->handle($me, $user->id);
-        }
+        $createFollow->handle($request->user(), $user->id);
 
         return response()->json(['data' => [
             'followed' => true,

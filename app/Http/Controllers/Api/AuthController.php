@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Auth\CreateToken;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Requests\Api\RegisterRequest;
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -33,6 +34,8 @@ final readonly class AuthController
         ]);
 
         event(new Registered($user));
+
+        UpdateUserAvatar::dispatchFor($user);
 
         return $createToken->handle($user, Response::HTTP_CREATED);
     }

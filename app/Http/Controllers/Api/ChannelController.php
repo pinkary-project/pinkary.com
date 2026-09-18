@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Channel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 final readonly class ChannelController
 {
@@ -17,21 +18,27 @@ final readonly class ChannelController
     public function index(Request $request): JsonResponse
     {
         $query = mb_trim((string) $request->string('q', ''));
+        $isAdmin = $request->user()->isAdmin();
 
         $channels = $query === ''
-            ? Channel::query()
-                ->orderByDesc('questions_count')
-                ->orderBy('name')
-                ->limit(8)
-                ->get()
+            ? Cache::remember(
+                'channels:popular',
+                3600,
+                fn () => Channel::query()
+                    ->orderByDesc('questions_count')
+                    ->orderBy('name')
+                    ->limit(8)
+                    ->get(),
+            )
             : Channel::query()
+                ->when(! $isAdmin, fn ($q) => $q->whereNotIn('slug', Channel::ADMIN_ONLY_SLUGS))
                 ->where('name', 'like', "%{$query}%")
                 ->orderByDesc('questions_count')
                 ->orderBy('name')
                 ->limit(8)
                 ->get();
 
-        if (! $request->user()->isAdmin()) {
+        if (! $isAdmin) {
             $channels = $channels->reject(fn (Channel $channel): bool => $channel->isAdminOnly())->values();
         }
 

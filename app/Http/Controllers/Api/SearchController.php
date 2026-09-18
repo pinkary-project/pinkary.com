@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Api\SearchRequest;
-use App\Models\Hashtag;
-use App\Models\User;
+use App\Services\Autocomplete\Types\Hashtags;
+use App\Services\Autocomplete\Types\Mentions;
 use App\Support\AbsoluteUrl;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 final readonly class SearchController
 {
@@ -20,55 +18,30 @@ final readonly class SearchController
      */
     public function index(SearchRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        $query = mb_trim($validated['q'], "@# \t\n\r\0\x0B");
+        $query = mb_trim($request->validated('q'), "@# \t\n\r\0\x0B");
 
         if ($query === '') {
             return response()->json(['data' => ['users' => [], 'hashtags' => []]]);
         }
 
-        $user = $request->user();
+        $userId = $request->user()->id;
 
-        $users = User::query()
-            ->whereKeyNot($user->id)
-            ->whereNotNull('email_verified_at')
-            ->where(fn (Builder $grouped): Builder => $grouped
-                ->where('name', 'like', "{$query}%")
-                ->orWhere('username', 'like', "{$query}%")
-            )
-            ->withCount('followers')
-            ->withExists([
-                'followers as is_followed_by_user' => fn (Builder $follower): Builder => $follower
-                    ->where('follower_id', '=', $user->id),
-            ])
-            ->orderByDesc('is_followed_by_user')
-            ->orderByDesc('followers_count')
-            ->orderBy('username')
-            ->limit(10)
-            ->get()
-            ->map(fn (User $found): array => [
-                'id' => $found->id,
-                'name' => $found->name,
-                'username' => $found->username,
-                'avatar' => AbsoluteUrl::for($found->avatar_url, $request),
-                'verified' => (bool) $found->is_verified,
-                'company_verified' => (bool) $found->is_company_verified,
-                'followed' => (bool) $found->is_followed_by_user,
+        $users = (new Mentions)->search($query, $userId)
+            ->map(fn ($result): array => [
+                'id' => $result->id,
+                'name' => $result->payload['name'],
+                'username' => mb_ltrim($result->replacement, '@'),
+                'avatar' => AbsoluteUrl::for($result->payload['avatarSrc'], $request),
+                'verified' => (bool) $result->payload['isVerified'],
+                'company_verified' => (bool) $result->payload['isCompanyVerified'],
+                'followed' => (bool) $result->payload['isFollowedByUser'],
             ])
             ->all();
 
-        $hashtags = Hashtag::query()
-            ->withCount('questions')
-            ->where(DB::raw('LOWER(name)'), 'like', mb_strtolower("{$query}%"))
-            ->orderByDesc('questions_count')
-            ->limit(8)
-            ->get()
-            ->unique(fn (Hashtag $hashtag): string => mb_strtolower($hashtag->name))
-            ->map(fn (Hashtag $hashtag): array => [
-                'id' => $hashtag->id,
-                'name' => $hashtag->name,
-                'questions_count' => (int) $hashtag->questions_count,
+        $hashtags = (new Hashtags)->search($query)
+            ->map(fn ($result): array => [
+                'id' => $result->id,
+                'name' => mb_ltrim($result->replacement, '#'),
             ])
             ->all();
 
