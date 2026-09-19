@@ -122,7 +122,6 @@
         </div>
 
         @persist('footer')
-            <x-back-to-top :offset="300" />
             <x-footer />
         @endpersist
     </div>
