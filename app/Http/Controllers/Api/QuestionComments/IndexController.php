@@ -14,7 +14,7 @@ final readonly class IndexController
 {
     public function __invoke(PaginatedRequest $request, Question $question): AnonymousResourceCollection
     {
-        $perPage = $request->validated()['per_page'] ?? 20;
+        $perPage = (int) ($request->validated()['per_page'] ?? 20);
 
         $comments = (new FeedQuestion)(
             Question::query()->where('parent_id', $question->id)->orderBy('created_at')->orderBy('id'),

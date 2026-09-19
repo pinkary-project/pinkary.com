@@ -17,7 +17,7 @@ final class NotificationController
 
     public function index(PaginatedRequest $request, FormatNotificationRow $format): JsonResponse
     {
-        $perPage = $request->validated()['per_page'] ?? 20;
+        $perPage = (int) ($request->validated()['per_page'] ?? 20);
 
         $paginator = $request->user()->notifications()->simplePaginate($perPage);
 
