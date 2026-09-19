@@ -17,7 +17,7 @@ final readonly class FeedController
 
         $paginator = $getFeed->handle(
             $validated['tab'] ?? 'recent',
-            $validated['per_page'] ?? 20,
+            (int) ($validated['per_page'] ?? 20),
             $request->user(),
         );
 

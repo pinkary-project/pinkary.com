@@ -19,7 +19,7 @@ final readonly class BookmarkController
         $paginator = (new FeedQuestion)(
             (new BookmarkedQuestionsFeed($userId))->builder(),
             $userId,
-        )->simplePaginate($request->validated()['per_page'] ?? 20);
+        )->simplePaginate((int) ($request->validated()['per_page'] ?? 20));
 
         return QuestionResource::collection($paginator);
     }
