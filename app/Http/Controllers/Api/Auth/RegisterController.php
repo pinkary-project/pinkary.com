@@ -5,31 +5,25 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Actions\Auth\CreateToken;
+use App\Actions\Users\CreateUser;
 use App\Http\Requests\Api\RegisterRequest;
-use App\Jobs\UpdateUserAvatar;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
 
 final readonly class RegisterController
 {
-    public function __invoke(RegisterRequest $request, CreateToken $createToken): JsonResponse
-    {
-        $validated = $request->validated();
+    public function __invoke(
+        RegisterRequest $request,
+        CreateUser $createUser,
+        CreateToken $createToken,
+    ): JsonResponse {
+        $user = $createUser->handle($request->validated());
+        $token = $createToken->handle($user);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'username' => $validated['username'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        event(new Registered($user));
-
-        UpdateUserAvatar::dispatchFor($user);
-
-        return $createToken->handle($user, Response::HTTP_CREATED);
+        return (new UserResource($user))
+            ->additional(['token' => $token])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 }

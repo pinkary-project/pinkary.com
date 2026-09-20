@@ -7,7 +7,7 @@ namespace App\Actions\Users;
 use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 
-final class LoadProfile
+final readonly class LoadProfile
 {
     public function handle(User $user): User
     {

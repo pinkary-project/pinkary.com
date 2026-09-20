@@ -31,7 +31,7 @@ final readonly class StoreController
 
         $updatePollVote->handle($request->user(), $question, $option);
 
-        $thread = $threaded->handle(Question::query()->findOrFail($question->id), $request->user()?->id);
+        $thread = $threaded->handle($question, $request->user()?->id);
 
         return response()->json(['data' => (new QuestionResource($thread['question']))->poll()]);
     }

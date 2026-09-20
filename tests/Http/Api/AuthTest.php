@@ -58,3 +58,23 @@ test('a user can revoke the current API token', function (): void {
 
     getJson(route('api.v1.profile.show'), $headers)->assertUnauthorized();
 });
+
+test('registration validates input and rejects duplicate email', function (): void {
+    User::factory()->create(['email' => 'taken@example.com']);
+
+    postJson(route('api.v1.auth.register'), [
+        'name' => 'Pinkary User',
+        'username' => 'pinkaryuser',
+        'email' => 'taken@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'terms' => true,
+    ])->assertUnprocessable()
+        ->assertJsonValidationErrors(['email']);
+});
+
+test('api routes render json exceptions even without accept header', function (): void {
+    $this->get('/api/v1/questions/non-existent-uuid')
+        ->assertNotFound()
+        ->assertHeader('content-type', 'application/json');
+});

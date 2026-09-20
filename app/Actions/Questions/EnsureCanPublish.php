@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Questions;
 
 use App\Models\User;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 final readonly class EnsureCanPublish
 {
@@ -16,11 +15,11 @@ final readonly class EnsureCanPublish
         }
 
         if ($user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
-            throw new HttpResponseException(response()->json(['message' => 'You can only send 3 questions per minute.'], 429));
+            abort(429, 'You can only send 3 questions per minute.');
         }
 
         if ($user->questionsSent()->where('created_at', '>=', now()->subDay())->count() + $incoming > 30) {
-            throw new HttpResponseException(response()->json(['message' => 'You can only send 30 questions per day.'], 429));
+            abort(429, 'You can only send 30 questions per day.');
         }
     }
 }

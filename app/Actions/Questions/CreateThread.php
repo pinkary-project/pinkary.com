@@ -9,7 +9,6 @@ use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
 use App\Queries\Feeds\FeedQuestion;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -52,7 +51,7 @@ final readonly class CreateThread
                 $duration = (int) ($threadPoll['duration'] ?? 1);
 
                 if ($options === false || $duration < 1 || $duration > 7) {
-                    throw new HttpResponseException(response()->json(['message' => 'Each thread poll needs 2 to 4 non-empty options and a duration of 1 to 7 days.'], 422));
+                    abort(422, 'Each thread poll needs 2 to 4 non-empty options and a duration of 1 to 7 days.');
                 }
 
                 $threadPollOptions[] = $options;
@@ -68,7 +67,7 @@ final readonly class CreateThread
         $pollOptions = $this->cleanPollOptions($validated['poll_options'] ?? null);
 
         if ($pollOptions === false) {
-            throw new HttpResponseException(response()->json(['message' => 'A poll must have between 2 and 4 non-empty options of at most 40 characters.'], 422));
+            abort(422, 'A poll must have between 2 and 4 non-empty options of at most 40 characters.');
         }
 
         $this->ensureCanPublish->handle($user, 1 + count($threadPosts));
