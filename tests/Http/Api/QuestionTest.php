@@ -9,6 +9,7 @@ use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\postJson;
+use function Pest\Laravel\putJson;
 
 test('a guest cannot publish a thread', function (): void {
     postJson(route('api.v1.questions.store'), [
@@ -514,4 +515,183 @@ test('showing a thread post includes its ancestors oldest first', function (): v
         ->assertJsonCount(2, 'thread')
         ->assertJsonPath('thread.0.answer', 'First post.')
         ->assertJsonPath('thread.1.answer', 'Second post.');
+});
+
+test('an authenticated user can ask a question to another user', function (): void {
+    Illuminate\Support\Facades\Notification::fake();
+
+    $sender = User::factory()->create();
+    $receiver = User::factory()->create(['username' => 'bob']);
+    $headers = ['Authorization' => 'Bearer '.$sender->createToken('test')->plainTextToken];
+
+    $response = postJson(route('api.v1.questions.store'), [
+        'to_username' => 'bob',
+        'content' => 'What is your favorite PHP feature?',
+        'anonymously' => false,
+    ], $headers);
+
+    $response->assertCreated()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.content', 'What is your favorite PHP feature?')
+        ->assertJsonPath('data.0.to.username', 'bob');
+
+    Illuminate\Support\Facades\Notification::assertSentTo(
+        $receiver,
+        App\Notifications\QuestionCreated::class,
+    );
+});
+
+test('asking a question validates 255 character limit', function (): void {
+    $sender = User::factory()->create();
+    User::factory()->create(['username' => 'bob']);
+    $headers = ['Authorization' => 'Bearer '.$sender->createToken('test')->plainTextToken];
+
+    postJson(route('api.v1.questions.store'), [
+        'to_username' => 'bob',
+        'content' => str_repeat('a', 256),
+    ], $headers)->assertUnprocessable()
+        ->assertJsonValidationErrors(['content']);
+});
+
+test('a user can pin and unpin their answered questions', function (): void {
+    $owner = User::factory()->create();
+    $stranger = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $owner->id,
+        'answer' => 'An answer to pin.',
+        'pinned' => false,
+    ]);
+
+    $ownerHeaders = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+    $strangerHeaders = ['Authorization' => 'Bearer '.$stranger->createToken('test')->plainTextToken];
+
+    postJson(route('api.v1.questions.pin', $question), [], $strangerHeaders)->assertForbidden();
+
+    auth()->forgetGuards();
+
+    postJson(route('api.v1.questions.pin', $question), [], $ownerHeaders)
+        ->assertOk()
+        ->assertJsonPath('data.pinned', true);
+
+    expect($question->fresh()->pinned)->toBeTrue();
+
+    auth()->forgetGuards();
+
+    deleteJson(route('api.v1.questions.unpin', $question), [], $ownerHeaders)
+        ->assertOk()
+        ->assertJsonPath('data.pinned', false);
+
+    expect($question->fresh()->pinned)->toBeFalse();
+});
+
+test('a user can answer or update an answer within 24 hours', function (): void {
+    $owner = User::factory()->create();
+    $stranger = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $owner->id,
+        'answer' => null,
+        'answer_created_at' => null,
+    ]);
+
+    $ownerHeaders = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+    $strangerHeaders = ['Authorization' => 'Bearer '.$stranger->createToken('test')->plainTextToken];
+
+    putJson(route('api.v1.questions.answer.update', $question), [
+        'answer' => 'First answer.',
+    ], $strangerHeaders)->assertForbidden();
+
+    auth()->forgetGuards();
+
+    putJson(route('api.v1.questions.answer.update', $question), [
+        'answer' => 'First answer.',
+    ], $ownerHeaders)->assertOk()
+        ->assertJsonPath('data.answer', 'First answer.');
+
+    $question->refresh();
+    expect($question->answer)->toBe('First answer.')
+        ->and($question->answer_created_at)->not->toBeNull();
+
+    auth()->forgetGuards();
+
+    putJson(route('api.v1.questions.answer.update', $question), [
+        'answer' => 'Updated answer.',
+    ], $ownerHeaders)->assertOk()
+        ->assertJsonPath('data.answer', 'Updated answer.');
+
+    expect($question->fresh()->answer)->toBe('Updated answer.');
+});
+
+test('answer cannot be updated after 24 hours', function (): void {
+    $owner = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $owner->id,
+        'answer' => 'Old answer',
+        'answer_created_at' => now()->subHours(25),
+    ]);
+    $headers = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+
+    putJson(route('api.v1.questions.answer.update', $question), [
+        'answer' => 'Attempted edit.',
+    ], $headers)->assertStatus(422);
+});
+
+test('a user can delete their questions', function (): void {
+    $owner = User::factory()->create();
+    $stranger = User::factory()->create();
+    $question = Question::factory()->create(['to_id' => $owner->id]);
+
+    $strangerHeaders = ['Authorization' => 'Bearer '.$stranger->createToken('test')->plainTextToken];
+    $ownerHeaders = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+
+    deleteJson(route('api.v1.questions.destroy', $question), [], $strangerHeaders)->assertForbidden();
+
+    auth()->forgetGuards();
+
+    deleteJson(route('api.v1.questions.destroy', $question), [], $ownerHeaders)->assertNoContent();
+
+    expect(Question::find($question->id))->toBeNull();
+});
+
+test('a user can ignore received questions', function (): void {
+    $owner = User::factory()->create();
+    $stranger = User::factory()->create();
+    $question = Question::factory()->create(['to_id' => $owner->id]);
+
+    $strangerHeaders = ['Authorization' => 'Bearer '.$stranger->createToken('test')->plainTextToken];
+    $ownerHeaders = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+
+    postJson(route('api.v1.questions.ignore', $question), [], $strangerHeaders)->assertForbidden();
+
+    auth()->forgetGuards();
+
+    postJson(route('api.v1.questions.ignore', $question), [], $ownerHeaders)
+        ->assertOk()
+        ->assertJsonPath('data.ignored', true);
+
+    expect($question->fresh()->is_ignored)->toBeTrue();
+});
+
+test('a question owner can view who liked the question', function (): void {
+    $owner = User::factory()->create();
+    $liker = User::factory()->create(['name' => 'Liker User']);
+    $stranger = User::factory()->create();
+    $question = Question::factory()->create(['to_id' => $owner->id]);
+
+    App\Models\Like::create([
+        'user_id' => $liker->id,
+        'question_id' => $question->id,
+    ]);
+
+    $strangerHeaders = ['Authorization' => 'Bearer '.$stranger->createToken('test')->plainTextToken];
+    $ownerHeaders = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+
+    getJson(route('api.v1.questions.likes.index', $question), $strangerHeaders)->assertForbidden();
+
+    auth()->forgetGuards();
+
+    getJson(route('api.v1.questions.likes.index', $question), $ownerHeaders)
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $liker->id)
+        ->assertJsonPath('data.0.name', 'Liker User');
 });

@@ -22,7 +22,7 @@ final readonly class FeedQuestion
     public function __invoke(Builder $query, ?int $userId): Builder
     {
         return $query
-            ->addSelect('questions.id', 'questions.from_id', 'questions.to_id', 'questions.content', 'questions.answer', 'questions.anonymously', 'questions.views', 'questions.created_at', 'questions.answer_created_at', 'questions.answer_updated_at', 'questions.parent_id', 'questions.root_id', 'questions.channel_id', 'questions.poll_expires_at')
+            ->addSelect('questions.id', 'questions.from_id', 'questions.to_id', 'questions.content', 'questions.answer', 'questions.anonymously', 'questions.views', 'questions.created_at', 'questions.answer_created_at', 'questions.answer_updated_at', 'questions.parent_id', 'questions.root_id', 'questions.channel_id', 'questions.poll_expires_at', 'questions.pinned')
             ->with([
                 'from:id,name,username,avatar,is_verified,is_company_verified',
                 'to:id,name,username,avatar,is_verified,is_company_verified',

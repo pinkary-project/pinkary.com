@@ -84,3 +84,25 @@ test('notifications can be marked as read', function (): void {
         ->assertJsonPath('data.0.read', true)
         ->assertJsonPath('meta.unread_count', 0);
 });
+
+test('a user can delete their notification', function (): void {
+    $user = User::factory()->create();
+    $stranger = User::factory()->create();
+    $question = Question::factory()->create();
+    $user->notify(new QuestionAnswered($question));
+
+    $notification = $user->notifications()->first();
+
+    $userHeaders = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
+    $strangerHeaders = ['Authorization' => 'Bearer '.$stranger->createToken('test')->plainTextToken];
+
+    \Pest\Laravel\deleteJson(route('api.v1.notifications.destroy', $notification->id), [], $strangerHeaders)
+        ->assertNotFound();
+
+    auth()->forgetGuards();
+
+    \Pest\Laravel\deleteJson(route('api.v1.notifications.destroy', $notification->id), [], $userHeaders)
+        ->assertNoContent();
+
+    expect($user->notifications()->count())->toBe(0);
+});

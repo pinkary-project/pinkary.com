@@ -34,10 +34,14 @@ final class UserResource extends JsonResource
                 'posts' => (int) ($this->resource->posts_count ?? 0),
                 'views' => (int) ($this->resource->views ?? 0),
             ],
-            'followed_by_me' => $viewer instanceof User
-                ? (bool) $this->resource->followers()->where('follower_id', $viewer->id)->exists()
-                : false,
+            'followed_by_me' => isset($this->resource->followed_by_me)
+                ? (bool) $this->resource->followed_by_me
+                : ($viewer instanceof User
+                    ? (bool) $this->resource->followers()->where('follower_id', $viewer->id)->exists()
+                    : false),
             'is_me' => $this->isMe($viewer),
+            'gradient' => $this->resource->gradient,
+            'link_shape' => $this->resource->link_shape,
             'links' => $this->links(),
             'member_since' => [
                 'human' => $this->resource->created_at->diffForHumans(),
@@ -89,6 +93,10 @@ final class UserResource extends JsonResource
                 'id' => $link->id,
                 'description' => $link->description,
                 'url' => $link->url.(str_contains($link->url, '?') ? '&' : '?').'ref=pinkary',
+                'click_count' => (int) $link->click_count,
+                'is_visible' => (bool) $link->is_visible,
+                'gradient' => $this->resource->gradient,
+                'link_shape' => $this->resource->link_shape,
             ])
             ->all();
     }

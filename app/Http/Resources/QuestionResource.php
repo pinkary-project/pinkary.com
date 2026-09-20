@@ -19,6 +19,7 @@ final class QuestionResource extends JsonResource
     {
         return [
             'id' => $this->resource->id,
+            'pinned' => (bool) $this->resource->pinned,
             'content' => $this->resource->anonymously ? null : $this->resource->sharable_content,
             'answer' => $this->resource->sharable_answer,
             'anonymously' => $this->resource->anonymously,

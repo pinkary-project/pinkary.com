@@ -97,3 +97,15 @@ test('own link taps do not count', function (): void {
 
     expect($link->fresh()->click_count)->toBe(0);
 });
+
+test('viewing a user profile dispatches IncrementViews job', function (): void {
+    Illuminate\Support\Facades\Queue::fake();
+
+    $me = User::factory()->create();
+    User::factory()->create(['username' => 'ada']);
+    $headers = ['Authorization' => 'Bearer '.$me->createToken('test')->plainTextToken];
+
+    getJson(route('api.v1.users.show', 'ada'), $headers)->assertOk();
+
+    Illuminate\Support\Facades\Queue::assertPushed(App\Jobs\IncrementViews::class);
+});
