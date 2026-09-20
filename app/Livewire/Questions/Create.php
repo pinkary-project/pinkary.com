@@ -31,6 +31,7 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 /**
  * @property-read bool $isSharingUpdate
+ * @property-read bool $canPoll
  * @property-read bool $canThread
  * @property-read int $maxContentLength
  * @property-read int $maxThreadPosts
@@ -235,6 +236,15 @@ final class Create extends Component
     }
 
     /**
+     * Determine if the composer allows polls.
+     */
+    #[Computed]
+    public function canPoll(): bool
+    {
+        return $this->isSharingUpdate || filled($this->parentId);
+    }
+
+    /**
      * Determine if the composer can publish a thread of multiple posts.
      */
     #[Computed]
@@ -401,6 +411,12 @@ final class Create extends Component
         $validOptions = [];
 
         if ($this->isPoll) {
+            if (! $this->canPoll) {
+                $this->addError('pollOptions', 'Polls are not allowed when asking a question.');
+
+                return;
+            }
+
             $this->validate([
                 'pollDuration' => ['required', 'integer', 'min:1', 'max:7'],
             ]);
