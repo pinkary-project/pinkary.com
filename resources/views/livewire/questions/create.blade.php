@@ -98,16 +98,18 @@
                                 >
                                     <x-heroicon-o-photo class="size-4" />
                                 </button>
-                                <button
-                                    type="button"
-                                    x-on:click="togglePoll()"
-                                    :disabled="uploading"
-                                    title="Create a poll"
-                                    class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
-                                    :class="{ 'text-pink-500': isPoll }"
-                                >
-                                    <x-heroicon-o-chart-bar class="size-4" />
-                                </button>
+                                @if ($this->canPoll)
+                                    <button
+                                        type="button"
+                                        x-on:click="togglePoll()"
+                                        :disabled="uploading"
+                                        title="Create a poll"
+                                        class="flex size-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-500/10 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-300"
+                                        :class="{ 'text-pink-500': isPoll }"
+                                    >
+                                        <x-heroicon-o-chart-bar class="size-4" />
+                                    </button>
+                                @endif
                                 <div class="ml-auto">
                                     <x-character-counter
                                         count="(content || '').length"
@@ -115,65 +117,67 @@
                                     />
                                 </div>
                             </div>
-                            <div
-                                x-cloak
-                                x-show="isPoll && showSecondaryControls()"
-                                class="mt-3 space-y-2 px-3.5"
-                                style="display: none"
-                            >
-                                <template x-for="(option, index) in pollOptions" :key="index">
-                                    <div class="flex items-center gap-2">
-                                        <span class="size-3.5 shrink-0 rounded-full border border-slate-400 dark:border-slate-600"></span>
-                                        <x-text-input
-                                            x-model="pollOptions[index]"
-                                            ::placeholder="`Option ${index + 1}`"
-                                            class="min-w-0 flex-1"
-                                            maxlength="40"
-                                        />
-                                        <button
-                                            x-show="canRemoveOption()"
-                                            type="button"
-                                            x-on:click="removePollOption(index)"
-                                            class="rounded-full p-1 text-slate-400 transition hover:text-red-500"
-                                            title="Remove option"
-                                        >
-                                            <x-heroicon-o-x-mark class="size-4" />
+                            @if ($this->canPoll)
+                                <div
+                                    x-cloak
+                                    x-show="isPoll && showSecondaryControls()"
+                                    class="mt-3 space-y-2 px-3.5"
+                                    style="display: none"
+                                >
+                                    <template x-for="(option, index) in pollOptions" :key="index">
+                                        <div class="flex items-center gap-2">
+                                            <span class="size-3.5 shrink-0 rounded-full border border-slate-400 dark:border-slate-600"></span>
+                                            <x-text-input
+                                                x-model="pollOptions[index]"
+                                                ::placeholder="`Option ${index + 1}`"
+                                                class="min-w-0 flex-1"
+                                                maxlength="40"
+                                            />
+                                            <button
+                                                x-show="canRemoveOption()"
+                                                type="button"
+                                                x-on:click="removePollOption(index)"
+                                                class="rounded-full p-1 text-slate-400 transition hover:text-red-500"
+                                                title="Remove option"
+                                            >
+                                                <x-heroicon-o-x-mark class="size-4" />
+                                            </button>
+                                        </div>
+                                    </template>
+                                    <button
+                                        x-show="canAddOption()"
+                                        type="button"
+                                        x-on:click="addPollOption()"
+                                        class="w-full rounded-lg border border-dashed border-slate-300 px-3 py-2 text-left text-sm text-slate-400 transition hover:border-pink-400 hover:text-pink-500 dark:border-slate-700 dark:text-slate-500"
+                                    >
+                                        Add another option
+                                    </button>
+                                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                        <label class="flex items-center gap-2">
+                                            <span>Duration</span>
+                                            <span class="relative">
+                                                <select
+                                                    x-model="pollDuration"
+                                                    aria-label="Poll duration"
+                                                    class="appearance-none rounded-lg border border-slate-200/70 bg-white px-2.5 py-1.5 pr-8 text-xs text-slate-600 shadow-sm focus:border-pink-500 focus:ring-pink-500 dark:border-slate-800/70 dark:bg-[#10182b] dark:text-slate-300"
+                                                >
+                                                    <option value="1">24 hours</option>
+                                                    <option value="2">2 days</option>
+                                                    <option value="3">3 days</option>
+                                                    <option value="5">5 days</option>
+                                                    <option value="7">1 week</option>
+                                                </select>
+                                                <x-heroicon-o-chevron-down class="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                                            </span>
+                                        </label>
+                                        <button type="button" x-on:click="togglePoll()" class="hover:text-pink-500">
+                                            Remove poll
                                         </button>
                                     </div>
-                                </template>
-                                <button
-                                    x-show="canAddOption()"
-                                    type="button"
-                                    x-on:click="addPollOption()"
-                                    class="w-full rounded-lg border border-dashed border-slate-300 px-3 py-2 text-left text-sm text-slate-400 transition hover:border-pink-400 hover:text-pink-500 dark:border-slate-700 dark:text-slate-500"
-                                >
-                                    Add another option
-                                </button>
-                                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                    <label class="flex items-center gap-2">
-                                        <span>Duration</span>
-                                        <span class="relative">
-                                            <select
-                                                x-model="pollDuration"
-                                                aria-label="Poll duration"
-                                                class="appearance-none rounded-lg border border-slate-200/70 bg-white px-2.5 py-1.5 pr-8 text-xs text-slate-600 shadow-sm focus:border-pink-500 focus:ring-pink-500 dark:border-slate-800/70 dark:bg-[#10182b] dark:text-slate-300"
-                                            >
-                                                <option value="1">24 hours</option>
-                                                <option value="2">2 days</option>
-                                                <option value="3">3 days</option>
-                                                <option value="5">5 days</option>
-                                                <option value="7">1 week</option>
-                                            </select>
-                                            <x-heroicon-o-chevron-down class="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
-                                        </span>
-                                    </label>
-                                    <button type="button" x-on:click="togglePoll()" class="hover:text-pink-500">
-                                        Remove poll
-                                    </button>
+                                    <x-input-error :messages="$errors->get('pollOptions')" class="text-xs" />
+                                    <x-input-error :messages="$errors->get('pollDuration')" class="text-xs" />
                                 </div>
-                                <x-input-error :messages="$errors->get('pollOptions')" class="text-xs" />
-                                <x-input-error :messages="$errors->get('pollDuration')" class="text-xs" />
-                            </div>
+                            @endif
                         </div>
                     </div>
                     <input class="hidden" type="file" x-ref="imageInput" multiple accept="image/*" />

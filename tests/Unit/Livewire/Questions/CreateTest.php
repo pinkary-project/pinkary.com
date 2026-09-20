@@ -806,12 +806,11 @@ test('shows validation error when content is missing', function (): void {
 });
 
 test('poll should have at least 2 options', function (): void {
-    $userA = User::factory()->create();
-    $userB = User::factory()->create();
+    $user = User::factory()->create();
 
     /** @var Testable $component */
-    $component = Livewire::actingAs($userA)->test(Create::class, [
-        'toId' => $userB->id,
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
     ]);
 
     $component->set('isPoll', true);
@@ -826,12 +825,11 @@ test('poll should have at least 2 options', function (): void {
 });
 
 test('poll should have at most 4 options', function (): void {
-    $userA = User::factory()->create();
-    $userB = User::factory()->create();
+    $user = User::factory()->create();
 
     /** @var Testable $component */
-    $component = Livewire::actingAs($userA)->test(Create::class, [
-        'toId' => $userB->id,
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
     ]);
 
     $component->set('isPoll', true);
@@ -845,7 +843,7 @@ test('poll should have at most 4 options', function (): void {
     ]);
 });
 
-test('poll button is visible for every composer', function (): void {
+test('poll button is visible for shared updates and comments', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)
@@ -853,13 +851,37 @@ test('poll button is visible for every composer', function (): void {
 
     $component->assertSee('Create a poll');
 
-    $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
     $component = Livewire::actingAs($user)
         ->test(Create::class, ['toId' => $user->id, 'parentId' => $question->id]);
 
     $component->assertSee('Create a poll');
+});
+
+test('poll button is not visible when asking a question', function (): void {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    $component = Livewire::actingAs($userA)
+        ->test(Create::class, ['toId' => $userB->id]);
+
+    $component->assertDontSee('Create a poll');
+});
+
+test('cannot store a poll when asking a question', function (): void {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    Livewire::actingAs($userA)
+        ->test(Create::class, ['toId' => $userB->id])
+        ->set('content', 'What do you think?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Option 1', 'Option 2'])
+        ->call('store')
+        ->assertHasErrors(['pollOptions' => 'Polls are not allowed when asking a question.']);
+
+    expect(Question::count())->toBe(0);
 });
 
 test('can create a poll with valid options', function (): void {
