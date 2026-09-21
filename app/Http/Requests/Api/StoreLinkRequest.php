@@ -4,12 +4,22 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class StoreLinkRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        /** @var User $user */
+        $user = $this->user();
+        $count = $user->links()->count();
+        $max = $user->is_verified ? 20 : 10;
+
+        if ($count >= $max) {
+            abort(422, "You can only have {$max} links at a time.");
+        }
+
         return true;
     }
 
