@@ -181,6 +181,10 @@
             "version": "v0.3.24",
             "hash": "tree-v2:af7fccf97985aef4aad89febec94cee2dce8d76a74b961c1d03a680df881ef6e"
         },
+        "laravel/sanctum": {
+            "version": "v4.3.3",
+            "hash": "tree-v2:63830d35780274f01c5f4999126781fb3de75408055c7ec4aac8bdf2d432c314"
+        },
         "laravel/serializable-closure": {
             "version": "v2.0.16",
             "hash": "tree-v2:a18134d3b60f4ae638a7f6830ca06784d59419dd7ebb008340d99ecfcb7fd88b"
