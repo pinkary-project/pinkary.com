@@ -1,3 +1,13 @@
+## Version 2.7.0
+> 23 September, 2026
+
+- Adds multi-account support, allowing users to add, manage, and seamlessly switch between multiple accounts.
+- Adds Twitter-style circular character counter when composing posts.
+- Positions desktop toast notifications at the bottom right.
+- Links the footer brand to the home page.
+- Removes the back-to-top button.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 2.6.1
 > 12 September, 2026
 
