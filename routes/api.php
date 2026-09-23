@@ -38,6 +38,7 @@ use App\Http\Controllers\Api\UserFollowers\IndexController as IndexUserFollowers
 use App\Http\Controllers\Api\UserFollowings\IndexController as IndexUserFollowingsController;
 use App\Http\Controllers\Api\UserFollows\DestroyController as DestroyUserFollowController;
 use App\Http\Controllers\Api\UserFollows\StoreController as StoreUserFollowController;
+use App\Http\Controllers\Api\UserQrCodeController;
 use App\Http\Controllers\Api\UserQuestions\IndexController as IndexUserQuestionsController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,10 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
     Route::get('feed', [FeedController::class, 'index'])
         ->middleware('optional.sanctum')
         ->name('feed.index');
+
+    Route::get('users/{user:username}/qr-code', UserQrCodeController::class)
+        ->middleware('throttle:60,1')
+        ->name('users.qr-code');
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('auth/logout', LogoutController::class)
