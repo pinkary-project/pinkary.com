@@ -128,10 +128,18 @@
 
     @auth
         <button
-            x-data
+            x-data="{ isMenuOpen: false }"
+            x-on:dropdown-toggled.window="isMenuOpen = $event.detail.open"
+            x-show="! isMenuOpen"
+            x-transition:enter="transition duration-150 ease-out"
+            x-transition:enter-start="scale-90 opacity-0"
+            x-transition:enter-end="scale-100 opacity-100"
+            x-transition:leave="transition duration-100 ease-in"
+            x-transition:leave-start="scale-100 opacity-100"
+            x-transition:leave-end="scale-90 opacity-0"
             type="button"
             x-on:click="$dispatch('open-modal', 'post-create')"
-            class="fixed right-5 bottom-20 z-50 flex size-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
+            class="fixed right-5 bottom-20 z-40 flex size-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
             title="Post"
             aria-label="Post"
         >
@@ -247,6 +255,43 @@
                         {{ __('Discard') }}
                     </x-primary-button>
                 </div>
+            </div>
+        </x-modal>
+
+        <x-modal name="confirm-remove-account" max-width="md" class="z-110">
+            <div
+                class="p-8"
+                x-data="{ username: '', action: '' }"
+                x-on:set-remove-account.window="
+                    username = $event.detail.username;
+                    action = $event.detail.action;
+                "
+            >
+                <form method="POST" x-bind:action="action">
+                    @csrf
+                    <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">
+                        {{ __('Log out of account?') }}
+                    </h2>
+                    <div class="mt-4 text-slate-500 dark:text-slate-400">
+                        <p>
+                            {{ __('Are you sure you want to log out of') }}
+                            <span
+                                class="font-semibold text-slate-700 dark:text-slate-200"
+                                x-text="'@' + username"
+                            ></span
+                            >? {{ __('You can log back into this account at any time.') }}
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between">
+                        <x-secondary-button
+                            type="button"
+                            x-on:click="$dispatch('close-modal', 'confirm-remove-account')"
+                        >
+                            {{ __('Cancel') }}
+                        </x-secondary-button>
+                        <x-danger-button type="submit"> {{ __('Log Out') }} </x-danger-button>
+                    </div>
+                </form>
             </div>
         </x-modal>
     @endauth

@@ -8,6 +8,7 @@
     $mobileIdleClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
     $mobileActiveClasses = 'bg-pink-500 text-white';
     $profileIsActive = auth()->check() && request()->routeIs('profile.show') && request()->route('username')?->is(auth()->user());
+    $hasMultipleAccounts = auth()->check() && count(App\Services\Accounts::all()) > 1;
     $menuLinkClasses = 'flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
     $menuContentClasses = 'space-y-2 rounded-2xl border border-slate-200/80 bg-white/95 p-2 text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:text-slate-300 dark:shadow-black/30';
 @endphp
@@ -196,18 +197,50 @@
 
                                 <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
 
-                                <form method="POST" action="{{ route('logout') }}" x-data>
-                                    @csrf
+                                <x-switch-account />
 
-                                    <x-dropdown-button
-                                        onclick="
-                                            event.preventDefault();
-                                            this.closest('form').submit();
-                                        "
-                                    >
-                                        {{ __('Log Out') }}
-                                    </x-dropdown-button>
-                                </form>
+                                <div class="space-y-1 border-t border-slate-200/70 pt-2 dark:border-slate-800/40">
+                                    @if ($hasMultipleAccounts)
+                                        <form method="POST" action="{{ route('logout') }}" x-data>
+                                            @csrf
+
+                                            <x-dropdown-button
+                                                onclick="
+                                                    event.preventDefault();
+                                                    this.closest('form').submit();
+                                                "
+                                            >
+                                                {{ __('Log out of @:username', ['username' => auth()->user()->username]) }}
+                                            </x-dropdown-button>
+                                        </form>
+
+                                        <form method="POST" action="{{ route('accounts.logout-all') }}" x-data>
+                                            @csrf
+
+                                            <x-dropdown-button
+                                                onclick="
+                                                    event.preventDefault();
+                                                    this.closest('form').submit();
+                                                "
+                                            >
+                                                {{ __('Log out of all accounts') }}
+                                            </x-dropdown-button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('logout') }}" x-data>
+                                            @csrf
+
+                                            <x-dropdown-button
+                                                onclick="
+                                                    event.preventDefault();
+                                                    this.closest('form').submit();
+                                                "
+                                            >
+                                                {{ __('Log Out') }}
+                                            </x-dropdown-button>
+                                        </form>
+                                    @endif
+                                </div>
                             </x-slot>
                         </x-dropdown>
                     </div>
@@ -216,7 +249,7 @@
         @endauth
     </div>
 
-    <div class="fixed inset-x-0 -bottom-px z-40 flex items-center justify-around border-t border-slate-200/70 bg-white px-3 py-2 pb-[max(0.65rem,env(safe-area-inset-bottom))] lg:hidden dark:border-slate-800/80 dark:bg-[#07101f]">
+    <div class="fixed inset-x-0 -bottom-px z-50 flex items-center justify-around border-t border-slate-200/70 bg-white px-3 py-2 pb-[max(0.65rem,env(safe-area-inset-bottom))] lg:hidden dark:border-slate-800/80 dark:bg-[#07101f]">
         @auth
             <a
                 title="Home"
@@ -308,18 +341,50 @@
                 @auth
                     <x-dropdown-link :href="route('profile.edit')"> {{ __('Settings') }} </x-dropdown-link>
 
-                    <form method="POST" action="{{ route('logout') }}" x-data>
-                        @csrf
+                    <x-switch-account />
 
-                        <x-dropdown-button
-                            onclick="
-                                event.preventDefault();
-                                this.closest('form').submit();
-                            "
-                        >
-                            {{ __('Log Out') }}
-                        </x-dropdown-button>
-                    </form>
+                    <div class="space-y-1 border-t border-slate-200/70 pt-2 dark:border-slate-800/40">
+                        @if ($hasMultipleAccounts)
+                            <form method="POST" action="{{ route('logout') }}" x-data>
+                                @csrf
+
+                                <x-dropdown-button
+                                    onclick="
+                                        event.preventDefault();
+                                        this.closest('form').submit();
+                                    "
+                                >
+                                    {{ __('Log out of @:username', ['username' => auth()->user()->username]) }}
+                                </x-dropdown-button>
+                            </form>
+
+                            <form method="POST" action="{{ route('accounts.logout-all') }}" x-data>
+                                @csrf
+
+                                <x-dropdown-button
+                                    onclick="
+                                        event.preventDefault();
+                                        this.closest('form').submit();
+                                    "
+                                >
+                                    {{ __('Log out of all accounts') }}
+                                </x-dropdown-button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('logout') }}" x-data>
+                                @csrf
+
+                                <x-dropdown-button
+                                    onclick="
+                                        event.preventDefault();
+                                        this.closest('form').submit();
+                                    "
+                                >
+                                    {{ __('Log Out') }}
+                                </x-dropdown-button>
+                            </form>
+                        @endif
+                    </div>
                 @endauth
             </x-slot>
         </x-dropdown>
