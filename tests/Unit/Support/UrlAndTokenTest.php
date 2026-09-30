@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
-    config(['trusted-hosts.hosts' => []]);
 
     // Static, and therefore inherited from earlier tests in this parallel
     // worker. AbsoluteUrl's own allowlist is what these tests exercise.
@@ -61,21 +60,9 @@ test('a page reference on another host is returned untouched', function (): void
         ->toBe('https://other.test/logo.png');
 });
 
-test('a page reference served from the app host is normalized like any other', function (): void {
-    $request = Request::create('https://phone.local/api/v1/feed');
-    config(['trusted-hosts.hosts' => ['phone.local']]);
-
-    expect(AbsoluteUrl::fromPage(
-        'https://pinkary.test/images/a.png',
-        'https://pinkary.test/questions/abc',
-        $request,
-    ))->toBe('https://phone.local/images/a.png');
-});
-
 test('a stored url is left alone when the application has no url of its own', function (): void {
     // No APP_URL means no host to compare against, so nothing is rewritten.
     config(['app.url' => null]);
-    config(['trusted-hosts.hosts' => ['phone.local']]);
 
     $request = Request::create('https://phone.local/api/v1/feed');
 

@@ -7,13 +7,10 @@ namespace App\Support;
 use Illuminate\Http\Request;
 
 /**
- * Rewrite stored URLs into absolute ones the requesting client can reach.
+ * Make a stored reference absolute so a client can load it.
  *
- * Stored references are app-relative or built from APP_URL, but a phone on
- * the local network reaches the API through another host entirely, so they
- * come back unreachable and images render blank. Rewriting is limited to
- * APP_TRUSTED_HOSTS so a forged Host header cannot repoint a response's
- * media at an origin of the caller's choosing.
+ * Relative references resolve against APP_URL, and only an untrusted Host
+ * header can repoint them.
  */
 final readonly class AbsoluteUrl
 {
@@ -96,11 +93,6 @@ final readonly class AbsoluteUrl
     /**
      * The origin a relative reference resolves against: the request's own
      * root on a trusted host, APP_URL otherwise.
-     *
-     * Relative references are the common case -- the local public disk hands
-     * out `/storage/...` -- so resolving them against an untrusted Host
-     * header would repoint every image in the response just as surely as
-     * rewriting an absolute one.
      */
     private static function baseUrl(Request $request): string
     {
@@ -117,7 +109,7 @@ final readonly class AbsoluteUrl
 
     /**
      * Whether the request arrived on a host this application serves: APP_URL's
-     * own host, the local development names, or APP_TRUSTED_HOSTS.
+     * own host, or a local development name.
      *
      * The application trusts every proxy, so the request root reflects
      * X-Forwarded-Host as well as Host. Rewriting onto it is therefore only
@@ -131,24 +123,10 @@ final readonly class AbsoluteUrl
             return false;
         }
 
-        $allowed = [self::appHost(), 'localhost', '127.0.0.1', '::1'];
-
-        $configured = config('trusted-hosts.hosts');
-
-        if (is_array($configured)) {
-            foreach ($configured as $candidate) {
-                if (is_string($candidate)) {
-                    $allowed[] = $candidate;
-                }
-            }
-        }
-
-        $allowed = array_filter(array_map(
+        return in_array($host, array_map(
             static fn (string $value): string => mb_strtolower(mb_trim($value)),
-            $allowed,
-        ));
-
-        return in_array($host, $allowed, true);
+            [self::appHost(), 'localhost', '127.0.0.1', '::1'],
+        ), true);
     }
 
     /**

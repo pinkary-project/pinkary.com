@@ -50,7 +50,6 @@ function render(Question $question): array
 
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
-    config(['trusted-hosts.hosts' => []]);
 
     Request::setTrustedHosts([]);
 });

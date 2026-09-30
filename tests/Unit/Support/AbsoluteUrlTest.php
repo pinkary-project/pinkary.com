@@ -7,11 +7,9 @@ use Illuminate\Http\Request;
 
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
-    config(['trusted-hosts.hosts' => []]);
 
-    // Symfony's trusted-host list is static, so it survives from whatever ran
-    // earlier in this parallel worker and rejects the hosts these tests need.
-    // AbsoluteUrl has its own allowlist, which is what is under test here.
+    // Symfony's trusted-host list is static, so it survives whatever ran
+    // earlier in this parallel worker and rejects the hosts used here.
     Request::setTrustedHosts([]);
 });
 
@@ -32,15 +30,6 @@ test('an app url rooted url is not rewritten for an untrusted host', function ()
         ->toBe('https://pinkary.test/storage/a.png');
 });
 
-test('a host named in the allowlist is rewritten onto the request root', function (): void {
-    config(['trusted-hosts.hosts' => ['phone.local']]);
-
-    $request = Request::create('http://phone.local:8080/api/v1/feed');
-
-    expect(AbsoluteUrl::for('https://pinkary.test/storage/a.png', $request))
-        ->toBe('http://phone.local:8080/storage/a.png');
-});
-
 test('a localhost url is always rewritten, for local development', function (): void {
     $request = Request::create('http://pinkary.test/api/v1/feed');
 
@@ -48,17 +37,11 @@ test('a localhost url is always rewritten, for local development', function (): 
         ->toBe('http://pinkary.test/storage/a.png');
 });
 
-test('a relative path is resolved against a trusted request root only', function (): void {
-    $untrusted = Request::create('https://evil.test/api/v1/feed');
+test('a relative path is resolved against APP_URL, not the request host', function (): void {
+    $request = Request::create('https://evil.test/api/v1/feed');
 
-    expect(AbsoluteUrl::for('storage/a.png', $untrusted))
+    expect(AbsoluteUrl::for('storage/a.png', $request))
         ->toBe('https://pinkary.test/storage/a.png');
-
-    config(['trusted-hosts.hosts' => ['phone.local']]);
-    $trusted = Request::create('http://phone.local/api/v1/feed');
-
-    expect(AbsoluteUrl::for('storage/a.png', $trusted))
-        ->toBe('http://phone.local/storage/a.png');
 });
 
 test('blank and non string values become null', function (): void {
@@ -70,20 +53,8 @@ test('blank and non string values become null', function (): void {
 });
 
 test('an external url is never rewritten', function (): void {
-    config(['trusted-hosts.hosts' => ['phone.local']]);
-
     $request = Request::create('http://phone.local/api/v1/feed');
 
     expect(AbsoluteUrl::for('https://example.com/logo.png', $request))
         ->toBe('https://example.com/logo.png');
-});
-
-test('a page embedded app url resolves through the same allowlist', function (): void {
-    $page = 'https://pinkary.test/questions/abc';
-
-    $trusted = Request::create('http://phone.local/api/v1/questions/abc');
-    config(['trusted-hosts.hosts' => ['phone.local']]);
-
-    expect(AbsoluteUrl::fromPage('/storage/a.png', $page, $trusted))
-        ->toBe('http://phone.local/storage/a.png');
 });
