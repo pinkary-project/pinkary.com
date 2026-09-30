@@ -15,3 +15,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 require __DIR__.'/api/v1/identity.php';
+require __DIR__.'/api/v1/reads.php';
