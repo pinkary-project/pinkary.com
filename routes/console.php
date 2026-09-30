@@ -15,3 +15,7 @@ Schedule::command(DeleteNonEmailVerifiedUsersCommand::class)->hourly();
 Schedule::command(SyncVerifiedUsersCommand::class)->daily();
 Schedule::job(CleanUnusedUploadedImages::class)->hourly();
 Schedule::job(DeleteOrphanNotifications::class)->hourly();
+
+// Tokens now expire (config/sanctum.php), so expired rows have to be swept
+// or the personal_access_tokens table grows without bound.
+Schedule::command('sanctum:prune-expired')->daily();
