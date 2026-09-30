@@ -6,6 +6,7 @@ use App\Services\MetaData;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\RejectedPromise;
 use GuzzleHttp\Psr7\Exception\MalformedUriException;
+use GuzzleHttp\Psr7\Request as Psr7Request;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Http\Client\ConnectionException;
@@ -283,10 +284,10 @@ it('handles all exceptions', function (Exception $exception): void {
 
     expect($data->isEmpty())->toBeTrue();
 })->with([
-    new ConnectionException('Connection error'),
-    new MalformedUriException('Malformed URI'),
-    new HttpClientException('Not Found'),
-    new TransferException('Transfer error'),
+    'connection' => fn (): Exception => new ConnectionException('Connection error'),
+    'malformed uri' => fn (): Exception => new MalformedUriException('Malformed URI'),
+    'http client' => fn (): Exception => new HttpClientException('Not Found'),
+    'transfer' => fn (): Exception => new TransferException('Transfer error', new Psr7Request('GET', 'https://laravel.com')),
 ]);
 
 it('handles empty content', function (): void {
