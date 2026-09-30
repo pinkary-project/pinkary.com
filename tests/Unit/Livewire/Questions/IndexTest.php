@@ -6,7 +6,6 @@ use App\Livewire\Questions\Index;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Livewire;
 
 test('render', function (): void {
@@ -20,10 +19,9 @@ test('render', function (): void {
 });
 
 test('render with wrong user id', function (): void {
-    $component = Livewire::test(Index::class, [
-        'userId' => 123,
-    ]);
-})->throws(ModelNotFoundException::class);
+    Livewire::test(Index::class, ['userId' => 123])
+        ->assertNotFound();
+});
 
 test('only renders questions with answers if user is not auth user', function (): void {
     $userA = User::factory()->create();

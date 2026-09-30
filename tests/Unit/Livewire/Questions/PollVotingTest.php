@@ -179,11 +179,12 @@ test('prevents voting on non-existent poll option', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->poll()->create();
 
-    $component = Livewire::actingAs($user)
-        ->test(PollVoting::class, ['questionId' => $question->id]);
+    Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question->id])
+        ->call('vote', 99999)
+        ->assertNotFound();
 
-    expect(fn () => $component->call('vote', 99999))
-        ->toThrow(Exception::class);
+    expect(PollVote::query()->exists())->toBeFalse();
 });
 
 test('prevents voting on poll option from different question', function (): void {
@@ -193,11 +194,12 @@ test('prevents voting on poll option from different question', function (): void
 
     $pollOption = PollOption::factory()->for($question2)->create();
 
-    $component = Livewire::actingAs($user)
-        ->test(PollVoting::class, ['questionId' => $question1->id]);
+    Livewire::actingAs($user)
+        ->test(PollVoting::class, ['questionId' => $question1->id])
+        ->call('vote', $pollOption->id)
+        ->assertNotFound();
 
-    expect(fn () => $component->call('vote', $pollOption->id))
-        ->toThrow(Exception::class);
+    expect(PollVote::query()->exists())->toBeFalse();
 });
 
 test('requires verified email to vote', function (): void {
