@@ -181,6 +181,7 @@ test('attaches preview only to the last valid preview link among multiple links'
             </html>
         HTML),
         'https://example3.com/' => Http::response('<html><head></head><body></body></html>'),
+        'https://laravel.com/img/og-image.jpg' => Http::response(''),
     ]);
 
     $content = 'Links: https://example1.com, https://laravel.com, https://example3.com,';
