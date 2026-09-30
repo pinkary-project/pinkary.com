@@ -14,18 +14,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 final class UserResource extends JsonResource
 {
     /**
-     * Overrides the request's viewer for the endpoints that hand back the
-     * freshly authenticated user.
-     *
-     * Login and register answer before a token exists, so $request->user()
-     * is null there and isMe() is false -- the client received its own
-     * email and verification state as null, and could not tell an
-     * unverified account to go verify it. Nothing else may set this.
+     * Login and register answer before a token exists, so the viewer cannot
+     * come from the request there.
      */
     private ?User $viewerOverride = null;
 
     /**
-     * Render this user as seen by themselves.
+     * Render the resource as seen by $viewer rather than the request's user.
      */
     public function viewingAs(User $viewer): static
     {
@@ -35,8 +30,6 @@ final class UserResource extends JsonResource
     }
 
     /**
-     * The user in the shape the clients render.
-     *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -55,13 +48,9 @@ final class UserResource extends JsonResource
                 'email' => $this->isMe($viewer) ? $this->resource->hasVerifiedEmail() : null,
                 'company' => $this->resource->is_company_verified,
             ],
+            // A count the query never loaded has to stay null: a confident
+            // zero reads as "this person has no followers".
             'stats' => [
-                // null, not 0, when the count was not loaded. The list
-                // endpoints (followers, following, likers) never
-                // withCount(), so a `?? 0` here reported a confident zero
-                // for every row. The web renders no counts on those rows at
-                // all, so nothing needed them -- but a wrong number is
-                // worse than an absent one.
                 'followers' => isset($this->resource->followers_count) ? (int) $this->resource->followers_count : null,
                 'following' => isset($this->resource->following_count) ? (int) $this->resource->following_count : null,
                 'posts' => isset($this->resource->posts_count) ? (int) $this->resource->posts_count : null,
@@ -70,11 +59,6 @@ final class UserResource extends JsonResource
             'followed_by_me' => isset($this->resource->followed_by_me)
                 ? (bool) $this->resource->followed_by_me
                 : ($viewer instanceof User && (bool) $this->resource->followers()->where('follower_id', $viewer->id)->exists()),
-            // The inverse flag, absent before. The web's follower,
-            // following and liker rows all carry it (Livewire\Followers\
-            // Index:44, Following\Index:46, Likes\Index:45) and render it
-            // as the "Follows you" badge; without it a client cannot show
-            // a mutual follow or offer Follow Back.
             'follows_me' => isset($this->resource->follows_me)
                 ? (bool) $this->resource->follows_me
                 : ($viewer instanceof User && (bool) $this->resource->following()->where('user_id', $viewer->id)->exists()),
@@ -90,7 +74,7 @@ final class UserResource extends JsonResource
     }
 
     /**
-     * Whether the viewer is looking at their own profile.
+     * Whether $viewer is the owner of this resource.
      */
     private function isMe(mixed $viewer): bool
     {

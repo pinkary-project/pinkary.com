@@ -11,15 +11,12 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Collection;
 
 /**
- * Shared notification data loaders used by both the Livewire notification
- * component and the API NotificationController. Extracted here to avoid
- * duplicating the batch-query logic across both callers.
+ * Shared notification data loaders, used by both the Livewire notification
+ * component and the API NotificationController.
  */
 trait HasNotificationLoaders
 {
     /**
-     * Load the questions referenced by the given notifications in a single query.
-     *
      * @param  Collection<int, DatabaseNotification>  $notifications
      * @return Collection<string, Question>
      */
@@ -46,8 +43,6 @@ trait HasNotificationLoaders
     }
 
     /**
-     * Load the followers referenced by the given notifications in a single query.
-     *
      * @param  Collection<int, DatabaseNotification>  $notifications
      * @return Collection<int, User>
      */
@@ -74,7 +69,7 @@ trait HasNotificationLoaders
     }
 
     /**
-     * Extract the question ID from a notification's data payload.
+     * A notification's subject id, or null when the payload carries none.
      */
     protected function questionIdFrom(DatabaseNotification $notification): ?string
     {

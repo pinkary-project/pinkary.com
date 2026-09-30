@@ -18,8 +18,6 @@ use Illuminate\Support\Collection;
 final readonly class FeedThread
 {
     /**
-     * Attach thread context to all items in the paginator.
-     *
      * @param  Paginator<int, Question>  $paginator
      * @return Paginator<int, Question>
      */
@@ -54,14 +52,10 @@ final readonly class FeedThread
 
         $hydrated = $ids === []
             ? collect()
-            // Defense in depth, matching ThreadedQuestionQuery:31. Not
-            // currently reachable, because QuestionObserver::updated()
-            // routes is_ignored/is_reported into deleted(), which
-            // hard-deletes a question's children and descendants -- so an
-            // ignored ancestor cannot coexist with a visible descendant to
-            // hydrate here. Kept so the filter does not depend on that
-            // cascade holding, and so this path matches the question
-            // detail path.
+            // QuestionObserver::updated() routes is_ignored/is_reported into
+            // deleted(), which hard-deletes a question's descendants, so an
+            // ignored ancestor cannot coexist with a visible descendant.
+            // Kept so the filter does not depend on that cascade holding.
             : (new FeedQuestion)(Question::query()->whereIn('id', $ids)->tap(new WhereNotModerated), $userId)->get()->keyBy('id');
 
         $threads = [];

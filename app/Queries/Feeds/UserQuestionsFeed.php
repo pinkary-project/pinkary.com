@@ -23,23 +23,11 @@ final readonly class UserQuestionsFeed
      * A person's timeline: one row per thread, ordered by when the thread was
      * last touched.
      *
-     * This used to be a second, simpler implementation of the query in
-     * Livewire\Questions\Index, and the two disagreed in ways a user could
-     * see. `whereNull('parent_id')` dropped every reply, so a thread the user
-     * took part in vanished whenever its first post belonged to someone else
-     * -- the web shows it. And ordering by answer_created_at put a thread
-     * where it was first answered instead of where it last changed, so
-     * adding a reply did not move the thread up the list. There is one
-     * definition now and both surfaces call it; a divergence like that cannot
-     * survive two copies.
-     *
      * Unanswered questions are hidden from everyone but the profile owner.
      *
-     * @param  bool  $includePinned  The web renders its pinned post as a
-     *                               separate banner above the list and filters
-     *                               it out here. The clients show it as the
-     *                               first card of the list with its Pinned
-     *                               chip, so they keep it in and sort it up.
+     * @param  bool  $includePinned  The clients render a pinned post as the
+     *                               first card of the list rather than
+     *                               filtering it out above it.
      * @return Builder<Question>
      */
     public function builder(bool $includePinned = true): Builder
@@ -56,16 +44,12 @@ final readonly class UserQuestionsFeed
             });
 
         // The callers paginate an Eloquent Builder, so unwrap the relation
-        // before building on it rather than chaining through the relation
-        // and unwrapping at the end.
+        // before building on it.
         $builder = $this->user->questionsReceived()->getQuery();
 
         $builder
-            // The smallest set that still answers "which threads does this
-            // person appear in, and in what nesting": the row itself plus
-            // the ancestry the client walks. Everything else is loaded by
-            // whoever renders the thread, and the API's FeedQuestion adds
-            // the columns QuestionResource reads.
+            // The row itself plus the ancestry the client walks; whoever
+            // renders the thread loads the rest.
             ->select('questions.id', 'questions.root_id', 'questions.parent_id', 'questions.pinned')
             ->joinSub(
                 $latestInThread,

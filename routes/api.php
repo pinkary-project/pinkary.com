@@ -50,24 +50,18 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         ->middleware('throttle:60,1,qr')
         ->name('users.qr-code');
 
-    // A public profile's links are tappable by anyone, including guests:
-    // the web mounts the same Livewire component on profile/show.blade.php
-    // and its non-owner branch calls click() with auth()->id(), which is
-    // null for a guest. The Action already declines to count the link's
-    // own owner, and dedupes per IP per day, so this is not a free counter
-    // to inflate. Kept out of the shared `read` bucket: it is a POST, and
-    // spends its own budget instead of a guest's read allowance.
+    // A public profile's links are tappable by anyone, including guests, so the
+    // click cannot be gated on authentication. It keeps its own budget rather
+    // than spending a guest's read allowance.
     Route::post('links/{link}/click', [LinkClickController::class, 'store'])
         ->middleware(['optional.sanctum', 'throttle:60,1,link_click'])
         ->name('links.click');
 
-    // Public reads. The web serves profiles, posts, comments, follower
-    // lists and search to guests, so the API must too: `optional.sanctum`
-    // lets a bearer token through when present (filling in viewer state
-    // like liked/bookmarked/followed_by_me) without requiring one. These
-    // share the `read` bucket rather than the 120/min `api` write bucket.
-    // `feed` and the QR code keep their own, larger dedicated budgets
-    // because they are the heaviest and most cacheable public reads.
+    // Public reads. `optional.sanctum` lets a bearer token through when present,
+    // filling in viewer state like liked/bookmarked/followed_by_me without
+    // requiring one. These share the `read` bucket rather than the 120/min
+    // `api` write bucket; `feed` and the QR code keep their own, larger
+    // budgets because they are the heaviest and most cacheable public reads.
     Route::middleware(['optional.sanctum', 'throttle:60,1,read'])->group(function (): void {
         Route::get('questions/{question}', [QuestionController::class, 'show'])
             ->name('questions.show')
@@ -130,17 +124,9 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         Route::post('links/sort', [LinkSortController::class, 'store'])
             ->name('links.sort');
 
-        // The verified-email gate the web applies and the API did not.
-        //
-        // On the web it is applied twice: as middleware on the bookmark and
-        // notification reads (routes/web.php:63) and as a
-        // NeedsVerifiedEmail check inside every state-changing Livewire
-        // action -- posting, answering, commenting, liking, bookmarking,
-        // pinning, ignoring, voting and image upload. The API had no
-        // equivalent anywhere, so a brand new unverified account -- exactly
-        // the population this gate exists for, and the one
-        // DeleteNonEmailVerifiedUsersCommand only culls after 24h -- could
-        // do all of it from the app while the site refused every action.
+        // The gate the web applies both as middleware on its bookmark and
+        // notification reads and as a NeedsVerifiedEmail check inside every
+        // state-changing Livewire action.
         Route::middleware('verified')->group(function (): void {
             Route::post('questions', [QuestionController::class, 'store'])
                 ->name('questions.store');
@@ -187,13 +173,8 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
                 ->name('questions.poll.vote')
                 ->whereUuid('question');
 
-            // Composer images. The web reached this through Livewire's file
-            // upload, which an API client cannot speak; the storage, the
-            // limits and the rendering were all here already, so this opens
-            // the same pipeline over HTTP. Its own bucket because a request
-            // can carry several megabytes -- it should not spend the
-            // caller's write budget on a request the write endpoints are
-            // meant to answer quickly.
+            // Composer images. Its own bucket because a request can carry several
+            // megabytes and should not spend the caller's write budget.
             Route::post('images', [ImageController::class, 'store'])
                 ->middleware('throttle:20,1,image')
                 ->name('images.store');

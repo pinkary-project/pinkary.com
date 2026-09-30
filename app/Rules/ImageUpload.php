@@ -12,56 +12,31 @@ use Illuminate\Validation\Rules\File;
 
 /**
  * The composer image rules, in one place.
- *
- * The web composer and the API both accept post images, and before this they
- * were described separately: the web's limits lived inline in
- * Livewire\Questions\Create::runImageValidation(), and the API had no
- * description at all because it had no upload surface. Two copies is how the
- * next one drifts, so both call rules() now and there is nothing left to keep
- * in step by hand.
  */
 final readonly class ImageUpload implements ValidationRule
 {
-    /**
-     * Largest accepted file, in kilobytes.
-     */
     public const int MAX_KILOBYTES = 8192;
 
-    /**
-     * Largest accepted width, in pixels.
-     */
     public const int MAX_WIDTH = 4000;
 
-    /**
-     * Largest accepted height, in pixels.
-     */
     public const int MAX_HEIGHT = 4000;
 
     /**
-     * Narrowest accepted width-to-height ratio (2/5), matching the web.
+     * Narrowest accepted width-to-height ratio, 2/5.
      */
     public const float MIN_ASPECT_RATIO = 0.4;
 
     /**
-     * Accepted image types.
-     *
      * @var array<int, string>
      */
     public const array TYPES = ['jpeg', 'png', 'gif', 'webp', 'jpg'];
 
-    /**
-     * Images allowed in a single post, matching the web composer's cap.
-     */
     public const int MAX_PER_POST = 3;
 
     /**
-     * The rule chain every composer image must pass.
-     *
-     * `bail` matters more than it looks: the File rule expands into image,
-     * mimes, max and dimensions, so a single PDF used to produce four
-     * complaints at once -- three of them about a file that is not an image
-     * at all. One message per file is the difference between "that is not an
-     * image" and a wall of text nobody can act on.
+     * `bail` keeps one message per file: the File rule expands into image,
+     * mimes, max and dimensions, so a single PDF otherwise reports four
+     * complaints, three of them about a file that is not an image at all.
      *
      * @return array<int, mixed>
      */
@@ -82,9 +57,6 @@ final readonly class ImageUpload implements ValidationRule
     }
 
     /**
-     * The messages for rules(), keyed by rule name so they apply whatever the
-     * field is called.
-     *
      * @return array<string, string>
      */
     public static function messages(): array
@@ -98,8 +70,6 @@ final readonly class ImageUpload implements ValidationRule
     }
 
     /**
-     * Validate the value of the given attribute.
-     *
      * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void

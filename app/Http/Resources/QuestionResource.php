@@ -18,15 +18,13 @@ use Illuminate\Support\Collection;
 final class QuestionResource extends JsonResource
 {
     /**
-     * Memoized result of parsedAnswer(); null when the post has no HTML.
+     * Memoized; null means the post has no HTML to parse.
      */
     private ?DOMDocument $parsedAnswer = null;
 
     /**
-     * Whether parsedAnswer() has already run.
-     *
-     * A separate flag because a post with no content legitimately resolves to
-     * null, and resolving it reads two accessors that can each re-parse.
+     * Separate from parsedAnswer, which is legitimately null for a post with
+     * no content.
      */
     private bool $answerParsed = false;
 

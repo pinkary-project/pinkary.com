@@ -18,8 +18,7 @@ use Illuminate\Support\Collection;
 final readonly class FormatNotificationRow
 {
     /**
-     * Shape one row, mirroring the web's notification components.
-     * Returns null when the subject is gone (the web skips those rows).
+     * Null when the subject is gone; the web skips those rows too.
      *
      * @param  Collection<string, Question>  $questions
      * @param  Collection<int, User>  $followers

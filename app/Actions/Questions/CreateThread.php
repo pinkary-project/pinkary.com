@@ -27,11 +27,6 @@ final readonly class CreateThread
     ) {}
 
     /**
-     * Publish a shared update (thread) for the given user.
-     *
-     * The main post plus up to 9 chained follow-ups are stored as
-     * self-addressed questions, mirroring the web composer's threads.
-     *
      * @param  array<string, mixed>  $validated
      * @return Collection<int, Question>
      */
@@ -126,7 +121,7 @@ final readonly class CreateThread
     }
 
     /**
-     * A poll's duration in days, defaulting when the value is absent.
+     * Days a poll runs for, or 1 when the client sent nothing usable.
      */
     private function duration(mixed $value): int
     {
@@ -134,9 +129,6 @@ final readonly class CreateThread
     }
 
     /**
-     * Normalize poll options, mirroring the web composer's rules
-     * (2 to 4 non-empty options, 40 characters each).
-     *
      * @return list<string>|false
      */
     private function cleanPollOptions(mixed $options): array|false
@@ -169,9 +161,8 @@ final readonly class CreateThread
     }
 
     /**
-     * Resolve the channel id, mirroring the web composer's staging:
-     * a new channel name is created at publish; admin-only channels
-     * are silently dropped for non-admins.
+     * A new channel name is created at publish; an admin-only channel is
+     * silently dropped for anyone else.
      */
     private function resolveChannelId(User $user, mixed $channelId, ?string $channelName): ?int
     {
