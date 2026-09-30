@@ -25,13 +25,8 @@ final readonly class AuthenticateUser
             ]);
         }
 
-        // The web challenges a 2FA account before it will let anyone in
-        // (routes/auth.php:38-42, Fortify two_factor_authentication.confirm).
-        // This path skipped that challenge entirely and minted a
-        // never-expiring, full-privilege bearer token, so holding a 2FA
-        // user's password was enough to own their account from the app.
-        // The mobile client has no 2FA screen to complete a challenge in,
-        // so refuse rather than hand out a token that bypasses the setting.
+        // The mobile client has no screen to complete a 2FA challenge in, so
+        // refuse rather than mint a token that bypasses the setting.
         if ($user->hasEnabledTwoFactorAuthentication()) {
             throw ValidationException::withMessages([
                 'email' => ['Two-factor authentication is enabled for this account. Sign in on the website to continue.'],

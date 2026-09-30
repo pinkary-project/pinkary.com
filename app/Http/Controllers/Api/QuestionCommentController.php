@@ -57,16 +57,9 @@ final readonly class QuestionCommentController
 
         $comment = $user->questionsSent()->create([
             'to_id' => $user->id,
-            // The web's reply composer is mounted with :to-id="auth()->id()"
-            // (livewire/questions/show.blade.php:467), which makes
-            // isSharingUpdate() true, so Questions\Create rewrites the
-            // payload before saving (Create.php:471-475). Mirror that
-            // exactly. Storing the text as `content` instead left an
-            // unanswered question, which RecentQuestionsFeed skips
-            // (it requires whereNotNull('answer'), RecentQuestionsFeed.php:29)
-            // and the web profile hides from everyone but its author
-            // (Questions\Index.php:73-75) -- so the same comment landed in
-            // the feed or not depending on which client sent it.
+            // A reply is stored as an answer, not as content: RecentQuestionsFeed
+            // skips questions with a null answer, so the text landed in the
+            // feed only when the web sent it.
             'content' => '__UPDATE__',
             'answer' => $request->validated('content'),
             'answer_created_at' => now(),

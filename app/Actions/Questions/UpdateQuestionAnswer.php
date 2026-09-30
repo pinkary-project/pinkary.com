@@ -28,15 +28,8 @@ final readonly class UpdateQuestionAnswer
 
         $question->update($attributes);
 
-        // Rewriting an answer that people have already liked drops those
-        // likes, the same way editing a question does
-        // (UpdateQuestion::handle, $clearLikes). The web's answer editor is
-        // Livewire\Questions\Edit::update() -- it validates `answer` and
-        // nothing else -- and it passes $originalAnswer !== null as
-        // $clearLikes (Edit.php:117), so a like on the old wording was never
-        // meant to survive a rewrite. Keying off an answer that already
-        // existed, rather than off "the text changed", matters: a first
-        // answer is not an edit.
+        // Keyed off an answer that already existed, not off whether the text
+        // changed: a first answer is not an edit.
         if ($question->wasChanged('answer') && array_key_exists('answer_updated_at', $attributes)) {
             $question->likes()->delete();
         }
