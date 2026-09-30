@@ -53,4 +53,12 @@ final readonly class QuestionPolicy
     {
         return $user->id === $question->to_id;
     }
+
+    /**
+     * Determine whether the user can delete the question.
+     */
+    public function delete(User $user, Question $question): bool
+    {
+        return $user->id === $question->to_id;
+    }
 }
