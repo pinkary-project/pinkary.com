@@ -6,6 +6,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\UserFollowed;
+use App\Notifications\UserMentioned;
 
 test('a guest cannot read notifications', function (): void {
     $this->getJson(route('api.v1.notifications.index'))->assertUnauthorized();
@@ -64,6 +65,120 @@ test('rows for deleted subjects are skipped like the web', function (): void {
         ->assertOk()
         ->assertJsonCount(0, 'data')
         ->assertJsonPath('meta.unread_count', 1);
+});
+
+test('a mention in a question is attributed to whoever asked it', function (): void {
+    $ada = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $bob = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'from_id' => $ada->id,
+        'to_id' => $ada->id,
+        'content' => 'What are you building?',
+        'answer' => null,
+        'answer_created_at' => null,
+        'anonymously' => false,
+    ]);
+
+    $bob->notify(new UserMentioned($question));
+
+    $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$bob->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->assertJsonPath('data.0.type', 'UserMentioned')
+        ->assertJsonPath('data.0.actor.username', 'ada')
+        ->assertJsonPath('data.0.action', 'mentioned you in a question:')
+        ->assertJsonPath('data.0.snippet', 'What are you building?')
+        ->assertJsonPath('data.0.target.kind', 'question');
+});
+
+test('a mention in a comment names the commenter', function (): void {
+    $ada = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $bob = User::factory()->create();
+
+    $root = Question::factory()->create([
+        'from_id' => $ada->id,
+        'to_id' => $ada->id,
+        'content' => 'First post.',
+        'answer' => 'First post.',
+        'answer_created_at' => now(),
+    ]);
+
+    $comment = Question::factory()->create([
+        'from_id' => $ada->id,
+        'to_id' => $ada->id,
+        'parent_id' => $root->id,
+        'root_id' => $root->id,
+        'content' => '__UPDATE__',
+        'answer' => 'Adding to this.',
+        'answer_created_at' => now(),
+        'anonymously' => false,
+    ]);
+
+    $bob->notify(new UserMentioned($comment));
+
+    $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$bob->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->assertJsonPath('data.0.action', 'mentioned you in a comment:')
+        ->assertJsonPath('data.0.actor.username', 'ada')
+        ->assertJsonPath('data.0.snippet', 'Adding to this.')
+        ->assertJsonPath('data.0.target.id', $comment->id);
+});
+
+test('a mention in a shared update is reported as an update', function (): void {
+    $ada = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $bob = User::factory()->create();
+
+    $update = Question::factory()->sharedUpdate()->create([
+        'from_id' => $ada->id,
+        'to_id' => $ada->id,
+        'answer' => 'Shipping today.',
+        'answer_created_at' => now(),
+        'anonymously' => false,
+    ]);
+
+    $bob->notify(new UserMentioned($update));
+
+    $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$bob->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->assertJsonPath('data.0.action', 'mentioned you in an update:')
+        ->assertJsonPath('data.0.actor.username', 'ada')
+        ->assertJsonPath('data.0.snippet', 'Shipping today.');
+});
+
+test('a mention in a question that was later answered credits the answerer', function (): void {
+    $ada = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $carol = User::factory()->create(['name' => 'Carol Reed', 'username' => 'carol']);
+    $bob = User::factory()->create();
+
+    $question = Question::factory()->create([
+        'from_id' => $ada->id,
+        'to_id' => $carol->id,
+        'content' => 'What are you building?',
+        'answer' => 'Here is my take.',
+        'answer_created_at' => now(),
+        'anonymously' => false,
+    ]);
+
+    $bob->notify(new UserMentioned($question));
+
+    // The actor is whoever last wrote to the post, not whoever mentioned
+    // Bob. Pinned because it reads as a bug and may well be one.
+    $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$bob->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->assertJsonPath('data.0.action', 'mentioned you in a question:')
+        ->assertJsonPath('data.0.actor.username', 'carol');
+});
+
+test('a mention row for a deleted post is skipped', function (): void {
+    $bob = User::factory()->create();
+    $question = Question::factory()->create();
+
+    $bob->notify(new UserMentioned($question));
+    $question->delete();
+
+    $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$bob->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->assertJsonCount(0, 'data');
 });
 
 test('notifications can be marked as read', function (): void {
