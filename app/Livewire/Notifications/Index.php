@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Livewire\Notifications;
 
 use App\Actions\Questions\UpdateQuestionStatus;
+use App\Livewire\Concerns\HasNotificationLoaders;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\QuestionCreated;
 use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Pagination\Paginator;
 use Illuminate\View\View;
@@ -18,7 +18,7 @@ use Livewire\WithPagination;
 
 final class Index extends Component
 {
-    use WithPagination;
+    use HasNotificationLoaders, WithPagination;
 
     /**
      * Ignore all notifications.
@@ -57,68 +57,13 @@ final class Index extends Component
         /** @var Paginator<int, DatabaseNotification> $notifications */
         $notifications = $user->notifications()->simplePaginate(10);
 
+        $items = collect($notifications->items());
+
         return view('livewire.notifications.index', [
             'user' => $user,
             'notifications' => $notifications,
-            'questions' => $this->questionsFor($notifications),
-            'followers' => $this->followersFor($notifications),
+            'questions' => $this->questionsFor($items),
+            'followers' => $this->followersFor($items),
         ]);
-    }
-
-    /**
-     * Load the questions referenced by the given notifications in a single query.
-     *
-     * @param  Paginator<int, DatabaseNotification>  $notifications
-     * @return Collection<int|string, Question>
-     */
-    private function questionsFor(Paginator $notifications): Collection
-    {
-        $questionIds = collect($notifications->items())
-            ->map(function (DatabaseNotification $notification): ?string {
-                $questionId = $notification->data['question_id'] ?? null;
-
-                return is_string($questionId) ? $questionId : null;
-            })
-            ->filter()
-            ->unique()
-            ->values();
-
-        if ($questionIds->isEmpty()) {
-            return new Collection();
-        }
-
-        return Question::query()
-            ->with(['from', 'to', 'parent'])
-            ->whereIn('id', $questionIds)
-            ->get()
-            ->keyBy('id');
-    }
-
-    /**
-     * Load the followers referenced by the given notifications in a single query.
-     *
-     * @param  Paginator<int, DatabaseNotification>  $notifications
-     * @return Collection<int|string, User>
-     */
-    private function followersFor(Paginator $notifications): Collection
-    {
-        $followerIds = collect($notifications->items())
-            ->map(function (DatabaseNotification $notification): ?int {
-                $followerId = $notification->data['follower_id'] ?? null;
-
-                return is_int($followerId) ? $followerId : (is_numeric($followerId) ? (int) $followerId : null);
-            })
-            ->filter()
-            ->unique()
-            ->values();
-
-        if ($followerIds->isEmpty()) {
-            return new Collection();
-        }
-
-        return User::query()
-            ->whereIn('id', $followerIds)
-            ->get()
-            ->keyBy('id');
     }
 }

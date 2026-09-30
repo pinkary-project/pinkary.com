@@ -11,16 +11,15 @@ use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
+use App\Rules\ImageUpload;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
 use App\Services\ImageProcessor;
-use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
@@ -60,13 +59,16 @@ final class Create extends Component
      * Max number of images allowed.
      */
     #[Locked]
-    public int $uploadLimit = 3;
+    public int $uploadLimit = ImageUpload::MAX_PER_POST;
 
     /**
-     * Max file size allowed.
+     * Max file size allowed, in kilobytes.
+     *
+     * The blade hands this to the client for a pre-flight check, and the
+     * server re-checks it through ImageUpload::rules().
      */
     #[Locked]
-    public int $maxFileSize = 1024 * 8;
+    public int $maxFileSize = ImageUpload::MAX_KILOBYTES;
 
     /**
      * The component's user ID.
@@ -176,38 +178,9 @@ final class Create extends Component
                     'bail',
                     new MaxUploads($this->uploadLimit),
                 ],
-                'images.*' => [
-                    File::image()
-                        ->types(['jpeg', 'png', 'gif', 'webp', 'jpg'])
-                        ->max($this->maxFileSize)
-                        ->dimensions(
-                            Rule::dimensions()->maxWidth(4000)->maxHeight(4000)
-                        ),
-
-                    static function (string $attribute, mixed $value, Closure $fail): void {
-                        /** @var UploadedFile $value */
-                        $dimensions = $value->dimensions();
-                        if (is_array($dimensions)) {
-                            /** @var array<int, int> $dimensions */
-                            [$width, $height] = $dimensions;
-                            $aspectRatio = $width / $height;
-                            $maxAspectRatio = 2 / 5;
-                            if ($aspectRatio < $maxAspectRatio) {
-                                $fail('The image aspect ratio must be less than 2/5.');
-                            }
-                        } else {
-                            $fail('The image aspect ratio could not be determined.');
-                        }
-                    },
-
-                ],
+                'images.*' => ImageUpload::rules(),
             ],
-            messages: [
-                'images.*.image' => 'The file must be an image.',
-                'images.*.mimes' => 'The image must be a file of type: :values.',
-                'images.*.max' => 'The image may not be greater than :max kilobytes.',
-                'images.*.dimensions' => 'The image must be less than :max_width x :max_height pixels.',
-            ]
+            messages: ImageUpload::messages()
         );
     }
 
