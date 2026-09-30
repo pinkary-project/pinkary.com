@@ -81,8 +81,7 @@ test('a stranger cannot reorder a link they do not own', function (): void {
     ], bearerFor($me))->assertOk();
 
     // The Action filters the submitted ids down to the caller's own links
-    // instead of rejecting them. A regression writing them straight through
-    // would leak a foreign link id into this column.
+    // instead of rejecting them.
     expect($me->fresh()->links_sort)->toBe([$mine->id]);
 });
 

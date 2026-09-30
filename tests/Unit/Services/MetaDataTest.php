@@ -284,9 +284,6 @@ it('handles all exceptions', function (Exception $exception): void {
 
     expect($data->isEmpty())->toBeTrue();
 })->with([
-    // Wrapped in closures on purpose: a plain list of objects is not a
-    // valid Pest dataset, and the collection error this caused aborted
-    // every other test in the suite, not just this one.
     'connection' => fn (): Exception => new ConnectionException('Connection error'),
     'malformed uri' => fn (): Exception => new MalformedUriException('Malformed URI'),
     'http client' => fn (): Exception => new HttpClientException('Not Found'),

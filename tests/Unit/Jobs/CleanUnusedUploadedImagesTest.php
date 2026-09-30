@@ -68,10 +68,7 @@ it('cleans up unused images', function (): void {
 
 it('keeps an image a mobile post referenced by its absolute url', function (): void {
     // The mobile API hands clients an absolute URL to embed, so a post
-    // written from the app stores that instead of the bare disk path. The
-    // file list is compared with a strict in_array, so without normalizing
-    // the reference first this file looks unreferenced and is deleted while
-    // the post still points at it.
+    // written from the app stores that instead of the bare disk path.
     Storage::fake();
     $day = now()->format('Y-m-d');
 

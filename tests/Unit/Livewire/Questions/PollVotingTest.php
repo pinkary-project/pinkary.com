@@ -179,13 +179,6 @@ test('prevents voting on non-existent poll option', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->poll()->create();
 
-    // The guard in PollVoting::vote() is
-    // PollOption::where('question_id', ...)->findOrFail($id), which throws
-    // ModelNotFoundException. Livewire's test broker lists that exception in
-    // withoutExceptionHandling($except) -- the list names exceptions that are
-    // still *handled*, so it is rendered as a 404 instead of rethrown -- and
-    // SubsequentRender then short-circuits on the non-OK response. So the
-    // observable result is a 404, and no vote may be recorded.
     Livewire::actingAs($user)
         ->test(PollVoting::class, ['questionId' => $question->id])
         ->call('vote', 99999)
@@ -201,8 +194,6 @@ test('prevents voting on poll option from different question', function (): void
 
     $pollOption = PollOption::factory()->for($question2)->create();
 
-    // As above: the option belongs to another question, so the where() scopes
-    // it out and the vote must not be recorded.
     Livewire::actingAs($user)
         ->test(PollVoting::class, ['questionId' => $question1->id])
         ->call('vote', $pollOption->id)

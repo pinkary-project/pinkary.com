@@ -692,10 +692,6 @@ test('reading the feed does not re-parse and rewrite every row', function (): vo
 
     $this->getJson(route('api.v1.feed.index'), $headers)->assertOk();
 
-    // FeedQuestion used to omit questions.parsed, so the content/answer
-    // accessors saw it as absent and ran RefreshParsedContent::refresh()
-    // for every item -- re-parsing (reaching MetaData over HTTP) and
-    // issuing an UPDATE, on a read.
     expect($writes)->toBeEmpty();
 });
 

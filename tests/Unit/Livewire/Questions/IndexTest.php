@@ -19,10 +19,6 @@ test('render', function (): void {
 });
 
 test('render with wrong user id', function (): void {
-    // Index::render() calls User::findOrFail($this->userId). Livewire's test
-    // broker lists ModelNotFoundException in withoutExceptionHandling($except)
-    // -- the exceptions named there are still handled and rendered -- so the
-    // failure surfaces as a 404 response rather than a thrown exception.
     Livewire::test(Index::class, ['userId' => 123])
         ->assertNotFound();
 });

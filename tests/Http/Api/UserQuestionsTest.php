@@ -184,10 +184,6 @@ test('a thread shows up even when its newest post is a reply', function (): void
 
     $this->getJson(route('api.v1.users.questions.index', 'alice'))
         ->assertOk()
-        // One row for the thread, and it is the reply -- the thread's most
-        // recent activity. The old query filtered on whereNull('parent_id'),
-        // so a thread whose newest post was a reply vanished from the profile
-        // entirely. The web has always shown it.
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.id', (string) $reply->id)
         ->assertJsonPath('data.0.answer', 'A reply in the thread.')
