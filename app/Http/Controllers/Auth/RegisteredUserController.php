@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Jobs\UpdateUserAvatar;
+use App\Actions\Users\CreateUser;
 use App\Models\User;
 use App\Rules\NoEmailAlias;
 use App\Rules\NotBlockedAccount;
 use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -35,7 +33,7 @@ final readonly class RegisteredUserController
      *
      * @throws ValidationException
      */
-    public function store(Request $request, Turnstile $turnstile): RedirectResponse
+    public function store(Request $request, Turnstile $turnstile, CreateUser $createUser): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -46,18 +44,14 @@ final readonly class RegisteredUserController
             'cf-turnstile-response' => app()->environment(['production', 'testing']) ? ['required', $turnstile] : [],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'username' => $request->username,
-            'password' => Hash::make($request->string('password')->value()),
+        $user = $createUser->handle([
+            'name' => $request->string('name')->toString(),
+            'username' => $request->string('username')->toString(),
+            'email' => $request->string('email')->toString(),
+            'password' => $request->string('password')->toString(),
         ]);
 
-        event(new Registered($user));
-
         Auth::login($user);
-
-        UpdateUserAvatar::dispatchFor($user);
 
         return redirect(route('profile.show', [
             'username' => $user->username,

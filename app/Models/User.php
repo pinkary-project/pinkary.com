@@ -24,6 +24,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property bool $prefers_anonymous_questions
@@ -54,6 +55,11 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property ?CarbonImmutable $avatar_updated_at
  * @property string $username
  * @property int $views
+ * @property int $followers_count
+ * @property int $following_count
+ * @property int $posts_count
+ * @property bool $followed_by_me
+ * @property bool $follows_me
  * @property bool $is_uploaded_avatar
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
@@ -68,7 +74,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -242,7 +248,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getLinkShapeAttribute(): string
     {
-        $settings = $this->settings ?: [];
+        $settings = array_key_exists('settings', $this->attributes) ? ($this->settings ?: []) : [];
 
         $linkShape = data_get($settings, 'link_shape', 'rounded-lg');
 
@@ -254,7 +260,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getGradientAttribute(): string
     {
-        $settings = $this->settings ?: [];
+        $settings = array_key_exists('settings', $this->attributes) ? ($this->settings ?: []) : [];
 
         $gradient = data_get($settings, 'gradient', 'from-blue-500 to-purple-600');
 
