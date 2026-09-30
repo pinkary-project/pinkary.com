@@ -15,3 +15,5 @@ Schedule::command(DeleteNonEmailVerifiedUsersCommand::class)->hourly();
 Schedule::command(SyncVerifiedUsersCommand::class)->daily();
 Schedule::job(CleanUnusedUploadedImages::class)->hourly();
 Schedule::job(DeleteOrphanNotifications::class)->hourly();
+
+Schedule::command('sanctum:prune-expired')->daily();
