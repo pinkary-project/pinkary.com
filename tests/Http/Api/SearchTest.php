@@ -36,10 +36,7 @@ test('a guest can search users and hashtags with neutral follow state', function
 });
 
 test('a query that is only a sigil matches nothing instead of everything', function (): void {
-    // The rules only require a non-empty string, and term() then strips
-    // sigils and whitespace. A bare "@" is valid input that resolves to an
-    // empty term, so it has to come back as an empty result rather than
-    // reaching the search services with nothing to search for.
+    // term() strips sigils, so a bare "@" is valid input resolving to nothing.
     User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
     Hashtag::factory()->create(['name' => 'laravel']);
 

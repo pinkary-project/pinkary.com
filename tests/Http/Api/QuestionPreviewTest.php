@@ -8,14 +8,11 @@ use App\Services\ParsableContent;
 use Illuminate\Http\Request;
 
 /**
- * Pin the resource's parsed payload to stored HTML.
+ * Pin the parsed payload to stored HTML.
  *
- * RefreshParsedContent only re-runs the parse pipeline when the stored
- * payload is missing, stale, or was written by a different provider
- * fingerprint. Seeding a payload that is fresh for the current raw fields
- * makes the accessors hand back exactly the HTML given here, so these tests
- * exercise the resource's own parsing instead of the composer -- and without
- * the link-preview HTTP calls that the composer makes.
+ * A payload fresh for the current raw fields makes the accessors return this
+ * HTML verbatim, so the resource's own parsing is exercised instead of the
+ * composer, and no link-preview HTTP call is made.
  */
 function pinAnswerHtml(Question $question, ?string $html): Question
 {
@@ -54,6 +51,8 @@ function render(Question $question): array
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
     config(['trusted-hosts.hosts' => []]);
+
+    Request::setTrustedHosts([]);
 });
 
 test('a link preview card is exposed with its url, host, title and image', function (): void {
@@ -76,8 +75,7 @@ test('a link preview card is exposed with its url, host, title and image', funct
 });
 
 test('a card carrying a scraped html snippet falls back to the url for its title and image', function (): void {
-    // The blade card only emits an <img>/<h3> on its metadata branch; on the
-    // raw-html branch the client still needs something to link to.
+    // Only the metadata branch of the card emits an <img>/<h3>.
     $question = pinAnswerHtml(makeQuestion(), <<<'HTML'
         <div id="link-preview-card" data-url="https://example.com/articles/two">
             <div class="snippet">Just some scraped markup</div>
@@ -115,9 +113,7 @@ test('post images are listed absolutely and the card image is left out of them',
         <img src="//cdn.example.com/two.png" alt="" />
         HTML);
 
-    // The card image belongs to `preview`; listing it again here would make a
-    // client render the same picture twice. The protocol-relative reference
-    // is normalized against the request scheme like any other.
+    // The card image is reported under `preview`, so it is not repeated here.
     expect(render($question)['images'])->toBe([
         'https://cdn.example.com/one.png',
         'https://cdn.example.com/two.png',
@@ -135,8 +131,7 @@ test('a repeated image is listed once and a blank source is dropped', function (
 });
 
 test('an unanswered post with no content has no preview and no images', function (): void {
-    // The column is NOT NULL, but the accessors resolve both '' and null to
-    // null, so this is the same state a deleted or blank post ends up in.
+    // The column is NOT NULL; the accessors resolve '' to null all the same.
     $question = Question::factory()->create(['content' => '', 'answer' => null]);
 
     $rendered = render($question);

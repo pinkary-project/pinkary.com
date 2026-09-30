@@ -11,9 +11,11 @@ use Illuminate\Http\Request;
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
     config(['trusted-hosts.hosts' => []]);
-});
 
-// AbsoluteUrl -----------------------------------------------------------------
+    // Static, and therefore inherited from earlier tests in this parallel
+    // worker. AbsoluteUrl's own allowlist is what these tests exercise.
+    Request::setTrustedHosts([]);
+});
 
 test('a protocol relative url adopts the request scheme', function (): void {
     $request = Request::create('https://pinkary.test/api/v1/feed');
@@ -34,7 +36,6 @@ test('a page url that is blank or not a string is discarded', function (mixed $u
 test('a page protocol relative reference adopts the page scheme', function (): void {
     $request = Request::create('https://pinkary.test/api/v1/feed');
 
-    // The preview card's image is stored protocol relative by the parser.
     expect(AbsoluteUrl::fromPage('//cdn.example.com/a.png', 'https://pinkary.test/q/1', $request))
         ->toBe('https://cdn.example.com/a.png');
 });
@@ -56,7 +57,6 @@ test('a page relative reference is resolved against the page directory', functio
 test('a page reference on another host is returned untouched', function (): void {
     $request = Request::create('https://pinkary.test/api/v1/feed');
 
-    // Not one of our uploads, so it must not be rebuilt onto the API host.
     expect(AbsoluteUrl::fromPage('https://other.test/logo.png', 'https://pinkary.test/q/1', $request))
         ->toBe('https://other.test/logo.png');
 });
@@ -73,9 +73,7 @@ test('a page reference served from the app host is normalized like any other', f
 });
 
 test('a stored url is left alone when the application has no url of its own', function (): void {
-    // With APP_URL unset there is no host to compare a stored absolute URL
-    // against, so rewriting it onto the request would be a guess. Leaving
-    // the stored value is the safer of the two.
+    // No APP_URL means no host to compare against, so nothing is rewritten.
     config(['app.url' => null]);
     config(['trusted-hosts.hosts' => ['phone.local']]);
 
@@ -85,16 +83,11 @@ test('a stored url is left alone when the application has no url of its own', fu
         ->toBe('https://pinkary.test/images/a.png');
 });
 
-// ImagePath -------------------------------------------------------------------
-
 test('a malformed reference degrades to itself instead of an empty string', function (): void {
-    // parse_url() returns false for an invalid port, so there is no path to
-    // work with and the reference is used as-is.
+    // parse_url() returns false for an invalid port.
     expect(ImagePath::toRelative('http://example.com:notaport/a.png'))
         ->toBe('http://example.com:notaport/a.png');
 });
-
-// CreateToken -----------------------------------------------------------------
 
 test('a token gets no expiry when the config has no expiration', function (): void {
     config(['sanctum.expiration' => null]);

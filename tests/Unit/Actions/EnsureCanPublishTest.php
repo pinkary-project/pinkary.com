@@ -37,8 +37,7 @@ test('the daily limit counts the posts this request is about to create', functio
     $user = User::factory()->create();
     sentPosts($user, 29, now()->subHours(5)->toDateTimeString());
 
-    // One already sent leaves room for exactly one more, so a thread that
-    // would add two posts has to be refused before the write.
+    // handle($user) fills the last slot, so the next two-post thread cannot.
     (new EnsureCanPublish)->handle($user);
 
     expect(fn () => (new EnsureCanPublish)->handle($user, 2))
@@ -60,7 +59,6 @@ test('local development is never rate limited', function (): void {
     $user = User::factory()->create();
     sentPosts($user, 50, now()->toDateTimeString());
 
-    // Otherwise a developer seeding fixtures locks themselves out.
     (new EnsureCanPublish)->handle($user);
 
     expect(true)->toBeTrue();

@@ -28,10 +28,8 @@ test('both dark and light themes render', function (): void {
             ->assertOk()
             ->assertHeader('Content-Type', 'image/png');
 
-        // A streamed response has no body until it is consumed, so asserting
-        // on the headers alone never proves the callback ran. The PNG
-        // signature also pins down that a real image came back, not an
-        // empty or errored stream.
+        // A stream has no body until consumed; the signature also proves an
+        // image came back rather than an empty or errored stream.
         expect($response->streamedContent())->toStartWith("\x89PNG");
     }
 });

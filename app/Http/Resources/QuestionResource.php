@@ -25,10 +25,8 @@ final class QuestionResource extends JsonResource
     /**
      * Whether parsedAnswer() has already run.
      *
-     * A separate flag rather than testing the document for null, because a
-     * post with no content legitimately resolves to null -- and resolving it
-     * reads two accessors that can each re-run RefreshParsedContent, which
-     * is most of the cost this memoization exists to avoid.
+     * A separate flag because a post with no content legitimately resolves to
+     * null, and resolving it reads two accessors that can each re-parse.
      */
     private bool $answerParsed = false;
 
@@ -42,9 +40,7 @@ final class QuestionResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'pinned' => (bool) $this->resource->pinned,
-            // A shared update stores '__UPDATE__' as its content sentinel;
-            // never let that reach the client, flag it instead so the
-            // client knows to render `answer` on its own.
+            // '__UPDATE__' is the shared-update sentinel, not content.
             'is_update' => $this->resource->isSharedUpdate(),
             'content' => $this->resource->isSharedUpdate() ? null : $this->resource->sharable_content,
             'answer' => $this->resource->sharable_answer,
@@ -239,12 +235,9 @@ final class QuestionResource extends JsonResource
      */
     private function parsedAnswer(): ?DOMDocument
     {
-        // preview() and images() both need this, and toArray() calls both, so
-        // without memoizing every rendered post paid two loadHTML() parses
-        // of the whole answer. A threadChain ancestor is itself rendered
-        // through a nested QuestionResource, so a 20-post page of replies
-        // two deep ran this a hundred-odd times per request. The result
-        // cannot change within a single serialization.
+        // toArray() calls preview() and images(), and a nested
+        // QuestionResource re-enters this per thread ancestor, so an
+        // unmemoized parse repeats ~120 times on a 20-post reply page.
         if ($this->answerParsed) {
             return $this->parsedAnswer;
         }

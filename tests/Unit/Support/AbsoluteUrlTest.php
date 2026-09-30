@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
     config(['trusted-hosts.hosts' => []]);
+
+    // Symfony's trusted-host list is static, so it survives from whatever ran
+    // earlier in this parallel worker and rejects the hosts these tests need.
+    // AbsoluteUrl has its own allowlist, which is what is under test here.
+    Request::setTrustedHosts([]);
 });
 
 test('a url already on the request host is returned untouched', function (): void {

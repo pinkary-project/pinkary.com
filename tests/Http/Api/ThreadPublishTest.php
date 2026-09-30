@@ -7,12 +7,6 @@ use App\Models\PollOption;
 use App\Models\Question;
 use App\Models\User;
 
-/**
- * The parts of thread publishing the Form Request cannot police on its own:
- * poll options are cleaned after validation, and a channel is resolved from a
- * name or an id against the admin-only list. Both decide something the client
- * never sees directly -- a silently dropped channel, a rejected post.
- */
 beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->headers = ['Authorization' => 'Bearer '.$this->user->createToken('test')->plainTextToken];
@@ -71,10 +65,8 @@ test('a thread poll with no duration given closes after a day', function (): voi
 });
 
 test('a blank poll option is refused by validation rather than by the action', function (): void {
-    // CreateThread re-checks the options itself, but poll_options.* is
-    // required and a run of spaces does not satisfy it, so the request never
-    // reaches the action's own guard. Pinned because the two layers have to
-    // agree on what a real option is.
+    // poll_options.* is required, so validation rejects this before the
+    // action's own guard runs.
     $this->postJson(route('api.v1.questions.store'), [
         'content' => 'Main post.',
         'poll_options' => ['   ', 'Real option'],
@@ -92,8 +84,7 @@ test('a channel name that slugs to nothing publishes without a channel', functio
         'channel_name' => '---',
     ], $this->headers)->assertCreated();
 
-    // The name is accepted by validation but carries no slug, so there is
-    // nothing to file the post under. Publishing is still the right answer.
+    // Passes validation, but slugs to nothing.
     expect(Question::sole()->channel_id)->toBeNull()
         ->and(Channel::query()->count())->toBe(0);
 });
@@ -106,8 +97,7 @@ test('a non-admin cannot publish into an admin only channel by name', function (
         'channel_name' => 'Announcements',
     ], $this->headers)->assertCreated();
 
-    // Dropped rather than refused, mirroring the web composer's staging, and
-    // no channel is created for a name the user may not use.
+    // Dropped, not refused, matching the web composer's staging.
     expect(Question::sole()->channel_id)->toBeNull()
         ->and(Channel::query()->count())->toBe(0);
 });
@@ -124,8 +114,6 @@ test('a non-admin cannot publish into an existing admin only channel', function 
 });
 
 test('a non-admin can publish into a channel they name', function (): void {
-    // The control for the two tests above: the channel is dropped because it
-    // is admin only, not because the name was rejected wholesale.
     $this->postJson(route('api.v1.questions.store'), [
         'content' => 'Main post.',
         'channel_name' => 'Laravel',

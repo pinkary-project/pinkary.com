@@ -9,14 +9,11 @@ use Illuminate\Http\Request;
 /**
  * Rewrite stored URLs into absolute ones the requesting client can reach.
  *
- * Avatars and embedded images are stored as app-relative paths or asset
- * URLs built from APP_URL (e.g. https://pinkary.test). A phone on the
- * local network reaches the API through another host entirely, so those
- * URLs come back unreachable and images render blank. Rebuilding them
- * from the request's own root fixes every client without touching the
- * web's asset handling.
- *
- * Only for hosts named in APP_TRUSTED_HOSTS -- see isTrustedRequestHost().
+ * Stored references are app-relative or built from APP_URL, but a phone on
+ * the local network reaches the API through another host entirely, so they
+ * come back unreachable and images render blank. Rewriting is limited to
+ * APP_TRUSTED_HOSTS so a forged Host header cannot repoint a response's
+ * media at an origin of the caller's choosing.
  */
 final readonly class AbsoluteUrl
 {
@@ -53,13 +50,6 @@ final readonly class AbsoluteUrl
             return $url;
         }
 
-        // Rewriting onto the request's own root makes the result depend on
-        // the Host header -- and, because the application trusts every
-        // proxy, on X-Forwarded-Host too. A forged one would otherwise
-        // repoint every avatar and image in the response, public or
-        // authenticated, at an origin of the caller's choosing. Only
-        // rewrite for a host this application is meant to be reached on;
-        // otherwise the stored URL, which points at APP_URL, still works.
         if (! self::isTrustedRequestHost($request)) {
             return $url;
         }
@@ -93,8 +83,6 @@ final readonly class AbsoluteUrl
             $url = mb_substr($base, 0, (int) mb_strrpos($base, '/') + 1).$url;
         }
 
-        // Page-embedded uploads served by this app are always reachable
-        // through the API host.
         $host = (string) parse_url($url, PHP_URL_HOST);
         $appHost = self::appHost();
 
@@ -106,13 +94,13 @@ final readonly class AbsoluteUrl
     }
 
     /**
-     * The origin that a relative reference is resolved against.
+     * The origin a relative reference resolves against: the request's own
+     * root on a trusted host, APP_URL otherwise.
      *
-     * The request's own root when it is a host this application is meant to
-     * be reached on, and APP_URL otherwise. Relative references are the
-     * common case -- the local public disk hands out `/storage/...` -- so
-     * resolving them against an untrusted Host header would repoint every
-     * image in the response just as surely as rewriting an absolute one.
+     * Relative references are the common case -- the local public disk hands
+     * out `/storage/...` -- so resolving them against an untrusted Host
+     * header would repoint every image in the response just as surely as
+     * rewriting an absolute one.
      */
     private static function baseUrl(Request $request): string
     {
@@ -128,10 +116,12 @@ final readonly class AbsoluteUrl
     }
 
     /**
-     * Whether the request arrived on a host this application serves.
+     * Whether the request arrived on a host this application serves: APP_URL's
+     * own host, the local development names, or APP_TRUSTED_HOSTS.
      *
-     * Always true for APP_URL's own host and for the local development
-     * names; otherwise only for the hosts in APP_TRUSTED_HOSTS.
+     * The application trusts every proxy, so the request root reflects
+     * X-Forwarded-Host as well as Host. Rewriting onto it is therefore only
+     * safe for a host this application is meant to be reached on.
      */
     private static function isTrustedRequestHost(Request $request): bool
     {

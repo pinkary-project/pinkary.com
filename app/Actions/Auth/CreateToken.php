@@ -14,11 +14,9 @@ final readonly class CreateToken
      */
     public function handle(User $user, string $name = 'pinkary-mobile'): string
     {
-        // Pass the expiry explicitly rather than relying on the config alone.
-        // Sanctum enforces config('sanctum.expiration') when authenticating,
-        // but it leaves the expires_at column NULL unless it is passed here --
-        // and that column is what sanctum:prune-expired sweeps, and what the
-        // branch's migration indexes.
+        // Sanctum enforces config('sanctum.expiration') when authenticating but
+        // leaves expires_at NULL unless it is passed, and that column is what
+        // sanctum:prune-expired sweeps.
         $expiration = config('sanctum.expiration');
 
         $expiresAt = is_numeric($expiration)

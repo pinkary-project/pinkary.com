@@ -36,11 +36,8 @@ final class SortLinksRequest extends FormRequest
             return [];
         }
 
-        // The `integer` rule accepts numeric strings, and a client sending
-        // JSON like {"sort":["3","1"]} produced a validated array that
-        // filtered straight down to empty -- which the caller then wrote to
-        // the column as null, silently discarding the order the user had
-        // just set. Cast instead of dropping.
+        // The `integer` rule accepts numeric strings, so {"sort":["3","1"]} has
+        // to be cast rather than filtered out -- dropping them wrote null.
         return array_values(array_map(
             strval(...),
             array_filter(
