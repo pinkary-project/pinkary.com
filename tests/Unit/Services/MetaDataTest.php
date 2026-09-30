@@ -45,6 +45,7 @@ it('returns the cached meta data if it exists', function (): void {
                 </head>
             </html>
         ', 200),
+        'https://laravel.com/img/og-image.jpg' => Http::response(''),
     ]);
 
     $service = new MetaData($url);
