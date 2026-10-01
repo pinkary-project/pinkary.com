@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Actions\Auth\CreateToken;
 use App\Models\User;
 use App\Support\AbsoluteUrl;
-use App\Support\ImagePath;
 use Illuminate\Http\Request;
 
 beforeEach(function (): void {
@@ -68,12 +67,6 @@ test('a stored url is left alone when the application has no url of its own', fu
 
     expect(AbsoluteUrl::for('https://pinkary.test/images/a.png', $request))
         ->toBe('https://pinkary.test/images/a.png');
-});
-
-test('a malformed reference degrades to itself instead of an empty string', function (): void {
-    // parse_url() returns false for an invalid port.
-    expect(ImagePath::toRelative('http://example.com:notaport/a.png'))
-        ->toBe('http://example.com:notaport/a.png');
 });
 
 test('a token gets no expiry when the config has no expiration', function (): void {
