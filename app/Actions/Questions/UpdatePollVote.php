@@ -23,6 +23,9 @@ final readonly class UpdatePollVote
             $existingVote = PollVote::query()
                 ->where('user_id', $user->id)
                 ->where('question_id', $question->id)
+                // Eager-load: the decrement below would otherwise lazy-load
+                // pollOption inside the transaction, while the row lock is open.
+                ->with('pollOption')
                 ->lockForUpdate()
                 ->first();
 
