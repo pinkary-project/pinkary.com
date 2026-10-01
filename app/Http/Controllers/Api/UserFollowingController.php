@@ -18,7 +18,6 @@ final readonly class UserFollowingController
         $viewerId = $request->user()?->id;
 
         $following = $user->following()
-            // Same two flags the web computes (Livewire\Following\Index:42-53).
             ->withExists([
                 'followers as followed_by_me' => fn (Builder $query) => $query->when(
                     $viewerId,
@@ -31,9 +30,8 @@ final readonly class UserFollowingController
                     fn (Builder $q) => $q->whereRaw('1 = 0')
                 ),
             ])
-            // Matches the web's pivot ordering (Following\Index:54); without
-            // it the first row is arbitrary and pages can overlap. The pivot
-            // table is `followers` in both directions.
+            // The pivot table is `followers` in both directions; ordering by
+            // its id is what keeps simplePaginate from overlapping pages.
             ->latest('followers.id')
             ->simplePaginate($request->perPage());
 

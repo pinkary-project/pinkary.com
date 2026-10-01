@@ -33,7 +33,7 @@ final readonly class QuestionLikeController
         $viewerId = $viewer->id;
 
         $likers = $question->likers()
-            // Same two flags the web computes (Livewire\Likes\Index:44-51).
+            // `follows_me` is what renders the web's "Follows you" badge.
             ->withExists([
                 'followers as followed_by_me' => fn (Builder $query) => $query->when(
                     $viewerId,
@@ -46,7 +46,6 @@ final readonly class QuestionLikeController
                     fn (Builder $q) => $q->whereRaw('1 = 0')
                 ),
             ])
-            // Newest like first, id as tie-break (Likes\Index:42-43).
             ->latest('likes.created_at')
             ->latest('likes.id')
             ->simplePaginate($request->perPage());

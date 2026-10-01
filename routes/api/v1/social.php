@@ -35,9 +35,6 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         Route::delete('users/{user:username}/follow', [UserFollowController::class, 'destroy'])
             ->name('users.unfollow');
 
-        // The gate the web applies both as middleware on its bookmark and
-        // notification reads and as a NeedsVerifiedEmail check inside every
-        // state-changing Livewire action.
         Route::middleware('verified')->group(function (): void {
             Route::post('questions/{question}/like', [QuestionLikeController::class, 'store'])
                 ->middleware('throttle:60,1,like')

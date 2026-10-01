@@ -18,9 +18,7 @@ final readonly class UserFollowerController
         $viewerId = $request->user()?->id;
 
         $followers = $user->followers()
-            // Same two flags the web computes (Livewire\Followers\Index:43-53):
-            // followed_by_me = I follow them, follows_me = they follow me.
-            // The second is what renders the web's "Follows you" badge.
+            // `follows_me` is what renders the web's "Follows you" badge.
             ->withExists([
                 'followers as followed_by_me' => fn (Builder $query) => $query->when(
                     $viewerId,
@@ -34,8 +32,7 @@ final readonly class UserFollowerController
                 ),
             ])
             // Without an ORDER BY the top row is whatever MySQL returns, and
-            // simplePaginate can skip or repeat rows across pages. The web
-            // orders by the pivot's id (Followers\Index:54).
+            // simplePaginate can skip or repeat rows across pages.
             ->latest('followers.id')
             ->simplePaginate($request->perPage());
 
