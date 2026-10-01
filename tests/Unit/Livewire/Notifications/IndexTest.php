@@ -244,3 +244,28 @@ test('orphan follower notifications are skipped and can be cleaned up', function
 
     expect($user->notifications()->count())->toBe(0);
 });
+
+test('displays notifications from verified users without missing attribute exceptions', function (): void {
+    $follower = User::factory()->create([
+        'username' => 'alice',
+        'is_verified' => true,
+    ]);
+    $user = User::factory()->create(['username' => 'bob']);
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'from_id' => $follower->id,
+        'content' => 'Question from verified user',
+    ]);
+
+    $user->notify(new QuestionCreated($question));
+    $user->notify(new UserFollowed($follower));
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('@alice')
+        ->assertSee('Question from verified user')
+        ->assertSee('followed you');
+});
