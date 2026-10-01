@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\LinkClickController;
 use App\Http\Controllers\Api\LinkController;
@@ -21,6 +22,12 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         Route::post('login', [LoginController::class, 'store'])
             ->middleware('throttle:login')
             ->name('login');
+        // A six digit code is brute-forceable without its own budget, and this
+        // endpoint is unauthenticated, so it is throttled per challenge rather
+        // than per session the way Fortify's two-factor limiter is.
+        Route::post('login/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])
+            ->middleware('throttle:two-factor-challenge')
+            ->name('login.two-factor-challenge');
     });
 
     Route::get('users/{user:username}/qr-code', [UserQrCodeController::class, 'show'])

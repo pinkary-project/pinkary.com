@@ -25,14 +25,6 @@ final readonly class AuthenticateUser
             ]);
         }
 
-        // The mobile client has no screen to complete a 2FA challenge in, so
-        // refuse rather than mint a token that bypasses the setting.
-        if ($user->hasEnabledTwoFactorAuthentication()) {
-            throw ValidationException::withMessages([
-                'email' => ['Two-factor authentication is enabled for this account. Sign in on the website to continue.'],
-            ]);
-        }
-
         return $user;
     }
 }
