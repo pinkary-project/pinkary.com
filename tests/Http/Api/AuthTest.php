@@ -76,23 +76,21 @@ test('api routes render json exceptions even without accept header', function ()
         ->assertHeader('content-type', 'application/json');
 });
 
-test('a user with two factor authentication enabled cannot log in', function (): void {
+test('a user with two factor authentication enabled is challenged, not given a token', function (): void {
     $user = User::factory()->create([
         'email' => 'pinkary@example.com',
         'password' => Hash::make('password'),
-        'two_factor_secret' => 'a-secret',
+        'two_factor_secret' => encrypt('ABCDEFGHIJKLMNOP'),
         'two_factor_confirmed_at' => now(),
     ]);
 
-    // The web challenges a 2FA account (routes/auth.php:38-42). The API has
-    // no 2FA screen to challenge in, so it must refuse rather than mint a
-    // bearer token that silently bypasses the setting.
     $this->postJson(route('api.v1.auth.login'), [
         'email' => $user->email,
         'password' => 'password',
     ])->assertUnprocessable()
-        ->assertJsonValidationErrors(['email']);
+        ->assertJsonPath('code', 'two_factor_required');
 
+    // The challenge is not a token: answering it is what mints one.
     expect($user->tokens()->count())->toBe(0);
 });
 
@@ -100,7 +98,7 @@ test('a user who has not confirmed two factor can still log in', function (): vo
     $user = User::factory()->create([
         'email' => 'pinkary@example.com',
         'password' => Hash::make('password'),
-        'two_factor_secret' => 'a-secret',
+        'two_factor_secret' => encrypt('ABCDEFGHIJKLMNOP'),
         'two_factor_confirmed_at' => null,
     ]);
 
