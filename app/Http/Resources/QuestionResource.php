@@ -233,9 +233,8 @@ final class QuestionResource extends JsonResource
      */
     private function parsedAnswer(): ?DOMDocument
     {
-        // toArray() calls preview() and images(), and a nested
-        // QuestionResource re-enters this per thread ancestor, so an
-        // unmemoized parse repeats ~120 times on a 20-post reply page.
+        // Memoized because a nested QuestionResource re-enters this once per
+        // thread ancestor, so a 20-post reply page would re-parse ~120 times.
         if ($this->answerParsed) {
             return $this->parsedAnswer;
         }
@@ -243,7 +242,7 @@ final class QuestionResource extends JsonResource
         $this->answerParsed = true;
 
         // The stored HTML already embeds the preview card and images, so
-        // parse it instead of issuing HTTP requests for link metadata.
+        // parsing it avoids HTTP requests for link metadata.
         $html = $this->resource->answer ?? $this->resource->content;
 
         if (! is_string($html) || mb_trim($html) === '') {

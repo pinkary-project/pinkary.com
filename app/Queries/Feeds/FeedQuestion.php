@@ -23,12 +23,9 @@ final readonly class FeedQuestion
     public function __invoke(Builder $query, ?int $userId): Builder
     {
         return $query
-            // `parsed` must be selected or the getContentAttribute()/
-            // getAnswerAttribute() accessors see it as absent, which sends
-            // every item through RefreshParsedContent::refresh() -- a
-            // re-parse (reaching MetaData over HTTP) plus an UPDATE per
-            // item, on a read. The web selects * and reads the same
-            // cached payload.
+            // Without `parsed` selected the accessors see it as absent, and
+            // RefreshParsedContent re-parses over HTTP and UPDATEs every row,
+            // on a read. The web selects * and gets the same cached payload.
             ->addSelect('questions.id', 'questions.from_id', 'questions.to_id', 'questions.content', 'questions.answer', 'questions.parsed', 'questions.anonymously', 'questions.views', 'questions.created_at', 'questions.answer_created_at', 'questions.answer_updated_at', 'questions.parent_id', 'questions.root_id', 'questions.channel_id', 'questions.poll_expires_at', 'questions.pinned')
             ->with([
                 'from:id,name,username,avatar,is_verified,is_company_verified',

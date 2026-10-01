@@ -17,10 +17,8 @@ final readonly class UserController
      */
     public function show(Request $request, User $user, UserProfileQuery $userProfileQuery): UserResource
     {
-        // The API is sessionless, so `dispatchUsingSession` would mint a
-        // brand new session id per guest request and defeat its 2h
-        // dedupe. Only count a view when the request carries a stable
-        // identity; the web still counts guest views through its session.
+        // dispatchUsingSession is skipped: the API is sessionless, so it would
+        // mint a fresh session id per guest request and defeat the 2h dedupe.
         if ($request->user() instanceof User) {
             IncrementViews::dispatchUsingSession($user);
         }
