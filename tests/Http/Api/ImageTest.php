@@ -31,7 +31,7 @@ test('a guest cannot upload a composer image', function (): void {
     ])->assertUnauthorized();
 });
 
-test('an image is stored and handed back with a public url', function (): void {
+test('an image is stored and handed back with a path and a public url', function (): void {
     $user = User::factory()->create();
     $headers = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
 
@@ -48,10 +48,10 @@ test('an image is stored and handed back with a public url', function (): void {
 
     Storage::disk()->assertExists($path);
 
-    // The URL a client puts in its markdown has to be the one ImageProcessor
-    // would hand out for that file. ImageProviderParsable builds an <img>
-    // straight from it, so a URL that does not resolve is a broken post with
-    // no error anywhere in the chain.
+    // `path` is the markdown value, so it stays disk-relative. `url` has to be
+    // the one ImageProcessor hands out for that same file.
+    expect($path)->toStartWith('images/');
+
     expect($response->json('data.0.url'))
         ->toBe(app(ImageProcessor::class)->url($path));
 });

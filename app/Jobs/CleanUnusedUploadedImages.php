@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Question;
-use App\Support\ImagePath;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,12 +60,10 @@ final class CleanUnusedUploadedImages implements ShouldQueue
     /**
      * Extract images from the recent questions
      *
-     * References are normalized to their disk-relative path. The composer
-     * stores `images/2026-09-29/x.jpg`, but a post written from the mobile
-     * app embeds the absolute URL the API returned, and this list is
-     * compared against real file paths with a strict in_array. Without the
-     * normalization every app-authored image looks unreferenced and gets
-     * deleted while its post still points at it.
+     * `content` holds `images/...` paths, matching what `allFiles()` returns,
+     * so the in_array below compares like with like. A disk or host prefix in
+     * `content` would make such an image look unreferenced and delete it while
+     * its post still points at it.
      *
      * @param  Collection<int, Question>  $questions
      * @return array<int, string>
@@ -93,7 +90,6 @@ final class CleanUnusedUploadedImages implements ShouldQueue
             })
             ->flatten()
             ->filter(fn (mixed $reference): bool => is_string($reference) && $reference !== '')
-            ->map(fn (string $reference): string => ImagePath::toRelative($reference))
             ->unique()
             ->values()
             ->toArray();

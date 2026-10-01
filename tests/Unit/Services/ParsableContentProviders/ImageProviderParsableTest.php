@@ -15,24 +15,14 @@ it('rewrites a bare disk path into an image tag', function (): void {
         ->toContain(Storage::disk()->url('images/2026-09-29/a.jpg'));
 });
 
-it('leaves an already absolute url alone instead of doubling it', function (): void {
-    // A post written from the mobile app embeds the absolute URL the API
-    // returned. Prepending the bucket URL again produced
-    // https://cdn/https://cdn/images/... -- a broken image on the web.
+it('resolves the stored path against the configured disk', function (): void {
+    // The composer JS normalizes to `images/...` before saving and the API
+    // returns the same shape, so this is the only form reaching the parser.
     Storage::fake();
 
-    $absolute = 'https://cdn.example.com/images/2026-09-29/a.jpg';
+    $html = (new ImageProviderParsable)->parse('![a](images/2026-09-29/b.jpg)');
 
-    $html = (new ImageProviderParsable)->parse("![a]({$absolute})");
-
-    expect($html)->toContain($absolute)
-        ->not->toContain('https://cdn.example.com/https://');
-});
-
-it('still rewrites a disk rooted reference', function (): void {
-    Storage::fake();
-
-    $html = (new ImageProviderParsable)->parse('![a](/storage/images/2026-09-29/a.jpg)');
-
-    expect($html)->toContain(Storage::disk()->url('images/2026-09-29/a.jpg'));
+    expect($html)
+        ->toContain(Storage::disk()->url('images/2026-09-29/b.jpg'))
+        ->not->toContain('images/2026-09-29/b.jpg\'');
 });

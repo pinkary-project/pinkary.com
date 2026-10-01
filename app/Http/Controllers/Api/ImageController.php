@@ -39,10 +39,11 @@ final readonly class ImageController
             }
 
             $stored[] = [
-                // `url` is what a client puts in markdown; `path` is the only
-                // way back to the file for a delete, as in the web's draft.
-                'url' => $imageProcessor->url($path),
+                // `path` is the markdown value, `url` the same file resolved
+                // for preview. Storing the path keeps `content` free of any
+                // host or disk prefix.
                 'path' => $path,
+                'url' => $imageProcessor->url($path),
                 'original_name' => $image->getClientOriginalName(),
                 'size' => $image->getSize(),
             ];

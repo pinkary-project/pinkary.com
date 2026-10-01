@@ -66,17 +66,14 @@ it('cleans up unused images', function (): void {
     Storage::disk()->assertMissing($path3);
 });
 
-it('keeps an image a mobile post referenced by its absolute url', function (): void {
-    // The mobile API hands clients an absolute URL to embed, so a post
-    // written from the app stores that instead of the bare disk path.
+it('keeps an image a mobile post referenced by its stored path', function (): void {
     Storage::fake();
     $day = now()->format('Y-m-d');
 
     $path = UploadedFile::fake()->image('image.jpg')->store("images/{$day}");
-    $absolute = Storage::disk()->url($path);
 
     Question::factory()->create([
-        'content' => "![Image]({$absolute})",
+        'content' => "![Image]({$path})",
         'answer' => null,
         'created_at' => now()->subMinutes(10),
     ]);
@@ -86,10 +83,10 @@ it('keeps an image a mobile post referenced by its absolute url', function (): v
     Storage::disk()->assertExists($path);
 });
 
-it('normalizes both reference styles to the same disk relative path', function (): void {
+it('extracts every reference verbatim from content and answer', function (): void {
     $questions = Question::factory()->create([
-        'content' => '![a](images/2026-09-29/a.jpg) ![b](https://cdn.example.com/images/2026-09-29/b.jpg)',
-        'answer' => '![c](/storage/images/2026-09-29/c.jpg)',
+        'content' => '![a](images/2026-09-29/a.jpg) ![b](images/2026-09-29/b.jpg)',
+        'answer' => '![c](images/2026-09-29/c.jpg)',
         'created_at' => now(),
     ]);
 
@@ -97,8 +94,9 @@ it('normalizes both reference styles to the same disk relative path', function (
         new Illuminate\Database\Eloquent\Collection([$questions])
     );
 
-    expect($extracted)->toContain('images/2026-09-29/a.jpg')
-        ->toContain('images/2026-09-29/b.jpg')
-        ->toContain('images/2026-09-29/c.jpg')
-        ->toHaveCount(3);
+    expect($extracted)->toBe([
+        'images/2026-09-29/a.jpg',
+        'images/2026-09-29/b.jpg',
+        'images/2026-09-29/c.jpg',
+    ]);
 });
