@@ -50,6 +50,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property-read Collection<int, Question> $descendants
  * @property-read Collection<int, Hashtag> $hashtags
  * @property-read Collection<int, PollOption> $pollOptions
+ * @property-read Collection<int, Question> $threadChain
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
@@ -329,5 +330,34 @@ final class Question extends Model implements Viewable
         }
 
         return $this->poll_expires_at?->diffForHumans();
+    }
+
+    /**
+     * Get the poll votes for the question.
+     *
+     * @return HasMany<PollVote, $this>
+     */
+    public function pollVotes(): HasMany
+    {
+        return $this->hasMany(PollVote::class);
+    }
+
+    /**
+     * Walk the parent chain upward and return the ancestor question IDs,
+     * oldest-first, up to the given limit.
+     *
+     * @return \Illuminate\Support\Collection<int, string>
+     */
+    public function ancestorIds(int $limit = 10): \Illuminate\Support\Collection
+    {
+        $ids = [];
+        $parentId = $this->parent_id;
+
+        while (is_string($parentId) && count($ids) < $limit) {
+            $ids[] = $parentId;
+            $parentId = self::query()->whereKey($parentId)->value('parent_id');
+        }
+
+        return collect(array_reverse($ids));
     }
 }
