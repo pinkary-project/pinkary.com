@@ -170,8 +170,8 @@ test('attaches preview only to the last valid preview link among multiple links'
     Http::clearResolvedInstances();
 
     Http::fake([
-        'https://example1.com/' => Http::response('<html><head></head><body></body></html>'),
-        'https://laravel.com/' => Http::response(<<<'HTML'
+        'https://example1.com' => Http::response('<html><head></head><body></body></html>'),
+        'https://laravel.com' => Http::response(<<<'HTML'
             <html>
             <head>
                 <meta property="og:title" content="Laravel - The PHP Framework For Web Artisans">
@@ -180,7 +180,7 @@ test('attaches preview only to the last valid preview link among multiple links'
             <body></body>
             </html>
         HTML),
-        'https://example3.com/' => Http::response('<html><head></head><body></body></html>'),
+        'https://example3.com' => Http::response('<html><head></head><body></body></html>'),
         'https://laravel.com/img/og-image.jpg' => Http::response(''),
     ]);
 
