@@ -57,9 +57,8 @@ final readonly class QuestionCommentController
 
         $comment = $user->questionsSent()->create([
             'to_id' => $user->id,
-            // A reply is stored as an answer, not as content: RecentQuestionsFeed
-            // skips questions with a null answer, so the text landed in the
-            // feed only when the web sent it.
+            // The reply goes in `answer`, not `content`, because
+            // RecentQuestionsFeed skips questions whose answer is null.
             'content' => '__UPDATE__',
             'answer' => $request->validated('content'),
             'answer_created_at' => now(),

@@ -65,11 +65,9 @@ final class StoreQuestionRequest extends FormRequest
             return $this->boolean('anonymously');
         }
 
-        // The web seeds its composer with the user's standing preference
-        // (Livewire\Questions\Create:190-194) and the column defaults to
-        // true. Defaulting to false instead meant a mobile user who had
-        // chosen "ask anonymously" published with their name attached --
-        // the opposite of the setting, and visible to the recipient.
+        // The web seeds this from the user's standing preference and the column
+        // defaults to true; defaulting to false would publish an
+        // anonymously-chosen question with the name attached.
         /** @var User|null $user */
         $user = $this->user();
 

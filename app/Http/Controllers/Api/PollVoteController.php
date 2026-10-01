@@ -42,11 +42,8 @@ final readonly class PollVoteController
 
         $updatePollVote->handle($user, $question, $option);
 
-        // Only the poll is returned, so only the poll needs loading. Running
-        // the full ThreadedQuestionQuery here re-fetched the post with its
-        // counts and existence subqueries and walked the ancestor chain --
-        // roughly three queries plus one per thread level -- and then threw
-        // all of it away except poll(). Mirrors FeedQuestion's eager loads.
+        // Deliberately not ThreadedQuestionQuery: only poll() is returned, so
+        // the counts, existence subqueries and ancestor walk would be discarded.
         $question->loadMissing([
             'pollOptions' => fn (Relation $query) => $query->select('id', 'question_id', 'text', 'votes_count')->orderBy('id'),
             'pollVotes' => fn (Relation $query) => $query->select('id', 'question_id', 'poll_option_id')->where('user_id', $user->id),
