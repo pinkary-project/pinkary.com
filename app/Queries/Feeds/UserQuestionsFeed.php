@@ -43,13 +43,9 @@ final readonly class UserQuestionsFeed
                 $query->whereNotNull('answer');
             });
 
-        // The callers paginate an Eloquent Builder, so unwrap the relation
-        // before building on it.
         $builder = $this->user->questionsReceived()->getQuery();
 
         $builder
-            // The row itself plus the ancestry the client walks; whoever
-            // renders the thread loads the rest.
             ->select('questions.id', 'questions.root_id', 'questions.parent_id', 'questions.pinned')
             ->joinSub(
                 $latestInThread,

@@ -52,10 +52,8 @@ final readonly class FeedThread
 
         $hydrated = $ids === []
             ? collect()
-            // QuestionObserver::updated() routes is_ignored/is_reported into
-            // deleted(), which hard-deletes a question's descendants, so an
-            // ignored ancestor cannot coexist with a visible descendant.
-            // Kept so the filter does not depend on that cascade holding.
+            // Belt and braces: the observer's cascade already hard-deletes the
+            // descendants of an ignored question, so this cannot currently matter.
             : (new FeedQuestion)(Question::query()->whereIn('id', $ids)->tap(new WhereNotModerated), $userId)->get()->keyBy('id');
 
         $threads = [];
