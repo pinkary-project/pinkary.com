@@ -28,8 +28,7 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         ->name('users.qr-code');
 
     // A public profile's links are tappable by anyone, including guests, so the
-    // click cannot be gated on authentication. It keeps its own budget rather
-    // than spending a guest's read allowance.
+    // click cannot be gated on authentication.
     Route::post('links/{link}/click', [LinkClickController::class, 'store'])
         ->middleware(['optional.sanctum', 'throttle:60,1,link_click'])
         ->name('links.click');

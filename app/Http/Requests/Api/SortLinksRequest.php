@@ -36,8 +36,6 @@ final class SortLinksRequest extends FormRequest
             return [];
         }
 
-        // The `integer` rule accepts numeric strings, so {"sort":["3","1"]} has
-        // to be cast rather than filtered out -- dropping them wrote null.
         return array_values(array_map(
             strval(...),
             array_filter(

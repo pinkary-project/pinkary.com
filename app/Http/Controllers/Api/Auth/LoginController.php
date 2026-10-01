@@ -28,10 +28,8 @@ final readonly class LoginController
         $user = $authenticateUser->handle($credentials['email'], $credentials['password']);
         $token = $createToken->handle($user);
 
-        // The first user object the client ever sees. Loading it like any
-        // other profile means links, counts and the follow flags are real
-        // rather than absent, and viewingAs() fills in email and the
-        // verification state that no token can authenticate yet.
+        // viewingAs() fills in email and verification state, which no token can
+        // authenticate at this point in the request.
         return new UserResource($userProfileQuery->load($user, $user->id))
             ->viewingAs($user)
             ->additional(['token' => $token])
