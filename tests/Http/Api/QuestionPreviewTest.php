@@ -54,6 +54,23 @@ beforeEach(function (): void {
     Request::setTrustedHosts([]);
 });
 
+test('rich API fields preserve newlines, links and code without changing sharing text', function (): void {
+    $html = 'First<br><br>Second<br><a href="https://example.com/docs">Docs</a><pre><code class="language-php">    return true;'."\n".'    return false;</code></pre>';
+    $question = pinAnswerHtml(makeQuestion(), $html);
+    $payload = render($question);
+
+    expect($payload['answer_html'])->toBe($html)
+        ->and($payload['answer'])->not->toContain('<br>', '<code>')
+        ->and($payload['answer'])->toContain('see the code on Pinkary')
+        ->and($payload['content_html'])->toBe($question->content);
+});
+
+test('shared updates do not expose the sentinel in rich content', function (): void {
+    $user = App\Models\User::factory()->create();
+    $question = Question::factory()->create(['from_id' => $user->id, 'to_id' => $user->id, 'content' => '__UPDATE__']);
+    expect(render($question))->toMatchArray(['is_update' => true, 'content' => null, 'content_html' => null]);
+});
+
 test('a link preview card is exposed with its url, host, title and image', function (): void {
     $question = pinAnswerHtml(makeQuestion(), <<<'HTML'
         <p>Look at this</p>

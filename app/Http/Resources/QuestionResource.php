@@ -42,6 +42,8 @@ final class QuestionResource extends JsonResource
             'is_update' => $this->resource->isSharedUpdate(),
             'content' => $this->resource->isSharedUpdate() ? null : $this->resource->sharable_content,
             'answer' => $this->resource->sharable_answer,
+            'content_html' => $this->resource->isSharedUpdate() ? null : $this->resource->content,
+            'answer_html' => $this->resource->answer,
             'anonymously' => (bool) $this->resource->anonymously,
             'views' => $this->resource->views,
             'created_at' => $this->resource->created_at->toIso8601String(),
