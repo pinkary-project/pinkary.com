@@ -9,6 +9,7 @@ use App\Rules\NoEmailAlias;
 use App\Rules\NotBlockedAccount;
 use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
+use App\Services\MobileCaptcha;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
@@ -28,9 +29,9 @@ final class RegisterRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(MobileCaptcha $captcha): array
     {
-        return ['name' => ['required', 'string', 'max:255'], 'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username], 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, new NoEmailAlias, new UnauthorizedEmailProviders, new NotBlockedAccount], 'password' => ['required', 'confirmed', Rules\Password::defaults()], 'terms' => ['required', 'accepted']];
+        return ['name' => ['required', 'string', 'max:255'], 'username' => ['required', 'string', 'min:4', 'max:50', 'unique:'.User::class, new Username], 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, new NoEmailAlias, new UnauthorizedEmailProviders, new NotBlockedAccount], 'password' => ['required', 'confirmed', Rules\Password::defaults()], 'terms' => ['required', 'accepted'], ...$captcha->rules('register', $this)];
     }
 
     /**

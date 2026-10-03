@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api;
 
 use App\Rules\NoBlankCharacters;
+use App\Services\MobileCaptcha;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,8 +24,8 @@ final class StoreCommentRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(MobileCaptcha $captcha): array
     {
-        return ['content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters]];
+        return ['content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters], ...$captcha->rules('comment', $this)];
     }
 }

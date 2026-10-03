@@ -18,7 +18,7 @@ final readonly class QuestionViewController
         Gate::authorize('view', $question);
 
         if (! $firewall->isBot($request) && $question->getRawOriginal('answer') !== null) {
-            $viewer = $request->user()?->id ?? 'mobile:'.$request->validated('viewer_id');
+            $viewer = $request->user()->id ?? 'mobile:'.$request->string('viewer_id')->toString();
             IncrementViews::dispatch(collect([$question]), $viewer);
         }
 

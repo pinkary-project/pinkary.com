@@ -2,10 +2,24 @@
 
 declare(strict_types=1);
 
+use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+
+beforeEach(function (): void {
+    config(['services.turnstile.secret' => 'test-secret', 'services.turnstile.hostname' => 'pinkary.test']);
+    Http::preventStrayRequests();
+    Http::fake(['challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+        'success' => true, 'hostname' => 'pinkary.test', 'action' => 'register',
+        'cdata' => '019a6f52-13ef-7000-9000-000000000001',
+    ])]);
+});
 
 test('a user can register through the API', function (): void {
+    Queue::fake([UpdateUserAvatar::class]);
+
     $response = $this->postJson(route('api.v1.auth.register'), [
         'name' => 'Pinkary User',
         'username' => 'pinkaryuser',
@@ -13,6 +27,8 @@ test('a user can register through the API', function (): void {
         'password' => 'password',
         'password_confirmation' => 'password',
         'terms' => true,
+        'cf-turnstile-response' => 'registration-token',
+        'captcha_state' => '019a6f52-13ef-7000-9000-000000000001',
     ]);
 
     $response->assertCreated()
@@ -20,6 +36,7 @@ test('a user can register through the API', function (): void {
         ->assertJsonPath('data.username', 'pinkaryuser');
 
     expect(User::query()->where('email', 'pinkary@example.com')->exists())->toBeTrue();
+    Queue::assertPushed(UpdateUserAvatar::class);
 });
 
 test('a user can log in through the API', function (): void {
@@ -169,6 +186,8 @@ test('logging in returns the signed-in user own email and verification state', f
 });
 
 test('registering returns the new user own email and unverified state', function (): void {
+    Queue::fake([UpdateUserAvatar::class]);
+
     // A brand new account is unverified by definition, and that is the one
     // thing it most needs to be told.
     $this->postJson(route('api.v1.auth.register'), [
@@ -178,10 +197,14 @@ test('registering returns the new user own email and unverified state', function
         'password' => 'password',
         'password_confirmation' => 'password',
         'terms' => true,
+        'cf-turnstile-response' => 'registration-token',
+        'captcha_state' => '019a6f52-13ef-7000-9000-000000000001',
     ])->assertCreated()
         ->assertJsonPath('data.email', 'pinkary@example.com')
         ->assertJsonPath('data.verification.email', false)
         ->assertJsonPath('data.is_me', true);
+
+    Queue::assertPushed(UpdateUserAvatar::class);
 });
 
 test('the login response carries the profile counts and links, not empty ones', function (): void {

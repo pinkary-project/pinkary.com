@@ -6,6 +6,7 @@ namespace App\Http\Requests\Api;
 
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
+use App\Services\MobileCaptcha;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,7 +25,7 @@ final class StoreQuestionRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(MobileCaptcha $captcha): array
     {
         $isAsking = $this->filled('to_username') && $this->input('to_username') !== $this->user()?->username;
         $maxContent = $isAsking ? 255 : 1000;
@@ -41,6 +42,7 @@ final class StoreQuestionRequest extends FormRequest
             'poll_options.*' => ['required', 'string', 'min:1', 'max:40'],
             'poll_duration' => ['required_with:poll_options', 'integer', 'min:1', 'max:7'],
             'thread_polls' => ['sometimes', 'array', 'max:9'],
+            ...$captcha->rules('post', $this),
         ];
     }
 
