@@ -35,8 +35,8 @@ Alpine.data('shareProfile', shareProfile)
 import { copyUrl } from './copy-url.js'
 Alpine.data('copyUrl', copyUrl)
 
-import { showMore } from './show-more.js'
-Alpine.data('showMore', showMore)
+import { feedContent } from './feed-content.js';
+Alpine.data('feedContent', feedContent);
 
 import { clickHandler } from './click-handler.js'
 Alpine.data('clickHandler', clickHandler)
