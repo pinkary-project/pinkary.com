@@ -17,19 +17,13 @@
         "livewire/blaze": "^1.0.19",
         "livewire/livewire": "^4.4.6",
         "matomo/device-detector": "^6.5.1",
-        "mrpunyapal/nativephp-plugin-turnstile": "^0.1.0",
+        "mrpunyapal/nativephp-plugin-turnstile": "dev-main",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
         "panphp/pan": "^0.1.10",
         "ryangjchandler/laravel-cloudflare-turnstile": "^3.0.4",
         "scrivo/highlight.php": "^9.18.1.10",
         "spatie/laravel-mailcoach-mailer": "^1.6.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/MrPunyapal/nativephp-plugin-turnstile"
-        }
-    ],
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.4.3",
         "fakerphp/faker": "^1.24.1",

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api;
 
+use App\Models\User;
+use App\Rules\MobileTurnstile;
 use App\Rules\NoBlankCharacters;
 use App\Services\MobileCaptcha;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -26,6 +28,16 @@ final class StoreCommentRequest extends FormRequest
      */
     public function rules(MobileCaptcha $captcha): array
     {
-        return ['content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters], ...$captcha->rules('comment', $this)];
+        $rules = ['content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters]];
+        /** @var User|null $user */
+        $user = $this->user();
+
+        if ($captcha->required('comment', $user)) {
+            $state = $this->input('captcha_state');
+            $rules['captcha_state'] = ['bail', 'required', 'uuid'];
+            $rules['cf-turnstile-response'] = ['bail', 'required', 'string', 'max:2048', new MobileTurnstile('comment', is_string($state) ? $state : '')];
+        }
+
+        return $rules;
     }
 }

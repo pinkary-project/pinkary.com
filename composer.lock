@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "71831f33dc860c81b6efb0fbda591a7a",
+    "content-hash": "62826c8d8da2daf04c4935e00a1bb2ad",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4647,16 +4647,16 @@
         },
         {
             "name": "mrpunyapal/nativephp-plugin-turnstile",
-            "version": "v0.1.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MrPunyapal/nativephp-plugin-turnstile.git",
-                "reference": "59bf6aaad17ac8991f048fddf88a9adfc5431410"
+                "reference": "9d04d75a8a72b015e5ff969b720d3945a33c2848"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MrPunyapal/nativephp-plugin-turnstile/zipball/59bf6aaad17ac8991f048fddf88a9adfc5431410",
-                "reference": "59bf6aaad17ac8991f048fddf88a9adfc5431410",
+                "url": "https://api.github.com/repos/MrPunyapal/nativephp-plugin-turnstile/zipball/9d04d75a8a72b015e5ff969b720d3945a33c2848",
+                "reference": "9d04d75a8a72b015e5ff969b720d3945a33c2848",
                 "shasum": ""
             },
             "require": {
@@ -4674,6 +4674,7 @@
                 "phpstan/phpstan-deprecation-rules": "^2.0",
                 "rector/rector": "^2.1"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -4687,31 +4688,7 @@
                     "MrPunyapal\\Turnstile\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "MrPunyapal\\Turnstile\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "pest"
-                ],
-                "lint": [
-                    "composer validate --strict && pint --test && phpstan analyse && rector process --dry-run"
-                ],
-                "format": [
-                    "pint"
-                ],
-                "analyse": [
-                    "phpstan analyse"
-                ],
-                "rector": [
-                    "rector process"
-                ],
-                "rector:test": [
-                    "rector process --dry-run"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4723,16 +4700,16 @@
                 "turnstile"
             ],
             "support": {
-                "source": "https://github.com/MrPunyapal/nativephp-plugin-turnstile/tree/v0.1.0",
-                "issues": "https://github.com/MrPunyapal/nativephp-plugin-turnstile/issues"
+                "issues": "https://github.com/MrPunyapal/nativephp-plugin-turnstile/issues",
+                "source": "https://github.com/MrPunyapal/nativephp-plugin-turnstile/tree/main"
             },
             "funding": [
                 {
-                    "type": "github",
-                    "url": "https://github.com/mrpunyapal"
+                    "url": "https://github.com/mrpunyapal",
+                    "type": "github"
                 }
             ],
-            "time": "2026-10-03T11:28:13+00:00"
+            "time": "2026-10-03T11:45:04+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",
@@ -15983,6 +15960,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "mrpunyapal/nativephp-plugin-turnstile": 20,
         "pestphp/pest-plugin-rector": 20
     },
     "prefer-stable": true,

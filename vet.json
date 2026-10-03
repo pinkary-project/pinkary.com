@@ -257,8 +257,8 @@
             "hash": "tree-v2:3bf8a86c910cd116831654f51a4505300d76f9405711425fc42156020bc20ea0"
         },
         "mrpunyapal/nativephp-plugin-turnstile": {
-            "version": "v0.1.0",
-            "hash": "tree-v2:887b46f872166cd7c21f8e2dca8c1e2cc1b7e1ea86bba3669112b518512b5089"
+            "version": "v0.1.1",
+            "hash": "tree-v2:a247ba86778aa6d2145e73490f9948f8cbd34b37daef4f7a8222cecfaa2f67d0"
         },
         "mtdowling/jmespath.php": {
             "version": "2.9.2",

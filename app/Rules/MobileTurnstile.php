@@ -13,6 +13,7 @@ use Throwable;
 
 final readonly class MobileTurnstile implements ValidationRule
 {
+    /** Bind verification to the action and state of the native challenge. */
     public function __construct(private string $action, private string $state) {}
 
     /**
@@ -27,6 +28,7 @@ final readonly class MobileTurnstile implements ValidationRule
         }
     }
 
+    /** Validate the token and its bound hostname, action, and challenge state. */
     private function verify(mixed $token): bool
     {
         $secret = config('services.turnstile.secret');

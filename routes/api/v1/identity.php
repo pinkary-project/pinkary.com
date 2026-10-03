@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Api\CaptchaController;
+use App\Http\Controllers\Api\CaptchaResultController;
+use App\Http\Controllers\Api\CaptchaWidgetController;
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\LinkClickController;
 use App\Http\Controllers\Api\LinkController;
@@ -18,8 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->as('api.v1.')->group(function (): void {
     Route::prefix('captcha')->as('captcha.')->middleware(['optional.sanctum', 'throttle:30,1,captcha'])->group(function (): void {
         Route::get('/', [CaptchaController::class, 'show'])->name('show');
-        Route::get('widget', [CaptchaController::class, 'widget'])->name('widget');
-        Route::get('result', [CaptchaController::class, 'result'])->name('result');
+        Route::get('widget', CaptchaWidgetController::class)->name('widget');
+        Route::get('result', CaptchaResultController::class)->name('result');
     });
 
     Route::prefix('auth')->as('auth.')->group(function (): void {

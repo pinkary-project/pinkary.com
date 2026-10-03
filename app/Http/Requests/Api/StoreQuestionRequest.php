@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api;
 
 use App\Models\User;
+use App\Rules\MobileTurnstile;
 use App\Rules\NoBlankCharacters;
 use App\Services\MobileCaptcha;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -30,7 +31,7 @@ final class StoreQuestionRequest extends FormRequest
         $isAsking = $this->filled('to_username') && $this->input('to_username') !== $this->user()?->username;
         $maxContent = $isAsking ? 255 : 1000;
 
-        return [
+        $rules = [
             'to_username' => ['sometimes', 'nullable', 'string', 'exists:users,username'],
             'anonymously' => ['sometimes', 'boolean'],
             'content' => ['required', 'string', 'min:1', "max:{$maxContent}", new NoBlankCharacters],
@@ -42,8 +43,18 @@ final class StoreQuestionRequest extends FormRequest
             'poll_options.*' => ['required', 'string', 'min:1', 'max:40'],
             'poll_duration' => ['required_with:poll_options', 'integer', 'min:1', 'max:7'],
             'thread_polls' => ['sometimes', 'array', 'max:9'],
-            ...$captcha->rules('post', $this),
         ];
+
+        /** @var User|null $user */
+        $user = $this->user();
+
+        if ($captcha->required('post', $user)) {
+            $state = $this->input('captcha_state');
+            $rules['captcha_state'] = ['bail', 'required', 'uuid'];
+            $rules['cf-turnstile-response'] = ['bail', 'required', 'string', 'max:2048', new MobileTurnstile('post', is_string($state) ? $state : '')];
+        }
+
+        return $rules;
     }
 
     /** The user being asked, or null for a post to the timeline. */
