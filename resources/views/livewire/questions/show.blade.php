@@ -180,7 +180,7 @@
                         <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
                     @endif
 
-                    <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
+                    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
                         <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
                             <a
                                 @if (! $commenting)
