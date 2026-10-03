@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\QuestionCommentController;
 use App\Http\Controllers\Api\QuestionController;
+use App\Http\Controllers\Api\QuestionViewBatchController;
 use App\Http\Controllers\Api\QuestionViewController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,10 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         Route::get('users/{user:username}', [UserController::class, 'show'])
             ->name('users.show');
     });
+
+    Route::post('questions/views', [QuestionViewBatchController::class, 'store'])
+        ->middleware(['optional.sanctum', 'throttle:120,1,impressions'])
+        ->name('questions.views.batch');
 
     Route::post('questions/{question}/views', [QuestionViewController::class, 'store'])
         ->middleware(['optional.sanctum', 'throttle:120,1,impressions'])
