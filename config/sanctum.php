@@ -24,7 +24,6 @@ return [
         '%s%s',
         'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
         Sanctum::currentApplicationUrlWithPort(),
-        // Sanctum::currentRequestHost(),
     ))),
 
     /*
@@ -49,12 +48,6 @@ return [
     | This value controls the number of minutes until an issued token will be
     | considered expired. This will override any values set in the token's
     | "expires_at" attribute, but first-party sessions are not affected.
-    |
-    | A mobile token used to be minted with no expiry at all, so one lifted
-    | off a lost device stayed valid forever, and there was no way to bulk
-    | revoke it because the API has no logout-all endpoint. Ninety days is
-    | long enough that a normal user rarely notices a re-login, and short
-    | enough that a stolen token stops working on its own.
     |
     */
 

@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
 
-    // Symfony's trusted-host list is static, so it survives whatever ran
-    // earlier in this parallel worker and rejects the hosts used here.
+    // Symfony's static trusted-host list survives application refreshes.
     Request::setTrustedHosts([]);
 });
 
@@ -21,9 +20,6 @@ test('a url already on the request host is returned untouched', function (): voi
 });
 
 test('an app url rooted url is not rewritten for an untrusted host', function (): void {
-    // The request claims to be another origin. Without the allowlist the
-    // app-rooted URL is kept, so every avatar and image in the response
-    // still points at APP_URL rather than at the caller's chosen host.
     $request = Request::create('https://evil.test/api/v1/feed');
 
     expect(AbsoluteUrl::for('https://pinkary.test/storage/a.png', $request))

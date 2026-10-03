@@ -125,9 +125,6 @@ test('guest link clicks are recorded, because the web counts them too', function
     $ada = User::factory()->create(['username' => 'ada']);
     $link = Link::factory()->create(['user_id' => $ada->id, 'is_visible' => true]);
 
-    // profile/show.blade.php mounts the same Livewire component whose
-    // non-owner branch calls click() with auth()->id() === null for a
-    // guest, and UpdateLinkClicks counts anyone who is not the owner.
     $this->postJson(route('api.v1.links.click', $link))->assertOk();
 
     expect($link->fresh()->click_count)->toBe(1);
@@ -177,7 +174,6 @@ test('a guest profile read does not inflate the view counter', function (): void
 test('public reads share a rate limited bucket that is not the write bucket', function (): void {
     $user = User::factory()->create(['username' => 'ada']);
 
-    // Every public read route draws from the same per-visitor budget.
     for ($i = 0; $i < 60; $i++) {
         $this->getJson(route('api.v1.users.show', 'ada'))->assertOk();
     }

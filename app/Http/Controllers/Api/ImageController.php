@@ -9,21 +9,9 @@ use App\Services\ImageProcessor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 
-/**
- * Accepts a post's images so a client is not limited to the web composer.
- *
- * The web already had this capability, reached through Livewire's
- * WithFileUploads and a session draft -- not something an API client can
- * speak. The rest of the pipeline already existed: ImageProcessor writes and
- * scales the file, ImageUpload states the limits, and ImageProviderParsable
- * turns the markdown the client writes back into an <img>. This is that same
- * path with a different front door.
- */
 final readonly class ImageController
 {
-    /**
-     * Store the uploaded images and hand back their public URLs.
-     */
+    /** Store the uploaded images and hand back their public URLs. */
     public function store(StoreImageRequest $request, ImageProcessor $imageProcessor): JsonResponse
     {
         /** @var array<int, UploadedFile> $images */
@@ -39,9 +27,7 @@ final readonly class ImageController
             }
 
             $stored[] = [
-                // `path` is the markdown value, `url` the same file resolved
-                // for preview. Storing the path keeps `content` free of any
-                // host or disk prefix.
+                // Store disk-relative paths in markdown; use absolute URLs only for previews.
                 'path' => $path,
                 'url' => $imageProcessor->url($path),
                 'original_name' => $image->getClientOriginalName(),

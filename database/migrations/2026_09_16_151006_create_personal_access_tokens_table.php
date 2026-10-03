@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('personal_access_tokens', function (Blueprint $table): void {
@@ -25,15 +22,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Run the migrations.
-     *
-     * Without this, `migrate:rollback` deletes the ledger row but leaves the
-     * table behind, and the next `migrate` aborts with "table already exists"
-     * -- so one rollback blocks every subsequent deploy until someone drops
-     * it by hand. This is the table the entire API auth surface depends on,
-     * and the one most likely to need a fast rollback.
-     */
     public function down(): void
     {
         Schema::dropIfExists('personal_access_tokens');

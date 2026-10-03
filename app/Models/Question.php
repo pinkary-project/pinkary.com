@@ -333,8 +333,6 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * Get the poll votes for the question.
-     *
      * @return HasMany<PollVote, $this>
      */
     public function pollVotes(): HasMany
@@ -343,9 +341,6 @@ final class Question extends Model implements Viewable
     }
 
     /**
-     * Walk the parent chain upward and return the ancestor question IDs,
-     * oldest-first, up to the given limit.
-     *
      * @return \Illuminate\Support\Collection<int, string>
      */
     public function ancestorIds(int $limit = 10): \Illuminate\Support\Collection

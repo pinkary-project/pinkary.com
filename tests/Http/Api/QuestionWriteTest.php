@@ -127,8 +127,6 @@ test('an authenticated user can comment on a question', function (): void {
         'content' => 'Great update!',
     ], $headers)
         ->assertCreated()
-        // Stored as a shared update, like the web: the text is the answer
-        // and the content column holds the __UPDATE__ sentinel.
         ->assertJsonPath('data.answer', 'Great update!')
         ->assertJsonPath('data.content', null)
         ->assertJsonPath('data.from.id', $user->id)
@@ -201,8 +199,6 @@ test('a shared update never leaks the update sentinel over the API', function ()
         ->assertJsonPath('data.content', $expected['content'])
         ->assertJsonPath('data.answer', $expected['answer']);
 
-    // The feed and profile assertions for this sentinel live with the routes
-    // that serve them, in the feed slice.
 });
 
 test('a question asked to someone else is not flagged as an update', function (): void {
@@ -301,7 +297,6 @@ test('an authenticated user can vote in a poll and toggle the vote', function ()
         ->assertJsonPath('data.total_votes', 1)
         ->assertJsonPath('data.user_vote_option_id', $yes->id);
 
-    // Voting the same option again removes the vote.
     $this->postJson(route('api.v1.questions.poll.vote', $question), ['option_id' => $yes->id], $headers)
         ->assertOk()
         ->assertJsonPath('data.total_votes', 0)
@@ -454,10 +449,6 @@ test('editing an answer clears the likes it had collected', function (): void {
         ->assertJsonPath('data.answer', 'Rewritten answer.')
         ->assertJsonPath('data.metrics.likes', 0);
 
-    // Rewriting an answer drops its likes, the same way editing a question
-    // does (UpdateQuestion::handle, $clearLikes). A like is a judgement about
-    // particular words, and carrying it across a rewrite is a judgement
-    // nobody made.
     expect($question->fresh()->likes()->count())->toBe(0);
 });
 
@@ -476,8 +467,6 @@ test('answering a question for the first time is not treated as an edit', functi
     ], $headers)->assertOk()
         ->assertJsonPath('data.answer', 'First answer.');
 
-    // Pins the branch the clearing keys off: an answer that did not exist
-    // before is not an edit, so the like delete must not even be considered.
     expect($question->fresh()->answer_created_at)->not->toBeNull();
 });
 

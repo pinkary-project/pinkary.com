@@ -17,20 +17,13 @@ use Illuminate\Support\Collection;
 /** @property Question $resource */
 final class QuestionResource extends JsonResource
 {
-    /**
-     * Memoized; null means the post has no HTML to parse.
-     */
+    /** Cached parsed HTML. */
     private ?DOMDocument $parsedAnswer = null;
 
-    /**
-     * Separate from parsedAnswer, which is legitimately null for a post with
-     * no content.
-     */
+    /** Null parsedAnswer is a cached result, not an unparsed state. */
     private bool $answerParsed = false;
 
     /**
-     * The post in the shape the clients render.
-     *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -38,7 +31,6 @@ final class QuestionResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'pinned' => (bool) $this->resource->pinned,
-            // '__UPDATE__' is the shared-update sentinel, not content.
             'is_update' => $this->resource->isSharedUpdate(),
             'content' => $this->resource->isSharedUpdate() ? null : $this->resource->sharable_content,
             'answer' => $this->resource->sharable_answer,
@@ -60,8 +52,7 @@ final class QuestionResource extends JsonResource
                 'posts' => self::collection(
                     $this->resource->relationLoaded('threadChain') ? $this->resource->threadChain : []
                 ),
-                // Read raw attributes: partially-selected models throw
-                // MissingAttributeException on dynamic getAttribute().
+                // Partially selected models throw on missing dynamic attributes.
                 'more' => (bool) ($this->resource->getAttributes()['threadMore'] ?? false),
                 'more_id' => $this->resource->getAttributes()['threadMoreId'] ?? null,
             ],
@@ -80,11 +71,6 @@ final class QuestionResource extends JsonResource
     }
 
     /** @return array<string, mixed>|null */
-    /**
-     * The post's poll, or null when it has none.
-     *
-     * @return array<string, mixed>|null
-     */
     public function poll(): ?array
     {
         if ($this->resource->poll_expires_at === null) {
@@ -210,9 +196,7 @@ final class QuestionResource extends JsonResource
         return $images;
     }
 
-    /**
-     * The link preview card embedded in the stored HTML, if the post has one.
-     */
+    /** Find the first stored link-preview card. */
     private function firstPreviewCard(): ?DOMElement
     {
         $document = $this->parsedAnswer();
@@ -230,21 +214,16 @@ final class QuestionResource extends JsonResource
         return null;
     }
 
-    /**
-     * The post's answer, or its content when unanswered, as a parsed document.
-     */
+    /** Parse the stored answer or unanswered content. */
     private function parsedAnswer(): ?DOMDocument
     {
-        // Memoized because a nested QuestionResource re-enters this once per
-        // thread ancestor, so a 20-post reply page would re-parse ~120 times.
         if ($this->answerParsed) {
             return $this->parsedAnswer;
         }
 
         $this->answerParsed = true;
 
-        // The stored HTML already embeds the preview card and images, so
-        // parsing it avoids HTTP requests for link metadata.
+        // Parse stored HTML to avoid fetching link metadata during reads.
         $html = $this->resource->answer ?? $this->resource->content;
 
         if (! is_string($html) || mb_trim($html) === '') {

@@ -18,8 +18,6 @@ use Illuminate\Support\Collection;
 final readonly class FormatNotificationRow
 {
     /**
-     * Null when the subject is gone; the web skips those rows too.
-     *
      * @param  Collection<string, Question>  $questions
      * @param  Collection<int, User>  $followers
      * @return array<string, mixed>|null

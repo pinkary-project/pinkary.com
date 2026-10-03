@@ -10,18 +10,12 @@ use Illuminate\Pagination\Paginator;
 
 final readonly class FeedQuery
 {
-    /**
-     * @param  FeedThread  $feedThread  Attaches thread context to each page.
-     */
+    /** Configure feed thread hydration. */
     public function __construct(
         private FeedThread $feedThread,
     ) {}
 
     /**
-     * Paginate the requested tab with feed relations and thread context.
-     * Guests read the public tabs like the web; the following feed
-     * needs a user, so it comes back empty for them.
-     *
      * @return Paginator<int, Question>
      */
     public function paginate(string $tab, int $perPage, ?User $user): Paginator
@@ -45,8 +39,6 @@ final readonly class FeedQuery
     }
 
     /**
-     * Load the trending page fully hydrated, preserving the trending order.
-     *
      * @return Paginator<int, Question>
      */
     private function trending(int $perPage, ?int $userId): Paginator

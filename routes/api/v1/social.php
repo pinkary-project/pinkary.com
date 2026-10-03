@@ -22,8 +22,6 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
     });
 
     Route::middleware(['auth:sanctum', 'throttle:120,1,api'])->group(function (): void {
-        // The liker list stays owner-only (QuestionPolicy::viewLikes) and
-        // authenticated: it is not a public surface on the web either.
         Route::get('questions/{question}/likes', [QuestionLikeController::class, 'index'])
             ->name('questions.likes.index')
             ->whereUuid('question');

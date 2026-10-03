@@ -16,8 +16,6 @@ it('rewrites a bare disk path into an image tag', function (): void {
 });
 
 it('resolves the stored path against the configured disk', function (): void {
-    // The composer JS normalizes to `images/...` before saving and the API
-    // returns the same shape, so this is the only form reaching the parser.
     Storage::fake();
 
     $html = (new ImageProviderParsable)->parse('![a](images/2026-09-29/b.jpg)');

@@ -107,7 +107,6 @@ test('a user with two factor authentication enabled is challenged, not given a t
     ])->assertUnprocessable()
         ->assertJsonPath('code', 'two_factor_required');
 
-    // The challenge is not a token: answering it is what mints one.
     expect($user->tokens()->count())->toBe(0);
 });
 
@@ -145,8 +144,6 @@ test('a minted token carries an expiry', function (): void {
 test('an expired token is rejected', function (): void {
     $user = User::factory()->create();
 
-    // A token that was minted 91 days ago. Sanctum checks expires_at, so
-    // this is refused even though it is still a structurally valid token.
     $expired = $user->tokens()->create([
         'name' => 'old-device',
         'token' => hash('sha256', 'plain-text-secret'),
@@ -173,9 +170,6 @@ test('logging in returns the signed-in user own email and verification state', f
         'password' => Hash::make('password'),
     ]);
 
-    // No token exists yet at this point in the request, so the resource
-    // cannot read the viewer off auth(). Before this was fixed the client
-    // received its own email and verification.email as null.
     $this->postJson(route('api.v1.auth.login'), [
         'email' => $user->email,
         'password' => 'password',
@@ -188,8 +182,6 @@ test('logging in returns the signed-in user own email and verification state', f
 test('registering returns the new user own email and unverified state', function (): void {
     Queue::fake([UpdateUserAvatar::class]);
 
-    // A brand new account is unverified by definition, and that is the one
-    // thing it most needs to be told.
     $this->postJson(route('api.v1.auth.register'), [
         'name' => 'Pinkary User',
         'username' => 'pinkaryuser',

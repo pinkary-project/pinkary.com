@@ -60,10 +60,7 @@ final class CleanUnusedUploadedImages implements ShouldQueue
     /**
      * Extract images from the recent questions
      *
-     * `content` holds `images/...` paths, matching what `allFiles()` returns,
-     * so the in_array below compares like with like. A disk or host prefix in
-     * `content` would make such an image look unreferenced and delete it while
-     * its post still points at it.
+     * Keep image references disk-relative so cleanup can match stored files.
      *
      * @param  Collection<int, Question>  $questions
      * @return array<int, string>

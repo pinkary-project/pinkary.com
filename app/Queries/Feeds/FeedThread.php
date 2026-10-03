@@ -9,12 +9,6 @@ use App\Models\Scopes\WhereNotModerated;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
-/**
- * Attach each feed item's visible thread context, mirroring the web's
- * x-thread component: at most the root and parent posts above the item,
- * oldest first, plus whether the chain continues above them (the web's
- * "View more comments" divider linking to the root).
- */
 final readonly class FeedThread
 {
     /**
@@ -38,7 +32,7 @@ final readonly class FeedThread
     }
 
     /**
-     * @param  Collection<int, Question>  $items  Hydrated feed items.
+     * @param  Collection<int, Question>  $items
      * @return array<string, array{posts: Collection<int, Question>, more: bool, more_id: ?string}>
      */
     public function forItems(Collection $items, ?int $userId, int $limit = 2): array
@@ -52,8 +46,6 @@ final readonly class FeedThread
 
         $hydrated = $ids === []
             ? collect()
-            // Belt and braces: the observer's cascade already hard-deletes the
-            // descendants of an ignored question, so this cannot currently matter.
             : (new FeedQuestion)(Question::query()->whereIn('id', $ids)->tap(new WhereNotModerated), $userId)->get()->keyBy('id');
 
         $threads = [];

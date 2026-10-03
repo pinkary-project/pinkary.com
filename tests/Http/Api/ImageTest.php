@@ -15,8 +15,7 @@ beforeEach(function (): void {
 });
 
 /**
- * The stored files. ImageProcessor nests them under images/<date>, and
- * Storage::files() does not recurse.
+ * allFiles() includes ImageProcessor's dated subdirectories.
  *
  * @return array<int, string>
  */
@@ -48,12 +47,8 @@ test('an image is stored and handed back with a path and a public url', function
 
     Storage::disk()->assertExists($path);
 
-    // `path` is the markdown value, so it stays disk-relative. `url` has to be
-    // the one ImageProcessor hands out for that same file.
-    expect($path)->toStartWith('images/');
-
-    expect($response->json('data.0.url'))
-        ->toBe(app(ImageProcessor::class)->url($path));
+    expect($path)->toStartWith('images/')
+        ->and($response->json('data.0.url'))->toBe(app(ImageProcessor::class)->url($path));
 });
 
 test('several images upload in one request and gifs skip resizing', function (): void {
@@ -98,31 +93,22 @@ test('a non-image is rejected', function (): void {
     ], $headers)->assertUnprocessable()
         ->assertJsonValidationErrors('images.0');
 
-    // The wording is the web's own, because both now read it from
-    // ImageUpload::messages() rather than keeping a copy each.
-    expect($response->json('errors')['images.0'])->toContain('The file must be an image.');
-
-    expect(storedImages())->toBeEmpty();
+    expect($response->json('errors')['images.0'])->toContain('The file must be an image.')
+        ->and(storedImages())->toBeEmpty();
 });
 
 test('a too-narrow image is rejected on aspect ratio', function (): void {
     $user = User::factory()->create();
     $headers = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
 
-    // 100x600 is a ratio of 1/6, below the 2/5 floor. The web enforced this
-    // with a closure inside runImageValidation(); a tall strip would
-    // otherwise be stored and then rendered enormous on a post.
     $response = $this->post(route('api.v1.images.store'), [
         'images' => [UploadedFile::fake()->image('tall.jpg', 100, 600)],
     ], $headers)->assertUnprocessable()
         ->assertJsonValidationErrors('images.0');
 
-    // One failure, one message. A file that is a real image of the wrong
-    // shape should not also be told it is not an image.
     expect($response->json('errors')['images.0'])
-        ->toBe(['The image aspect ratio must be less than 2/5.']);
-
-    expect(storedImages())->toBeEmpty();
+        ->toBe(['The image aspect ratio must be less than 2/5.'])
+        ->and(storedImages())->toBeEmpty();
 });
 
 test('an oversized image is rejected', function (): void {
@@ -164,8 +150,7 @@ test('a storage failure is reported rather than returning a half-built image', f
     $user = User::factory()->create();
     $headers = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
 
-    // ImageProcessor is final, so the disk it writes through is what gets
-    // doubled. S3 disks set 'throw' => false, so a rejected put() is silent.
+    // Model a silent failed write on disks configured with throw=false.
     $disk = Mockery::mock(Filesystem::class);
     $disk->shouldReceive('put')->once()->andReturnFalse();
 

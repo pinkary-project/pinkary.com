@@ -24,7 +24,6 @@ test('an authenticated user can like and unlike a question', function (): void {
         ->assertJsonPath('data.liked', true)
         ->assertJsonPath('data.likes', 1);
 
-    // Liking twice stays idempotent.
     $this->postJson(route('api.v1.questions.like', $question), [], $headers)
         ->assertOk()
         ->assertJsonPath('data.likes', 1);
@@ -36,7 +35,6 @@ test('an authenticated user can like and unlike a question', function (): void {
         ->assertJsonPath('data.liked', false)
         ->assertJsonPath('data.likes', 0);
 
-    // Unliking twice stays a no-op.
     $this->deleteJson(route('api.v1.questions.unlike', $question), [], $headers)
         ->assertOk()
         ->assertJsonPath('data.likes', 0);

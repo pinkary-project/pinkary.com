@@ -10,10 +10,7 @@ use Symfony\Component\HttpFoundation\IpUtils;
 
 final readonly class UpdateLinkClicks
 {
-    /**
-     * Increment the click count unless the visitor is the link owner
-     * or has already clicked within the last day (deduplication).
-     */
+    /** Count a visitor's click once per day, excluding the owner. */
     public function handle(Link $link, string $ip, ?int $ownerId = null): bool
     {
         if ($ownerId === $link->user_id) {

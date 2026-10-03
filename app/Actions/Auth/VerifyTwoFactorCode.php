@@ -12,24 +12,14 @@ use Laravel\Fortify\Events\RecoveryCodeReplaced;
 use Laravel\Fortify\Fortify;
 use Throwable;
 
-/**
- * Check a two factor answer against Fortify's own verification.
- *
- * Deliberately reuses the provider and the recovery-code storage rather than
- * reimplementing either, so the API cannot drift from what the web accepts.
- */
 final readonly class VerifyTwoFactorCode
 {
-    /**
-     * Create a new action instance.
-     */
+    /** Configure two-factor verification. */
     public function __construct(
         private TwoFactorAuthenticationProvider $provider,
     ) {}
 
     /**
-     * Verify a one-time password or a recovery code.
-     *
      * @throws ValidationException
      */
     public function handle(User $user, ?string $code, ?string $recoveryCode): void
@@ -43,9 +33,7 @@ final readonly class VerifyTwoFactorCode
         ]);
     }
 
-    /**
-     * Whether a one-time password is currently valid for the user.
-     */
+    /** Verify a one-time password. */
     private function validCode(User $user, ?string $code): bool
     {
         if ($code === null || $code === '' || ! is_string($user->two_factor_secret)) {
@@ -65,16 +53,12 @@ final readonly class VerifyTwoFactorCode
         try {
             return (bool) $this->provider->verify($secret, $code);
         } catch (Throwable) {
-            // A stored secret that is not valid base32 cannot be checked, and
-            // throwing here would turn a bad code into a 500. Recovery is the
-            // account owner's: re-enrol 2FA on the web.
+            // Invalid stored secrets must fail validation, not expose account state through a 500.
             return false;
         }
     }
 
-    /**
-     * Whether a recovery code matches, consuming it so it cannot be reused.
-     */
+    /** Verify and consume a recovery code. */
     private function validRecoveryCode(User $user, ?string $recoveryCode): bool
     {
         if ($recoveryCode === null || $recoveryCode === '') {

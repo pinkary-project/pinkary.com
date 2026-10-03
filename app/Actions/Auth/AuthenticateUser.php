@@ -11,8 +11,6 @@ use Illuminate\Validation\ValidationException;
 final readonly class AuthenticateUser
 {
     /**
-     * Authenticate a user by credentials.
-     *
      * @throws ValidationException
      */
     public function handle(string $email, string $password): User

@@ -28,8 +28,6 @@ test('both dark and light themes render', function (): void {
             ->assertOk()
             ->assertHeader('Content-Type', 'image/png');
 
-        // A stream has no body until consumed; the signature also proves an
-        // image came back rather than an empty or errored stream.
         expect($response->streamedContent())->toStartWith("\x89PNG");
     }
 });

@@ -8,12 +8,6 @@ use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-/**
- * Apply the columns and relations the mobile clients render.
- *
- * Shared by the feed and the question detail endpoints so both return
- * the exact shape QuestionResource expects.
- */
 final readonly class FeedQuestion
 {
     /**
@@ -23,9 +17,7 @@ final readonly class FeedQuestion
     public function __invoke(Builder $query, ?int $userId): Builder
     {
         return $query
-            // Without `parsed` selected the accessors see it as absent, and
-            // RefreshParsedContent re-parses over HTTP and UPDATEs every row,
-            // on a read. The web selects * and gets the same cached payload.
+            // Select the cached parse to avoid HTTP fetches and row updates during reads.
             ->addSelect('questions.id', 'questions.from_id', 'questions.to_id', 'questions.content', 'questions.answer', 'questions.parsed', 'questions.anonymously', 'questions.views', 'questions.created_at', 'questions.answer_created_at', 'questions.answer_updated_at', 'questions.parent_id', 'questions.root_id', 'questions.channel_id', 'questions.poll_expires_at', 'questions.pinned')
             ->with([
                 'from:id,name,username,avatar,is_verified,is_company_verified',

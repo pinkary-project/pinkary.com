@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Gate;
 
 final readonly class QuestionViewBatchController
 {
-    /** Record an authorized batch using the same identity and deduplication as single views. */
+    /** Record authorized post impressions in a batch. */
     public function store(StoreQuestionViewBatchRequest $request, Firewall $firewall): Response
     {
         if ($firewall->isBot($request)) {

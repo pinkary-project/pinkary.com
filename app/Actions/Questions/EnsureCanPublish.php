@@ -8,12 +8,7 @@ use App\Models\User;
 
 final readonly class EnsureCanPublish
 {
-    /**
-     * Refuse the publish when the author is over their rate limit.
-     *
-     * @param  int  $incoming  Posts this request will create, so a thread's
-     *                         other posts count against the daily limit.
-     */
+    /** Enforce publishing limits. */
     public function handle(User $user, int $incoming = 1): void
     {
         if (app()->isLocal()) {

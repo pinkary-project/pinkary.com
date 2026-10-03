@@ -16,10 +16,7 @@ use Illuminate\Http\UploadedFile;
 
 final readonly class ProfileController
 {
-    /**
-     * Return the authenticated user's profile with the counts and links
-     * the profile card renders.
-     */
+    /** Return the authenticated user's profile. */
     public function show(Request $request, UserProfileQuery $userProfileQuery): UserResource
     {
         /** @var User $user */

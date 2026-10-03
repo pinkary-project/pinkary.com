@@ -59,7 +59,6 @@ test('link CRUD and sort work through the API', function (): void {
     $userHeaders = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
     $strangerHeaders = ['Authorization' => 'Bearer '.$stranger->createToken('test')->plainTextToken];
 
-    // Create
     $response = $this->postJson(route('api.v1.links.store'), [
         'description' => 'My GitHub',
         'url' => 'github.com/myuser',
@@ -72,7 +71,6 @@ test('link CRUD and sort work through the API', function (): void {
     $linkId = (int) $response->json('data.id');
     $link = Link::findOrFail($linkId);
 
-    // Update
     auth()->forgetGuards();
     $this->putJson(route('api.v1.links.update', $link), [
         'description' => 'Updated GitHub',
@@ -91,7 +89,6 @@ test('link CRUD and sort work through the API', function (): void {
 
     expect($link->fresh()->is_visible)->toBeFalse();
 
-    // Create a second link for sorting
     $response2 = $this->postJson(route('api.v1.links.store'), [
         'description' => 'Second Link',
         'url' => 'https://second.com',
@@ -99,7 +96,6 @@ test('link CRUD and sort work through the API', function (): void {
 
     $link2Id = (int) $response2->json('data.id');
 
-    // Sort
     $this->postJson(route('api.v1.links.sort'), [
         'sort' => [$link2Id, $linkId],
     ], $userHeaders)->assertOk()
@@ -107,7 +103,6 @@ test('link CRUD and sort work through the API', function (): void {
 
     expect($user->fresh()->links_sort)->toBe([$link2Id, $linkId]);
 
-    // Delete
     auth()->forgetGuards();
     $this->deleteJson(route('api.v1.links.destroy', $link), [], $strangerHeaders)->assertForbidden();
     auth()->forgetGuards();

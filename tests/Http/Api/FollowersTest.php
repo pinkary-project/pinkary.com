@@ -14,7 +14,7 @@ test('a guest can read followers and following with neutral follow state', funct
     $createFollow = app(CreateFollow::class);
     $createFollow->handle($follower, $target->id);
     $createFollow->handle($target, $followingUser->id);
-    $createFollow->handle($me, $follower->id); // I follow target's follower
+    $createFollow->handle($me, $follower->id);
 
     $followers = $this->getJson(route('api.v1.users.followers.index', 'target'))->assertOk()
         ->assertJsonCount(1, 'data')
@@ -39,8 +39,6 @@ test('follow lists carry both directions of the follow state, like the web', fun
     $me = User::factory()->create();
     $target = User::factory()->create(['username' => 'target']);
 
-    // Everyone here follows the target, so all four land in the list; what
-    // varies is their relation to the viewer, which is the point.
     $mutual = User::factory()->create(['name' => 'Mutual']);
     $theyFollowMe = User::factory()->create(['name' => 'They Follow Me']);
     $iFollowThem = User::factory()->create(['name' => 'I Follow Them']);
@@ -64,10 +62,6 @@ test('follow lists carry both directions of the follow state, like the web', fun
 
     $byName = collect($followers)->keyBy('name');
 
-    // followed_by_me = I follow them; follows_me = they follow me. The web
-    // computes both (Livewire\Followers\Index:43-53) and renders the second
-    // as its "Follows you" badge. The API only had the first, so a client
-    // could not show a mutual follow or offer Follow Back.
     expect($byName)->toHaveKeys(['Mutual', 'They Follow Me', 'I Follow Them', 'Neither'])
         ->and($byName['Mutual']['follows_me'])->toBeTrue()
         ->and($byName['Mutual']['followed_by_me'])->toBeTrue()
@@ -100,8 +94,6 @@ test('list rows do not report confident zero counts they never loaded', function
 
     $this->getJson(route('api.v1.users.followers.index', 'target'))
         ->assertOk()
-        // The list endpoints never withCount(), so `?? 0` claimed every
-        // follower had zero followers. null says "not loaded" instead.
         ->assertJsonPath('data.0.stats.followers', null)
         ->assertJsonPath('data.0.stats.posts', null);
 });
@@ -120,18 +112,16 @@ test('an authenticated user can view paginated followers and following with foll
     $createFollow = app(CreateFollow::class);
     $createFollow->handle($follower, $target->id);
     $createFollow->handle($target, $followingUser->id);
-    $createFollow->handle($me, $follower->id); // I follow target's follower
+    $createFollow->handle($me, $follower->id);
 
     $headers = ['Authorization' => 'Bearer '.$me->createToken('test')->plainTextToken];
 
-    // Followers of target
     $this->getJson(route('api.v1.users.followers.index', 'target'), $headers)
         ->assertOk()
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.id', $follower->id)
         ->assertJsonPath('data.0.followed_by_me', true);
 
-    // Following of target
     $this->getJson(route('api.v1.users.following.index', 'target'), $headers)
         ->assertOk()
         ->assertJsonCount(1, 'data')

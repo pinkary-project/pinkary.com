@@ -43,14 +43,12 @@ test('a guest sees post counts but never their own state or private fields', fun
     App\Models\Like::factory()->create(['user_id' => $viewer->id, 'question_id' => $question->id]);
     $headers = ['Authorization' => 'Bearer '.$viewer->createToken('test')->plainTextToken];
 
-    // The viewer's own token fills in their state...
     $this->getJson(route('api.v1.users.questions.index', 'alice'), $headers)
         ->assertOk()
         ->assertJsonPath('data.0.metrics.liked', true)
         ->assertJsonPath('data.0.metrics.bookmarked', true)
         ->assertJsonPath('data.0.metrics.likes', 1);
 
-    // ...while a guest sees the counts with neutral state and no private data.
     auth()->forgetGuards();
 
     $this->getJson(route('api.v1.users.questions.index', 'alice'))
@@ -162,8 +160,6 @@ test('a thread shows up even when its newest post is a reply', function (): void
     $owner = User::factory()->create(['username' => 'alice']);
     $friend = User::factory()->create();
 
-    // A thread alice is genuinely part of: the first post was for her, and
-    // the friend replied in it.
     $root = Question::factory()->create([
         'from_id' => $friend->id,
         'to_id' => $owner->id,
@@ -210,10 +206,6 @@ test('one row per thread, ordered by when the thread last changed', function ():
         'answer_created_at' => now()->subDays(3),
     ]);
 
-    // A reply to a thread answered five days ago. The thread has not been
-    // answered again, so ordering by answer_created_at would leave it at the
-    // bottom; ordering by the thread's last update lifts it to the top, which
-    // is what the web does and what a reader expects.
     $reply = Question::factory()->create([
         'from_id' => $owner->id,
         'to_id' => $owner->id,

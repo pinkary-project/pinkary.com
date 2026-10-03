@@ -50,11 +50,7 @@ final readonly class QuestionController
         return QuestionResource::collection($questions)->response()->setStatusCode(201);
     }
 
-    /**
-     * Show a single post. Mirrors the web: the `view` policy keeps
-     * unanswered, ignored and reported posts off the public surface,
-     * and works for guests because it accepts a nullable user.
-     */
+    /** Show a post visible to the current viewer. */
     public function show(Request $request, Question $question, ThreadedQuestionQuery $threaded): QuestionResource
     {
         Gate::authorize('view', $question);

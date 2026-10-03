@@ -9,9 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 final readonly class BookmarkedQuestionsFeed
 {
-    /**
-     * @param  int  $userId  Whose bookmarks to return.
-     */
+    /** Configure the user's bookmarked feed. */
     public function __construct(private int $userId) {}
 
     /**

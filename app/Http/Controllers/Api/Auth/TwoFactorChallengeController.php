@@ -17,8 +17,6 @@ use Illuminate\Validation\ValidationException;
 final readonly class TwoFactorChallengeController
 {
     /**
-     * Answer a two factor challenge and mint the token.
-     *
      * @throws ValidationException
      */
     public function store(
@@ -32,9 +30,7 @@ final readonly class TwoFactorChallengeController
 
         $user = $challenge->resolve($token);
 
-        // Every unusable challenge looks the same from out here, so a caller
-        // cannot tell a forged token from an expired one and probe for valid
-        // user ids.
+        // Reject all unusable challenges identically to prevent account probing.
         if (! $user instanceof User) {
             throw ValidationException::withMessages([
                 'challenge' => ['The two factor challenge is invalid or has expired.'],

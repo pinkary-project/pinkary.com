@@ -8,7 +8,7 @@ use App\Models\User;
 
 final readonly class MobileCaptcha
 {
-    /** Determine whether the mobile action requires a challenge. */
+    /** Check whether an action requires captcha. */
     public function required(string $action, ?User $user): bool
     {
         if ($action === 'register') {

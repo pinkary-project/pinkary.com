@@ -6,17 +6,9 @@ namespace App\Support;
 
 use Illuminate\Http\Request;
 
-/**
- * Make a stored reference absolute so a client can load it.
- *
- * Relative references resolve against APP_URL, and only an untrusted Host
- * header can repoint them.
- */
 final readonly class AbsoluteUrl
 {
-    /**
-     * Normalize an avatar/image URL for the requesting client.
-     */
+    /** Normalize a URL for the requesting client. */
     public static function for(mixed $url, Request $request): ?string
     {
         if (! is_string($url) || mb_trim($url) === '') {
@@ -57,10 +49,7 @@ final readonly class AbsoluteUrl
         return mb_rtrim($request->root(), '/').$path.($query !== null && $query !== '' ? '?'.$query : '');
     }
 
-    /**
-     * Resolve a page-embedded URL (link-preview / content images) against
-     * the page it was found on, then normalize it for the client.
-     */
+    /** Resolve an embedded URL relative to its page. */
     public static function fromPage(?string $url, string $pageUrl, Request $request): ?string
     {
         if (! is_string($url) || mb_trim($url) === '') {
@@ -90,10 +79,7 @@ final readonly class AbsoluteUrl
         return $url;
     }
 
-    /**
-     * The origin a relative reference resolves against: the request's own
-     * root on a trusted host, APP_URL otherwise.
-     */
+    /** Resolve the trusted request or application origin. */
     private static function baseUrl(Request $request): string
     {
         if (self::isTrustedRequestHost($request)) {
@@ -107,14 +93,7 @@ final readonly class AbsoluteUrl
             : mb_rtrim($request->root(), '/');
     }
 
-    /**
-     * Whether the request arrived on a host this application serves: APP_URL's
-     * own host, or a local development name.
-     *
-     * The application trusts every proxy, so the request root reflects
-     * X-Forwarded-Host as well as Host. Rewriting onto it is therefore only
-     * safe for a host this application is meant to be reached on.
-     */
+    /** Only rewrite trusted hosts; proxy headers can influence the request root. */
     private static function isTrustedRequestHost(Request $request): bool
     {
         $host = mb_strtolower($request->getHost());
@@ -129,9 +108,7 @@ final readonly class AbsoluteUrl
         ), true);
     }
 
-    /**
-     * The host this application is served from, or an empty string when unset.
-     */
+    /** The host this application is served from, or an empty string when unset. */
     private static function appHost(): string
     {
         $url = config('app.url');

@@ -11,17 +11,13 @@ use Illuminate\Validation\Rule;
 
 final class FeedRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Authorize this request. */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -41,13 +37,7 @@ final class FeedRequest extends FormRequest
         return $this->integer('per_page', 20);
     }
 
-    /**
-     * The tab the user's own home screen opens on.
-     *
-     * The web redirects `/` to the user's default_feed, and the column
-     * defaults to "following". Hardcoding "recent" gave the same person a
-     * different home feed on the app than on the site.
-     */
+    /** Read the user's preferred home feed. */
     private function defaultTab(): string
     {
         /** @var User|null $user */

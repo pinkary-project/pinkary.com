@@ -10,9 +10,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 
-/**
- * The composer image rules, in one place.
- */
 final readonly class ImageUpload implements ValidationRule
 {
     public const int MAX_KILOBYTES = 8192;
@@ -21,9 +18,6 @@ final readonly class ImageUpload implements ValidationRule
 
     public const int MAX_HEIGHT = 4000;
 
-    /**
-     * Narrowest accepted width-to-height ratio, 2/5.
-     */
     public const float MIN_ASPECT_RATIO = 0.4;
 
     /**
@@ -34,9 +28,7 @@ final readonly class ImageUpload implements ValidationRule
     public const int MAX_PER_POST = 3;
 
     /**
-     * `bail` keeps one message per file: the File rule expands into image,
-     * mimes, max and dimensions, so a single PDF otherwise reports four
-     * complaints, three of them about a file that is not an image at all.
+     * Bail prevents File's expanded rules from reporting multiple errors for one upload.
      *
      * @return array<int, mixed>
      */

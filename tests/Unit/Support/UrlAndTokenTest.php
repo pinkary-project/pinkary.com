@@ -10,8 +10,7 @@ use Illuminate\Http\Request;
 beforeEach(function (): void {
     config(['app.url' => 'https://pinkary.test']);
 
-    // Static, and therefore inherited from earlier tests in this parallel
-    // worker. AbsoluteUrl's own allowlist is what these tests exercise.
+    // Symfony's static trusted-host list survives application refreshes.
     Request::setTrustedHosts([]);
 });
 
@@ -60,7 +59,6 @@ test('a page reference on another host is returned untouched', function (): void
 });
 
 test('a stored url is left alone when the application has no url of its own', function (): void {
-    // No APP_URL means no host to compare against, so nothing is rewritten.
     config(['app.url' => null]);
 
     $request = Request::create('https://phone.local/api/v1/feed');

@@ -18,12 +18,7 @@ use Illuminate\Support\Facades\Gate;
 
 final readonly class QuestionLikeController
 {
-    /**
-     * The liker list stays owner-only (`QuestionPolicy::viewLikes`) and
-     * authenticated, matching the web's likes modal. It exposes no
-     * viewer-specific data, so the only thing keeping it closed is the
-     * policy, not the data itself.
-     */
+    /** List a post's likes for its owner. */
     public function index(PaginatedRequest $request, Question $question): AnonymousResourceCollection
     {
         Gate::authorize('viewLikes', $question);
@@ -33,7 +28,6 @@ final readonly class QuestionLikeController
         $viewerId = $viewer->id;
 
         $likers = $question->likers()
-            // `follows_me` is what renders the web's "Follows you" badge.
             ->withExists([
                 'followers as followed_by_me' => fn (Builder $query) => $query->when(
                     $viewerId,

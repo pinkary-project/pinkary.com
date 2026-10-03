@@ -8,7 +8,7 @@ use App\Services\ParsableContent;
 test('a payload that is valid json but not an object is reparsed instead of trusted', function (): void {
     $question = Question::factory()->create();
 
-    // '5' is valid JSON, so the JsonException guard does not fire.
+    // Valid JSON scalars bypass the JsonException guard.
     $question->setRawAttributes(
         array_merge($question->getAttributes(), ['parsed' => '5']),
         true,
@@ -46,7 +46,6 @@ test('an empty payload is reparsed instead of trusted', function (): void {
 test('a payload written by an older provider set is reparsed', function (): void {
     $question = Question::factory()->create();
 
-    // A stale fingerprint has to invalidate the stored parse.
     $question->setRawAttributes(
         array_merge($question->getAttributes(), ['parsed' => '{"f":"stale","content":"<p>old</p>"}']),
         true,

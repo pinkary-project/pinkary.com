@@ -70,10 +70,7 @@ final class FortifyServiceProvider extends ServiceProvider
 
         RateLimiter::for('two-factor', fn (Request $request) => Limit::perMinute(5)->by($request->session()->get('login.id')));
 
-        // The API has no session to key on, so the budget is per challenge
-        // hashed, with the IP as a second key: a caller cannot spend another
-        // challenge's allowance, and one stolen challenge cannot be retried
-        // from many addresses without hitting the per-IP cap.
+        // Combine challenge and IP limits to prevent retries across multiple addresses.
         RateLimiter::for('two-factor-challenge', function (Request $request): array {
             $challenge = $request->string('challenge')->toString();
 

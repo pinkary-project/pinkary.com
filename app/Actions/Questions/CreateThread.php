@@ -14,12 +14,7 @@ use Illuminate\Support\Str;
 
 final readonly class CreateThread
 {
-    /**
-     * @param  CreateQuestion  $createQuestion  Persists each post in the thread.
-     * @param  CreateChannel  $createChannel  Resolves the channel being posted to.
-     * @param  EnsureCanPublish  $ensureCanPublish  Refuses the post when the
-     *                                              author is over their quota.
-     */
+    /** Configure thread publishing. */
     public function __construct(
         private CreateQuestion $createQuestion,
         private CreateChannel $createChannel,
@@ -120,9 +115,7 @@ final readonly class CreateThread
             ->values();
     }
 
-    /**
-     * Days a poll runs for, or 1 when the client sent nothing usable.
-     */
+    /** Days a poll runs for, or 1 when the client sent nothing usable. */
     private function duration(mixed $value): int
     {
         return is_numeric($value) ? (int) $value : 1;
@@ -160,10 +153,7 @@ final readonly class CreateThread
         return $cleaned;
     }
 
-    /**
-     * A new channel name is created at publish; an admin-only channel is
-     * silently dropped for anyone else.
-     */
+    /** Resolve an allowed channel for publishing. */
     private function resolveChannelId(User $user, mixed $channelId, ?string $channelName): ?int
     {
         if (is_string($channelName) && $channelName !== '') {

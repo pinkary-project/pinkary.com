@@ -17,8 +17,6 @@ final readonly class MobileTurnstile implements ValidationRule
     public function __construct(private string $action, private string $state) {}
 
     /**
-     * Run the validation rule.
-     *
      * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void

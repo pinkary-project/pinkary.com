@@ -13,10 +13,7 @@ use Illuminate\Http\JsonResponse;
 
 final readonly class SearchController
 {
-    /**
-     * Search verified users and hashtags by prefix — the same sources
-     * the web autocomplete draws from.
-     */
+    /** Search verified users and hashtags by prefix. */
     public function index(SearchRequest $request): JsonResponse
     {
         $query = $request->term();

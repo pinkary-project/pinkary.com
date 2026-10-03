@@ -11,10 +11,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final readonly class UserQrCodeController
 {
-    /**
-     * Stream the user's public profile QR code (same artwork as the web
-     * modal) so image-only clients can render it without session auth.
-     */
+    /** Stream the public profile QR code. */
     public function show(UserQrCodeRequest $request, User $user, GenerateUserQrCode $generateUserQrCode): StreamedResponse
     {
         $qrCode = $generateUserQrCode->handle(

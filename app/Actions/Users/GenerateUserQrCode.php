@@ -10,9 +10,7 @@ use Illuminate\Support\HtmlString;
 
 final readonly class GenerateUserQrCode
 {
-    /**
-     * Build the QR code linking to a user's public profile.
-     */
+    /** Build the QR code linking to a user's public profile. */
     public function handle(User $user, bool $lightMode): HtmlString
     {
         return new QrCode($lightMode)->generate(

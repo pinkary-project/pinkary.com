@@ -31,9 +31,7 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         Route::post('login', [LoginController::class, 'store'])
             ->middleware('throttle:login')
             ->name('login');
-        // A six digit code is brute-forceable without its own budget, and this
-        // endpoint is unauthenticated, so it is throttled per challenge rather
-        // than per session the way Fortify's two-factor limiter is.
+        // An unauthenticated six-digit challenge needs its own brute-force budget.
         Route::post('login/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])
             ->middleware('throttle:two-factor-challenge')
             ->name('login.two-factor-challenge');
@@ -43,8 +41,6 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         ->middleware('throttle:60,1,qr')
         ->name('users.qr-code');
 
-    // A public profile's links are tappable by anyone, including guests, so the
-    // click cannot be gated on authentication.
     Route::post('links/{link}/click', [LinkClickController::class, 'store'])
         ->middleware(['optional.sanctum', 'throttle:60,1,link_click'])
         ->name('links.click');

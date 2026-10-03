@@ -37,10 +37,7 @@ final readonly class LoginController
         return $this->authorized($user, $createToken, $userProfileQuery);
     }
 
-    /**
-     * Hand back a challenge instead of a token, in a shape a client can branch
-     * on rather than a bare validation error.
-     */
+    /** Return a two-factor challenge. */
     private function challenged(User $user, TwoFactorChallenge $challenge): JsonResponse
     {
         return response()->json([
@@ -51,9 +48,7 @@ final readonly class LoginController
         ], 422);
     }
 
-    /**
-     * Mint the token and return the profile.
-     */
+    /** Mint the token and return the profile. */
     private function authorized(
         User $user,
         CreateToken $createToken,

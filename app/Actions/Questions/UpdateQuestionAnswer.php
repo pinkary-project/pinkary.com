@@ -9,9 +9,7 @@ use App\Queries\Feeds\FeedQuestion;
 
 final readonly class UpdateQuestionAnswer
 {
-    /**
-     * Update or provide the answer to a question within the 24h window.
-     */
+    /** Update or provide the answer to a question within the 24h window. */
     public function handle(Question $question, string $answer, int $userId): Question
     {
         if ($question->answer_created_at !== null && $question->answer_created_at->diffInHours(now()) > 24) {
@@ -28,8 +26,6 @@ final readonly class UpdateQuestionAnswer
 
         $question->update($attributes);
 
-        // Keyed off an answer that already existed, not off whether the text
-        // changed: a first answer is not an edit.
         if ($question->wasChanged('answer') && array_key_exists('answer_updated_at', $attributes)) {
             $question->likes()->delete();
         }

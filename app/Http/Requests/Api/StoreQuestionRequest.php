@@ -13,17 +13,13 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class StoreQuestionRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Authorize this request. */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(MobileCaptcha $captcha): array
@@ -78,9 +74,7 @@ final class StoreQuestionRequest extends FormRequest
             return $this->boolean('anonymously');
         }
 
-        // The web seeds this from the user's standing preference and the column
-        // defaults to true; defaulting to false would publish an
-        // anonymously-chosen question with the name attached.
+        // Honor the user's anonymity preference when the client omits this flag.
         /** @var User|null $user */
         $user = $this->user();
 

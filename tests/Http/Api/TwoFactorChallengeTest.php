@@ -33,10 +33,8 @@ test('a user with two factor enabled is challenged instead of given a token', fu
         ->assertJsonPath('code', 'two_factor_required')
         ->assertJsonStructure(['challenge', 'expires_in']);
 
-    expect($response->json('challenge'))->toBeString();
-    // The refusal used to be a validation error, which a client could not tell
-    // apart from a wrong password.
-    expect($response->json('errors'))->toBeNull();
+    expect($response->json('challenge'))->toBeString()
+        ->and($response->json('errors'))->toBeNull();
 });
 
 test('the challenge does not leak the account before the password is checked', function (): void {
@@ -101,7 +99,6 @@ test('a recovery code is accepted once and then spent', function (): void {
     ])->assertOk()
         ->assertJsonStructure(['token']);
 
-    // The same code must not work twice, on a fresh challenge or the same one.
     $second = $this->postJson(route('api.v1.auth.login'), [
         'email' => $user->email,
         'password' => 'password',
@@ -129,8 +126,6 @@ test('a spent challenge cannot be answered again with the same code', function (
         'code' => $code,
     ])->assertOk();
 
-    // A TOTP code stays valid for its window, so replay protection has to come
-    // from the challenge being spent rather than from the code.
     $this->postJson(route('api.v1.auth.login.two-factor-challenge'), [
         'challenge' => $challenge,
         'code' => $code,
@@ -147,8 +142,6 @@ test('a forged or tampered challenge is rejected', function (): void {
     ])->assertStatus(422)
         ->assertJsonValidationErrors('challenge');
 
-    // An expired one has the same shape, so a caller cannot probe for which
-    // challenges ever existed.
     $challenge = app(App\Services\TwoFactorChallenge::class)->issue($user);
 
     $this->travel(6)->minutes();
@@ -215,8 +208,6 @@ test('a corrupt stored secret fails validation instead of erroring', function ()
         'password' => 'password',
     ])->json('challenge');
 
-    // Google2FA throws on a secret that is not base32; that must not surface as
-    // a 500 or the endpoint tells an attacker the account state is malformed.
     $this->postJson(route('api.v1.auth.login.two-factor-challenge'), [
         'challenge' => $challenge,
         'code' => '123456',
@@ -232,8 +223,6 @@ test('two factor answers are throttled', function (): void {
         'password' => 'password',
     ])->json('challenge');
 
-    // Six attempts: the limiter allows five per minute per challenge, so the
-    // sixth is the one that proves a six digit code is not brute-forceable.
     for ($attempt = 0; $attempt < 5; $attempt++) {
         $this->postJson(route('api.v1.auth.login.two-factor-challenge'), [
             'challenge' => $challenge,

@@ -17,9 +17,6 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
             ->name('questions.destroy')
             ->whereUuid('question');
 
-        // The gate the web applies both as middleware on its bookmark and
-        // notification reads and as a NeedsVerifiedEmail check inside every
-        // state-changing Livewire action.
         Route::middleware('verified')->group(function (): void {
             Route::post('questions', [QuestionController::class, 'store'])
                 ->name('questions.store');
@@ -48,8 +45,7 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
                 ->name('questions.poll.vote')
                 ->whereUuid('question');
 
-            // Composer images. Its own bucket because a request can carry several
-            // megabytes and should not spend the caller's write budget.
+            // Image uploads use a separate rate limit because each request can carry several megabytes.
             Route::post('images', [ImageController::class, 'store'])
                 ->middleware('throttle:20,1,image')
                 ->name('images.store');

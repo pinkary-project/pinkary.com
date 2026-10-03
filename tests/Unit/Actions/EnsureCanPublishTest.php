@@ -26,7 +26,7 @@ test('a user sending three posts a minute is stopped', function (): void {
 test('a user sending thirty posts a day is stopped before the day is up', function (): void {
     $user = User::factory()->create();
 
-    // Spread over the day so the per-minute limit is not what trips.
+    // Spread timestamps across the day to avoid the per-minute limit.
     sentPosts($user, 30, now()->subHours(5)->toDateTimeString());
 
     expect(fn () => (new EnsureCanPublish)->handle($user))
@@ -37,7 +37,6 @@ test('the daily limit counts the posts this request is about to create', functio
     $user = User::factory()->create();
     sentPosts($user, 29, now()->subHours(5)->toDateTimeString());
 
-    // handle($user) fills the last slot, so the next two-post thread cannot.
     (new EnsureCanPublish)->handle($user);
 
     expect(fn () => (new EnsureCanPublish)->handle($user, 2))

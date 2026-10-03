@@ -30,8 +30,7 @@ final readonly class UserFollowingController
                     fn (Builder $q) => $q->whereRaw('1 = 0')
                 ),
             ])
-            // The pivot table is `followers` in both directions; ordering by
-            // its id is what keeps simplePaginate from overlapping pages.
+            // Both relationship directions use the followers pivot table.
             ->latest('followers.id')
             ->simplePaginate($request->perPage());
 

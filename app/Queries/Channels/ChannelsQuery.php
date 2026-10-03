@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Cache;
 final readonly class ChannelsQuery
 {
     /**
-     * List popular channels, or search them by name (admin-only hidden from non-admins).
-     *
      * @return Collection<int, Channel>
      */
     public function get(string $query = '', bool $isAdmin = false, int $limit = 8): Collection

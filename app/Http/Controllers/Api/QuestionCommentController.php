@@ -19,10 +19,7 @@ use Illuminate\Support\Facades\Gate;
 
 final readonly class QuestionCommentController
 {
-    /**
-     * List a post's comments. Guests read them like the web, which only
-     * renders comments inside the gated post page.
-     */
+    /** List a post's comments. */
     public function index(PaginatedRequest $request, Question $question): AnonymousResourceCollection
     {
         Gate::authorize('view', $question);
@@ -57,8 +54,7 @@ final readonly class QuestionCommentController
 
         $comment = $user->questionsSent()->create([
             'to_id' => $user->id,
-            // The reply goes in `answer`, not `content`, because
-            // RecentQuestionsFeed skips questions whose answer is null.
+            // Replies need a non-null answer to appear in RecentQuestionsFeed.
             'content' => '__UPDATE__',
             'answer' => $request->validated('content'),
             'answer_created_at' => now(),

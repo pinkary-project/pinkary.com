@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 final readonly class OptionalSanctum
 {
     /**
-     * Resolve a bearer token when present, while allowing guests through.
-     *
      * @param  Closure(Request): Response  $next
      */
     public function handle(Request $request, Closure $next): Response

@@ -10,10 +10,6 @@ use App\Notifications\UserFollowed;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Collection;
 
-/**
- * Shared notification data loaders, used by both the Livewire notification
- * component and the API NotificationController.
- */
 trait HasNotificationLoaders
 {
     /**
@@ -68,9 +64,7 @@ trait HasNotificationLoaders
         return $followers;
     }
 
-    /**
-     * A notification's subject id, or null when the payload carries none.
-     */
+    /** A notification's subject id, or null when the payload carries none. */
     protected function questionIdFrom(DatabaseNotification $notification): ?string
     {
         $id = $notification->data['question_id'] ?? null;

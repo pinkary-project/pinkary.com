@@ -10,17 +10,12 @@ use App\Queries\Feeds\FeedQuestion;
 
 final readonly class CreateQuestionToUser
 {
-    /**
-     * @param  EnsureCanPublish  $ensureCanPublish  Refuses the post when the
-     *                                              author is over their quota.
-     */
+    /** Configure question publishing. */
     public function __construct(
         private EnsureCanPublish $ensureCanPublish,
     ) {}
 
-    /**
-     * Ask a question to another user.
-     */
+    /** Ask a question to another user. */
     public function handle(User $from, User $to, string $content, bool $anonymously = false): Question
     {
         $this->ensureCanPublish->handle($from, 1);

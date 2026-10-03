@@ -18,7 +18,6 @@ final readonly class UserFollowerController
         $viewerId = $request->user()?->id;
 
         $followers = $user->followers()
-            // `follows_me` is what renders the web's "Follows you" badge.
             ->withExists([
                 'followers as followed_by_me' => fn (Builder $query) => $query->when(
                     $viewerId,
@@ -31,8 +30,7 @@ final readonly class UserFollowerController
                     fn (Builder $q) => $q->whereRaw('1 = 0')
                 ),
             ])
-            // Without an ORDER BY the top row is whatever MySQL returns, and
-            // simplePaginate can skip or repeat rows across pages.
+            // Stable ordering prevents skipped or duplicated pagination rows.
             ->latest('followers.id')
             ->simplePaginate($request->perPage());
 

@@ -7,9 +7,6 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 
-// Behaviours where the API answered differently from the web for the same
-// person. Each of these was verified against the Livewire path it mirrors.
-
 test('an omitted anonymously flag follows the user preference', function (): void {
     Notification::fake();
 
@@ -23,9 +20,6 @@ test('an omitted anonymously flag follows the user preference', function (): voi
         'content' => 'A question.',
     ], $headers)->assertCreated()->json('data.0.id');
 
-    // The web seeds its composer with this preference and the column
-    // defaults to true. Defaulting to false meant a user who had chosen
-    // "ask anonymously" published with their name attached from the app.
     expect(Question::findOrFail($id)->anonymously)->toBeTrue();
 });
 
@@ -63,8 +57,6 @@ test('a user who prefers named questions gets their name', function (): void {
 });
 
 test('the feed defaults to the tab the user chose', function (): void {
-    // Follows nobody, so the "following" tab is empty even though there is a
-    // perfectly good post to read.
     Question::factory()->create([
         'content' => 'A recent answer.',
         'answer' => 'Yes.',
@@ -74,9 +66,6 @@ test('the feed defaults to the tab the user chose', function (): void {
     $user = User::factory()->create(['default_feed' => UserDefaultFeed::Following]);
     $headers = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
 
-    // The web redirects / to the user's default_feed, whose column default
-    // is "following". Hardcoding "recent" gave the same person a different
-    // home feed on the app than on the site.
     $this->getJson(route('api.v1.feed.index'), $headers)
         ->assertOk()
         ->assertJsonCount(0, 'data');

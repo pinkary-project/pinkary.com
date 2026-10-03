@@ -7,13 +7,7 @@ use App\Models\Question;
 use App\Services\ParsableContent;
 use Illuminate\Http\Request;
 
-/**
- * Pin the parsed payload to stored HTML.
- *
- * A payload fresh for the current raw fields makes the accessors return this
- * HTML verbatim, so the resource's own parsing is exercised instead of the
- * composer, and no link-preview HTTP call is made.
- */
+/** Keep the stored parse fresh to exercise the resource without metadata requests. */
 function pinAnswerHtml(Question $question, ?string $html): Question
 {
     $raw = $question->getAttributes();
@@ -91,7 +85,6 @@ test('a link preview card is exposed with its url, host, title and image', funct
 });
 
 test('a card carrying a scraped html snippet falls back to the url for its title and image', function (): void {
-    // Only the metadata branch of the card emits an <img>/<h3>.
     $question = pinAnswerHtml(makeQuestion(), <<<'HTML'
         <div id="link-preview-card" data-url="https://example.com/articles/two">
             <div class="snippet">Just some scraped markup</div>
@@ -129,7 +122,6 @@ test('post images are listed absolutely and the card image is left out of them',
         <img src="//cdn.example.com/two.png" alt="" />
         HTML);
 
-    // The card image is reported under `preview`, so it is not repeated here.
     expect(render($question)['images'])->toBe([
         'https://cdn.example.com/one.png',
         'https://cdn.example.com/two.png',
@@ -147,7 +139,6 @@ test('a repeated image is listed once and a blank source is dropped', function (
 });
 
 test('an unanswered post with no content has no preview and no images', function (): void {
-    // The column is NOT NULL; the accessors resolve '' to null all the same.
     $question = Question::factory()->create(['content' => '', 'answer' => null]);
 
     $rendered = render($question);

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Gate;
 
 final readonly class QuestionViewController
 {
-    /** Record an authorized human impression using the existing view job. */
+    /** Record an authorized post impression. */
     public function store(StoreQuestionViewRequest $request, Question $question, Firewall $firewall): Response
     {
         Gate::authorize('view', $question);

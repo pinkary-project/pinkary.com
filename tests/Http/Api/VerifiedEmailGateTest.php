@@ -9,12 +9,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
-// The web refuses every one of these for an unverified account: as
-// middleware on the bookmark and notification reads (routes/web.php:63),
-// and through NeedsVerifiedEmail inside the state-changing Livewire
-// actions. The API had no equivalent, so a brand new account could do all
-// of it from the app while the site said no.
-
 function unverifiedUser(): User
 {
     return User::factory()->create(['email_verified_at' => null]);
@@ -116,8 +110,6 @@ test('the refusal is json the client can act on', function (): void {
 });
 
 test('an unverified user can still sign in and read their profile', function (): void {
-    // The gate must not lock a new account out of the one thing it needs:
-    // learning that it has to verify, and doing so.
     $user = unverifiedUser();
 
     $this->postJson(route('api.v1.auth.login'), [
@@ -154,8 +146,6 @@ test('a verified user is unaffected', function (): void {
 });
 
 test('a user whose email changed is re-gated', function (): void {
-    // UpdateUser nulls email_verified_at on an email change, so the gate has
-    // to follow the column rather than a flag set at registration.
     $user = User::factory()->create([
         'email' => 'old@example.com',
         'password' => Hash::make('password'),

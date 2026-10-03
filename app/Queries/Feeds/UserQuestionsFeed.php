@@ -11,29 +11,18 @@ use Illuminate\Database\Eloquent\Builder;
 
 final readonly class UserQuestionsFeed
 {
-    /**
-     * Create a new instance of UserQuestionsFeed.
-     */
+    /** Configure the user's profile feed. */
     public function __construct(
         private User $user,
         private ?int $viewerId = null,
     ) {}
 
     /**
-     * A person's timeline: one row per thread, ordered by when the thread was
-     * last touched.
-     *
-     * Unanswered questions are hidden from everyone but the profile owner.
-     *
-     * @param  bool  $includePinned  The clients render a pinned post as the
-     *                               first card of the list rather than
-     *                               filtering it out above it.
      * @return Builder<Question>
      */
     public function builder(bool $includePinned = true): Builder
     {
-        // One row per thread: the most recently updated member, so a thread
-        // sorts by its last activity rather than by when it began.
+        // Rank threads by their latest activity, not their original posting date.
         $latestInThread = Question::query()
             ->selectRaw('id as latest_id, updated_at as last_update')
             ->selectRaw('ROW_NUMBER() OVER (PARTITION BY COALESCE(root_id, id) ORDER BY updated_at DESC, id DESC) as thread_rank')
@@ -68,9 +57,7 @@ final readonly class UserQuestionsFeed
             ->when($this->user->id !== $this->viewerId, function (Builder $query): void {
                 $query->whereNotNull('questions.answer');
             })
-            // A reply counts only when the thread it belongs to is one this
-            // person is actually part of; otherwise anyone could be dropped
-            // into another's thread by a reply and appear to own it.
+            // A reply must not make its recipient appear to own someone else's thread.
             ->where(function (Builder $query): void {
                 $belongsToUser = function (Builder $query): void {
                     $query->where('to_id', $this->user->id);

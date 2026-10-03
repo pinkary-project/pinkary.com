@@ -24,8 +24,6 @@ final readonly class RegisterController
         $user = $createUser->handle($request->attributes());
         $token = $createToken->handle($user);
 
-        // A brand new account is unverified by definition, and viewingAs() is
-        // what fills in email and verification.email here.
         return new UserResource($userProfileQuery->load($user, $user->id))
             ->viewingAs($user)
             ->additional(['token' => $token])

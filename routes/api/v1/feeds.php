@@ -8,8 +8,6 @@ use App\Http\Controllers\Api\UserQuestionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->as('api.v1.')->group(function (): void {
-    // `feed` gets its own budget rather than the 60/min `read` bucket: it is
-    // the heaviest public read and the most cacheable.
     Route::get('feed', [FeedController::class, 'index'])
         ->middleware(['optional.sanctum', 'throttle:60,1,feed'])
         ->name('feed.index');

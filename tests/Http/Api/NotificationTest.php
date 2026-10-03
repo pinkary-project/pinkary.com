@@ -161,8 +161,6 @@ test('a mention in a question that was later answered credits the answerer', fun
 
     $bob->notify(new UserMentioned($question));
 
-    // The actor is whoever last wrote to the post, not whoever mentioned
-    // Bob. Pinned because it reads as a bug and may well be one.
     $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$bob->createToken('test')->plainTextToken])
         ->assertOk()
         ->assertJsonPath('data.0.action', 'mentioned you in a question:')

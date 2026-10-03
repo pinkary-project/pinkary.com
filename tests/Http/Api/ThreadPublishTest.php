@@ -65,8 +65,6 @@ test('a thread poll with no duration given closes after a day', function (): voi
 });
 
 test('a blank poll option is refused by validation rather than by the action', function (): void {
-    // poll_options.* is required, so validation rejects this before the
-    // action's own guard runs.
     $this->postJson(route('api.v1.questions.store'), [
         'content' => 'Main post.',
         'poll_options' => ['   ', 'Real option'],
@@ -84,7 +82,6 @@ test('a channel name that slugs to nothing publishes without a channel', functio
         'channel_name' => '---',
     ], $this->headers)->assertCreated();
 
-    // Passes validation, but slugs to nothing.
     expect(Question::sole()->channel_id)->toBeNull()
         ->and(Channel::query()->count())->toBe(0);
 });
@@ -97,7 +94,6 @@ test('a non-admin cannot publish into an admin only channel by name', function (
         'channel_name' => 'Announcements',
     ], $this->headers)->assertCreated();
 
-    // Dropped, not refused, matching the web composer's staging.
     expect(Question::sole()->channel_id)->toBeNull()
         ->and(Channel::query()->count())->toBe(0);
 });

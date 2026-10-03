@@ -63,9 +63,6 @@ final class Create extends Component
 
     /**
      * Max file size allowed, in kilobytes.
-     *
-     * The blade hands this to the client for a pre-flight check, and the
-     * server re-checks it through ImageUpload::rules().
      */
     #[Locked]
     public int $maxFileSize = ImageUpload::MAX_KILOBYTES;

@@ -7,22 +7,15 @@ namespace App\Http\Requests\Api;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
-/**
- * The second step of a two factor sign in.
- */
 final class TwoFactorChallengeRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    /** Authorize this request. */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, list<string>>
      */
     public function rules(): array
@@ -35,8 +28,6 @@ final class TwoFactorChallengeRequest extends FormRequest
     }
 
     /**
-     * Get the error messages for the defined validation rules.
-     *
      * @return array<string, string>
      */
     public function messages(): array
@@ -46,9 +37,7 @@ final class TwoFactorChallengeRequest extends FormRequest
         ];
     }
 
-    /**
-     * Require at least one of the two ways to answer the challenge.
-     */
+    /** Require a one-time password or recovery code. */
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
@@ -60,9 +49,7 @@ final class TwoFactorChallengeRequest extends FormRequest
         });
     }
 
-    /**
-     * The challenge token, guaranteed present by the rules above.
-     */
+    /** Read the validated challenge token. */
     public function challenge(): string
     {
         $challenge = $this->validated('challenge');
@@ -70,9 +57,7 @@ final class TwoFactorChallengeRequest extends FormRequest
         return is_string($challenge) ? $challenge : '';
     }
 
-    /**
-     * The one-time password, if one was sent.
-     */
+    /** The one-time password, if one was sent. */
     public function code(): ?string
     {
         $code = $this->validated('code');
@@ -80,9 +65,7 @@ final class TwoFactorChallengeRequest extends FormRequest
         return is_string($code) && $code !== '' ? $code : null;
     }
 
-    /**
-     * The recovery code, if one was sent.
-     */
+    /** The recovery code, if one was sent. */
     public function recoveryCode(): ?string
     {
         $recoveryCode = $this->validated('recovery_code');

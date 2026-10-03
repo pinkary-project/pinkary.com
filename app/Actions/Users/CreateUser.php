@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Hash;
 final readonly class CreateUser
 {
     /**
-     * Create and register a new user.
-     *
      * @param  array{name: string, username: string, email: string, password: string}  $attributes
      */
     public function handle(array $attributes): User

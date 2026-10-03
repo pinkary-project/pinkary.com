@@ -13,15 +13,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @property User $resource */
 final class UserResource extends JsonResource
 {
-    /**
-     * Login and register answer before a token exists, so the viewer cannot
-     * come from the request there.
-     */
+    /** Login and registration must supply the viewer before a token exists. */
     private ?User $viewerOverride = null;
 
-    /**
-     * Render the resource as seen by $viewer rather than the request's user.
-     */
+    /** Render the resource as seen by $viewer rather than the request's user. */
     public function viewingAs(User $viewer): static
     {
         $this->viewerOverride = $viewer;
@@ -48,8 +43,7 @@ final class UserResource extends JsonResource
                 'email' => $this->isMe($viewer) ? $this->resource->hasVerifiedEmail() : null,
                 'company' => $this->resource->is_company_verified,
             ],
-            // A count the query never loaded has to stay null: a confident
-            // zero reads as "this person has no followers".
+            // Unloaded counts remain null rather than falsely reporting zero.
             'stats' => [
                 'followers' => isset($this->resource->followers_count) ? (int) $this->resource->followers_count : null,
                 'following' => isset($this->resource->following_count) ? (int) $this->resource->following_count : null,
@@ -73,17 +67,13 @@ final class UserResource extends JsonResource
         ];
     }
 
-    /**
-     * Whether $viewer is the owner of this resource.
-     */
+    /** Whether $viewer is the owner of this resource. */
     private function isMe(mixed $viewer): bool
     {
         return $viewer instanceof User && $viewer->is($this->resource);
     }
 
-    /**
-     * The rendered bio as plain text — the app cannot display HTML.
-     */
+    /** Return the rendered bio as plain text. */
     private function plainBio(): ?string
     {
         $bio = mb_trim(html_entity_decode(
@@ -96,9 +86,6 @@ final class UserResource extends JsonResource
     }
 
     /**
-     * Visible links in the owner's sort order, with the same ref marker
-     * the web appends.
-     *
      * @return list<array<string, mixed>>
      */
     private function links(): array
