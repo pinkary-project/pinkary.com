@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\URL;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 beforeEach(function (): void {
     config([
@@ -16,7 +18,13 @@ beforeEach(function (): void {
         'services.turnstile.secret' => 'test-secret',
         'services.turnstile.hostname' => 'pinkary.test',
     ]);
+
+    URL::useOrigin(config('app.url'));
     Http::preventStrayRequests();
+});
+
+afterEach(function (): void {
+    SymfonyRequest::setTrustedHosts([]);
 });
 
 /** @return array<string, mixed> */
@@ -141,6 +149,15 @@ test('posting without followers requires captcha in production', function (): vo
 
     $this->assertDatabaseCount('questions', 0);
 });
+
+test('production rejects captcha requests from untrusted hosts', function (string $host): void {
+    app()->detectEnvironment(fn (): string => 'production');
+
+    $this->getJson('https://'.$host.route('api.v1.captcha.show', ['action' => 'register'], absolute: false))
+        ->assertBadRequest();
+
+    Http::assertNothingSent();
+})->with(['evil.test', 'pinkary.test.evil.test']);
 
 test('users with followers can post without captcha in production', function (): void {
     app()->detectEnvironment(fn (): string => 'production');
