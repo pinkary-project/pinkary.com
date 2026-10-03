@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aba5f6ccdf5a18cb81537c5fdae05307",
+    "content-hash": "62826c8d8da2daf04c4935e00a1bb2ad",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4644,6 +4644,72 @@
                 }
             ],
             "time": "2026-09-09T08:34:20+00:00"
+        },
+        {
+            "name": "mrpunyapal/nativephp-plugin-turnstile",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MrPunyapal/nativephp-plugin-turnstile.git",
+                "reference": "9d04d75a8a72b015e5ff969b720d3945a33c2848"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MrPunyapal/nativephp-plugin-turnstile/zipball/9d04d75a8a72b015e5ff969b720d3945a33c2848",
+                "reference": "9d04d75a8a72b015e5ff969b720d3945a33c2848",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.0|^8.0",
+                "illuminate/contracts": "^11.0|^12.0|^13.0",
+                "illuminate/support": "^11.0|^12.0|^13.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.24",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.8|^4.0|^5.0",
+                "pestphp/pest-plugin-laravel": "^3.2|^4.0|^5.0",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "rector/rector": "^2.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MrPunyapal\\Turnstile\\TurnstileServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MrPunyapal\\Turnstile\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Cloudflare Turnstile integration for Laravel and NativePHP Mobile.",
+            "keywords": [
+                "cloudflare",
+                "laravel",
+                "nativephp",
+                "turnstile"
+            ],
+            "support": {
+                "issues": "https://github.com/MrPunyapal/nativephp-plugin-turnstile/issues",
+                "source": "https://github.com/MrPunyapal/nativephp-plugin-turnstile/tree/main"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/mrpunyapal",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-03T11:45:04+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",
@@ -15894,6 +15960,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "mrpunyapal/nativephp-plugin-turnstile": 20,
         "pestphp/pest-plugin-rector": 20
     },
     "prefer-stable": true,

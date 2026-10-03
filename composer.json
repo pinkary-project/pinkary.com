@@ -17,6 +17,7 @@
         "livewire/blaze": "^1.0.19",
         "livewire/livewire": "^4.4.6",
         "matomo/device-detector": "^6.5.1",
+        "mrpunyapal/nativephp-plugin-turnstile": "dev-main",
         "nunomaduro/laravel-optimize-database": "^1.0.5",
         "panphp/pan": "^0.1.10",
         "ryangjchandler/laravel-cloudflare-turnstile": "^3.0.4",
