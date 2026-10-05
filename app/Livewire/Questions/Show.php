@@ -13,6 +13,7 @@ use App\Actions\Questions\UpdateQuestionStatus;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
 use App\Models\User;
+use App\Services\FeedContent;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
@@ -304,7 +305,7 @@ final class Show extends Component
     /**
      * Render the component.
      */
-    public function render(): View
+    public function render(FeedContent $feedContent): View
     {
         $question = Question::where('id', $this->questionId)
             ->with(['to', 'from'])
@@ -322,6 +323,7 @@ final class Show extends Component
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
+            'feedContent' => $this->inIndex ? $feedContent->parse($question->answer ?? '') : null,
         ]);
     }
 }

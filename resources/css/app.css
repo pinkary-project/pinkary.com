@@ -57,6 +57,20 @@
     margin-top: 0;
 }
 
+.answer.answer-inline-media img:not(:where(#link-preview-card *)) {
+    @apply block h-auto w-auto max-h-64;
+    max-width: min(100%, 32rem);
+    margin-inline: 0;
+
+    @media (width >= 40rem) {
+        @apply max-h-80;
+    }
+}
+
+.answer.answer-inline-media img:not(:where(#link-preview-card *)) + br {
+    display: none;
+}
+
 .hover\:darken-gradient:hover {
     filter: saturate(2.5);
 }

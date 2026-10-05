@@ -162,30 +162,25 @@
                         </div>
                     </div>
 
-                    <div x-data="showMore">
+                    @if ($inIndex)
+                        <x-feed-content
+                            :content="$feedContent"
+                            :url="route('questions.show', ['username' => $question->to->username, 'question' => $question])"
+                        />
+                    @else
                         <div
-                            class="answer mt-1 overflow-hidden break-words text-slate-700 dark:text-slate-200"
-                            wire:ignore.self
-                            x-ref="parentDiv"
+                            class="answer answer-inline-media mt-1 break-words text-slate-700 dark:text-slate-200"
+                            x-data="hasLightBoxImages"
                         >
-                            <p x-data="hasLightBoxImages">{!! $question->answer !!}</p>
+                            {!! $question->answer !!}
                         </div>
-
-                        <div x-show="showMore === true" class="answer mt-2">
-                            <button
-                                data-navigate-ignore="true"
-                                @click="showButtonAction"
-                                class="ml-auto flex text-sm font-medium text-pink-500"
-                                x-text="showMoreButtonText"
-                            ></button>
-                        </div>
-                    </div>
+                    @endif
 
                     @if ($question->isPoll())
                         <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
                     @endif
 
-                    <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
+                    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
                         <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
                             <a
                                 @if (! $commenting)
