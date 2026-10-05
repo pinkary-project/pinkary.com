@@ -14,7 +14,9 @@ test('feed extracts images after the text while full posts retain inline image p
 
     $feed = Livewire::test(Show::class, ['questionId' => $question->id, 'inIndex' => true]);
     $feed->assertViewHas('feedContent', fn (array $content): bool => count($content['images']) === 2 && ! str_contains($content['html'], '<img'))
-        ->assertSee('Swipe to see all images. Tap an image to enlarge it.')
+        ->assertDontSeeHtml('aria-label="Next images"')
+        ->assertDontSeeHtml('aria-label="Previous images"')
+        ->assertSeeHtml('x-data="imageGallery"')
         ->assertSeeHtml('x-data="feedContent"');
 
     $detail = Livewire::test(Show::class, ['questionId' => $question->id]);

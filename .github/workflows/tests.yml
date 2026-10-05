@@ -82,6 +82,9 @@ jobs:
       - name: Build dependencies
         run: npm run build
 
+      - name: Test JavaScript
+        run: npm run test:js
+
       - name: Prepare Laravel
         run: |
           cp .env.example .env

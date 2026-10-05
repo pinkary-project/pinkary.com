@@ -17,29 +17,49 @@
 
     @if ($content['images'] !== [])
         <div
-            class="mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto rounded-xl"
-            x-data="hasLightBoxImages"
+            class="mt-2"
+            x-data="imageGallery"
+            x-bind:style="{ '--gallery-height': height + 'px' }"
             data-navigate-ignore="true"
             role="group"
             aria-label="{{ __('Post images') }}"
-            tabindex="0"
         >
-            @foreach ($content['images'] as $image)
-                <figure @class(['flex shrink-0 snap-center items-center justify-center overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-900', 'w-full' => count($content['images']) === 1, 'w-[85%]' => count($content['images']) > 1])>
-                    <img
-                        src="{{ $image['src'] }}"
-                        alt="{{ $image['alt'] }}"
-                        class="max-h-96 w-full object-contain"
-                        loading="lazy"
-                    />
-                </figure>
-            @endforeach
+            <div
+                x-ref="viewport"
+                class="scrollbar-none overflow-x-auto overscroll-x-contain rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500"
+                x-bind:class="{
+                    'cursor-grabbing select-none [&_img]:cursor-grabbing': dragging,
+                    'cursor-grab [&_img]:cursor-grab': ! dragging && (canPrevious || canNext),
+                }"
+                tabindex="0"
+                aria-label="{{ __('Drag or scroll post images. Use the left and right arrow keys to navigate.') }}"
+                x-on:keydown.right.prevent.stop="scroll(1)"
+                x-on:keydown.left.prevent.stop="scroll(-1)"
+                x-on:scroll.passive="updateControls()"
+                x-on:load.capture="measure()"
+                x-on:pointerdown="startDrag($event)"
+                x-on:pointermove="drag($event)"
+                x-on:pointerup="endDrag($event)"
+                x-on:pointercancel="endDrag($event)"
+                x-on:lostpointercapture="endDrag($event)"
+                x-on:dragstart.prevent
+                x-on:click.capture="preventDragClick($event)"
+            >
+                <div class="flex h-[var(--gallery-height)] w-max gap-2" x-data="hasLightBoxImages">
+                    @foreach ($content['images'] as $image)
+                        <figure class="h-full shrink-0 overflow-hidden rounded-xl">
+                            <img
+                                src="{{ $image['src'] }}"
+                                alt="{{ $image['alt'] }}"
+                                class="h-full w-auto max-w-none"
+                                loading="lazy"
+                                draggable="false"
+                            />
+                        </figure>
+                    @endforeach
+                </div>
+            </div>
         </div>
-        @if (count($content['images']) > 1)
-            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {{ __('Swipe to see all images. Tap an image to enlarge it.') }}
-            </p>
-        @endif
     @elseif ($content['preview'] !== '')
         <div data-navigate-ignore="true">{!! $content['preview'] !!}</div>
     @endif

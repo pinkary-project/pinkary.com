@@ -38,6 +38,9 @@ Alpine.data('copyUrl', copyUrl)
 import { feedContent } from './feed-content.js';
 Alpine.data('feedContent', feedContent);
 
+import { imageGallery } from './image-gallery.js';
+Alpine.data('imageGallery', imageGallery);
+
 import { clickHandler } from './click-handler.js'
 Alpine.data('clickHandler', clickHandler)
 

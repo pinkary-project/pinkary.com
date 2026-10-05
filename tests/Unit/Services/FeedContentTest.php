@@ -47,3 +47,15 @@ it('does not extract image-shaped code and preserves escaped user input', functi
 it('renders an empty or media-free post without adding markup', function (string $html): void {
     expect((new FeedContent)->parse($html))->toBe(['html' => $html, 'images' => [], 'preview' => '']);
 })->with(['', 'Plain text', '<a href="/@ada">@ada</a>']);
+
+it('removes empty image lines without removing paragraph breaks', function (string $html, string $expected): void {
+    expect((new FeedContent)->parse($html)['html'])->toBe($expected);
+})->with([
+    'images between lines' => ['one<br><img src="/one.png"><br>two<br><img src="/two.png"><br>three<br><img src="/three.png">', 'one<br>two<br>three'],
+    'intentional paragraphs' => ['before<br><br>paragraph<br><img src="/one.png">', 'before<br><br>paragraph'],
+    'image before text' => ['<img src="/one.png"><br>after', 'after'],
+    'media-only post' => ['<img src="/one.png"><br><img src="/two.png"><br>', ''],
+    'inline image' => ['before<img src="/one.png"><br>after', 'before<br>after'],
+    'whitespace around image' => ["<br> \n<img src=\"/one.png\"> \n<br>after<br> \n", 'after'],
+    'media-free line breaks' => ['<br>before<br><br>after<br>', '<br>before<br><br>after<br>'],
+]);
