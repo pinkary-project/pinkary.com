@@ -16,6 +16,7 @@ test('feed extracts images after the text while full posts retain inline image p
     $feed->assertViewHas('feedContent', fn (array $content): bool => count($content['images']) === 2 && ! str_contains($content['html'], '<img'))
         ->assertDontSeeHtml('aria-label="Next images"')
         ->assertDontSeeHtml('aria-label="Previous images"')
+        ->assertSeeHtml('aria-label="Image 1 of 2"')
         ->assertSeeHtml('x-data="imageGallery"')
         ->assertSeeHtml('x-data="feedContent"');
 
@@ -23,6 +24,14 @@ test('feed extracts images after the text while full posts retain inline image p
     $detail->assertViewHas('feedContent')->assertDontSeeHtml('x-data="feedContent"')
         ->assertDontSeeHtml('x-data="showMore"')
         ->assertSeeInOrder(['before', 'images/first.png', 'between', 'images/second.png', 'after'], false);
+});
+
+test('single-image feed posts have no image counter', function (): void {
+    $question = Question::factory()->create(['answer' => '![only image](images/only.png)']);
+
+    Livewire::test(Show::class, ['questionId' => $question->id, 'inIndex' => true])
+        ->assertSeeHtml('x-data="imageGallery"')
+        ->assertDontSeeHtml('aria-label="Image 1 of 1"');
 });
 
 test('feed renders escaped user input without turning it into executable markup', function (): void {

@@ -1,8 +1,9 @@
 const galleryHeight = (width, images, maximum = 256) => {
     const ratios = images.filter(image => image.width > 0 && image.height > 0)
         .map(image => image.width / image.height);
+    const availableWidth = Math.max(0, width - (images.length > 1 ? 32 : 0));
 
-    return Math.min(maximum, width / Math.max(1, ...ratios));
+    return Math.min(maximum, availableWidth / Math.max(1, ...ratios));
 };
 
 const galleryScrollTarget = (positions, current, maximum, direction) => {
@@ -16,6 +17,7 @@ const galleryScrollTarget = (positions, current, maximum, direction) => {
 
 const imageGallery = () => ({
     height: 192,
+    currentImage: 1,
     canPrevious: false,
     canNext: false,
     dragging: false,
@@ -42,8 +44,17 @@ const imageGallery = () => ({
 
     updateControls() {
         const viewport = this.$refs.viewport;
+        const images = Array.from(viewport.firstElementChild.children);
+        const left = viewport.getBoundingClientRect().left;
+        const firstVisibleImage = images.findIndex(image =>
+            image.getBoundingClientRect().right > left + Math.min(viewport.clientWidth, image.clientWidth) / 2
+        );
+
         this.canPrevious = viewport.scrollLeft > 1;
         this.canNext = viewport.scrollLeft < viewport.scrollWidth - viewport.clientWidth - 1;
+        this.currentImage = this.canPrevious && ! this.canNext
+            ? images.length
+            : Math.max(0, firstVisibleImage) + 1;
     },
 
     scroll(direction) {

@@ -17,7 +17,7 @@
 
     @if ($content['images'] !== [])
         <div
-            class="mt-2"
+            class="relative mt-2"
             x-data="imageGallery"
             x-bind:style="{ '--gallery-height': height + 'px' }"
             data-navigate-ignore="true"
@@ -59,6 +59,15 @@
                     @endforeach
                 </div>
             </div>
+            @if (count($content['images']) > 1)
+                <span
+                    class="pointer-events-none absolute top-2 right-2 rounded-full bg-slate-950/70 px-2.5 py-1 text-xs font-medium text-white tabular-nums"
+                    role="status"
+                    aria-label="{{ __('Image :current of :total', ['current' => 1, 'total' => count($content['images'])]) }}"
+                    x-bind:aria-label="@js(__('Image :current of :total')).replace(':current', currentImage).replace(':total', {{ count($content['images']) }})"
+                    x-text="currentImage + '/{{ count($content['images']) }}'"
+                >1/{{ count($content['images']) }}</span>
+            @endif
         </div>
     @elseif ($content['preview'] !== '')
         <div data-navigate-ignore="true">{!! $content['preview'] !!}</div>
