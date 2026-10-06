@@ -24,6 +24,7 @@ test('to array', function (): void {
         'mail_preference_time',
         'github_username',
         'prefers_anonymous_questions',
+        'question_preference',
         'is_company_verified',
         'avatar_updated_at',
         'views',
@@ -32,7 +33,7 @@ test('to array', function (): void {
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
         'default_feed',
-    )->toHaveCount(23);
+    )->toHaveCount(24);
 });
 
 test('is verified', function (): void {
