@@ -27,6 +27,9 @@
             <div class="border border-slate-200/70 bg-slate-50/80 p-6 dark:border-slate-800/30 dark:bg-[#0b1324]">
                 <div class="max-w-xl">
                     @include('profile.partials.update-profile-information-form')
+                    <div class="mt-6 border-t border-slate-200/70 pt-6 dark:border-slate-800/30">
+                        <livewire:profile.question-preferences />
+                    </div>
                 </div>
             </div>
 
