@@ -13,6 +13,14 @@ it('can be listed', function (): void {
         ->assertCanSeeTableRecords($users);
 });
 
+it('lists the newest users first', function (): void {
+    $oldest = User::factory()->create(['created_at' => now()->subDay()]);
+    $newest = User::factory()->create(['created_at' => now()]);
+
+    Livewire::test(UserResource\Pages\Index::class)
+        ->assertCanSeeTableRecords(collect([$newest, $oldest]), inOrder: true);
+});
+
 it('can delete user', function (): void {
     $user = User::factory()->create();
     $anotherUser = User::factory()->create();
