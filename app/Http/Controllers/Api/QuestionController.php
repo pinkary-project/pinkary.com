@@ -34,6 +34,7 @@ final readonly class QuestionController
 
         if ($recipientUsername !== null && $recipientUsername !== $user->username) {
             $recipient = User::where('username', $recipientUsername)->firstOrFail();
+            Gate::authorize('askQuestion', $recipient);
 
             $question = $createQuestionToUser->handle(
                 $user,

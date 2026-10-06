@@ -27,6 +27,6 @@ final readonly class CreateUser
 
         UpdateUserAvatar::dispatchFor($user);
 
-        return $user;
+        return $user->refresh();
     }
 }
