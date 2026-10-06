@@ -1,5 +1,6 @@
 const feedContent = () => ({
     overflowing: false,
+    expanded: false,
     observer: null,
 
     init() {

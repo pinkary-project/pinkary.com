@@ -1,19 +1,23 @@
-@props(['content', 'url'])
+@props(['content'])
 
 <div class="mt-1" x-data="feedContent">
-    <div class="answer max-h-48 overflow-hidden break-words text-slate-700 dark:text-slate-200" x-ref="text">
+    <div
+        class="answer overflow-hidden break-words text-slate-700 dark:text-slate-200"
+        x-bind:class="{ 'max-h-48': ! expanded, 'max-h-none': expanded }"
+        x-ref="text"
+    >
         {!! $content['html'] !!}
     </div>
-    <a
+    <button
+        type="button"
         x-cloak
-        x-show="overflowing"
-        href="{{ $url }}"
-        wire:navigate
+        x-show="overflowing && ! expanded"
+        x-on:click="expanded = true"
         data-navigate-ignore="true"
         class="mt-2 inline-block text-sm font-medium text-pink-500 hover:underline"
     >
         {{ __('View more') }}
-    </a>
+    </button>
 
     @if ($content['images'] !== [])
         <div

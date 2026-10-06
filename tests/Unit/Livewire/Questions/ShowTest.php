@@ -18,7 +18,8 @@ test('feed extracts images after the text while full posts retain inline image p
         ->assertDontSeeHtml('aria-label="Previous images"')
         ->assertSeeHtml('aria-label="Image 1 of 2"')
         ->assertSeeHtml('x-data="imageGallery"')
-        ->assertSeeHtml('x-data="feedContent"');
+        ->assertSeeHtml('x-data="feedContent"')
+        ->assertSeeHtml('x-on:click="expanded = true"');
 
     $detail = Livewire::test(Show::class, ['questionId' => $question->id]);
     $detail->assertViewHas('feedContent')->assertDontSeeHtml('x-data="feedContent"')
