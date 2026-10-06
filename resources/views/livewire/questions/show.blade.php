@@ -163,10 +163,7 @@
                     </div>
 
                     @if ($inIndex)
-                        <x-feed-content
-                            :content="$feedContent"
-                            :url="route('questions.show', ['username' => $question->to->username, 'question' => $question])"
-                        />
+                        <x-feed-content :content="$feedContent" />
                     @else
                         <div
                             class="answer answer-inline-media mt-1 break-words text-slate-700 dark:text-slate-200"
