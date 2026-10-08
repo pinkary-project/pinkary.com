@@ -52,6 +52,19 @@ test('guests can only start the open question experience', function (string $pre
     ['no_one', false],
 ]);
 
+test('question authorization checks the current follow relationship despite a stale profile flag', function (bool $followsSender): void {
+    $sender = User::factory()->create();
+    $recipient = User::factory()->create(['question_preference' => 'following']);
+
+    if ($followsSender) {
+        $recipient->following()->attach($sender);
+    }
+
+    $recipient->setAttribute('follows_me', ! $followsSender);
+
+    expect(Gate::forUser($sender)->allows('askQuestion', $recipient))->toBe($followsSender);
+})->with([true, false]);
+
 test('question write actions enforce the latest preference without side effects', function (bool $apiAction): void {
     $sender = User::factory()->create();
     $recipient = User::factory()->create();

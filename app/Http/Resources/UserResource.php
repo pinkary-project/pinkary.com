@@ -61,7 +61,10 @@ final class UserResource extends JsonResource
             'can_ask_question' => $viewer instanceof User
                 && $viewer->hasVerifiedEmail()
                 && ! $this->isMe($viewer)
-                && Gate::forUser($viewer)->allows('askQuestion', $this->resource),
+                && Gate::forUser($viewer)->allows('askQuestion', [
+                    $this->resource,
+                    isset($this->resource->follows_me) ? (bool) $this->resource->follows_me : null,
+                ]),
             'question_preference' => $this->isMe($viewer) ? $this->resource->question_preference->value : null,
             'gradient' => $this->resource->gradient,
             'link_shape' => $this->resource->link_shape,

@@ -4,6 +4,54 @@ declare(strict_types=1);
 
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
+test('API user list question availability does not add queries per user', function (string $endpoint, bool $followsViewer): void {
+    $viewer = User::factory()->create();
+    $users = User::factory()->count(10)->create(['question_preference' => 'following']);
+    $viewer->following()->attach($users->modelKeys());
+
+    if ($followsViewer) {
+        $viewer->followers()->attach($users->modelKeys());
+    }
+
+    if ($endpoint === 'likes') {
+        $question = Question::factory()->create(['to_id' => $viewer->id]);
+        $question->likes()->createMany($users->map(fn (User $user): array => ['user_id' => $user->id])->all());
+        $url = route('api.v1.questions.likes.index', $question);
+    } else {
+        $target = User::factory()->create();
+        $target->{$endpoint}()->attach($users->modelKeys());
+        $url = route('api.v1.users.'.$endpoint.'.index', $target->username);
+    }
+
+    $headers = ['Authorization' => 'Bearer '.$viewer->createToken('test')->plainTextToken];
+    $followQueryCounts = [];
+
+    foreach ([1, 10] as $size) {
+        auth()->forgetGuards();
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+
+        try {
+            $response = $this->getJson($url.'?per_page='.$size, $headers)->assertOk()->assertJsonCount($size, 'data');
+            $followQueryCounts[] = collect(DB::getQueryLog())
+                ->filter(fn (array $entry): bool => str_starts_with($entry['query'], 'select exists(') && str_contains($entry['query'], 'followers'))
+                ->count();
+        } finally {
+            DB::disableQueryLog();
+            DB::flushQueryLog();
+        }
+
+        foreach ($response->json('data') as $user) {
+            expect($user['can_ask_question'])->toBe($followsViewer)
+                ->and($user['follows_me'])->toBe($followsViewer)
+                ->and($user['followed_by_me'])->toBeTrue();
+        }
+    }
+
+    expect($followQueryCounts)->toBe([0, 0]);
+})->with(['followers', 'following', 'likes'])->with([true, false]);
 
 test('API profiles communicate question availability without exposing another users preference', function (string $preference, bool $followed, bool $allowed): void {
     $sender = User::factory()->create();
