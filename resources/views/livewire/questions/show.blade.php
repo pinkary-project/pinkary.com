@@ -166,7 +166,7 @@
                         <x-feed-content :content="$feedContent" />
                     @else
                         <div
-                            class="answer answer-inline-media mt-1 break-words text-slate-700 dark:text-slate-200"
+                            class="answer answer-inline-media mt-1 wrap-anywhere text-slate-700 dark:text-slate-200"
                             x-data="hasLightBoxImages"
                         >
                             {!! $question->answer !!}
