@@ -52,15 +52,6 @@ test('guests can only start the open question experience', function (string $pre
     ['no_one', false],
 ]);
 
-test('only the owner can change a question preference', function (): void {
-    $owner = User::factory()->create();
-    $stranger = User::factory()->create();
-
-    expect(Gate::forUser($owner)->allows('updateQuestionPreference', $owner))->toBeTrue()
-        ->and(Gate::forUser($stranger)->allows('updateQuestionPreference', $owner))->toBeFalse()
-        ->and(Gate::forUser(null)->allows('updateQuestionPreference', $owner))->toBeFalse();
-});
-
 test('question write actions enforce the latest preference without side effects', function (bool $apiAction): void {
     $sender = User::factory()->create();
     $recipient = User::factory()->create();

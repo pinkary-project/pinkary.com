@@ -22,14 +22,6 @@ final readonly class UserPolicy
     }
 
     /**
-     * Determine whether the user can change the question preference.
-     */
-    public function updateQuestionPreference(User $user, User $target): bool
-    {
-        return $user->id === $target->id;
-    }
-
-    /**
      * Determine whether the user can follow the user.
      */
     public function follow(User $user, User $target): bool

@@ -301,7 +301,6 @@ final class Create extends Component
     #[On([
         'link-settings.updated',
         'question.created',
-        'question-preference.updated',
         'following.updated',
     ])]
     public function refresh(): void
