@@ -53,7 +53,7 @@
             @if ($question->parent !== null)
                 mentioned you in a comment:
             @else
-                mentioned you in {{ $question->isSharedUpdate() ? 'an update:' : 'a post:' }}
+                mentioned you in {{ $question->isSharedUpdate() ? 'an update:' : 'a question:' }}
             @endif
         </p>
 

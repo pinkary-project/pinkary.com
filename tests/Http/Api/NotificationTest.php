@@ -34,7 +34,7 @@ test('question rows carry actor, action, snippet, and target', function (): void
 
     expect($answered['read'])->toBeFalse()
         ->and($answered['actor']['username'])->toBe('ada')
-        ->and($answered['action'])->toBe('answered your post:')
+        ->and($answered['action'])->toBe('answered your question:')
         ->and($answered['snippet'])->toBe('What are you building?')
         ->and($answered['target'])->toMatchArray(['kind' => 'question', 'id' => $question->id]);
 
@@ -61,7 +61,7 @@ test('repost rows carry the reposter and original question', function (): void {
     $reposted = collect($rows)->firstWhere('type', 'QuestionReposted');
 
     expect($reposted['actor']['username'])->toBe('ada')
-        ->and($reposted['action'])->toBe('reposted your post:')
+        ->and($reposted['action'])->toBe('reposted your question:')
         ->and($reposted['snippet'])->toBe('What are you building?')
         ->and($reposted['target']['id'])->toBe($question->id);
 });
@@ -112,7 +112,7 @@ test('a mention in a question is attributed to whoever asked it', function (): v
         ->assertOk()
         ->assertJsonPath('data.0.type', 'UserMentioned')
         ->assertJsonPath('data.0.actor.username', 'ada')
-        ->assertJsonPath('data.0.action', 'mentioned you in a post:')
+        ->assertJsonPath('data.0.action', 'mentioned you in a question:')
         ->assertJsonPath('data.0.snippet', 'What are you building?')
         ->assertJsonPath('data.0.target.kind', 'question');
 });
@@ -189,7 +189,7 @@ test('a mention in a question that was later answered credits the answerer', fun
 
     $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$bob->createToken('test')->plainTextToken])
         ->assertOk()
-        ->assertJsonPath('data.0.action', 'mentioned you in a post:')
+        ->assertJsonPath('data.0.action', 'mentioned you in a question:')
         ->assertJsonPath('data.0.actor.username', 'carol');
 });
 

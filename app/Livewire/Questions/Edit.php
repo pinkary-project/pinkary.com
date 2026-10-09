@@ -129,7 +129,11 @@ final class Edit extends Component
             $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
         }
 
-        $this->dispatch('notification.created', message: $originalAnswer === null ? 'Post answered.' : ($question->isSharedUpdate() ? 'Post updated.' : 'Answer updated.'));
+        $message = $question->isSharedUpdate()
+            ? 'Post updated.'
+            : ($originalAnswer === null ? 'Question answered.' : 'Answer updated.');
+
+        $this->dispatch('notification.created', message: $message);
         $this->dispatch('question.updated');
     }
 
@@ -144,7 +148,7 @@ final class Edit extends Component
 
         $updateQuestionStatus->handle($question, reported: true);
 
-        $this->dispatch('notification.created', message: 'Post reported.');
+        $this->dispatch('notification.created', message: $question->isSharedUpdate() ? 'Post reported.' : 'Question reported.');
         $this->dispatch('question.reported');
     }
 
@@ -153,7 +157,9 @@ final class Edit extends Component
      */
     public function ignore(): void
     {
-        $this->dispatch('notification.created', message: 'Post ignored.');
+        $question = Question::findOrFail($this->questionId);
+
+        $this->dispatch('notification.created', message: $question->isSharedUpdate() ? 'Post ignored.' : 'Question ignored.');
 
         $this->dispatch('question.ignore', questionId: $this->questionId);
     }

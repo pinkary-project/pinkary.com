@@ -24,7 +24,7 @@ test('render', function (): void {
         'toId' => $userB->id,
     ]);
 
-    $component->assertOk()->assertSee('Share a post...');
+    $component->assertOk()->assertSee('Ask a question...');
 });
 
 test('refreshes when link settings changes', function (): void {
@@ -65,7 +65,7 @@ test('store', function (): void {
     $component->assertSet('content', '');
     $component->assertSet('anonymously', true);
 
-    $component->assertDispatched('notification.created', message: 'Post sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
     $component->assertDispatched('close-modal', 'post-create');
 
@@ -121,7 +121,7 @@ test('users with zero followers pass captcha and can store', function (): void {
     $component->call('store');
 
     $component->assertSet('content', '');
-    $component->assertDispatched('notification.created', message: 'Post sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = Question::first();
@@ -243,14 +243,14 @@ test('store rate limit', function (): void {
     $component->call('store');
 
     $component->assertHasErrors([
-        'content' => 'You can only send 3 posts per minute.',
+        'content' => 'You can only send 3 questions per minute.',
     ]);
 
     $component->set('content', 'Hello World');
     $component->call('store');
 
     $component->assertHasErrors([
-        'content' => 'You can only send 3 posts per minute.',
+        'content' => 'You can only send 3 questions per minute.',
     ]);
 });
 
@@ -437,7 +437,7 @@ test('ignores extra thread posts when asking another user', function (): void {
 
     expect(Question::count())->toBe(1);
 
-    $component->assertDispatched('notification.created', message: 'Post sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
 });
 
 test('ignores extra thread posts when commenting on a question', function (): void {
@@ -879,7 +879,7 @@ test('cannot store a poll when asking a question', function (): void {
         ->set('isPoll', true)
         ->set('pollOptions', ['Option 1', 'Option 2'])
         ->call('store')
-        ->assertHasErrors(['pollOptions' => 'Polls are not allowed in this post.']);
+        ->assertHasErrors(['pollOptions' => 'Polls are not allowed when asking a question.']);
 
     expect(Question::count())->toBe(0);
 });
@@ -1084,7 +1084,7 @@ test('store with user questions_preference set to public', function (): void {
     $component->assertSet('content', '');
     $component->assertSet('anonymously', false);
 
-    $component->assertDispatched('notification.created', message: 'Post sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = Question::first();
@@ -1114,7 +1114,7 @@ test('store with user questions_preference set to anonymously', function (): voi
     $component->assertSet('content', '');
     $component->assertSet('anonymously', true);
 
-    $component->assertDispatched('notification.created', message: 'Post sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = Question::first();
@@ -1145,7 +1145,7 @@ test('anonymous set back to user\'s preference after sending a question', functi
     $component->assertSet('content', '');
     $component->assertSet('anonymously', false);
 
-    $component->assertDispatched('notification.created', message: 'Post sent.');
+    $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
 
     $question = Question::first();
@@ -1171,7 +1171,7 @@ test('show "Share an update..." if user is viewing his own profile', function ()
         'toId' => $user2->id,
     ]);
 
-    $component->assertSee('Share a post...');
+    $component->assertSee('Ask a question...');
 });
 
 test('user don\'t see the anonymous checkbox if the user is viewing his own profile', function (): void {

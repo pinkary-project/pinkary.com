@@ -465,9 +465,11 @@
 
         <x-modal max-width="md" name="question.delete.{{ $questionId }}.confirmation">
             <div class="p-8">
-                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">Delete Post</h2>
+                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">
+                    Delete {{ $question->isSharedUpdate() ? 'Post' : 'Question' }}
+                </h2>
                 <div class="mt-4 text-slate-500 dark:text-slate-400">
-                    <p>Are you sure you want to delete this post?</p>
+                    <p>Are you sure you want to delete this {{ $question->isSharedUpdate() ? 'post' : 'question' }}?</p>
                 </div>
                 <div class="mt-4 flex items-center justify-between">
                     <x-secondary-button x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')">

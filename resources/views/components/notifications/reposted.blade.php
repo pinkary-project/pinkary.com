@@ -36,7 +36,9 @@
             </time>
         </div>
 
-        <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">reposted your post:</p>
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            reposted your {{ $question->isSharedUpdate() ? 'post' : 'question' }}:
+        </p>
 
         @if (filled($question->content))
             <div class="mt-1.5 line-clamp-3 text-sm leading-6 break-words text-slate-700 dark:text-slate-200">

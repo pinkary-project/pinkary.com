@@ -132,15 +132,15 @@ final class Show extends Component
             return;
         }
 
+        $question = Question::findOrFail($this->questionId);
+
         if ($this->inIndex) {
-            $this->dispatch('notification.created', message: 'Post ignored.');
+            $this->dispatch('notification.created', message: $question->isSharedUpdate() ? 'Post ignored.' : 'Question ignored.');
 
             $this->dispatch('question.ignore', questionId: $this->questionId);
 
             return;
         }
-
-        $question = Question::findOrFail($this->questionId);
 
         $this->authorize('ignore', $question);
 
@@ -226,7 +226,7 @@ final class Show extends Component
         $repost = $createRepost->handle($question, $user);
 
         if ($repost->wasRecentlyCreated) {
-            $this->dispatch('notification.created', message: 'Post reposted.');
+            $this->dispatch('notification.created', message: $question->isSharedUpdate() ? 'Post reposted.' : 'Question reposted.');
         }
     }
 

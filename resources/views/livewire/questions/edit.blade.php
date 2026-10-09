@@ -48,14 +48,14 @@
                         @if (! $question->answer)
                             <button
                                 wire:click.prevent="ignore"
-                                wire:confirm="Are you sure you want to ignore this post?"
+                                wire:confirm="Are you sure you want to ignore this {{ $question->isSharedUpdate() ? 'post' : 'question' }}?"
                                 class="text-sm text-slate-400 hover:text-slate-500 focus:outline-none"
                             >
                                 {{ __('Ignore') }}
                             </button>
                             <button
                                 wire:click.prevent="report"
-                                wire:confirm="Are you sure you want to report this post?"
+                                wire:confirm="Are you sure you want to report this {{ $question->isSharedUpdate() ? 'post' : 'question' }}?"
                                 class="text-sm text-slate-400 hover:text-red-500 focus:outline-none"
                             >
                                 {{ __('Report') }}

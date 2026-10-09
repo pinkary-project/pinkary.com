@@ -138,7 +138,7 @@ test('ignore', function (): void {
     ]);
 
     $component->call('ignore');
-    $component->assertDispatched('notification.created', message: 'Post ignored.');
+    $component->assertDispatched('notification.created', message: 'Question ignored.');
     $component->assertDispatched('question.ignore');
 });
 
@@ -316,7 +316,7 @@ test('repost', function (): void {
     ]);
 
     $component->call('repost');
-    $component->assertDispatched('notification.created', message: 'Post reposted.');
+    $component->assertDispatched('notification.created', message: 'Question reposted.');
 
     $component->call('repost');
 
