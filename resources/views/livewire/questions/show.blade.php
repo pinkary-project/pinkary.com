@@ -7,13 +7,16 @@
     x-data="copyCode"
 >
     @if ($repost?->user)
-        <div class="flex items-center gap-2 px-4 pb-1 text-sm text-slate-500 dark:text-slate-400">
+        <div class="flex min-w-0 items-center gap-2 px-4 pb-1 text-sm text-slate-500 dark:text-slate-400">
             <img
                 src="{{ $repost->user->avatar_url }}"
                 alt="{{ $repost->user->username }}"
-                class="h-5 w-5 rounded-full"
+                class="h-5 w-5 shrink-0 rounded-full"
             />
-            <span>{{ $repost->user->name }} reposted</span>
+            <p class="min-w-0 flex-1 truncate">
+                <span class="font-medium text-slate-600 dark:text-slate-300">{{ $repost->user->name }}</span>
+                <span>{{ '@'.$repost->user->username }} reposted</span>
+            </p>
         </div>
     @endif
 

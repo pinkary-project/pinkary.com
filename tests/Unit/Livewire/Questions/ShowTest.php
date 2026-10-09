@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Questions\Show;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Notifications\QuestionReposted;
 use Livewire\Livewire;
@@ -321,6 +322,26 @@ test('repost', function (): void {
 
     expect($question->reposts()->whereBelongsTo($user)->count())->toBe(1)
         ->and($question->to->notifications()->where('type', QuestionReposted::class)->count())->toBe(1);
+});
+
+test('repost attribution shows the username and truncates long names', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->create([
+        'name' => str_repeat('A very long display name ', 10),
+        'username' => 'longusername',
+    ]);
+    $repost = Repost::factory()->create([
+        'user_id' => $user->id,
+        'question_id' => $question->id,
+    ]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $question->id,
+        'repostId' => $repost->id,
+        'inIndex' => true,
+    ])
+        ->assertSee('@longusername reposted')
+        ->assertSeeHtml('class="min-w-0 flex-1 truncate"');
 });
 
 test('repost auth', function (): void {
