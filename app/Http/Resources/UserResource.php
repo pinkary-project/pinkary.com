@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\AbsoluteUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Gate;
 
 /** @property User $resource */
 final class UserResource extends JsonResource
@@ -57,6 +58,14 @@ final class UserResource extends JsonResource
                 ? (bool) $this->resource->follows_me
                 : ($viewer instanceof User && (bool) $this->resource->following()->where('user_id', $viewer->id)->exists()),
             'is_me' => $this->isMe($viewer),
+            'can_ask_question' => $viewer instanceof User
+                && $viewer->hasVerifiedEmail()
+                && ! $this->isMe($viewer)
+                && Gate::forUser($viewer)->allows('askQuestion', [
+                    $this->resource,
+                    isset($this->resource->follows_me) ? (bool) $this->resource->follows_me : null,
+                ]),
+            'question_preference' => $this->isMe($viewer) ? $this->resource->question_preference->value : null,
             'gradient' => $this->resource->gradient,
             'link_shape' => $this->resource->link_shape,
             'links' => $this->links(),

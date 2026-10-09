@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
+use App\Enums\UserQuestionPreference;
 use App\Services\ParsableBio;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
@@ -28,6 +29,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property bool $prefers_anonymous_questions
+ * @property UserQuestionPreference $question_preference
  * @property string|null $avatar
  * @property string $avatar_url
  * @property string|null $bio
@@ -340,6 +342,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',
+            'question_preference' => UserQuestionPreference::class,
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
             'default_feed' => UserDefaultFeed::class,

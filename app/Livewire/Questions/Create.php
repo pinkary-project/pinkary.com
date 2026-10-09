@@ -6,6 +6,7 @@ namespace App\Livewire\Questions;
 
 use App\Actions\Channels\CreateChannel;
 use App\Actions\Questions\CreateQuestion;
+use App\Enums\UserQuestionPreference;
 use App\Livewire\Concerns\HasChannelPicker;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Channel;
@@ -18,6 +19,7 @@ use App\Services\ImageProcessor;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -299,6 +301,7 @@ final class Create extends Component
     #[On([
         'link-settings.updated',
         'question.created',
+        'following.updated',
     ])]
     public function refresh(): void
     {
@@ -322,6 +325,10 @@ final class Create extends Component
 
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
+        }
+
+        if (! $this->isSharingUpdate && blank($this->parentId) && $this->toId !== null) {
+            $this->authorize('askQuestion', User::query()->findOrFail($this->toId));
         }
 
         // Treat whitespace-only rows as empty and keep each row's poll state aligned.
@@ -559,6 +566,14 @@ final class Create extends Component
 
         if (filled($this->toId)) {
             $user = $user->findOrFail($this->toId);
+        }
+
+        if (! $this->isSharingUpdate && blank($this->parentId) && filled($this->toId) && Gate::denies('askQuestion', $user)) {
+            return view('livewire.questions.unavailable', [
+                'message' => $user->question_preference === UserQuestionPreference::NoOne
+                    ? __("This user isn't accepting questions right now.")
+                    : __("This user isn't accepting questions from you right now."),
+            ]);
         }
 
         return view('livewire.questions.create', [

@@ -6,6 +6,7 @@ namespace App\Http\Requests\Api;
 
 use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
+use App\Enums\UserQuestionPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\NoEmailAlias;
@@ -45,6 +46,7 @@ final class UpdateProfileRequest extends FormRequest
             'mail_preference_time' => ['sometimes', Rule::enum(UserMailPreference::class)],
             'default_feed' => ['sometimes', Rule::enum(UserDefaultFeed::class)],
             'prefers_anonymous_questions' => ['sometimes', 'boolean'],
+            'question_preference' => ['sometimes', Rule::enum(UserQuestionPreference::class)],
             'avatar' => ['sometimes', 'file', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'link_shape' => ['sometimes', 'string', 'in:rounded-none,rounded-lg,rounded-full'],
             'gradient' => [

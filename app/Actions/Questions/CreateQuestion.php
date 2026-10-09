@@ -9,6 +9,7 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 final readonly class CreateQuestion
 {
@@ -33,6 +34,10 @@ final readonly class CreateQuestion
             $created = [];
 
             foreach ($payloads as $index => $payload) {
+                if ($payload['to_id'] !== $user->id && empty($payload['parent_id'])) {
+                    Gate::forUser($user)->authorize('askQuestion', User::query()->findOrFail($payload['to_id']));
+                }
+
                 if ($index > 0) {
                     $payload['parent_id'] = $created[$index - 1]->id;
                     $payload['root_id'] = $created[0]->id;

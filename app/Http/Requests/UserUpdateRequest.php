@@ -6,6 +6,7 @@ namespace App\Http\Requests;
 
 use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
+use App\Enums\UserQuestionPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\NoEmailAlias;
@@ -42,6 +43,7 @@ final class UserUpdateRequest extends FormRequest
             'default_feed' => [Rule::enum(UserDefaultFeed::class)],
             'bio' => ['nullable', 'string', 'max:255'],
             'prefers_anonymous_questions' => ['required', 'boolean'],
+            'question_preference' => [Rule::enum(UserQuestionPreference::class)],
         ];
     }
 }

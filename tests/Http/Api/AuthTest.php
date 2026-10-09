@@ -33,6 +33,7 @@ test('a user can register through the API', function (): void {
 
     $response->assertCreated()
         ->assertJsonStructure(['data', 'token'])
+        ->assertJsonPath('data.question_preference', 'everyone')
         ->assertJsonPath('data.username', 'pinkaryuser');
 
     expect(User::query()->where('email', 'pinkary@example.com')->exists())->toBeTrue();

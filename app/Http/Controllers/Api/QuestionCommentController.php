@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Questions\CreateQuestion;
 use App\Actions\Questions\EnsureCanPublish;
 use App\Http\Requests\Api\PaginatedRequest;
 use App\Http\Requests\Api\StoreCommentRequest;
@@ -44,6 +45,7 @@ final readonly class QuestionCommentController
         Question $question,
         ThreadedQuestionQuery $threaded,
         EnsureCanPublish $ensureCanPublish,
+        CreateQuestion $createQuestion,
     ): JsonResponse {
         Gate::authorize('view', $question);
 
@@ -52,7 +54,7 @@ final readonly class QuestionCommentController
 
         $ensureCanPublish->handle($user);
 
-        $comment = $user->questionsSent()->create([
+        $comment = $createQuestion->handle($user, [[
             'to_id' => $user->id,
             // Replies need a non-null answer to appear in RecentQuestionsFeed.
             'content' => '__UPDATE__',
@@ -60,7 +62,7 @@ final readonly class QuestionCommentController
             'answer_created_at' => now(),
             'parent_id' => $question->id,
             'root_id' => $question->root_id ?? $question->id,
-        ]);
+        ]], [], [], null)[0];
 
         $thread = $threaded->get(Question::query()->findOrFail($comment->id), $user->id);
 

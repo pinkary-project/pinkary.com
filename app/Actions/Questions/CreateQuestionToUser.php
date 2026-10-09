@@ -10,8 +10,13 @@ use App\Queries\Feeds\FeedQuestion;
 
 final readonly class CreateQuestionToUser
 {
-    /** Configure question publishing. */
+    /**
+     * @param  CreateQuestion  $createQuestion  Persists the question through the shared writer.
+     * @param  EnsureCanPublish  $ensureCanPublish  Refuses the post when the
+     *                                              author is over their quota.
+     */
     public function __construct(
+        private CreateQuestion $createQuestion,
         private EnsureCanPublish $ensureCanPublish,
     ) {}
 
@@ -20,11 +25,11 @@ final readonly class CreateQuestionToUser
     {
         $this->ensureCanPublish->handle($from, 1);
 
-        $question = $from->questionsSent()->create([
+        $question = $this->createQuestion->handle($from, [[
             'to_id' => $to->id,
             'content' => $content,
             'anonymously' => $anonymously,
-        ]);
+        ]], [], [], null)[0];
 
         return (new FeedQuestion)(Question::query()->whereKey($question->id), $from->id)->firstOrFail();
     }

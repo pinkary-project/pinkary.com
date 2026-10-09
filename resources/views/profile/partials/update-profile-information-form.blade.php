@@ -1,6 +1,7 @@
 @php
     use App\Enums\UserDefaultFeed;
     use App\Enums\UserMailPreference;
+    use App\Enums\UserQuestionPreference;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
 
@@ -133,6 +134,23 @@
                 required
             />
             <x-input-error class="mt-2" :messages="$errors->get('prefers_anonymous_questions')" />
+        </div>
+
+        <div>
+            <x-input-label for="question_preference" :value="__('Who can ask you questions?')" />
+            <x-select-input
+                id="question_preference"
+                name="question_preference"
+                class="mt-1 block w-full"
+                :options="UserQuestionPreference::toArray()"
+                :value="old('question_preference', $user->question_preference->value)"
+                aria-describedby="question-preference-help"
+                required
+            />
+            <p id="question-preference-help" class="mt-2 text-sm text-slate-500">
+                {{ __('Following allows questions only from people you follow.') }}
+            </p>
+            <x-input-error class="mt-2" :messages="$errors->get('question_preference')" />
         </div>
 
         <div class="flex items-center gap-4">
