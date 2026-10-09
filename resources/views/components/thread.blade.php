@@ -12,7 +12,7 @@
 @php($threadKey = $feedKey ?? $questionId)
 
 <div wire:key="thread-inner-{{ $threadKey.'-'.$rootId.'-'.$parentId }}">
-    @if ($rootId !== null)
+    @if ($repostId === null && $rootId !== null)
         <livewire:questions.show
             :questionId="$rootId"
             :in-thread="true"
@@ -31,7 +31,7 @@
         @endif
     @endif
 
-    @if ($parentId !== null && $rootId !== $parentId)
+    @if ($repostId === null && $parentId !== null && $rootId !== $parentId)
         <livewire:questions.show
             :questionId="$parentId"
             :in-thread="$rootId !== null"
