@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
  * @property int|null $channel_id
+ * @property string|null $quoted_question_id
  * @property-read User $from
  * @property-read User $to
  * @property-read Channel|null $channel
@@ -50,6 +51,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
  * @property-read Collection<int, Question> $descendants
+ * @property-read Question|null $quotedQuestion
+ * @property-read Collection<int, Question> $quotes
  * @property-read Collection<int, Hashtag> $hashtags
  * @property-read Collection<int, PollOption> $pollOptions
  * @property-read Collection<int, Question> $threadChain
@@ -212,6 +215,26 @@ final class Question extends Model implements Viewable
     public function reposts(): HasMany
     {
         return $this->hasMany(Repost::class);
+    }
+
+    /**
+     * Get the post quoted by this post.
+     *
+     * @return BelongsTo<Question, $this>
+     */
+    public function quotedQuestion(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'quoted_question_id');
+    }
+
+    /**
+     * Get the posts quoting this post.
+     *
+     * @return HasMany<Question, $this>
+     */
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(self::class, 'quoted_question_id');
     }
 
     /**
