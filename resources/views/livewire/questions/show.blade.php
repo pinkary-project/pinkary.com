@@ -15,7 +15,7 @@
             />
             <p class="min-w-0 flex-1 truncate">
                 <span class="font-medium text-slate-600 dark:text-slate-300">{{ $repost->user->name }}</span>
-                <span>{{ '@'.$repost->user->username }} reposted</span>
+                <span>reposted</span>
             </p>
         </div>
     @endif

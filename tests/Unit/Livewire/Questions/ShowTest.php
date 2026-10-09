@@ -342,7 +342,9 @@ test('repost attribution shows the username and truncates long names', function 
         'repostId' => $repost->id,
         'inIndex' => true,
     ])
-        ->assertSee('@longusername reposted')
+        ->assertSee($user->name)
+        ->assertSee('reposted')
+        ->assertDontSee('@longusername reposted')
         ->assertSeeHtml('class="min-w-0 flex-1 truncate"');
 });
 
