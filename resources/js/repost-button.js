@@ -5,6 +5,7 @@ const repostButton = (id, isAuthenticated) => ({
     isAuthenticated,
     isReposted: false,
     count: 0,
+    pending: false,
     repostButtonTitle: '',
     repostButtonText: '',
 
@@ -23,19 +24,27 @@ const repostButton = (id, isAuthenticated) => ({
         this.repostButtonText = this.count === 0 ? '' : abbreviate(this.count);
     },
 
-    toggleRepost() {
+    async toggleRepost() {
         if (! this.isAuthenticated) {
             window.Livewire.navigate('/login');
 
             return;
         }
 
-        if (this.isReposted) {
-            this.$wire.unrepost(id);
-            this.$dispatch('question.unreposted', { id });
-        } else {
-            this.$wire.repost(id);
-            this.$dispatch('question.reposted', { id });
+        if (this.pending) {
+            return;
+        }
+
+        this.pending = true;
+
+        try {
+            if (this.isReposted) {
+                await this.$wire.unrepost(id);
+            } else {
+                await this.$wire.repost(id);
+            }
+        } finally {
+            this.pending = false;
         }
     },
 

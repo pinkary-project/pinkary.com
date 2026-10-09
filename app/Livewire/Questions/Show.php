@@ -226,6 +226,7 @@ final class Show extends Component
         $repost = $createRepost->handle($question, $user);
 
         if ($repost->wasRecentlyCreated) {
+            $this->dispatch('question.reposted', id: $question->id);
             $this->dispatch('notification.created', message: $question->isSharedUpdate() ? 'Post reposted.' : 'Question reposted.');
         }
     }
@@ -259,6 +260,7 @@ final class Show extends Component
         $this->authorize('delete', $repost);
 
         if ($deleteRepost->handle($repost)) {
+            $this->dispatch('question.unreposted', id: $question->id);
             $this->dispatch('notification.created', message: 'Repost removed.');
         }
     }

@@ -13,6 +13,8 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 
 #[On('question.created')]
+#[On('question.reposted')]
+#[On('question.unreposted')]
 final class QuestionsFollowing extends Component
 {
     use HasLoadMore;

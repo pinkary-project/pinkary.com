@@ -245,6 +245,7 @@
                                 data-is-reposted="@js($question->is_reposted)"
                                 data-reposts-count="{{ $question->reposts_count }}"
                                 x-cloak
+                                x-bind:disabled="pending"
                                 data-navigate-ignore="true"
                                 x-on:click="toggleRepost"
                                 :title="repostButtonTitle"
