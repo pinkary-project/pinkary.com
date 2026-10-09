@@ -44,6 +44,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property-read User $to
  * @property-read Channel|null $channel
  * @property-read Collection<int, Like> $likes
+ * @property-read Collection<int, Repost> $reposts
+ * @property-read User|null $repostedBy
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
@@ -200,6 +202,38 @@ final class Question extends Model implements Viewable
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get the reposts for the question.
+     *
+     * @return HasMany<Repost, $this>
+     */
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(Repost::class);
+    }
+
+    /**
+     * Get the user who created the feed repost event.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function repostedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reposted_by_id');
+    }
+
+    /** Read the optional feed repost id when a query selected it. */
+    public function getRepostIdAttribute(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    /** Read the optional feed reposter id when a query selected it. */
+    public function getRepostedByIdAttribute(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
     }
 
     /**

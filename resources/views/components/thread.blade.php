@@ -5,15 +5,19 @@
     'questionId' => null,
     'username' => null,
     'inIndex' => true,
+    'repostId' => null,
+    'feedKey' => null,
 ])
 
-<div wire:key="thread-inner-{{ $questionId.'-'.$rootId.'-'.$parentId }}">
+@php($threadKey = $feedKey ?? $questionId)
+
+<div wire:key="thread-inner-{{ $threadKey.'-'.$rootId.'-'.$parentId }}">
     @if ($rootId !== null)
         <livewire:questions.show
             :questionId="$rootId"
             :in-thread="true"
             :in-index="$inIndex"
-            :key="'question-'.$rootId"
+            :key="'question-'.$threadKey.'-'.$rootId"
         />
 
         @if ($grandParentId !== null && ($parentId === null || $grandParentId !== $rootId))
@@ -32,7 +36,7 @@
             :questionId="$parentId"
             :in-thread="$rootId !== null"
             :in-index="$inIndex"
-            :key="'question-'.$parentId"
+            :key="'question-'.$threadKey.'-'.$parentId"
         />
 
         <x-post-divider wire:key="divider-{{ $questionId }}" />
@@ -40,8 +44,9 @@
 
     <livewire:questions.show
         :questionId="$questionId"
+        :repostId="$repostId"
         :in-thread="false"
         :in-index="$inIndex"
-        :key="'question-'.$questionId"
+        :key="'question-'.$threadKey.'-'.$questionId"
     />
 </div>

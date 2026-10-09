@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,10 +33,9 @@ final readonly class UserQuestionsFeed
                 $query->whereNotNull('answer');
             });
 
-        $builder = $this->user->questionsReceived()->getQuery();
-
-        $builder
-            ->select('questions.id', 'questions.root_id', 'questions.parent_id', 'questions.pinned')
+        $questions = $this->user->questionsReceived()->getQuery()
+            ->selectRaw('questions.id as question_id')
+            ->selectRaw('NULL as repost_id, NULL as reposted_by_id, grouped_questions.last_update as feed_at')
             ->joinSub(
                 $latestInThread,
                 'grouped_questions',
@@ -43,15 +43,6 @@ final readonly class UserQuestionsFeed
                 '=',
                 'grouped_questions.latest_id',
             )
-            ->withExists([
-                'root as showRoot' => function (Builder $query): void {
-                    $query->where('to_id', $this->user->id);
-                },
-                'parent as showParent' => function (Builder $query): void {
-                    $query->where('to_id', $this->user->id);
-                },
-            ])
-            ->with('parent:id,parent_id')
             ->where('grouped_questions.thread_rank', 1)
             ->tap(new WhereNotModerated)
             ->when($this->user->id !== $this->viewerId, function (Builder $query): void {
@@ -68,6 +59,26 @@ final readonly class UserQuestionsFeed
                     ->orWhereHas('parent', $belongsToUser);
             });
 
+        $reposts = Repost::query()
+            ->join('questions', 'questions.id', '=', 'reposts.question_id')
+            ->selectRaw('questions.id as question_id')
+            ->selectRaw('reposts.id as repost_id, reposts.user_id as reposted_by_id, reposts.created_at as feed_at')
+            ->where('reposts.user_id', $this->user->id)
+            ->whereNotNull('questions.answer')
+            ->where('questions.is_ignored', false)
+            ->where('questions.is_reported', false);
+
+        $builder = new FeedItems()->merge($questions, $reposts)
+            ->withExists([
+                'root as showRoot' => function (Builder $query): void {
+                    $query->where('to_id', $this->user->id);
+                },
+                'parent as showParent' => function (Builder $query): void {
+                    $query->where('to_id', $this->user->id);
+                },
+            ])
+            ->with('parent:id,parent_id');
+
         if ($includePinned) {
             $builder->orderByDesc('questions.pinned');
         } else {
@@ -75,7 +86,7 @@ final readonly class UserQuestionsFeed
         }
 
         return $builder
-            ->orderByDesc('grouped_questions.last_update')
+            ->orderByDesc('feed_items.feed_at')
             ->orderByDesc('questions.id');
     }
 }

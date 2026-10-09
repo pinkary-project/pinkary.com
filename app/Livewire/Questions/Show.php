@@ -6,12 +6,15 @@ namespace App\Livewire\Questions;
 
 use App\Actions\Questions\CreateBookmark;
 use App\Actions\Questions\CreateLike;
+use App\Actions\Questions\CreateRepost;
 use App\Actions\Questions\DeleteBookmark;
 use App\Actions\Questions\DeleteLike;
+use App\Actions\Questions\DeleteRepost;
 use App\Actions\Questions\UpdateQuestionPin;
 use App\Actions\Questions\UpdateQuestionStatus;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Services\FeedContent;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -32,6 +35,12 @@ final class Show extends Component
      */
     #[Locked]
     public string $questionId;
+
+    /**
+     * The repost event that opened this question in a feed.
+     */
+    #[Locked]
+    public ?int $repostId = null;
 
     /**
      * Determine if this is currently being viewed in the index (list) view.
@@ -193,6 +202,68 @@ final class Show extends Component
     }
 
     /**
+     * Repost the question.
+     */
+    #[Renderless]
+    public function repost(CreateRepost $createRepost): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $this->authorize('repost', $question);
+
+        /** @var User $user */
+        $user = auth()->user();
+        $repost = $createRepost->handle($question, $user);
+
+        if ($repost->wasRecentlyCreated) {
+            $this->dispatch('notification.created', message: 'Question reposted.');
+        }
+    }
+
+    /**
+     * Remove the user's repost.
+     */
+    #[Renderless]
+    public function unrepost(DeleteRepost $deleteRepost): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        /** @var User $user */
+        $user = auth()->user();
+        $repost = $question->reposts()->whereBelongsTo($user)->first();
+
+        if ($repost === null) {
+            return;
+        }
+
+        $this->authorize('delete', $repost);
+
+        if ($deleteRepost->handle($repost)) {
+            $this->dispatch('notification.created', message: 'Question unreposted.');
+        }
+    }
+
+    /**
      * Pin a question.
      */
     public function pin(#[CurrentUser] ?User $user, UpdateQuestionPin $updateQuestionPin): void
@@ -313,16 +384,23 @@ final class Show extends Component
                 $query->where('user_id', auth()->id());
             }, 'likes as is_liked' => function (Builder $query): void {
                 $query->where('user_id', auth()->id());
+            }, 'reposts as is_reposted' => function (Builder $query): void {
+                $query->where('user_id', auth()->id());
             }])
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
-            ->withCount(['likes', 'children', 'bookmarks'])
+            ->withCount(['likes', 'children', 'bookmarks', 'reposts'])
             ->firstOrFail();
+
+        $repost = $this->repostId === null
+            ? null
+            : Repost::query()->with('user')->find($this->repostId);
 
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
+            'repost' => $repost,
             'feedContent' => $this->inIndex ? $feedContent->parse($question->answer ?? '') : null,
         ]);
     }

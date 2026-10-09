@@ -47,6 +47,23 @@
                         <x-notifications.user-followed :notification="$notification" :follower="$follower" />
                     </x-notifications.item>
                 @endif
+            @elseif ($notification->type === \App\Notifications\QuestionReposted::class)
+                @php
+                    /** @var \App\Models\Question|null $question */
+                    $question = $questions->get($notification->data['question_id'] ?? null);
+                    /** @var \App\Models\Repost|null $repost */
+                    $repost = $reposts->get($notification->data['repost_id'] ?? null);
+                @endphp
+
+                @if ($question !== null && $repost !== null)
+                    <x-notifications.item :notification="$notification">
+                        <x-notifications.reposted
+                            :notification="$notification"
+                            :question="$question"
+                            :repost="$repost"
+                        />
+                    </x-notifications.item>
+                @endif
             @endif
         @endforeach
 

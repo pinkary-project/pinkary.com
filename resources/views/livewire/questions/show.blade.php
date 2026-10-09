@@ -6,6 +6,17 @@
     id="q-{{ $questionId }}"
     x-data="copyCode"
 >
+    @if ($repost?->user)
+        <div class="flex items-center gap-2 px-4 pb-1 text-sm text-slate-500 dark:text-slate-400">
+            <img
+                src="{{ $repost->user->avatar_url }}"
+                alt="{{ $repost->user->username }}"
+                class="h-5 w-5 rounded-full"
+            />
+            <span>{{ $repost->user->name }} reposted</span>
+        </div>
+    @endif
+
     @php
         $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
         $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
@@ -222,6 +233,23 @@
                                 <x-heroicon-s-heart class="h-4 w-4 text-pink-500" x-show="isLiked" />
                                 <x-heroicon-o-heart class="h-4 w-4" x-show="! isLiked" />
                                 <span x-show="count" x-text="likeButtonText"></span>
+                            </button>
+
+                            <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
+                            <button
+                                x-data="repostButton('{{ $question->id }}', @js(auth()->check()))"
+                                data-is-reposted="@js($question->is_reposted)"
+                                data-reposts-count="{{ $question->reposts_count }}"
+                                x-cloak
+                                data-navigate-ignore="true"
+                                x-on:click="toggleRepost"
+                                :title="repostButtonTitle"
+                                class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
+                            >
+                                <x-heroicon-o-arrow-path class="h-4 w-4" x-show="! isReposted" />
+                                <x-heroicon-s-arrow-path class="h-4 w-4 text-pink-500" x-show="isReposted" />
+                                <span x-show="count" x-text="repostButtonText"></span>
                             </button>
 
                             <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>

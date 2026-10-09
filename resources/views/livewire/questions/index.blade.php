@@ -17,6 +17,8 @@
                 :grandParentId="$question->parent?->parent_id"
                 :parentId="$question->showParent ? $question->parent_id : null"
                 :questionId="$question->id"
+                :repostId="$question->repost_id ?? null"
+                :feedKey="$question->repost_id ?? $question->id"
                 :username="$user->username"
             />
         </div>

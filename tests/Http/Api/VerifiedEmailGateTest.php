@@ -45,7 +45,7 @@ test('an unverified user cannot comment', function (): void {
     ], $headers)->assertForbidden();
 });
 
-test('an unverified user cannot like, bookmark, pin or ignore', function (): void {
+test('an unverified user cannot like, bookmark, repost, pin or ignore', function (): void {
     $author = User::factory()->create();
     $question = Question::factory()->create([
         'from_id' => $author->id,
@@ -60,6 +60,8 @@ test('an unverified user cannot like, bookmark, pin or ignore', function (): voi
     $this->deleteJson(route('api.v1.questions.unlike', $question), [], $headers)->assertForbidden();
     $this->postJson(route('api.v1.questions.bookmark', $question), [], $headers)->assertForbidden();
     $this->deleteJson(route('api.v1.questions.unbookmark', $question), [], $headers)->assertForbidden();
+    $this->postJson(route('api.v1.questions.repost', $question), [], $headers)->assertForbidden();
+    $this->deleteJson(route('api.v1.questions.unrepost', $question), [], $headers)->assertForbidden();
     $this->postJson(route('api.v1.questions.pin', $question), [], $headers)->assertForbidden();
     $this->deleteJson(route('api.v1.questions.unpin', $question), [], $headers)->assertForbidden();
     $this->postJson(route('api.v1.questions.ignore', $question), ['ignored' => true], $headers)->assertForbidden();

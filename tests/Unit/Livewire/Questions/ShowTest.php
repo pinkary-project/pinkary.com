@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Livewire\Questions\Show;
 use App\Models\Question;
 use App\Models\User;
+use App\Notifications\QuestionReposted;
 use Livewire\Livewire;
 
 test('feed extracts images after the text while full posts retain inline image positions', function (): void {
@@ -303,6 +304,66 @@ test('like unverified user', function (): void {
     $component->assertRedirect(route('verification.notice'));
 
     expect($question->likes()->count())->toBe(0);
+});
+
+test('repost', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+    $component->assertDispatched('notification.created', message: 'Question reposted.');
+
+    $component->call('repost');
+
+    expect($question->reposts()->whereBelongsTo($user)->count())->toBe(1)
+        ->and($question->to->notifications()->where('type', QuestionReposted::class)->count())->toBe(1);
+});
+
+test('repost auth', function (): void {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+
+    $component->assertRedirect(route('login'));
+    expect($question->reposts()->count())->toBe(0);
+});
+
+test('repost unverified user', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+
+    $component->assertRedirect(route('verification.notice'));
+    expect($question->reposts()->count())->toBe(0);
+});
+
+test('unrepost', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+    $component->call('unrepost');
+
+    $component->assertDispatched('notification.created', message: 'Question unreposted.');
+    expect($question->reposts()->count())->toBe(0)
+        ->and($question->to->notifications()->where('type', QuestionReposted::class)->count())->toBe(0);
 });
 
 test('unlike', function (): void {

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\UserFollowed;
@@ -38,6 +39,31 @@ test('question rows carry actor, action, snippet, and target', function (): void
         ->and($answered['target'])->toMatchArray(['kind' => 'question', 'id' => $question->id]);
 
     $this->getJson(route('api.v1.notifications.index'), $headers)->assertJsonPath('meta.unread_count', count($rows));
+});
+
+test('repost rows carry the reposter and original question', function (): void {
+    $owner = User::factory()->create();
+    $reposter = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $question = Question::factory()->create([
+        'to_id' => $owner->id,
+        'content' => 'What are you building?',
+        'answer' => 'A thoughtful answer.',
+        'answer_created_at' => now(),
+    ]);
+    $repost = Repost::factory()->create([
+        'user_id' => $reposter->id,
+        'question_id' => $question->id,
+    ]);
+    $rows = $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->json('data');
+
+    $reposted = collect($rows)->firstWhere('type', 'QuestionReposted');
+
+    expect($reposted['actor']['username'])->toBe('ada')
+        ->and($reposted['action'])->toBe('reposted your question:')
+        ->and($reposted['snippet'])->toBe('What are you building?')
+        ->and($reposted['target']['id'])->toBe($question->id);
 });
 
 test('follow rows target the follower profile', function (): void {

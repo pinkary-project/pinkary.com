@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Actions\Notifications;
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
+use App\Notifications\QuestionReposted;
 use App\Notifications\UserFollowed;
 use App\Notifications\UserMentioned;
 use App\Support\AbsoluteUrl;
@@ -20,6 +22,7 @@ final readonly class FormatNotificationRow
     /**
      * @param  Collection<string, Question>  $questions
      * @param  Collection<int, User>  $followers
+     * @param  Collection<int, Repost>  $reposts
      * @return array<string, mixed>|null
      */
     public function handle(
@@ -27,12 +30,14 @@ final readonly class FormatNotificationRow
         User $viewer,
         Collection $questions,
         Collection $followers,
+        Collection $reposts,
         Request $request,
     ): ?array {
         $row = match ($notification->type) {
             UserFollowed::class => $this->followedRow($notification, $followers, $request),
             UserMentioned::class => $this->mentionRow($notification, $questions, $request),
             QuestionCreated::class, QuestionAnswered::class => $this->questionRow($notification, $viewer, $questions, $request),
+            QuestionReposted::class => $this->repostedRow($notification, $questions, $reposts, $request),
             default => null,
         };
 
@@ -143,10 +148,33 @@ final readonly class FormatNotificationRow
 
     /**
      * @param  Collection<string, Question>  $questions
+     * @param  Collection<int, Repost>  $reposts
+     * @return array<string, mixed>|null
+     */
+    private function repostedRow(DatabaseNotification $notification, Collection $questions, Collection $reposts, Request $request): ?array
+    {
+        $question = $this->findQuestion($notification, $questions);
+        $repostId = $notification->data['repost_id'] ?? null;
+        $repost = is_int($repostId) ? $reposts->get($repostId) : null;
+
+        if (! $question instanceof Question || ! $repost instanceof Repost || ! $repost->user instanceof User) {
+            return null;
+        }
+
+        return [
+            'actor' => $this->actor($repost->user, $request),
+            'action' => 'reposted your question:',
+            'snippet' => $this->snippet($question),
+            'target' => ['kind' => 'question', 'id' => $question->id],
+        ];
+    }
+
+    /**
+     * @param  Collection<string, Question>  $questions
      */
     private function findQuestion(DatabaseNotification $notification, Collection $questions): ?Question
     {
-        if (! in_array($notification->type, [UserMentioned::class, QuestionCreated::class, QuestionAnswered::class], true)) {
+        if (! in_array($notification->type, [UserMentioned::class, QuestionCreated::class, QuestionAnswered::class, QuestionReposted::class], true)) {
             return null;
         }
 
