@@ -69,7 +69,7 @@
         $answer = $question->answer ? $toMeta($question->answer) : null;
         $isSharedUpdate = $question->isSharedUpdate();
         $ogTitle = ($isSharedUpdate ? $question->to->name.' On Pinkary' : $question->to->name.': "'.$answer.'" / Pinkary');
-        $ogDescription = ($isSharedUpdate ? $answer : ($question->anonymously ? 'Question' : 'Question from '.$question->from->name).': "'.$content.'"');
+        $ogDescription = ($isSharedUpdate ? $answer : ($question->anonymously ? 'Post' : 'Post from '.$question->from->name).': "'.$content.'"');
     @endphp
 
     <meta property="og:description" content="{{ $ogDescription }}" data-rh="true" />

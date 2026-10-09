@@ -91,7 +91,7 @@ it('can filter questions to those with a particular hashtag', function (): void 
         )
         ->assertSee('question 1')
         ->assertDontSee('question 2')
-        ->assertDontSee('There are no questions to show.');
+        ->assertDontSee('There are no posts to show.');
 });
 
 it('can see the post create button in navigation when authenticated', function (): void {

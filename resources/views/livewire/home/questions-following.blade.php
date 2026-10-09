@@ -18,7 +18,7 @@
                     {{ __('Your following feed is empty.') }}
                 </p>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    {{ __('Follow more people or check back once they publish new questions.') }}
+                    {{ __('Follow more people or check back once they publish new posts.') }}
                 </p>
             </div>
         @endforelse
@@ -26,7 +26,7 @@
         <x-load-more-button
             :perPage="$perPage"
             :paginator="$followingQuestions"
-            message="There are no more questions to load, or you have scrolled too far."
+            message="There are no more posts to load, or you have scrolled too far."
         />
     </section>
 </div>

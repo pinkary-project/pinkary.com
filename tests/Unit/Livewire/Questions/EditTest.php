@@ -112,7 +112,7 @@ test('ignore', function (): void {
 
     $component->call('ignore');
 
-    $component->assertDispatched('notification.created', message: 'Question ignored.');
+    $component->assertDispatched('notification.created', message: 'Post ignored.');
     $component->assertDispatched('question.ignore', questionId: $this->question->id);
 });
 

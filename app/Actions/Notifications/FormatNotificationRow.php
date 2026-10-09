@@ -100,7 +100,7 @@ final readonly class FormatNotificationRow
             'actor' => $this->actor($author, $request),
             'action' => $question->parent_id !== null
                 ? 'mentioned you in a comment:'
-                : 'mentioned you in '.($question->isSharedUpdate() ? 'an update:' : 'a question:'),
+                : 'mentioned you in '.($question->isSharedUpdate() ? 'an update:' : 'a post:'),
             'snippet' => $this->snippet($question),
             'target' => ['kind' => 'question', 'id' => $question->id],
         ];
@@ -129,7 +129,7 @@ final readonly class FormatNotificationRow
                 : ($question->parent?->isSharedUpdate() ? 'Update:' : 'Answer:'));
         } elseif ($isAnswer) {
             $actor = $question->to;
-            $action = 'answered your '.($question->anonymously ? 'anonymous question:' : 'question:');
+            $action = 'answered your '.($question->anonymously ? 'anonymous post:' : 'post:');
         } elseif ($isAnonymous) {
             $actor = null;
             $action = 'asked you anonymously:';
@@ -163,7 +163,7 @@ final readonly class FormatNotificationRow
 
         return [
             'actor' => $this->actor($repost->user, $request),
-            'action' => 'reposted your question:',
+            'action' => 'reposted your post:',
             'snippet' => $this->snippet($question),
             'target' => ['kind' => 'question', 'id' => $question->id],
         ];

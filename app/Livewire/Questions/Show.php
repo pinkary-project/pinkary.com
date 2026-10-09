@@ -133,7 +133,7 @@ final class Show extends Component
         }
 
         if ($this->inIndex) {
-            $this->dispatch('notification.created', message: 'Question ignored.');
+            $this->dispatch('notification.created', message: 'Post ignored.');
 
             $this->dispatch('question.ignore', questionId: $this->questionId);
 
@@ -226,7 +226,7 @@ final class Show extends Component
         $repost = $createRepost->handle($question, $user);
 
         if ($repost->wasRecentlyCreated) {
-            $this->dispatch('notification.created', message: 'Question reposted.');
+            $this->dispatch('notification.created', message: 'Post reposted.');
         }
     }
 
@@ -259,7 +259,7 @@ final class Show extends Component
         $this->authorize('delete', $repost);
 
         if ($deleteRepost->handle($repost)) {
-            $this->dispatch('notification.created', message: 'Question unreposted.');
+            $this->dispatch('notification.created', message: 'Repost removed.');
         }
     }
 

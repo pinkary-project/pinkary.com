@@ -20,7 +20,7 @@ test('a user sending three posts a minute is stopped', function (): void {
     sentPosts($user, 3, now()->toDateTimeString());
 
     expect(fn () => (new EnsureCanPublish)->handle($user))
-        ->toThrow(HttpException::class, 'You can only send 3 questions per minute.');
+        ->toThrow(HttpException::class, 'You can only send 3 posts per minute.');
 });
 
 test('a user sending thirty posts a day is stopped before the day is up', function (): void {
@@ -30,7 +30,7 @@ test('a user sending thirty posts a day is stopped before the day is up', functi
     sentPosts($user, 30, now()->subHours(5)->toDateTimeString());
 
     expect(fn () => (new EnsureCanPublish)->handle($user))
-        ->toThrow(HttpException::class, 'You can only send 30 questions per day.');
+        ->toThrow(HttpException::class, 'You can only send 30 posts per day.');
 });
 
 test('the daily limit counts the posts this request is about to create', function (): void {
@@ -40,7 +40,7 @@ test('the daily limit counts the posts this request is about to create', functio
     (new EnsureCanPublish)->handle($user);
 
     expect(fn () => (new EnsureCanPublish)->handle($user, 2))
-        ->toThrow(HttpException::class, 'You can only send 30 questions per day.');
+        ->toThrow(HttpException::class, 'You can only send 30 posts per day.');
 });
 
 test('a user under both limits may publish', function (): void {

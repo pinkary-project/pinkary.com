@@ -243,7 +243,7 @@ final class Create extends Component
         return match (true) {
             filled($this->parentId) => 'Write a comment...',
             $this->isSharingUpdate() => 'Share an update...',
-            default => 'Ask a question...'
+            default => 'Share a post...'
         };
     }
 
@@ -372,14 +372,14 @@ final class Create extends Component
         unset($validated['threadPosts']);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
-            $this->addError('content', 'You can only send 3 questions per minute.');
+            $this->addError('content', 'You can only send 3 posts per minute.');
 
             return;
         }
 
         // Each post of a thread counts towards the daily limit.
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() + 1 + $threadPosts->count() > 30) {
-            $this->addError('content', 'You can only send 30 questions per day.');
+            $this->addError('content', 'You can only send 30 posts per day.');
 
             return;
         }
@@ -389,7 +389,7 @@ final class Create extends Component
 
         if ($this->isPoll) {
             if (! $this->canPoll) {
-                $this->addError('pollOptions', 'Polls are not allowed when asking a question.');
+                $this->addError('pollOptions', 'Polls are not allowed in this post.');
 
                 return;
             }
@@ -538,7 +538,7 @@ final class Create extends Component
             $threadPosts->isNotEmpty() => 'Thread sent.',
             filled($this->parentId) => 'Comment sent.',
             $this->isSharingUpdate => 'Update sent.',
-            default => 'Question sent.'
+            default => 'Post sent.'
         };
 
         if ($this->isSharingUpdate) {

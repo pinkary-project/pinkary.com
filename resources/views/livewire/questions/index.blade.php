@@ -28,7 +28,7 @@
         <x-load-more-button
             :perPage="$perPage"
             :paginator="$questions"
-            message="There are no more questions to load, or you have scrolled too far."
+            message="There are no more posts to load, or you have scrolled too far."
         />
     </div>
 </section>

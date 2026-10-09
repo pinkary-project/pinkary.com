@@ -138,7 +138,7 @@ test('ignore', function (): void {
     ]);
 
     $component->call('ignore');
-    $component->assertDispatched('notification.created', message: 'Question ignored.');
+    $component->assertDispatched('notification.created', message: 'Post ignored.');
     $component->assertDispatched('question.ignore');
 });
 
@@ -316,7 +316,7 @@ test('repost', function (): void {
     ]);
 
     $component->call('repost');
-    $component->assertDispatched('notification.created', message: 'Question reposted.');
+    $component->assertDispatched('notification.created', message: 'Post reposted.');
 
     $component->call('repost');
 
@@ -382,7 +382,7 @@ test('unrepost', function (): void {
     $component->call('repost');
     $component->call('unrepost');
 
-    $component->assertDispatched('notification.created', message: 'Question unreposted.');
+    $component->assertDispatched('notification.created', message: 'Repost removed.');
     expect($question->reposts()->count())->toBe(0)
         ->and($question->to->notifications()->where('type', QuestionReposted::class)->count())->toBe(0);
 });

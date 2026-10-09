@@ -26,7 +26,7 @@
             </div>
         @empty
             <div class="py-5 text-center">
-                <p class="text-lg font-medium text-slate-950 dark:text-white">There are no questions to show.</p>
+                <p class="text-lg font-medium text-slate-950 dark:text-white">There are no posts to show.</p>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
                     Try switching to another feed view or come back once new posts are published.
                 </p>
@@ -36,7 +36,7 @@
         <x-load-more-button
             :perPage="$perPage"
             :paginator="$questions"
-            message="There are no more questions to load, or you have scrolled too far."
+            message="There are no more posts to load, or you have scrolled too far."
         />
     </section>
 </div>

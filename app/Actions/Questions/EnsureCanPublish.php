@@ -16,11 +16,11 @@ final readonly class EnsureCanPublish
         }
 
         if ($user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
-            abort(429, 'You can only send 3 questions per minute.');
+            abort(429, 'You can only send 3 posts per minute.');
         }
 
         if ($user->questionsSent()->where('created_at', '>=', now()->subDay())->count() + $incoming > 30) {
-            abort(429, 'You can only send 30 questions per day.');
+            abort(429, 'You can only send 30 posts per day.');
         }
     }
 }

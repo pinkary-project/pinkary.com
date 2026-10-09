@@ -71,7 +71,7 @@
                         <x-heroicon-o-chat-bubble-oval-left class="h-5 w-5" />
                     </div>
 
-                    <h3>Ask and answer questions</h3>
+                    <h3>Share and discuss posts</h3>
                     <p class="text-sm text-slate-500 dark:text-slate-400">
                         Engage with the community in an open and friendly way.
                     </p>

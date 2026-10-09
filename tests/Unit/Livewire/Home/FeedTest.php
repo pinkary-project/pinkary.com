@@ -15,7 +15,7 @@ test('renders questions with answers', function (): void {
     $component = Livewire::test(Feed::class);
 
     $component->assertSee('This is the answer')
-        ->assertDontSee('There are no questions to show.');
+        ->assertDontSee('There are no posts to show.');
 });
 
 test('do not renders questions without answers', function (): void {
@@ -27,7 +27,7 @@ test('do not renders questions without answers', function (): void {
 
     $component = Livewire::actingAs($user)->test(Feed::class);
 
-    $component->assertSee('There are no questions to show.');
+    $component->assertSee('There are no posts to show.');
 });
 
 test('do not renders ignored questions', function (): void {
@@ -38,7 +38,7 @@ test('do not renders ignored questions', function (): void {
 
     $component = Livewire::test(Feed::class);
 
-    $component->assertSee('There are no questions to show.');
+    $component->assertSee('There are no posts to show.');
 });
 
 test('ignore', function (): void {
@@ -122,13 +122,13 @@ test('refresh', function (): void {
         'answer' => 'This is the answer',
     ]);
 
-    $component->assertSee('There are no questions to show.')
+    $component->assertSee('There are no posts to show.')
         ->assertDontSee('This is the answer');
 
     $component->dispatch('question.created');
 
     $component->assertSee('This is the answer')
-        ->assertDontSee('There are no questions to show.');
+        ->assertDontSee('There are no posts to show.');
 });
 
 it('renders the threads in the right order', function (): void {
