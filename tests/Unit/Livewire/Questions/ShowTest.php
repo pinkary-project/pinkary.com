@@ -346,6 +346,19 @@ test('repost attribution shows the username and truncates long names', function 
         ->assertSeeHtml('class="min-w-0 flex-1 truncate"');
 });
 
+test('post author names truncate in the feed header', function (): void {
+    $user = User::factory()->create([
+        'name' => str_repeat('A very long display name ', 10),
+        'username' => 'longusername',
+    ]);
+    $question = Question::factory()->create(['to_id' => $user->id]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $question->id,
+        'inIndex' => true,
+    ])->assertSeeHtml('class="min-w-0 truncate font-medium text-slate-950 dark:text-white"');
+});
+
 test('repost auth', function (): void {
     $question = Question::factory()->create();
 

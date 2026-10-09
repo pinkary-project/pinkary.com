@@ -1,6 +1,6 @@
 <article
     @class([
-        'block',
+        'block min-w-0',
         'space-y-1' => ! $question->isSharedUpdate() || ($question->pinned && $pinnable),
     ])
     id="q-{{ $questionId }}"
@@ -102,7 +102,7 @@
                 'cursor-pointer transition-colors duration-100 ease-in-out' => ! $commenting,
             ])
         >
-            <div class="flex items-stretch gap-3">
+            <div class="flex min-w-0 items-stretch gap-3">
                 <div class="flex shrink-0 flex-col items-center self-stretch">
                     <a
                         href="{{ route('profile.show', ['username' => $question->to->username]) }}"
@@ -123,15 +123,15 @@
                     @endif
                 </div>
                 <div class="min-w-0 flex-1 py-0.5">
-                    <div class="flex items-center justify-between gap-x-2">
+                    <div class="flex min-w-0 items-center justify-between gap-x-2">
                         <div class="flex min-w-0 flex-1 items-center gap-x-1.5 text-sm">
                             <a
                                 href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                                class="group/profile flex min-w-0 shrink items-center gap-x-1.5"
+                                class="group/profile flex min-w-0 max-w-full shrink items-center gap-x-1.5 overflow-hidden"
                                 data-navigate-ignore="true"
                                 wire:navigate
                             >
-                                <p class="font-medium whitespace-nowrap text-slate-950 dark:text-white">
+                                <p class="min-w-0 truncate font-medium text-slate-950 dark:text-white">
                                     {{ $question->to->name }}
                                 </p>
 
@@ -147,7 +147,7 @@
                                     />
                                 @endif
 
-                                <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
+                                <p class="min-w-0 truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
                                     {{ '@'.$question->to->username }}
                                 </p>
                             </a>
@@ -180,7 +180,7 @@
                         <x-feed-content :content="$feedContent" />
                     @else
                         <div
-                            class="answer answer-inline-media mt-1 wrap-anywhere text-slate-700 dark:text-slate-200"
+                            class="answer answer-inline-media mt-1 min-w-0 max-w-full wrap-anywhere text-slate-700 dark:text-slate-200"
                             x-data="hasLightBoxImages"
                         >
                             {!! $question->answer !!}
@@ -191,8 +191,8 @@
                         <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
                     @endif
 
-                    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
-                        <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
+                    <div class="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-x-3 sm:flex-nowrap">
+                        <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-x-3">
                             <a
                                 @if (! $commenting)
                                     x-ref="parentLink"
