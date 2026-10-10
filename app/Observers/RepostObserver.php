@@ -6,6 +6,7 @@ namespace App\Observers;
 
 use App\Models\Repost;
 use App\Notifications\QuestionReposted;
+use Illuminate\Notifications\DatabaseNotification;
 
 final readonly class RepostObserver
 {
@@ -26,9 +27,8 @@ final readonly class RepostObserver
      */
     public function deleted(Repost $repost): void
     {
-        $repost->loadMissing('question.to');
-
-        $repost->question?->to?->notifications()
+        DatabaseNotification::query()
+            ->where('type', QuestionReposted::class)
             ->whereJsonContains('data->repost_id', $repost->id)
             ->delete();
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Questions\Index;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Livewire\Livewire;
@@ -185,6 +186,44 @@ test('pinned question is displayed at the top', function (): void {
         $otherQuestion->content,
         $question->content,
     ]);
+});
+
+test('reposts of pinned posts remain in the profile feed in chronological order', function (): void {
+    $this->freezeTime();
+    $user = User::factory()->create();
+    $author = User::factory()->create();
+
+    Question::factory()->sharedUpdate()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => 'My pinned post',
+        'pinned' => true,
+        'updated_at' => now()->subDays(3),
+    ]);
+    $repostedPost = Question::factory()->sharedUpdate()->create([
+        'from_id' => $author->id,
+        'to_id' => $author->id,
+        'answer' => 'Another author pinned post',
+        'pinned' => true,
+    ]);
+    Repost::factory()->create([
+        'user_id' => $user->id,
+        'question_id' => $repostedPost->id,
+        'created_at' => now()->subDays(2),
+    ]);
+    Question::factory()->sharedUpdate()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => 'My recent post',
+        'updated_at' => now()->subDay(),
+    ]);
+
+    Livewire::actingAs($user)->test(Index::class, ['userId' => $user->id])
+        ->assertSeeInOrder([
+            'My pinned post',
+            'My recent post',
+            'Another author pinned post',
+        ]);
 });
 
 it('renders the threads in the right order', function (): void {

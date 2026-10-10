@@ -157,7 +157,7 @@ final readonly class FormatNotificationRow
         $repostId = $notification->data['repost_id'] ?? null;
         $repost = is_int($repostId) ? $reposts->get($repostId) : null;
 
-        if (! $question instanceof Question || ! $repost instanceof Repost || ! $repost->user instanceof User) {
+        if (! $question instanceof Question || ! $repost instanceof Repost) {
             return null;
         }
 

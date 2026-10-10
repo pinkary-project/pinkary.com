@@ -127,7 +127,7 @@
                         <div class="flex min-w-0 flex-1 items-center gap-x-1.5 text-sm">
                             <a
                                 href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                                class="group/profile flex min-w-0 max-w-full shrink items-center gap-x-1.5 overflow-hidden"
+                                class="group/profile flex max-w-full min-w-0 shrink items-center gap-x-1.5 overflow-hidden"
                                 data-navigate-ignore="true"
                                 wire:navigate
                             >
@@ -180,7 +180,7 @@
                         <x-feed-content :content="$feedContent" />
                     @else
                         <div
-                            class="answer answer-inline-media mt-1 min-w-0 max-w-full wrap-anywhere text-slate-700 dark:text-slate-200"
+                            class="answer answer-inline-media mt-1 max-w-full min-w-0 wrap-anywhere text-slate-700 dark:text-slate-200"
                             x-data="hasLightBoxImages"
                         >
                             {!! $question->answer !!}
@@ -191,7 +191,7 @@
                         <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
                     @endif
 
-                    <div class="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-x-3 sm:flex-nowrap">
+                    <div class="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2 sm:flex-nowrap sm:gap-x-3">
                         <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-x-3">
                             <a
                                 @if (! $commenting)

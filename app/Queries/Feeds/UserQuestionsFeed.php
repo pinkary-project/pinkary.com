@@ -80,9 +80,12 @@ final readonly class UserQuestionsFeed
             ->with('parent:id,parent_id');
 
         if ($includePinned) {
-            $builder->orderByDesc('questions.pinned');
+            $builder->orderByRaw('CASE WHEN feed_items.repost_id IS NULL THEN questions.pinned ELSE 0 END DESC');
         } else {
-            $builder->where('questions.pinned', false);
+            $builder->where(function (Builder $query): void {
+                $query->where('questions.pinned', false)
+                    ->orWhereNotNull('feed_items.repost_id');
+            });
         }
 
         return $builder

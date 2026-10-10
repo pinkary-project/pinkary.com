@@ -12,6 +12,9 @@ final class QuestionReposted extends Notification
 {
     use Queueable;
 
+    /**
+     * Create a new notification instance.
+     */
     public function __construct(private Repost $repost) {}
 
     /**
