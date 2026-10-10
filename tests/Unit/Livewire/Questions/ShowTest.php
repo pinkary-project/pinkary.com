@@ -318,7 +318,7 @@ test('repost', function (): void {
     $component->call('repost');
     $component
         ->assertDispatched('question.reposted', id: $question->id)
-        ->assertDispatched('notification.created', message: 'Question reposted.');
+        ->assertNotDispatched('notification.created');
 
     $component->call('repost');
 
@@ -401,7 +401,7 @@ test('unrepost', function (): void {
 
     $component
         ->assertDispatched('question.unreposted', id: $question->id)
-        ->assertDispatched('notification.created', message: 'Repost removed.');
+        ->assertNotDispatched('notification.created');
     expect($question->reposts()->count())->toBe(0)
         ->and($question->to->notifications()->where('type', QuestionReposted::class)->count())->toBe(0);
 });
