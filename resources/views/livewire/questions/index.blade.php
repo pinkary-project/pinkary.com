@@ -17,6 +17,8 @@
                 :grandParentId="$question->parent?->parent_id"
                 :parentId="$question->showParent ? $question->parent_id : null"
                 :questionId="$question->id"
+                :repostId="$question->repost_id ?? null"
+                :feedKey="$question->repost_id ?? $question->id"
                 :username="$user->username"
             />
         </div>
@@ -26,7 +28,7 @@
         <x-load-more-button
             :perPage="$perPage"
             :paginator="$questions"
-            message="There are no more questions to load, or you have scrolled too far."
+            message="There are no more posts to load, or you have scrolled too far."
         />
     </div>
 </section>

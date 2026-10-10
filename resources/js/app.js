@@ -63,6 +63,8 @@ Alpine.data('likeButton', likeButton);
 
 import { bookmarkButton } from './bookmark-button.js';
 Alpine.data('bookmarkButton', bookmarkButton);
+import { repostButton } from './repost-button.js';
+Alpine.data('repostButton', repostButton);
 import { followButton } from './follow-button.js'
 Alpine.data('followButton', followButton)
 

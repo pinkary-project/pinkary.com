@@ -87,7 +87,9 @@ final readonly class QuestionObserver
             $user->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         });
 
-        $question->loadMissing(['children', 'descendants']);
+        $question->loadMissing(['children', 'descendants', 'reposts']);
+
+        $question->reposts->each->delete();
 
         $question->children->each->delete();
 

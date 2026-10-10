@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 
 test('a guest can read the recent feed without logging in', function (): void {
@@ -24,6 +25,34 @@ test('a guest can read the recent feed without logging in', function (): void {
         ->assertJsonPath('data.0.metrics.liked', false)
         ->assertJsonPath('data.0.metrics.bookmarked', false)
         ->assertJsonPath('data.0.poll.user_vote_option_id', null);
+});
+
+test('the recent feed includes repost attribution and metrics', function (): void {
+    $owner = User::factory()->create();
+    $reposter = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $question = Question::factory()->create([
+        'to_id' => $owner->id,
+        'content' => 'What are you building?',
+        'answer' => 'A thoughtful answer.',
+        'answer_created_at' => now(),
+    ]);
+    $repost = Repost::factory()->create([
+        'user_id' => $reposter->id,
+        'question_id' => $question->id,
+    ]);
+
+    $items = $this->getJson(route('api.v1.feed.index'))
+        ->assertOk()
+        ->json('data');
+
+    $item = collect($items)->firstWhere('reposted_by.id', $reposter->id);
+
+    expect($item['id'])->toBe($question->id)
+        ->and($item['reposted_by']['username'])->toBe('ada')
+        ->and($item['metrics']['reposts'])->toBe(1)
+        ->and($item['metrics']['reposted'])->toBeFalse()
+        ->and($item['thread']['parent_id'])->toBe($question->parent_id)
+        ->and($question->reposts()->count())->toBe(1);
 });
 
 test('a guest gets an empty following feed', function (): void {

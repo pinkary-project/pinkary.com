@@ -13,10 +13,10 @@
         @empty
             <div class="py-8 text-center">
                 <p class="text-lg font-medium text-slate-950 dark:text-white">
-                    {{ __('There are no trending questions right now.') }}
+                    {{ __('There are no trending posts right now.') }}
                 </p>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    {{ __('Check back soon as new questions and discussions gain traction.') }}
+                    {{ __('Check back soon as new posts and discussions gain traction.') }}
                 </p>
             </div>
         @endforelse
@@ -24,7 +24,7 @@
         <x-load-more-button
             :perPage="$perPage"
             :paginator="$trendingQuestions"
-            message="There are no more questions to load, or you have scrolled too far."
+            message="There are no more posts to load, or you have scrolled too far."
         />
     </section>
 </div>

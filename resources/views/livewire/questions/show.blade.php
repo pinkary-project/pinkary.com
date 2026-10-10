@@ -1,11 +1,25 @@
 <article
     @class([
-        'block',
+        'block min-w-0',
         'space-y-1' => ! $question->isSharedUpdate() || ($question->pinned && $pinnable),
     ])
     id="q-{{ $questionId }}"
     x-data="copyCode"
 >
+    @if ($repost?->user)
+        <div class="flex min-w-0 items-center gap-2 px-4 pb-1 text-sm text-slate-500 dark:text-slate-400">
+            <img
+                src="{{ $repost->user->avatar_url }}"
+                alt="{{ $repost->user->username }}"
+                class="h-5 w-5 shrink-0 rounded-full"
+            />
+            <p class="min-w-0 flex-1 truncate">
+                <span class="font-medium text-slate-600 dark:text-slate-300">{{ $repost->user->name }}</span>
+                <span>reposted</span>
+            </p>
+        </div>
+    @endif
+
     @php
         $chipClasses = 'inline-flex items-center gap-1.5 rounded-full bg-slate-100/80 px-2.5 py-1.5 text-[0.72rem] font-medium text-slate-500 dark:bg-[#111a2d] dark:text-slate-400';
         $interactiveChipClasses = $chipClasses.' transition hover:bg-slate-200/80 hover:text-slate-950 dark:hover:bg-[#16203a] dark:hover:text-white';
@@ -88,7 +102,7 @@
                 'cursor-pointer transition-colors duration-100 ease-in-out' => ! $commenting,
             ])
         >
-            <div class="flex items-stretch gap-3">
+            <div class="flex min-w-0 items-stretch gap-3">
                 <div class="flex shrink-0 flex-col items-center self-stretch">
                     <a
                         href="{{ route('profile.show', ['username' => $question->to->username]) }}"
@@ -109,15 +123,15 @@
                     @endif
                 </div>
                 <div class="min-w-0 flex-1 py-0.5">
-                    <div class="flex items-center justify-between gap-x-2">
+                    <div class="flex min-w-0 items-center justify-between gap-x-2">
                         <div class="flex min-w-0 flex-1 items-center gap-x-1.5 text-sm">
                             <a
                                 href="{{ route('profile.show', ['username' => $question->to->username]) }}"
-                                class="group/profile flex min-w-0 shrink items-center gap-x-1.5"
+                                class="group/profile flex max-w-full min-w-0 shrink items-center gap-x-1.5 overflow-hidden"
                                 data-navigate-ignore="true"
                                 wire:navigate
                             >
-                                <p class="font-medium whitespace-nowrap text-slate-950 dark:text-white">
+                                <p class="min-w-0 truncate font-medium text-slate-950 dark:text-white">
                                     {{ $question->to->name }}
                                 </p>
 
@@ -133,7 +147,7 @@
                                     />
                                 @endif
 
-                                <p class="truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
+                                <p class="min-w-0 truncate text-slate-500 transition-colors group-hover/profile:text-slate-600 dark:text-slate-400 dark:group-hover/profile:text-slate-300">
                                     {{ '@'.$question->to->username }}
                                 </p>
                             </a>
@@ -166,7 +180,7 @@
                         <x-feed-content :content="$feedContent" />
                     @else
                         <div
-                            class="answer answer-inline-media mt-1 wrap-anywhere text-slate-700 dark:text-slate-200"
+                            class="answer answer-inline-media mt-1 max-w-full min-w-0 wrap-anywhere text-slate-700 dark:text-slate-200"
                             x-data="hasLightBoxImages"
                         >
                             {!! $question->answer !!}
@@ -177,8 +191,8 @@
                         <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
                     @endif
 
-                    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 sm:flex-nowrap">
-                        <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-2">
+                    <div class="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2 sm:flex-nowrap sm:gap-x-3">
+                        <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-x-3">
                             <a
                                 @if (! $commenting)
                                     x-ref="parentLink"
@@ -222,6 +236,24 @@
                                 <x-heroicon-s-heart class="h-4 w-4 text-pink-500" x-show="isLiked" />
                                 <x-heroicon-o-heart class="h-4 w-4" x-show="! isLiked" />
                                 <span x-show="count" x-text="likeButtonText"></span>
+                            </button>
+
+                            <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
+
+                            <button
+                                x-data="repostButton('{{ $question->id }}', @js(auth()->check()))"
+                                data-is-reposted="@js($question->is_reposted)"
+                                data-reposts-count="{{ $question->reposts_count }}"
+                                x-cloak
+                                x-bind:disabled="pending"
+                                data-navigate-ignore="true"
+                                x-on:click="toggleRepost"
+                                :title="repostButtonTitle"
+                                class="{{ $actionMetricClasses }} {{ $actionMetricHoverClasses }} focus:outline-none"
+                            >
+                                <x-heroicon-o-arrow-path class="h-4 w-4" x-show="! isReposted" />
+                                <x-heroicon-s-arrow-path class="h-4 w-4 text-pink-500" x-show="isReposted" />
+                                <span x-show="count" x-text="repostButtonText"></span>
                             </button>
 
                             <span aria-hidden="true" class="{{ $actionSeparatorClasses }}"></span>
@@ -434,9 +466,11 @@
 
         <x-modal max-width="md" name="question.delete.{{ $questionId }}.confirmation">
             <div class="p-8">
-                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">Delete Question</h2>
+                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">
+                    Delete {{ $question->isSharedUpdate() ? 'Post' : 'Question' }}
+                </h2>
                 <div class="mt-4 text-slate-500 dark:text-slate-400">
-                    <p>Are you sure you want to delete this question?</p>
+                    <p>Are you sure you want to delete this {{ $question->isSharedUpdate() ? 'post' : 'question' }}?</p>
                 </div>
                 <div class="mt-4 flex items-center justify-between">
                     <x-secondary-button x-on:click="$dispatch('close-modal', 'question.delete.{{ $questionId }}.confirmation')">

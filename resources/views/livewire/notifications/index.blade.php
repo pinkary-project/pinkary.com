@@ -47,6 +47,23 @@
                         <x-notifications.user-followed :notification="$notification" :follower="$follower" />
                     </x-notifications.item>
                 @endif
+            @elseif ($notification->type === \App\Notifications\QuestionReposted::class)
+                @php
+                    /** @var \App\Models\Question|null $question */
+                    $question = $questions->get($notification->data['question_id'] ?? null);
+                    /** @var \App\Models\Repost|null $repost */
+                    $repost = $reposts->get($notification->data['repost_id'] ?? null);
+                @endphp
+
+                @if ($question !== null && $repost !== null)
+                    <x-notifications.item :notification="$notification">
+                        <x-notifications.reposted
+                            :notification="$notification"
+                            :question="$question"
+                            :repost="$repost"
+                        />
+                    </x-notifications.item>
+                @endif
             @endif
         @endforeach
 
@@ -60,7 +77,7 @@
                     <div>
                         <p class="text-lg font-medium text-slate-950 dark:text-white">No pending notifications.</p>
                         <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                            New replies, mentions, followers, and questions will show up here.
+                            New replies, mentions, followers, and posts will show up here.
                         </p>
                     </div>
                 </div>

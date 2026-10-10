@@ -66,6 +66,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
+ * @property-read Collection<int, Repost> $reposts
  * @property-read Question $pinnedQuestion
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
@@ -154,6 +155,16 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function questionsReceived(): HasMany
     {
         return $this->hasMany(Question::class, 'to_id');
+    }
+
+    /**
+     * Get the user's reposts.
+     *
+     * @return HasMany<Repost, $this>
+     */
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(Repost::class);
     }
 
     /**
@@ -282,6 +293,8 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         $this->following()->detach();
 
         $this->notifications()->delete();
+
+        $this->reposts->each->delete();
 
         $this->questionsReceived->each->delete();
         $this->questionsSent->each->delete();

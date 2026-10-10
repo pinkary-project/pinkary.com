@@ -31,6 +31,7 @@ final readonly class NotificationController
 
         $questions = $this->questionsFor($notifications);
         $followers = $this->followersFor($notifications);
+        $reposts = $this->repostsFor($notifications);
 
         $items = $notifications
             ->map(fn (DatabaseNotification $notification): ?array => $format->handle(
@@ -38,6 +39,7 @@ final readonly class NotificationController
                 $user,
                 $questions,
                 $followers,
+                $reposts,
                 $request,
             ))
             ->filter()

@@ -372,14 +372,14 @@ final class Create extends Component
         unset($validated['threadPosts']);
 
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
-            $this->addError('content', 'You can only send 3 questions per minute.');
+            $this->addError('content', "You can only send 3 {$this->publishableItem()} per minute.");
 
             return;
         }
 
         // Each post of a thread counts towards the daily limit.
         if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() + 1 + $threadPosts->count() > 30) {
-            $this->addError('content', 'You can only send 30 questions per day.');
+            $this->addError('content', "You can only send 30 {$this->publishableItem()} per day.");
 
             return;
         }
@@ -613,6 +613,14 @@ final class Create extends Component
 
         session()->forget($sourceSessionKey);
         $this->reset('imageSourceDraftKey');
+    }
+
+    /**
+     * Get the user-facing name for the current composer item.
+     */
+    private function publishableItem(): string
+    {
+        return $this->isSharingUpdate() || filled($this->parentId) ? 'posts' : 'questions';
     }
 
     /**

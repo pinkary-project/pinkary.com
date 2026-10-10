@@ -1,7 +1,7 @@
 <div
     id="link-preview-card"
     data-url="{{ $url }}"
-    class="group/preview mx-auto mt-2 min-w-full"
+    class="group/preview mx-auto mt-2 w-full max-w-full"
     data-navigate-ignore="true"
 >
     @if ($data->has('html'))
