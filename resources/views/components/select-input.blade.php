@@ -11,6 +11,8 @@
             value="{{ $value }}"
             class="{{ $optionClasses }}"
             {{ $value == $attributes->get('value') ? 'selected' : '' }}
-        >{{ $label }}</option>
+        >
+            {{ $label }}
+        </option>
     @endforeach
 </select>
