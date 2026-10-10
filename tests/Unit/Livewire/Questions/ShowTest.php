@@ -317,6 +317,7 @@ test('repost', function (): void {
 
     $component->call('repost');
     $component
+        ->assertRenderSkipped()
         ->assertDispatched('question.reposted', id: $question->id)
         ->assertNotDispatched('notification.created');
 
@@ -400,6 +401,7 @@ test('unrepost', function (): void {
     $component->call('unrepost');
 
     $component
+        ->assertRenderSkipped()
         ->assertDispatched('question.unreposted', id: $question->id)
         ->assertNotDispatched('notification.created');
     expect($question->reposts()->count())->toBe(0)

@@ -40,8 +40,6 @@ final class Feed extends Component
      * Refresh the feed.
      */
     #[On('question.created')]
-    #[On('question.reposted')]
-    #[On('question.unreposted')]
     public function refresh(): void {}
 
     /**
