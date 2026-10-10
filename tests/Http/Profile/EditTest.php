@@ -352,13 +352,15 @@ test('prefers_anonymous_questions can be updated', function (): void {
 test('profile form shows the saved question preference', function (): void {
     $user = User::factory()->create(['question_preference' => 'following']);
 
-    $this->actingAs($user)->get(route('profile.edit'))
+    $response = $this->actingAs($user)->get(route('profile.edit'))
         ->assertOk()
         ->assertSee('Who can ask you questions?')
         ->assertSee('Following allows questions only from people you follow.')
         ->assertSeeHtml('name="question_preference"')
-        ->assertSeeHtml('class="bg-white text-slate-950 dark:bg-[#0b1324] dark:text-white"')
-        ->assertSeeHtml('<option value="following" selected>Following</option>');
+        ->assertSeeHtml('class="bg-white text-slate-950 dark:bg-[#0b1324] dark:text-white"');
+
+    expect((string) $response->getContent())
+        ->toMatch('/<select(?=[^>]*name="question_preference")[^>]*>.*?<option(?=[^>]*value="following")(?=[^>]*selected)[^>]*>\s*Following\s*<\/option>/s');
 });
 
 test('question preferences save with profile information for the signed in user', function (string $preference): void {
@@ -428,10 +430,11 @@ test('profile form retains the submitted question preference after validation fa
         'question_preference' => 'no_one',
     ])->assertSessionHasErrors('name');
 
-    $this->get(route('profile.edit'))->assertOk()
-        ->assertSeeHtml('<option value="no_one" selected>No one</option>');
+    $response = $this->get(route('profile.edit'))->assertOk();
 
-    expect($user->refresh()->question_preference->value)->toBe('everyone');
+    expect((string) $response->getContent())
+        ->toMatch('/<select(?=[^>]*name="question_preference")[^>]*>.*?<option(?=[^>]*value="no_one")(?=[^>]*selected)[^>]*>\s*No one\s*<\/option>/s')
+        ->and($user->refresh()->question_preference->value)->toBe('everyone');
 });
 
 test('guests cannot update question preferences through the profile form', function (): void {
