@@ -357,6 +357,7 @@ test('profile form shows the saved question preference', function (): void {
         ->assertSee('Who can ask you questions?')
         ->assertSee('Following allows questions only from people you follow.')
         ->assertSeeHtml('name="question_preference"')
+        ->assertSeeHtml('class="bg-white text-slate-950 dark:bg-[#0b1324] dark:text-white"')
         ->assertSeeHtml('<option value="following" selected>Following</option>');
 });
 
