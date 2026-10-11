@@ -245,7 +245,7 @@ it('rethrows request exceptions that are not caused by an oversized response', f
     mockSafeUrlFetcherResponses([new RuntimeException('The request failed.')]);
     $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
 
-    expect(fn () => $fetcher->get('https://public.example/'))->toThrow(RuntimeException::class, 'The request failed.');
+    expect(fn (): ?\Illuminate\Http\Client\Response => $fetcher->get('https://public.example/'))->toThrow(RuntimeException::class, 'The request failed.');
 });
 
 it('fetches a valid public URL using only its validated DNS answer', function (): void {
