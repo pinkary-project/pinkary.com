@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface as PsrResponse;
 use RuntimeException;
 use Throwable;
 
-final class SafeUrlFetcher
+final readonly class SafeUrlFetcher
 {
     public const int MAX_RESPONSE_BYTES = 5 * 1024 * 1024;
 
@@ -27,16 +27,16 @@ final class SafeUrlFetcher
     private const array REDIRECT_STATUSES = [301, 302, 303, 307, 308];
 
     /**
-     * @var Closure(string): list<string>
+     * @var Closure(string): array<array-key, mixed>
      */
-    private readonly Closure $resolveHost;
+    private Closure $resolveHost;
 
     /**
-     * @param  Closure(string): list<string>|null  $resolveHost
+     * @param  Closure(string): array<array-key, mixed>|null  $resolveHost
      */
     public function __construct(?Closure $resolveHost = null)
     {
-        $this->resolveHost = $resolveHost ?? self::dnsAddresses(...);
+        $this->resolveHost = $resolveHost ?? $this->dnsAddresses(...);
     }
 
     /**
@@ -90,8 +90,7 @@ final class SafeUrlFetcher
             $contentLength = $response->header('Content-Length');
 
             if ($responseBody->hasExceededLimit()
-                || (is_string($contentLength)
-                    && ctype_digit($contentLength)
+                || (ctype_digit($contentLength)
                     && (int) $contentLength > self::MAX_RESPONSE_BYTES)) {
                 return null;
             }
@@ -102,7 +101,7 @@ final class SafeUrlFetcher
 
             $location = $response->header('Location');
 
-            if (! is_string($location) || $location === '') {
+            if ($location === '') {
                 return $response;
             }
 
@@ -126,7 +125,7 @@ final class SafeUrlFetcher
     /**
      * @return list<string>
      */
-    private static function dnsAddresses(string $host): array
+    private function dnsAddresses(string $host): array
     {
         $records = dns_get_record($host, DNS_A | DNS_AAAA);
 
@@ -147,7 +146,7 @@ final class SafeUrlFetcher
         return array_values(array_unique($addresses));
     }
 
-    private static function isGlobalAddress(string $address): bool
+    private function isGlobalAddress(string $address): bool
     {
         if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE) === false) {
             return false;
@@ -200,7 +199,7 @@ final class SafeUrlFetcher
         $host = mb_strtolower(mb_trim($rawHost, '[]'));
         $port = $parts['port'] ?? ($scheme === 'https' ? 443 : 80);
 
-        if (! is_int($port) || $port < 1 || $port > 65535) {
+        if ($port < 1) {
             return null;
         }
 
@@ -230,7 +229,7 @@ final class SafeUrlFetcher
 
         foreach ($addresses as $address) {
             if (! is_string($address)
-                || ! self::isGlobalAddress($address)) {
+                || ! $this->isGlobalAddress($address)) {
                 return null;
             }
         }

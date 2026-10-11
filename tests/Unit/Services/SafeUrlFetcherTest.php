@@ -17,9 +17,7 @@ function mockSafeUrlFetcherResponses(array $responses): MockHandler
 {
     $mockHandler = new MockHandler($responses);
 
-    Http::globalMiddleware(static function (callable $handler) use ($mockHandler): Closure {
-        return static fn (RequestInterface $request, array $options): PromiseInterface => $mockHandler($request, $options);
-    });
+    Http::globalMiddleware(static fn (callable $handler): Closure => static fn (RequestInterface $request, array $options): PromiseInterface => $mockHandler($request, $options));
 
     return $mockHandler;
 }
@@ -88,7 +86,7 @@ it('pins every validated DNS answer and disables proxies', function (): void {
         ->and($requestOptions['curl'][CURLOPT_RESOLVE])->toBe(['public.example:443:93.184.216.34,[2606:4700:4700::1111]'])
         ->and($requestOptions['proxy'])->toBe('')
         ->and($requestOptions['allow_redirects'])->toBeFalse()
-        ->and(count($mockHandler))->toBe(0);
+        ->and($mockHandler)->toBeEmpty();
 });
 
 it('rejects a response with a Content-Length larger than the body limit', function (): void {
@@ -106,7 +104,7 @@ it('rejects a response with a Content-Length larger than the body limit', functi
     expect($response)->toBeNull()
         ->and($responseBody)->toBeInstanceOf(BoundedResponseBody::class)
         ->and($responseBody->getSize())->toBe(0)
-        ->and(count($mockHandler))->toBe(0);
+        ->and($mockHandler)->toBeEmpty();
 });
 
 it('aborts before reading a response whose Content-Length exceeds the limit', function (): void {
@@ -128,7 +126,7 @@ it('aborts before reading a response whose Content-Length exceeds the limit', fu
     expect($fetcher->get($url))->toBeNull()
         ->and($responseBody)->toBeInstanceOf(BoundedResponseBody::class)
         ->and($responseBody->getSize())->toBe(0)
-        ->and(count($mockHandler))->toBe(0);
+        ->and($mockHandler)->toBeEmpty();
 });
 
 it('caps a chunked response body at the byte limit', function (): void {
@@ -148,7 +146,7 @@ it('caps a chunked response body at the byte limit', function (): void {
     expect($fetcher->get($url))->toBeNull()
         ->and($responseBody)->toBeInstanceOf(BoundedResponseBody::class)
         ->and($responseBody->getSize())->toBe(SafeUrlFetcher::MAX_RESPONSE_BYTES)
-        ->and(count($mockHandler))->toBe(0);
+        ->and($mockHandler)->toBeEmpty();
 });
 
 it('blocks redirects to private IP addresses before sending a second request', function (): void {
@@ -196,7 +194,7 @@ it('fetches a valid public URL using only its validated DNS answer', function ()
 
     expect($response?->ok())->toBeTrue()
         ->and($response?->body())->toBe('page')
-        ->and(count($mockHandler))->toBe(0);
+        ->and($mockHandler)->toBeEmpty();
 });
 
 it('allows a NAT64 address that embeds a public IPv4 destination', function (): void {
@@ -207,5 +205,5 @@ it('allows a NAT64 address that embeds a public IPv4 destination', function (): 
 
     expect($response?->ok())->toBeTrue()
         ->and($response?->body())->toBe('page')
-        ->and(count($mockHandler))->toBe(0);
+        ->and($mockHandler)->toBeEmpty();
 });
