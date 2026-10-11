@@ -234,6 +234,37 @@ it('collects thread participants without a recursive CTE', function (): void {
         ]);
 });
 
+it('stops walking the thread at the depth cap', function (): void {
+    $postUser = User::factory()->create();
+
+    // 25 levels deep, so the oldest participants sit beyond the 20 level cap.
+    $ancestors = User::factory(25)->create();
+
+    $question = null;
+
+    foreach ($ancestors as $ancestor) {
+        $question = Question::factory()->create([
+            'from_id' => $ancestor->id,
+            'to_id' => $postUser->id,
+            'parent_id' => $question?->id,
+        ]);
+    }
+
+    // 21 suggestions leaves no room for the fallback, so this only measures the thread walk.
+    $users = new PeopleToFollowRecommendations()->forContext(
+        authenticatedUserId: null,
+        context: 'question',
+        contextQuestionId: (string) $question->id,
+        limit: 21,
+    );
+
+    $ids = $users->pluck('id')->all();
+
+    expect($ids)->toHaveCount(21)
+        ->and($ids)->toContain($postUser->id, $ancestors[24]->id, $ancestors[6]->id)
+        ->and($ids)->not->toContain($ancestors[5]->id, $ancestors[0]->id);
+});
+
 it('falls back to generic suggestions when the question context cannot be found', function (): void {
     $fallbackUser = User::factory()
         ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])

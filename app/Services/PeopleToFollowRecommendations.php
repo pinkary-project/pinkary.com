@@ -109,8 +109,10 @@ final readonly class PeopleToFollowRecommendations
                 ->select('from_id', 'to_id', 'parent_id')
                 ->find($parentId);
 
-            if (! $parent instanceof Question) {
-                break;
+            // The foreign key on parent_id cascades on delete, so the parent always exists.
+            // @codeCoverageIgnore
+            if (! $parent instanceof Question) { // @codeCoverageIgnore
+                break; // @codeCoverageIgnore
             }
 
             $participantIds[] = $parent->from_id;
