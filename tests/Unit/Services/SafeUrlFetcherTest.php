@@ -50,6 +50,18 @@ it('rejects localhost names without sending a request', function (string $url): 
     'localhost subdomain' => 'http://api.localhost/admin',
 ]);
 
+it('rejects malformed URLs without sending a request', function (string $url): void {
+    $mockHandler = mockSafeUrlFetcherResponses([new PsrResponse]);
+
+    expect((new SafeUrlFetcher)->get($url))->toBeNull()
+        ->and(count($mockHandler))->toBe(1);
+})->with([
+    'contains whitespace' => 'https://public.example/a path',
+    'cannot be parsed' => 'http://',
+    'contains an encoded host' => 'https://public%2eexample/',
+    'uses an invalid port' => 'https://public.example:0/',
+]);
+
 it('rejects a DNS answer containing any private address', function (): void {
     $mockHandler = mockSafeUrlFetcherResponses([new PsrResponse]);
 
@@ -59,6 +71,25 @@ it('rejects a DNS answer containing any private address', function (): void {
     ]);
 
     expect($fetcher->get('https://rebound.example/'))->toBeNull()
+        ->and(count($mockHandler))->toBe(1);
+});
+
+it('rejects empty or non-list DNS answers', function (array $addresses): void {
+    $mockHandler = mockSafeUrlFetcherResponses([new PsrResponse]);
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => $addresses);
+
+    expect($fetcher->get('https://public.example/'))->toBeNull()
+        ->and(count($mockHandler))->toBe(1);
+})->with([
+    'empty' => [[]],
+    'associative' => [['address' => '93.184.216.34']],
+]);
+
+it('rejects a DNS lookup that throws', function (): void {
+    $mockHandler = mockSafeUrlFetcherResponses([new PsrResponse]);
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => throw new RuntimeException('DNS lookup failed.'));
+
+    expect($fetcher->get('https://public.example/'))->toBeNull()
         ->and(count($mockHandler))->toBe(1);
 });
 
@@ -182,6 +213,39 @@ it('rejects a DNS rebinding introduced before a redirect', function (): void {
         ->and((string) $mockHandler->getLastRequest()?->getUri())->toBe($url)
         ->and(count($mockHandler))->toBe(1)
         ->and($lookups)->toBe(2);
+});
+
+it('returns a redirect response without a location header', function (): void {
+    $mockHandler = mockSafeUrlFetcherResponses([new PsrResponse(302)]);
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
+
+    $response = $fetcher->get('https://public.example/start');
+
+    expect($response?->status())->toBe(302)
+        ->and($mockHandler)->toBeEmpty();
+});
+
+it('stops after the maximum number of redirects', function (): void {
+    $mockHandler = mockSafeUrlFetcherResponses(array_fill(0, 6, new PsrResponse(302, ['Location' => '/next'])));
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
+
+    expect($fetcher->get('https://public.example/start'))->toBeNull()
+        ->and($mockHandler)->toBeEmpty();
+});
+
+it('rejects a malformed redirect location', function (): void {
+    $mockHandler = mockSafeUrlFetcherResponses([new PsrResponse(302, ['Location' => 'http://[::1'])]);
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
+
+    expect($fetcher->get('https://public.example/start'))->toBeNull()
+        ->and($mockHandler)->toBeEmpty();
+});
+
+it('rethrows request exceptions that are not caused by an oversized response', function (): void {
+    mockSafeUrlFetcherResponses([new RuntimeException('The request failed.')]);
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
+
+    expect(fn (): ?\Illuminate\Http\Client\Response => $fetcher->get('https://public.example/'))->toThrow(RuntimeException::class, 'The request failed.');
 });
 
 it('fetches a valid public URL using only its validated DNS answer', function (): void {
