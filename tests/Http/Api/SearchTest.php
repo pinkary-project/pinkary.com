@@ -82,6 +82,25 @@ test('hashtag search returns the post count with the existing payload', function
         'to_id' => $user->id,
         'answer' => '#laravel',
     ]);
+    Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'content' => '#laravel',
+        'answer' => null,
+        'answer_created_at' => null,
+    ]);
+    Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => '#laravel',
+        'is_ignored' => true,
+    ]);
+    Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => '#laravel',
+        'is_reported' => true,
+    ]);
 
     $this->getJson(route('api.v1.search.index', ['q' => 'lara']))
         ->assertOk()

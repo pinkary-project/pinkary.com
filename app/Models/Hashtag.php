@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $name
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
+ * @property-read int|null $questions_count
  * @property-read Collection<int, Question> $questions
  */
 final class Hashtag extends Model
@@ -31,6 +32,7 @@ final class Hashtag extends Model
     public function casts(): array
     {
         return [
+            'questions_count' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
