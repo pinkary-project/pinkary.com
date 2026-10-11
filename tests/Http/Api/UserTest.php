@@ -20,7 +20,13 @@ test('a guest can read a profile without private fields', function (): void {
         'bio' => 'First programmer.',
         'email' => 'ada@example.com',
     ]);
-    Link::factory()->create(['user_id' => $ada->id, 'description' => 'Website', 'url' => 'https://example.com', 'is_visible' => true]);
+    Link::factory()->create([
+        'user_id' => $ada->id,
+        'description' => 'Website',
+        'url' => 'https://example.com',
+        'is_visible' => true,
+        'click_count' => 12,
+    ]);
     Question::factory()->create(['to_id' => $ada->id, 'answer' => 'An answer.']);
 
     $response = $this->getJson(route('api.v1.users.show', 'ada'))->assertOk()
@@ -30,11 +36,55 @@ test('a guest can read a profile without private fields', function (): void {
         ->assertJsonPath('data.followed_by_me', false)
         ->assertJsonPath('data.email', null)
         ->assertJsonPath('data.verification.email', null)
+        ->assertJsonPath('data.mail_preference_time', null)
+        ->assertJsonPath('data.default_feed', null)
+        ->assertJsonPath('data.prefers_anonymous_questions', null)
+        ->assertJsonPath('data.links.0.click_count', null)
         ->assertJsonPath('data.stats.posts', 1)
         ->assertJsonCount(1, 'data.links');
 
     expect(array_keys($response->json('data')))
-        ->not->toContain('two_factor_secret', 'settings', 'password', 'remember_token', 'mail_preference_time');
+        ->not->toContain('two_factor_secret', 'settings', 'password', 'remember_token');
+});
+
+test('a member cannot read another profiles private preferences or link click counts', function (): void {
+    $viewer = User::factory()->create();
+    $ada = User::factory()->create(['username' => 'ada']);
+    Link::factory()->create([
+        'user_id' => $ada->id,
+        'url' => 'https://example.com',
+        'click_count' => 23,
+    ]);
+    $headers = ['Authorization' => 'Bearer '.$viewer->createToken('test')->plainTextToken];
+
+    $this->getJson(route('api.v1.users.show', 'ada'), $headers)
+        ->assertOk()
+        ->assertJsonPath('data.mail_preference_time', null)
+        ->assertJsonPath('data.default_feed', null)
+        ->assertJsonPath('data.prefers_anonymous_questions', null)
+        ->assertJsonPath('data.links.0.click_count', null);
+});
+
+test('a profile owner receives their preferences and link click counts', function (): void {
+    $ada = User::factory()->create([
+        'username' => 'ada',
+        'mail_preference_time' => 'weekly',
+        'default_feed' => 'trending',
+        'prefers_anonymous_questions' => false,
+    ]);
+    Link::factory()->create([
+        'user_id' => $ada->id,
+        'url' => 'https://example.com',
+        'click_count' => 23,
+    ]);
+    $headers = ['Authorization' => 'Bearer '.$ada->createToken('test')->plainTextToken];
+
+    $this->getJson(route('api.v1.users.show', 'ada'), $headers)
+        ->assertOk()
+        ->assertJsonPath('data.mail_preference_time', 'weekly')
+        ->assertJsonPath('data.default_feed', 'trending')
+        ->assertJsonPath('data.prefers_anonymous_questions', false)
+        ->assertJsonPath('data.links.0.click_count', 23);
 });
 
 test('a bearer token still resolves the viewer on a public profile read', function (): void {

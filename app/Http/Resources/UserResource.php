@@ -66,9 +66,12 @@ final class UserResource extends JsonResource
                     isset($this->resource->follows_me) ? (bool) $this->resource->follows_me : null,
                 ]),
             'question_preference' => $this->isMe($viewer) ? $this->resource->question_preference->value : null,
+            'mail_preference_time' => $this->isMe($viewer) ? $this->resource->mail_preference_time->value : null,
+            'default_feed' => $this->isMe($viewer) ? $this->resource->default_feed->value : null,
+            'prefers_anonymous_questions' => $this->isMe($viewer) ? $this->resource->prefers_anonymous_questions : null,
             'gradient' => $this->resource->gradient,
             'link_shape' => $this->resource->link_shape,
-            'links' => $this->links(),
+            'links' => $this->links($this->isMe($viewer)),
             'member_since' => [
                 'human' => $this->resource->created_at->diffForHumans(),
                 'string' => $this->resource->created_at->toDateTimeLocalString(),
@@ -97,7 +100,7 @@ final class UserResource extends JsonResource
     /**
      * @return list<array<string, mixed>>
      */
-    private function links(): array
+    private function links(bool $isOwner): array
     {
         if (! $this->resource->relationLoaded('links')) {
             return [];
@@ -112,7 +115,7 @@ final class UserResource extends JsonResource
                 'id' => $link->id,
                 'description' => $link->description,
                 'url' => $link->url.(str_contains($link->url, '?') ? '&' : '?').'ref=pinkary',
-                'click_count' => (int) $link->click_count,
+                'click_count' => $isOwner ? (int) $link->click_count : null,
                 'is_visible' => (bool) $link->is_visible,
                 'gradient' => $this->resource->gradient,
                 'link_shape' => $this->resource->link_shape,
