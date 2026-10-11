@@ -22,7 +22,7 @@ final readonly class PeopleToFollowRecommendations
 
     private const int EXTENDED_FAMOUS_LIMIT = 200;
 
-    private const int THREAD_DEPTH_CAP = 20;
+    private const int THREAD_PARTICIPANTS_PER_QUESTION = 2;
 
     /**
      * @return EloquentCollection<int, User>
@@ -92,36 +92,28 @@ final readonly class PeopleToFollowRecommendations
     /**
      * Collect the participants of every question in the thread the given question belongs to.
      *
-     * The ancestor chain is walked one question at a time instead of with a recursive CTE,
-     * because a recursive CTE needs an internal temporary table that the database may fail
-     * to materialise, which takes down the whole page instead of this widget alone.
+     * The thread is fetched with a single indexed query on `root_id` rather than with a
+     * recursive CTE, because a recursive CTE needs an internal temporary table that the
+     * database may fail to materialise, which takes down the whole page instead of this
+     * widget alone. Every question in a thread shares the root id, so one query is enough.
      *
      * @return array<int, int>
      */
-    private function threadParticipantIds(Question $question): array
+    private function threadParticipantIds(Question $question, int $limit): array
     {
-        $participantIds = [$question->from_id, $question->to_id];
+        $questions = Question::query()
+            ->select(['from_id', 'to_id'])
+            ->where(function (Builder $query) use ($question): void {
+                $query->where('root_id', $question->root_id ?? $question->id)
+                    ->orWhere('id', $question->id);
+            })
+            ->orderByDesc('created_at')
+            ->limit($limit * self::THREAD_PARTICIPANTS_PER_QUESTION)
+            ->get();
 
-        $parentId = $question->parent_id;
-
-        for ($depth = 0; is_string($parentId) && $depth < self::THREAD_DEPTH_CAP; $depth++) {
-            $parent = Question::query()
-                ->select('from_id', 'to_id', 'parent_id')
-                ->find($parentId);
-
-            // The foreign key on parent_id cascades on delete, so the parent always exists.
-            // @codeCoverageIgnore
-            if (! $parent instanceof Question) { // @codeCoverageIgnore
-                break; // @codeCoverageIgnore
-            }
-
-            $participantIds[] = $parent->from_id;
-            $participantIds[] = $parent->to_id;
-
-            $parentId = $parent->parent_id;
-        }
-
-        return $participantIds;
+        return $questions
+            ->flatMap(static fn (Question $questionInThread): array => [$questionInThread->from_id, $questionInThread->to_id])
+            ->all();
     }
 
     /**
@@ -130,7 +122,7 @@ final readonly class PeopleToFollowRecommendations
     private function questionContextUserIds(string $questionId, ?int $authenticatedUserId, int $limit): array
     {
         $question = Question::query()
-            ->select('id', 'from_id', 'to_id', 'parent_id')
+            ->select('id', 'from_id', 'to_id', 'root_id')
             ->find($questionId);
 
         if ($question === null) {
@@ -139,7 +131,7 @@ final readonly class PeopleToFollowRecommendations
 
         $selectedIds = $this->availableUserIds([$question->to_id], $authenticatedUserId, [], 1);
 
-        $threadParticipantIds = $this->threadParticipantIds($question);
+        $threadParticipantIds = $this->threadParticipantIds($question, $limit);
 
         if (count($selectedIds) < $limit) {
             $selectedIds = [
