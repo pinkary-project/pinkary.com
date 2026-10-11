@@ -6,6 +6,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Services\PeopleToFollowRecommendations;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function (): void {
     Cache::forget('top-50-users');
@@ -194,6 +195,43 @@ it('falls back to generic suggestions when question context has no question id',
 
     expect($users->pluck('id')->all())
         ->toBe([$fallbackUser->id]);
+});
+
+it('collects thread participants without a recursive CTE', function (): void {
+    $postUser = User::factory()->create();
+    $rootParticipant = User::factory()->create();
+    $currentParticipant = User::factory()->create();
+
+    $rootQuestion = Question::factory()->create([
+        'from_id' => $rootParticipant->id,
+        'to_id' => $postUser->id,
+    ]);
+
+    $question = Question::factory()->create([
+        'from_id' => $currentParticipant->id,
+        'to_id' => $postUser->id,
+        'parent_id' => $rootQuestion->id,
+    ]);
+
+    DB::enableQueryLog();
+
+    $users = new PeopleToFollowRecommendations()->forContext(
+        authenticatedUserId: null,
+        context: 'question',
+        contextQuestionId: (string) $question->id,
+        limit: 3,
+    );
+
+    $queries = collect(DB::getQueryLog())->pluck('query');
+
+    DB::disableQueryLog();
+
+    expect($queries->implode(' '))->not->toContain('WITH RECURSIVE')
+        ->and($users->pluck('id')->all())->toBe([
+            $postUser->id,
+            $currentParticipant->id,
+            $rootParticipant->id,
+        ]);
 });
 
 it('falls back to generic suggestions when the question context cannot be found', function (): void {

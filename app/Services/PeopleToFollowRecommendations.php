@@ -90,6 +90,39 @@ final readonly class PeopleToFollowRecommendations
     }
 
     /**
+     * Collect the participants of every question in the thread the given question belongs to.
+     *
+     * The ancestor chain is walked one question at a time instead of with a recursive CTE,
+     * because a recursive CTE needs an internal temporary table that the database may fail
+     * to materialise, which takes down the whole page instead of this widget alone.
+     *
+     * @return array<int, int>
+     */
+    private function threadParticipantIds(Question $question): array
+    {
+        $participantIds = [$question->from_id, $question->to_id];
+
+        $parentId = $question->parent_id;
+
+        for ($depth = 0; is_string($parentId) && $depth < self::THREAD_DEPTH_CAP; $depth++) {
+            $parent = Question::query()
+                ->select('from_id', 'to_id', 'parent_id')
+                ->find($parentId);
+
+            if (! $parent instanceof Question) {
+                break;
+            }
+
+            $participantIds[] = $parent->from_id;
+            $participantIds[] = $parent->to_id;
+
+            $parentId = $parent->parent_id;
+        }
+
+        return $participantIds;
+    }
+
+    /**
      * @return array<int, int>
      */
     private function questionContextUserIds(string $questionId, ?int $authenticatedUserId, int $limit): array
@@ -104,27 +137,7 @@ final readonly class PeopleToFollowRecommendations
 
         $selectedIds = $this->availableUserIds([$question->to_id], $authenticatedUserId, [], 1);
 
-        // Load the full ancestor chain in a single recursive CTE (depth-capped at THREAD_DEPTH_CAP).
-        /**
-         * @var array<array-key, object{id: int, from_id: int, to_id: int, parent_id: int, depth: int}>
-         */
-        $threadRows = DB::select(
-            'WITH RECURSIVE thread (id, from_id, to_id, parent_id, depth) AS (
-                SELECT id, from_id, to_id, parent_id, 0 FROM questions WHERE id = ?
-                UNION ALL
-                SELECT q.id, q.from_id, q.to_id, q.parent_id, t.depth + 1
-                FROM questions q INNER JOIN thread t ON q.id = t.parent_id
-                WHERE t.depth < ?
-            )
-            SELECT from_id, to_id FROM thread',
-            [$questionId, self::THREAD_DEPTH_CAP]
-        );
-
-        $threadParticipantIds = [];
-        foreach ($threadRows as $row) {
-            $threadParticipantIds[] = (int) $row->from_id;
-            $threadParticipantIds[] = (int) $row->to_id;
-        }
+        $threadParticipantIds = $this->threadParticipantIds($question);
 
         if (count($selectedIds) < $limit) {
             $selectedIds = [
