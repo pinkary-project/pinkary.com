@@ -38,6 +38,21 @@ test('allows a query string with many sibling parameters', function (): void {
         ->assertOk();
 });
 
+test('allows a query string with a parameter that has no value', function (): void {
+    Route::get('/test-query-nesting-novalue', fn (): Response => response(status: 200));
+
+    $this->get('/test-query-nesting-novalue?flag&page=2')
+        ->assertOk();
+});
+
+test('rejects an over-nested parameter that has no value', function (): void {
+    Route::get('/test-query-nesting-novalue-deep', fn (): Response => response(status: 200));
+
+    // PHP still nests a value-less parameter, so "z[a][a]" is two levels deep.
+    $this->get('/test-query-nesting-novalue-deep?z'.str_repeat('[a]', 70))
+        ->assertStatus(400);
+});
+
 test('allows requests without a query string', function (): void {
     Route::get('/test-query-nesting-empty', fn (): Response => response(status: 200));
 
