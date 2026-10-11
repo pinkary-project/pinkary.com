@@ -40,6 +40,7 @@ final readonly class SearchController
             ->map(fn (Result $result): array => [
                 'id' => $result->id,
                 'name' => mb_ltrim($result->replacement, '#'),
+                'questions_count' => $result->payload['questions_count'],
             ])
             ->all();
 
