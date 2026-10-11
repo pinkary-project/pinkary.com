@@ -2,6 +2,7 @@
 > 11 October, 2026
 
 - Adds reposting for posts and replies, with feed support and notifications.
+- Adds an in-development mobile API for authentication, feeds, post publishing, social actions, notifications, and batched post view tracking, with two-factor sign-in and Turnstile challenges. The API is not stable and may change.
 - Lets users choose who can ask them questions.
 - Improves feed reading with horizontal image strips and inline expansion for long posts.
 - Fixes long post content overflowing the feed and select option colors in dark mode.
