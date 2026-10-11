@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Services\BoundedResponseBody;
 use App\Services\SafeUrlFetcher;
+use GuzzleHttp\Psr7\Response as PsrResponse;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 
 it('rejects private and reserved IP addresses without sending a request', function (string $url): void {
     Http::preventStrayRequests();
@@ -68,6 +71,69 @@ it('pins every validated DNS answer and disables proxies', function (): void {
         ->and($requestOptions['curl'][CURLOPT_RESOLVE])->toBe(['public.example:443:93.184.216.34,[2606:4700:4700::1111]'])
         ->and($requestOptions['proxy'])->toBe('')
         ->and($requestOptions['allow_redirects'])->toBeFalse();
+});
+
+it('rejects a response with a Content-Length larger than the body limit', function (): void {
+    $url = 'https://public.example/large-page';
+    $responseBody = null;
+
+    Http::fake([$url => function (Request $request, array $options) use (&$responseBody): mixed {
+        $responseBody = $options['sink'];
+
+        return Http::response('page', 200, [
+            'Content-Length' => (string) (SafeUrlFetcher::MAX_RESPONSE_BYTES + 1),
+        ]);
+    }]);
+    Http::preventStrayRequests();
+
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
+
+    expect($fetcher->get($url))->toBeNull()
+        ->and($responseBody)->toBeInstanceOf(BoundedResponseBody::class)
+        ->and($responseBody->getSize())->toBe(0);
+});
+
+it('aborts before reading a response whose Content-Length exceeds the limit', function (): void {
+    $url = 'https://public.example/large-header';
+    $responseBody = null;
+
+    Http::fake([$url => function (Request $request, array $options) use (&$responseBody): mixed {
+        $responseBody = $options['sink'];
+
+        expect(fn () => $options['on_headers'](new PsrResponse(200, [
+            'Content-Length' => (string) (SafeUrlFetcher::MAX_RESPONSE_BYTES + 1),
+        ])))->toThrow(RuntimeException::class);
+
+        return Http::response('page');
+    }]);
+    Http::preventStrayRequests();
+
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
+
+    expect($fetcher->get($url))->toBeNull()
+        ->and($responseBody)->toBeInstanceOf(BoundedResponseBody::class)
+        ->and($responseBody->getSize())->toBe(0);
+});
+
+it('caps a chunked response body at the byte limit', function (): void {
+    $url = 'https://public.example/chunked-page';
+    $responseBody = null;
+
+    Http::fake([$url => function (Request $request, array $options) use (&$responseBody): mixed {
+        $responseBody = $options['sink'];
+        $responseBody->write(str_repeat('é', intdiv(SafeUrlFetcher::MAX_RESPONSE_BYTES, 2)));
+
+        expect(fn () => $responseBody->write('x'))->toThrow(RuntimeException::class);
+
+        return Http::response('', 200, ['Transfer-Encoding' => 'chunked']);
+    }]);
+    Http::preventStrayRequests();
+
+    $fetcher = new SafeUrlFetcher(static fn (string $host): array => ['93.184.216.34']);
+
+    expect($fetcher->get($url))->toBeNull()
+        ->and($responseBody)->toBeInstanceOf(BoundedResponseBody::class)
+        ->and($responseBody->getSize())->toBe(SafeUrlFetcher::MAX_RESPONSE_BYTES);
 });
 
 it('blocks redirects to private IP addresses before sending a second request', function (): void {

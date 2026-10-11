@@ -9,10 +9,14 @@ use GuzzleHttp\Psr7\UriResolver;
 use GuzzleHttp\Psr7\Utils;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Psr\Http\Message\ResponseInterface as PsrResponse;
+use RuntimeException;
 use Throwable;
 
 final class SafeUrlFetcher
 {
+    public const int MAX_RESPONSE_BYTES = 5 * 1024 * 1024;
+
     private const int MAX_REDIRECTS = 5;
 
     /**
@@ -53,13 +57,42 @@ final class SafeUrlFetcher
                 return null;
             }
 
-            $response = Http::withOptions([
-                'allow_redirects' => false,
-                'curl' => $request['curl_options'],
-                'proxy' => '',
-            ])->withHeaders($headers)
-                ->timeout($timeout)
-                ->get($currentUrl);
+            $responseBody = new BoundedResponseBody(self::MAX_RESPONSE_BYTES);
+
+            try {
+                $response = Http::withOptions([
+                    'allow_redirects' => false,
+                    'curl' => $request['curl_options'],
+                    'on_headers' => static function (PsrResponse $response) use ($responseBody): void {
+                        $contentLength = $response->getHeaderLine('Content-Length');
+
+                        if (ctype_digit($contentLength) && (int) $contentLength > self::MAX_RESPONSE_BYTES) {
+                            $responseBody->markLimitExceeded();
+
+                            throw new RuntimeException('The response body exceeds the maximum allowed size.');
+                        }
+                    },
+                    'proxy' => '',
+                    'sink' => $responseBody,
+                ])->withHeaders($headers)
+                    ->timeout($timeout)
+                    ->get($currentUrl);
+            } catch (Throwable $exception) {
+                if ($responseBody->hasExceededLimit()) {
+                    return null;
+                }
+
+                throw $exception;
+            }
+
+            $contentLength = $response->header('Content-Length');
+
+            if ($responseBody->hasExceededLimit()
+                || (is_string($contentLength)
+                    && ctype_digit($contentLength)
+                    && (int) $contentLength > self::MAX_RESPONSE_BYTES)) {
+                return null;
+            }
 
             if (! in_array($response->status(), self::REDIRECT_STATUSES, true)) {
                 return $response;
