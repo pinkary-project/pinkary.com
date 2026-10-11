@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -44,7 +45,7 @@ final readonly class QuestionsFollowingFeed
             ->tap(new WhereNotModerated)
             ->where($followQueryClosure);
 
-        return Question::query()
+        $questions = Question::query()
             ->joinSub(
                 $latestQuestions,
                 'grouped_questions',
@@ -52,12 +53,8 @@ final readonly class QuestionsFollowingFeed
                 '=',
                 'grouped_questions.latest_id',
             )
-            ->select('questions.id', 'questions.root_id', 'questions.parent_id')
-            ->withExists([
-                'root as showRoot' => $followQueryClosure,
-                'parent as showParent' => $followQueryClosure,
-            ])
-            ->with('root:id,to_id', 'root.to:id,username', 'parent:id,parent_id')
+            ->selectRaw('questions.id as question_id')
+            ->selectRaw('NULL as repost_id, NULL as reposted_by_id, grouped_questions.last_update as feed_at')
             ->whereNotNull('answer')
             ->tap(new WhereNotModerated)
             ->where($followQueryClosure)
@@ -66,7 +63,33 @@ final readonly class QuestionsFollowingFeed
                 $query->whereNull('questions.parent_id')
                     ->orWhereHas('root', $followQueryClosure)
                     ->orWhereHas('parent', $followQueryClosure);
-            })
-            ->orderByDesc('grouped_questions.last_update');
+            });
+
+        $reposts = Repost::query()
+            ->join('questions', 'questions.id', '=', 'reposts.question_id')
+            ->selectRaw('questions.id as question_id')
+            ->selectRaw('reposts.id as repost_id, reposts.user_id as reposted_by_id, reposts.created_at as feed_at')
+            ->whereNotNull('questions.answer')
+            ->where('questions.is_ignored', false)
+            ->where('questions.is_reported', false)
+            ->where(function (Builder $query): void {
+                $query
+                    ->where('reposts.user_id', $this->user->id)
+                    ->orWhereExists(function (Builder|QueryBuilder $query): void {
+                        $query->select(DB::raw(1))
+                            ->from('followers')
+                            ->whereColumn('user_id', 'reposts.user_id')
+                            ->where('follower_id', $this->user->id);
+                    });
+            });
+
+        return new FeedItems()->merge($questions, $reposts)
+            ->withExists([
+                'root as showRoot' => $followQueryClosure,
+                'parent as showParent' => $followQueryClosure,
+            ])
+            ->with('root:id,to_id', 'root.to:id,username', 'parent:id,parent_id')
+            ->orderByDesc('feed_items.feed_at')
+            ->orderByDesc('questions.id');
     }
 }

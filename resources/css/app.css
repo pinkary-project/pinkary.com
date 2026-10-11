@@ -71,6 +71,16 @@
     display: none;
 }
 
+.answer pre,
+.answer table {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.answer pre {
+    white-space: pre;
+}
+
 .hover\:darken-gradient:hover {
     filter: saturate(2.5);
 }

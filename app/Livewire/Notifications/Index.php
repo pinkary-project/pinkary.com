@@ -64,6 +64,7 @@ final class Index extends Component
             'notifications' => $notifications,
             'questions' => $this->questionsFor($items),
             'followers' => $this->followersFor($items),
+            'reposts' => $this->repostsFor($items),
         ]);
     }
 }

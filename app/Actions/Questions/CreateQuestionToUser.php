@@ -23,7 +23,7 @@ final readonly class CreateQuestionToUser
     /** Ask a question to another user. */
     public function handle(User $from, User $to, string $content, bool $anonymously = false): Question
     {
-        $this->ensureCanPublish->handle($from, 1);
+        $this->ensureCanPublish->handle($from, 1, 'questions');
 
         $question = $this->createQuestion->handle($from, [[
             'to_id' => $to->id,

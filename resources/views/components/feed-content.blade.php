@@ -1,8 +1,8 @@
 @props(['content'])
 
-<div class="mt-1" x-data="feedContent">
+<div class="mt-1 max-w-full min-w-0" x-data="feedContent">
     <div
-        class="answer overflow-hidden wrap-anywhere text-slate-700 dark:text-slate-200"
+        class="answer max-w-full min-w-0 overflow-hidden wrap-anywhere text-slate-700 dark:text-slate-200"
         x-bind:class="{ 'max-h-48': ! expanded, 'max-h-none': expanded }"
         x-ref="text"
     >

@@ -22,6 +22,7 @@ final readonly class FeedQuestion
             ->with([
                 'from:id,name,username,avatar,is_verified,is_company_verified',
                 'to:id,name,username,avatar,is_verified,is_company_verified',
+                'repostedBy:id,name,username,avatar,is_verified,is_company_verified',
                 'channel:id,name,slug',
                 'pollOptions' => fn (Relation $query) => $query->select('id', 'question_id', 'text', 'votes_count')->orderBy('id'),
                 'pollVotes' => fn (Relation $query) => $query
@@ -44,6 +45,13 @@ final readonly class FeedQuestion
                     fn (Builder $q) => $q->whereRaw('1 = 0'),
                 ),
             ])
-            ->withCount(['likes', 'children', 'bookmarks']);
+            ->withCount(['likes', 'children', 'bookmarks', 'reposts'])
+            ->withExists([
+                'reposts as is_reposted' => fn (Builder $query) => $query->when(
+                    $userId,
+                    fn (Builder $q) => $q->where('user_id', $userId),
+                    fn (Builder $q) => $q->whereRaw('1 = 0'),
+                ),
+            ]);
     }
 }

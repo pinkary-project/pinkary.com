@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\NotificationReadController;
 use App\Http\Controllers\Api\QuestionBookmarkController;
 use App\Http\Controllers\Api\QuestionLikeController;
+use App\Http\Controllers\Api\QuestionRepostController;
 use App\Http\Controllers\Api\UserFollowController;
 use App\Http\Controllers\Api\UserFollowerController;
 use App\Http\Controllers\Api\UserFollowingController;
@@ -50,6 +51,15 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
 
             Route::delete('questions/{question}/bookmark', [QuestionBookmarkController::class, 'destroy'])
                 ->name('questions.unbookmark')
+                ->whereUuid('question');
+
+            Route::post('questions/{question}/repost', [QuestionRepostController::class, 'store'])
+                ->middleware('throttle:60,1,repost')
+                ->name('questions.repost')
+                ->whereUuid('question');
+
+            Route::delete('questions/{question}/repost', [QuestionRepostController::class, 'destroy'])
+                ->name('questions.unrepost')
                 ->whereUuid('question');
 
             Route::apiResource('bookmarks', BookmarkController::class)

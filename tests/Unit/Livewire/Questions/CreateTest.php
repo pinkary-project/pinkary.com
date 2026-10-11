@@ -487,7 +487,7 @@ test('a whole thread counts against the per minute limit', function (): void {
     $component->call('store');
 
     $component->assertHasErrors([
-        'content' => 'You can only send 3 questions per minute.',
+        'content' => 'You can only send 3 posts per minute.',
     ]);
 
     expect(Question::count())->toBe(4);
@@ -515,7 +515,7 @@ test('each thread post counts towards the daily limit', function (): void {
     $component->call('store');
 
     $component->assertHasErrors([
-        'content' => 'You can only send 30 questions per day.',
+        'content' => 'You can only send 30 posts per day.',
     ]);
 
     expect(Question::count())->toBe(29);
@@ -761,7 +761,7 @@ test('max 30 questions per day', function (): void {
     $component->call('store');
 
     $component->assertHasErrors([
-        'content' => 'You can only send 30 questions per day.',
+        'content' => 'You can only send 30 posts per day.',
     ]);
 
     expect(Question::count())->toBe(30);

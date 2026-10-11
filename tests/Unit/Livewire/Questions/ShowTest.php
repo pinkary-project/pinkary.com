@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use App\Livewire\Questions\Show;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
+use App\Notifications\QuestionReposted;
 use Livewire\Livewire;
 
 test('feed extracts images after the text while full posts retain inline image positions', function (): void {
@@ -303,6 +305,162 @@ test('like unverified user', function (): void {
     $component->assertRedirect(route('verification.notice'));
 
     expect($question->likes()->count())->toBe(0);
+});
+
+test('repost', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+    $component
+        ->assertRenderSkipped()
+        ->assertDispatched('question.reposted', id: $question->id)
+        ->assertNotDispatched('notification.created');
+
+    $component->call('repost');
+
+    expect($question->reposts()->whereBelongsTo($user)->count())->toBe(1)
+        ->and($question->to->notifications()->where('type', QuestionReposted::class)->count())->toBe(1);
+});
+
+test('repost attribution shows the username and truncates long names', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->create([
+        'name' => str_repeat('A very long display name ', 10),
+        'username' => 'longusername',
+    ]);
+    $repost = Repost::factory()->create([
+        'user_id' => $user->id,
+        'question_id' => $question->id,
+    ]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $question->id,
+        'repostId' => $repost->id,
+        'inIndex' => true,
+    ])
+        ->assertSee($user->name)
+        ->assertSee('reposted')
+        ->assertDontSee('View full thread')
+        ->assertDontSee('@longusername reposted')
+        ->assertSeeHtml('class="min-w-0 flex-1 truncate"');
+});
+
+test('reposted replies link to their full parent chain', function (): void {
+    $root = Question::factory()->sharedUpdate()->create(['answer' => 'Thread root']);
+    $parent = Question::factory()->sharedUpdate()->create([
+        'parent_id' => $root->id,
+        'root_id' => $root->id,
+        'answer' => 'Earlier reply',
+    ]);
+    $reply = Question::factory()->sharedUpdate()->create([
+        'parent_id' => $parent->id,
+        'root_id' => $root->id,
+        'answer' => 'Reposted reply',
+    ]);
+    $repost = Repost::factory()->create(['question_id' => $reply->id]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $reply->id,
+        'repostId' => $repost->id,
+        'inIndex' => true,
+    ]);
+
+    $document = new DOMDocument();
+    $document->loadHTML($component->html(), LIBXML_NOERROR | LIBXML_NOWARNING);
+    $threadUrl = new DOMXPath($document)->evaluate('string(//a[normalize-space(.)="View full thread"]/@href)');
+
+    expect($threadUrl)->toBe(route('questions.show', [
+        'username' => $reply->to->username,
+        'question' => $reply,
+    ]));
+
+    $this->get($threadUrl)->assertOk()
+        ->assertSeeInOrder(['Thread root', 'Earlier reply', 'Reposted reply']);
+});
+
+test('ordinary replies do not show the repost thread link', function (): void {
+    $parent = Question::factory()->sharedUpdate()->create();
+    $reply = Question::factory()->sharedUpdate()->create(['parent_id' => $parent->id]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $reply->id,
+        'inIndex' => true,
+    ])->assertDontSee('View full thread');
+});
+
+test('the full reply view does not repeat the repost thread link', function (): void {
+    $parent = Question::factory()->sharedUpdate()->create();
+    $reply = Question::factory()->sharedUpdate()->create(['parent_id' => $parent->id]);
+    $repost = Repost::factory()->create(['question_id' => $reply->id]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $reply->id,
+        'repostId' => $repost->id,
+    ])->assertDontSee('View full thread');
+});
+
+test('post author names truncate in the feed header', function (): void {
+    $user = User::factory()->create([
+        'name' => str_repeat('A very long display name ', 10),
+        'username' => 'longusername',
+    ]);
+    $question = Question::factory()->create(['to_id' => $user->id]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $question->id,
+        'inIndex' => true,
+    ])->assertSeeHtml('class="min-w-0 truncate font-medium text-slate-950 dark:text-white"');
+});
+
+test('repost auth', function (): void {
+    $question = Question::factory()->create();
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+
+    $component->assertRedirect(route('login'));
+    expect($question->reposts()->count())->toBe(0);
+});
+
+test('repost unverified user', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->unverified()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+
+    $component->assertRedirect(route('verification.notice'));
+    expect($question->reposts()->count())->toBe(0);
+});
+
+test('unrepost', function (): void {
+    $question = Question::factory()->create();
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Show::class, [
+        'questionId' => $question->id,
+    ]);
+
+    $component->call('repost');
+    $component->call('unrepost');
+
+    $component
+        ->assertRenderSkipped()
+        ->assertDispatched('question.unreposted', id: $question->id)
+        ->assertNotDispatched('notification.created');
+    expect($question->reposts()->count())->toBe(0)
+        ->and($question->to->notifications()->where('type', QuestionReposted::class)->count())->toBe(0);
 });
 
 test('unlike', function (): void {

@@ -34,7 +34,8 @@ test('to array', function (): void {
         'root_id',
         'poll_expires_at',
         'channel_id',
-    )->toHaveCount(18);
+        'quoted_question_id',
+    )->toHaveCount(19);
 });
 
 test('content', function (): void {
@@ -78,6 +79,22 @@ test('relations', function (): void {
     $questionWithChannel = Question::factory()->for($channel)->create();
     expect($questionWithChannel->channel)->toBeInstanceOf(Channel::class)
         ->and($questionWithChannel->channel->id)->toBe($channel->id);
+
+    $quotedQuestion = Question::factory()->create();
+    $quote = Question::factory()->for($quotedQuestion, 'quotedQuestion')->create();
+
+    expect($quote->quotedQuestion->id)->toBe($quotedQuestion->id)
+        ->and($quotedQuestion->quotes)->toContainOnlyInstancesOf(Question::class)
+        ->and($quotedQuestion->quotes)->toHaveCount(1);
+});
+
+test('deleting a quoted post keeps the quote post', function (): void {
+    $quotedQuestion = Question::factory()->create();
+    $quote = Question::factory()->for($quotedQuestion, 'quotedQuestion')->create();
+
+    $quotedQuestion->delete();
+
+    expect($quote->fresh()->quoted_question_id)->toBeNull();
 });
 
 test('mentions', function (): void {

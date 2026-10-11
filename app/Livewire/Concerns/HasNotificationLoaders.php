@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Concerns;
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Notifications\UserFollowed;
 use Illuminate\Notifications\DatabaseNotification;
@@ -62,6 +63,32 @@ trait HasNotificationLoaders
                 ->keyBy('id');
 
         return $followers;
+    }
+
+    /**
+     * @param  Collection<int, DatabaseNotification>  $notifications
+     * @return Collection<int, Repost>
+     */
+    protected function repostsFor(Collection $notifications): Collection
+    {
+        /** @var list<int> $ids */
+        $ids = $notifications
+            ->map(fn (DatabaseNotification $notification): mixed => $notification->data['repost_id'] ?? null)
+            ->filter(fn (mixed $id): bool => is_int($id))
+            ->unique()
+            ->values()
+            ->all();
+
+        /** @var Collection<int, Repost> $reposts */
+        $reposts = $ids === []
+            ? new Collection()
+            : Repost::query()
+                ->whereIn('id', $ids)
+                ->with('user')
+                ->get()
+                ->keyBy('id');
+
+        return $reposts;
     }
 
     /** A notification's subject id, or null when the payload carries none. */

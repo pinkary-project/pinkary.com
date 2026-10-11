@@ -14,7 +14,9 @@
         $action = 'commented on your '.($question->parent->parent_id !== null ? 'comment:' : ($question->parent->isSharedUpdate() ? 'Update:' : 'Answer:'));
     } elseif ($isAnswer) {
         $actor = $question->to;
-        $action = 'answered your '.($question->anonymously ? 'anonymous question:' : 'question:');
+        $action = $question->isSharedUpdate()
+            ? 'updated your post:'
+            : 'answered your '.($question->anonymously ? 'anonymous question:' : 'question:');
     } elseif ($isAnonymous) {
         $actor = null;
         $action = 'asked you anonymously:';

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 
 test('a guest can read answered questions for a profile', function (): void {
@@ -154,6 +155,40 @@ test('pinned question appears first in user questions', function (): void {
         ->assertJsonPath('data.0.answer', 'Old pinned answer')
         ->assertJsonPath('data.1.pinned', false)
         ->assertJsonPath('data.1.answer', 'Recent answer');
+});
+
+test('only the profile owner pinned posts are promoted ahead of reposts', function (): void {
+    $this->freezeTime();
+    $owner = User::factory()->create();
+    $author = User::factory()->create();
+    $pinned = Question::factory()->sharedUpdate()->create([
+        'from_id' => $owner->id,
+        'to_id' => $owner->id,
+        'pinned' => true,
+        'updated_at' => now()->subDays(3),
+    ]);
+    $repostedPost = Question::factory()->sharedUpdate()->create([
+        'from_id' => $author->id,
+        'to_id' => $author->id,
+        'pinned' => true,
+    ]);
+    Repost::factory()->create([
+        'user_id' => $owner->id,
+        'question_id' => $repostedPost->id,
+        'created_at' => now()->subDays(2),
+    ]);
+    $recent = Question::factory()->sharedUpdate()->create([
+        'from_id' => $owner->id,
+        'to_id' => $owner->id,
+        'updated_at' => now()->subDay(),
+    ]);
+
+    $this->getJson(route('api.v1.users.questions.index', $owner->username))
+        ->assertOk()
+        ->assertJsonCount(3, 'data')
+        ->assertJsonPath('data.0.id', $pinned->id)
+        ->assertJsonPath('data.1.id', $recent->id)
+        ->assertJsonPath('data.2.id', $repostedPost->id);
 });
 
 test('a thread shows up even when its newest post is a reply', function (): void {

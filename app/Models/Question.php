@@ -40,14 +40,19 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
  * @property int|null $channel_id
+ * @property string|null $quoted_question_id
  * @property-read User $from
  * @property-read User $to
  * @property-read Channel|null $channel
  * @property-read Collection<int, Like> $likes
+ * @property-read Collection<int, Repost> $reposts
+ * @property-read User|null $repostedBy
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
  * @property-read Collection<int, Question> $descendants
+ * @property-read Question|null $quotedQuestion
+ * @property-read Collection<int, Question> $quotes
  * @property-read Collection<int, Hashtag> $hashtags
  * @property-read Collection<int, PollOption> $pollOptions
  * @property-read Collection<int, Question> $threadChain
@@ -200,6 +205,58 @@ final class Question extends Model implements Viewable
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get the reposts for the question.
+     *
+     * @return HasMany<Repost, $this>
+     */
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(Repost::class);
+    }
+
+    /**
+     * Get the post quoted by this post.
+     *
+     * @return BelongsTo<Question, $this>
+     */
+    public function quotedQuestion(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'quoted_question_id');
+    }
+
+    /**
+     * Get the posts quoting this post.
+     *
+     * @return HasMany<Question, $this>
+     */
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(self::class, 'quoted_question_id');
+    }
+
+    /**
+     * Get the user who created the feed repost event.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function repostedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reposted_by_id');
+    }
+
+    /** Read the optional feed repost id when a query selected it. */
+    public function getRepostIdAttribute(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    /** Read the optional feed reposter id when a query selected it. */
+    public function getRepostedByIdAttribute(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
     }
 
     /**

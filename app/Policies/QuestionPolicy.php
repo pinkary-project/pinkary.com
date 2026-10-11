@@ -54,6 +54,14 @@ final readonly class QuestionPolicy
         return $user->id === $question->to_id;
     }
 
+    /** Determine whether the user can repost the question. */
+    public function repost(User $user, Question $question): bool
+    {
+        return $question->answer !== null
+            && ! $question->is_ignored
+            && ! $question->is_reported;
+    }
+
     /** Determine whether the user can delete the question. */
     public function delete(User $user, Question $question): bool
     {

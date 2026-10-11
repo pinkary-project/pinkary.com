@@ -5,9 +5,11 @@ declare(strict_types=1);
 use App\Jobs\DeleteOrphanNotifications;
 use App\Livewire\Notifications\Index;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
+use App\Notifications\QuestionReposted;
 use App\Notifications\UserFollowed;
 use App\Notifications\UserMentioned;
 use Illuminate\Notifications\DatabaseNotification;
@@ -220,6 +222,31 @@ test('displays user followed notification with follower username', function (): 
     $component
         ->assertSee('@alice')
         ->assertSee('followed you');
+});
+
+test('shared update repost notifications show the update text', function (): void {
+    $owner = User::factory()->create();
+    $reposter = User::factory()->create();
+    $update = Question::factory()->sharedUpdate()->create([
+        'from_id' => $owner->id,
+        'to_id' => $owner->id,
+        'answer' => 'A shared update worth reading.',
+    ]);
+
+    Repost::factory()->create([
+        'user_id' => $reposter->id,
+        'question_id' => $update->id,
+    ]);
+
+    expect($owner->notifications()->where('type', QuestionReposted::class)->exists())->toBeTrue();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($owner->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('reposted your post:')
+        ->assertSee('A shared update worth reading.')
+        ->assertDontSee('__UPDATE__');
 });
 
 test('orphan follower notifications are skipped and can be cleaned up', function (): void {

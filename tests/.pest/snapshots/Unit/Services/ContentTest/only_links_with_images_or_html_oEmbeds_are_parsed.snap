@@ -1,7 +1,7 @@
 Sure, here is the link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://laravel.com">laravel.com</a><div
     id="link-preview-card"
     data-url="https://laravel.com"
-    class="group/preview mx-auto mt-2 min-w-full"
+    class="group/preview mx-auto mt-2 w-full max-w-full"
     data-navigate-ignore="true"
 >
                     <a href="https://laravel.com" target="_blank" rel="noopener noreferrer">

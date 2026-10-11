@@ -5,13 +5,41 @@ declare(strict_types=1);
 use App\Models\Question;
 use App\Models\User;
 
-test('a guest cannot like or bookmark questions', function (): void {
+test('a guest cannot like, bookmark, or repost questions', function (): void {
     $question = Question::factory()->create();
 
     $this->postJson(route('api.v1.questions.like', $question))->assertUnauthorized();
     $this->deleteJson(route('api.v1.questions.unlike', $question))->assertUnauthorized();
     $this->postJson(route('api.v1.questions.bookmark', $question))->assertUnauthorized();
     $this->deleteJson(route('api.v1.questions.unbookmark', $question))->assertUnauthorized();
+    $this->postJson(route('api.v1.questions.repost', $question))->assertUnauthorized();
+    $this->deleteJson(route('api.v1.questions.unrepost', $question))->assertUnauthorized();
+});
+
+test('an authenticated user can repost and unrepost a question', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create();
+    $headers = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
+
+    $this->postJson(route('api.v1.questions.repost', $question), [], $headers)
+        ->assertOk()
+        ->assertJsonPath('data.reposted', true)
+        ->assertJsonPath('data.reposts', 1);
+
+    $this->postJson(route('api.v1.questions.repost', $question), [], $headers)
+        ->assertOk()
+        ->assertJsonPath('data.reposts', 1);
+
+    $this->assertDatabaseCount('reposts', 1);
+
+    $this->deleteJson(route('api.v1.questions.unrepost', $question), [], $headers)
+        ->assertOk()
+        ->assertJsonPath('data.reposted', false)
+        ->assertJsonPath('data.reposts', 0);
+
+    $this->deleteJson(route('api.v1.questions.unrepost', $question), [], $headers)
+        ->assertOk()
+        ->assertJsonPath('data.reposts', 0);
 });
 
 test('an authenticated user can like and unlike a question', function (): void {
@@ -66,7 +94,7 @@ test('an authenticated user can bookmark and unbookmark a question', function ()
     $this->assertDatabaseCount('bookmarks', 0);
 });
 
-test('liking, bookmarking and voting require a viewable question', function (): void {
+test('liking, bookmarking, reposting and voting require a viewable question', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create([
         'answer' => null,
@@ -78,6 +106,7 @@ test('liking, bookmarking and voting require a viewable question', function (): 
 
     $this->postJson(route('api.v1.questions.like', $question), [], $headers)->assertForbidden();
     $this->postJson(route('api.v1.questions.bookmark', $question), [], $headers)->assertForbidden();
+    $this->postJson(route('api.v1.questions.repost', $question), [], $headers)->assertForbidden();
     $this->postJson(route('api.v1.questions.poll.vote', $question), ['option_id' => $option->id], $headers)
         ->assertForbidden();
 

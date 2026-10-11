@@ -46,6 +46,7 @@ final class QuestionResource extends JsonResource
                 ? $this->author($this->resource->from, $request)
                 : null,
             'to' => $this->author($this->resource->to, $request),
+            'reposted_by' => $this->repostedBy($request),
             'thread' => [
                 'parent_id' => $this->resource->parent_id,
                 'root_id' => $this->resource->root_id,
@@ -64,8 +65,10 @@ final class QuestionResource extends JsonResource
                 'likes' => (int) ($this->resource->likes_count ?? 0),
                 'comments' => (int) ($this->resource->children_count ?? 0),
                 'bookmarks' => (int) ($this->resource->bookmarks_count ?? 0),
+                'reposts' => (int) ($this->resource->reposts_count ?? 0),
                 'liked' => (bool) ($this->resource->is_liked ?? false),
                 'bookmarked' => (bool) ($this->resource->is_bookmarked ?? false),
+                'reposted' => (bool) ($this->resource->is_reposted ?? false),
             ],
         ];
     }
@@ -111,6 +114,16 @@ final class QuestionResource extends JsonResource
             'verified' => (bool) $user->is_verified,
             'company_verified' => (bool) $user->is_company_verified,
         ];
+    }
+
+    /** @return array<string, mixed>|null */
+    private function repostedBy(Request $request): ?array
+    {
+        if (! $this->resource->relationLoaded('repostedBy') || ! $this->resource->repostedBy instanceof User) {
+            return null;
+        }
+
+        return $this->author($this->resource->repostedBy, $request);
     }
 
     /** @return array<string, mixed>|null */
