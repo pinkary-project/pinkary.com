@@ -6,6 +6,7 @@ use App\Models\Question;
 use App\Models\User;
 use App\Services\PeopleToFollowRecommendations;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function (): void {
     Cache::forget('top-50-users');
@@ -147,21 +148,23 @@ it('shows the post user and thread users on question pages before falling back t
     $rootQuestion = Question::factory()->create([
         'from_id' => $rootParticipant->id,
         'to_id' => $postUser->id,
-        'updated_at' => now()->subMinutes(3),
+        'created_at' => now()->subMinutes(3),
     ]);
 
     $middleQuestion = Question::factory()->create([
         'from_id' => $middleParticipant->id,
         'to_id' => $postUser->id,
         'parent_id' => $rootQuestion->id,
-        'updated_at' => now()->subMinutes(2),
+        'root_id' => $rootQuestion->id,
+        'created_at' => now()->subMinutes(2),
     ]);
 
     $question = Question::factory()->create([
         'from_id' => $currentParticipant->id,
         'to_id' => $postUser->id,
         'parent_id' => $middleQuestion->id,
-        'updated_at' => now()->subMinute(),
+        'root_id' => $rootQuestion->id,
+        'created_at' => now()->subMinute(),
     ]);
 
     $users = new PeopleToFollowRecommendations()->forContext(
@@ -194,6 +197,134 @@ it('falls back to generic suggestions when question context has no question id',
 
     expect($users->pluck('id')->all())
         ->toBe([$fallbackUser->id]);
+});
+
+it('collects thread participants with a single query instead of a recursive CTE', function (): void {
+    $postUser = User::factory()->create();
+    $rootParticipant = User::factory()->create();
+    $currentParticipant = User::factory()->create();
+
+    $rootQuestion = Question::factory()->create([
+        'from_id' => $rootParticipant->id,
+        'to_id' => $postUser->id,
+        'created_at' => now()->subMinutes(2),
+    ]);
+
+    $question = Question::factory()->create([
+        'from_id' => $currentParticipant->id,
+        'to_id' => $postUser->id,
+        'parent_id' => $rootQuestion->id,
+        'root_id' => $rootQuestion->id,
+        'created_at' => now()->subMinute(),
+    ]);
+
+    DB::enableQueryLog();
+
+    $users = new PeopleToFollowRecommendations()->forContext(
+        authenticatedUserId: null,
+        context: 'question',
+        contextQuestionId: (string) $question->id,
+        limit: 3,
+    );
+
+    $queries = collect(DB::getQueryLog())->pluck('query');
+
+    DB::disableQueryLog();
+
+    // Only the thread query filters on root_id; the question lookup merely selects it.
+    $threadQueries = $queries->filter(
+        fn (string $query): bool => str_contains(str_replace('`', '', $query), 'root_id =')
+    );
+
+    expect($queries->implode(' '))->not->toContain('WITH RECURSIVE')
+        ->and($threadQueries)->toHaveCount(1)
+        ->and($users->pluck('id')->all())->toBe([
+            $postUser->id,
+            $currentParticipant->id,
+            $rootParticipant->id,
+        ]);
+});
+
+it('collects participants from every branch of the thread', function (): void {
+    $postUser = User::factory()->create();
+    $rootParticipant = User::factory()->create();
+    $firstReplyParticipant = User::factory()->create();
+    $siblingParticipant = User::factory()->create();
+
+    $rootQuestion = Question::factory()->create([
+        'from_id' => $rootParticipant->id,
+        'to_id' => $postUser->id,
+        'created_at' => now()->subMinutes(3),
+    ]);
+
+    $firstReply = Question::factory()->create([
+        'from_id' => $firstReplyParticipant->id,
+        'to_id' => $postUser->id,
+        'parent_id' => $rootQuestion->id,
+        'root_id' => $rootQuestion->id,
+        'created_at' => now()->subMinutes(2),
+    ]);
+
+    $siblingReply = Question::factory()->create([
+        'from_id' => $siblingParticipant->id,
+        'to_id' => $postUser->id,
+        'parent_id' => $rootQuestion->id,
+        'root_id' => $rootQuestion->id,
+        'created_at' => now()->subMinute(),
+    ]);
+
+    $users = new PeopleToFollowRecommendations()->forContext(
+        authenticatedUserId: null,
+        context: 'question',
+        contextQuestionId: (string) $firstReply->id,
+        limit: 5,
+    );
+
+    expect($users->pluck('id')->all())->toBe([
+        $postUser->id,
+        $siblingParticipant->id,
+        $firstReplyParticipant->id,
+        $rootParticipant->id,
+    ]);
+});
+
+it('cuts the thread at the requested number of suggestions', function (): void {
+    $postUser = User::factory()->create();
+
+    $rootQuestion = Question::factory()->create([
+        'from_id' => $postUser->id,
+        'to_id' => $postUser->id,
+        'created_at' => now()->subDay(),
+    ]);
+
+    $participants = User::factory(25)->create();
+
+    foreach ($participants as $offset => $participant) {
+        Question::factory()->create([
+            'from_id' => $participant->id,
+            'to_id' => $postUser->id,
+            'parent_id' => $rootQuestion->id,
+            'root_id' => $rootQuestion->id,
+            'created_at' => now()->subDays(25 - $offset),
+        ]);
+    }
+
+    $users = new PeopleToFollowRecommendations()->forContext(
+        authenticatedUserId: null,
+        context: 'question',
+        contextQuestionId: (string) $rootQuestion->id,
+        limit: 5,
+    );
+
+    $ids = $users->pluck('id')->all();
+
+    expect($ids)->toBe([
+        $postUser->id,
+        $participants[24]->id,
+        $participants[23]->id,
+        $participants[22]->id,
+        $participants[21]->id,
+    ]);
 });
 
 it('falls back to generic suggestions when the question context cannot be found', function (): void {

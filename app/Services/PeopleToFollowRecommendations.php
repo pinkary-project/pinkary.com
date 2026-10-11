@@ -22,7 +22,7 @@ final readonly class PeopleToFollowRecommendations
 
     private const int EXTENDED_FAMOUS_LIMIT = 200;
 
-    private const int THREAD_DEPTH_CAP = 20;
+    private const int THREAD_PARTICIPANTS_PER_QUESTION = 2;
 
     /**
      * @return EloquentCollection<int, User>
@@ -90,12 +90,39 @@ final readonly class PeopleToFollowRecommendations
     }
 
     /**
+     * Collect the participants of every question in the thread the given question belongs to.
+     *
+     * The thread is fetched with a single indexed query on `root_id` rather than with a
+     * recursive CTE, because a recursive CTE needs an internal temporary table that the
+     * database may fail to materialise, which takes down the whole page instead of this
+     * widget alone. Every question in a thread shares the root id, so one query is enough.
+     *
+     * @return array<int, int>
+     */
+    private function threadParticipantIds(Question $question, int $limit): array
+    {
+        $questions = Question::query()
+            ->select(['from_id', 'to_id'])
+            ->where(function (Builder $query) use ($question): void {
+                $query->where('root_id', $question->root_id ?? $question->id)
+                    ->orWhere('id', $question->id);
+            })
+            ->orderByDesc('created_at')
+            ->limit($limit * self::THREAD_PARTICIPANTS_PER_QUESTION)
+            ->get();
+
+        return $questions
+            ->flatMap(static fn (Question $questionInThread): array => [$questionInThread->from_id, $questionInThread->to_id])
+            ->all();
+    }
+
+    /**
      * @return array<int, int>
      */
     private function questionContextUserIds(string $questionId, ?int $authenticatedUserId, int $limit): array
     {
         $question = Question::query()
-            ->select('id', 'from_id', 'to_id', 'parent_id')
+            ->select('id', 'from_id', 'to_id', 'root_id')
             ->find($questionId);
 
         if ($question === null) {
@@ -104,27 +131,7 @@ final readonly class PeopleToFollowRecommendations
 
         $selectedIds = $this->availableUserIds([$question->to_id], $authenticatedUserId, [], 1);
 
-        // Load the full ancestor chain in a single recursive CTE (depth-capped at THREAD_DEPTH_CAP).
-        /**
-         * @var array<array-key, object{id: int, from_id: int, to_id: int, parent_id: int, depth: int}>
-         */
-        $threadRows = DB::select(
-            'WITH RECURSIVE thread (id, from_id, to_id, parent_id, depth) AS (
-                SELECT id, from_id, to_id, parent_id, 0 FROM questions WHERE id = ?
-                UNION ALL
-                SELECT q.id, q.from_id, q.to_id, q.parent_id, t.depth + 1
-                FROM questions q INNER JOIN thread t ON q.id = t.parent_id
-                WHERE t.depth < ?
-            )
-            SELECT from_id, to_id FROM thread',
-            [$questionId, self::THREAD_DEPTH_CAP]
-        );
-
-        $threadParticipantIds = [];
-        foreach ($threadRows as $row) {
-            $threadParticipantIds[] = (int) $row->from_id;
-            $threadParticipantIds[] = (int) $row->to_id;
-        }
+        $threadParticipantIds = $this->threadParticipantIds($question, $limit);
 
         if (count($selectedIds) < $limit) {
             $selectedIds = [
