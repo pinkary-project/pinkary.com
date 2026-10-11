@@ -11,7 +11,6 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Uri;
 
@@ -45,10 +44,7 @@ final readonly class MetaData
     /**
      * Fetch the Open Graph data for a given URL.
      */
-    public function __construct(private string $url)
-    {
-        //
-    }
+    public function __construct(private string $url, private SafeUrlFetcher $fetcher = new SafeUrlFetcher()) {}
 
     /**
      * Fetch the parsed meta-data for the URL
@@ -96,19 +92,13 @@ final readonly class MetaData
      */
     public function checkExistsAndSize(string $image): bool
     {
-        if (! (Http::timeout(self::HTTP_TIMEOUT_SECONDS)->head($image)->ok())) {
+        $response = $this->fetcher->get($image, timeout: self::HTTP_TIMEOUT_SECONDS);
+
+        if (! $response?->ok()) {
             return false;
         }
 
-        $previousTimeout = ini_get('default_socket_timeout');
-
-        ini_set('default_socket_timeout', (string) self::HTTP_TIMEOUT_SECONDS);
-
-        try {
-            $dimensions = @getimagesize($image);
-        } finally {
-            ini_set('default_socket_timeout', $previousTimeout);
-        }
+        $dimensions = @getimagesizefromstring($response->body());
         $min_width = self::CARD_WIDTH / 0.66;
         $min_height = self::CARD_HEIGHT / 0.66;
 
@@ -147,9 +137,9 @@ final readonly class MetaData
         $data = collect();
 
         try {
-            $response = Http::timeout(self::HTTP_TIMEOUT_SECONDS)->get($this->url);
+            $response = $this->fetcher->get($this->url, timeout: self::HTTP_TIMEOUT_SECONDS);
 
-            if ($response->ok() && $response->body() !== '') {
+            if ($response?->ok() && $response->body() !== '') {
                 $data = $this->parse(
                     $response->body()
                 );
@@ -173,11 +163,12 @@ final readonly class MetaData
         $data = collect();
 
         try {
-            $response = Http::timeout(self::HTTP_TIMEOUT_SECONDS)->get(
-                url: $service.'?url='.urlencode($this->url).'&'.http_build_query($options)
+            $response = $this->fetcher->get(
+                $service.'?url='.urlencode($this->url).'&'.http_build_query($options),
+                timeout: self::HTTP_TIMEOUT_SECONDS,
             );
 
-            if ($response->ok()) {
+            if ($response?->ok()) {
                 $data = $response->collect();
             }
         } catch (ConnectionException) {
@@ -253,9 +244,13 @@ final readonly class MetaData
         }
 
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
-            $response = Http::withHeader('User-Agent', 'Twitterbot')->timeout(self::HTTP_TIMEOUT_SECONDS)->get($this->url);
+            $response = $this->fetcher->get(
+                $this->url,
+                ['User-Agent' => 'Twitterbot'],
+                self::HTTP_TIMEOUT_SECONDS,
+            );
 
-            if ($response->ok() && $response->body() !== '') {
+            if ($response?->ok() && $response->body() !== '') {
                 $data = $this->parseContent($response->body());
                 if ($data->has('image')) {
                     $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));
