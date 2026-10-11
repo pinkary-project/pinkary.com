@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustHosts();
         $middleware->trustProxies();
 
+        // Runs before anything parses the query string, so an over-nested one becomes a 400
+        // instead of an ErrorException from deep inside the request stack.
+        $middleware->prepend(App\Http\Middleware\RejectExcessiveQueryNesting::class);
+
         $middleware->alias([
             'block.bots' => App\Http\Middleware\BlockBots::class,
             'optional.sanctum' => App\Http\Middleware\OptionalSanctum::class,
