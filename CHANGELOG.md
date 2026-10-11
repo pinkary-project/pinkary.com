@@ -1,3 +1,12 @@
+## Version 2.8.0
+> 11 October, 2026
+
+- Adds reposting for posts and replies, with feed support and notifications.
+- Lets users choose who can ask them questions.
+- Improves feed reading with horizontal image strips and inline expansion for long posts.
+- Fixes long post content overflowing the feed and select option colors in dark mode.
+- Internal improvements, including admin user sorting, dependency updates, and bug fixes.
+
 ## Version 2.7.0
 > 23 September, 2026
 
