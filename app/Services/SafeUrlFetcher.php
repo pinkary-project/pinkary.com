@@ -19,6 +19,8 @@ final class SafeUrlFetcher
 
     private const int MAX_REDIRECTS = 5;
 
+    private const string NAT64_WELL_KNOWN_PREFIX = "\x00\x64\xff\x9b\x00\x00\x00\x00\x00\x00\x00\x00";
+
     /**
      * @var list<int>
      */
@@ -145,6 +147,26 @@ final class SafeUrlFetcher
         return array_values(array_unique($addresses));
     }
 
+    private static function isGlobalAddress(string $address): bool
+    {
+        if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE) === false) {
+            return false;
+        }
+
+        $packedAddress = inet_pton($address);
+
+        if (! is_string($packedAddress)
+            || mb_strlen($packedAddress, '8bit') !== 16
+            || ! str_starts_with($packedAddress, self::NAT64_WELL_KNOWN_PREFIX)) {
+            return true;
+        }
+
+        $embeddedAddress = inet_ntop(mb_substr($packedAddress, 12, null, '8bit'));
+
+        return is_string($embeddedAddress)
+            && filter_var($embeddedAddress, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE) !== false;
+    }
+
     /**
      * @return array{curl_options: array<int, array<int, string>>}|null
      */
@@ -208,7 +230,7 @@ final class SafeUrlFetcher
 
         foreach ($addresses as $address) {
             if (! is_string($address)
-                || filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE) === false) {
+                || ! self::isGlobalAddress($address)) {
                 return null;
             }
         }
