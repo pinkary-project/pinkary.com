@@ -48,6 +48,9 @@ final readonly class Hashtags extends Type
                 id: $hashtag->id,
                 replacement: "#{$hashtag->name}",
                 view: 'components.autocomplete.hashtag-item',
+                payload: [
+                    'questions_count' => (int) $hashtag->getAttribute('questions_count'),
+                ],
             ));
     }
 }

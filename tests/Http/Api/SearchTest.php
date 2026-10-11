@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Hashtag;
+use App\Models\Question;
 use App\Models\User;
 
 test('search requires a query', function (): void {
@@ -70,4 +71,30 @@ test('search finds users by name prefix and hashtags', function (): void {
         ->assertJsonPath('data.hashtags.0.name', 'laravel');
 
     expect($ada->username)->toBe('ada');
+});
+
+test('hashtag search returns the post count with the existing payload', function (): void {
+    $user = User::factory()->create(['name' => 'Test User', 'username' => 'test-user']);
+    $hashtag = Hashtag::factory()->create(['name' => 'laravel']);
+
+    Question::factory()->count(3)->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'answer' => '#laravel',
+    ]);
+
+    $this->getJson(route('api.v1.search.index', ['q' => 'lara']))
+        ->assertOk()
+        ->assertExactJson([
+            'data' => [
+                'users' => [],
+                'hashtags' => [
+                    [
+                        'id' => $hashtag->id,
+                        'name' => 'laravel',
+                        'questions_count' => 3,
+                    ],
+                ],
+            ],
+        ]);
 });
