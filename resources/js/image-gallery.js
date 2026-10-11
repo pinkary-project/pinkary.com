@@ -1,7 +1,9 @@
+const galleryGap = 8;
+
 const galleryHeight = (width, images, maximum = 256) => {
     const ratios = images.filter(image => image.width > 0 && image.height > 0)
         .map(image => image.width / image.height);
-    const availableWidth = Math.max(0, width - (images.length > 1 ? 32 : 0));
+    const availableWidth = Math.max(0, width - Math.max(0, images.length - 1) * galleryGap);
 
     return Math.min(maximum, availableWidth / Math.max(1, ...ratios));
 };
