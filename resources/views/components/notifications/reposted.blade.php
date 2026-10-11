@@ -4,6 +4,10 @@
     'repost',
 ])
 
+@php
+    $snippet = $question->isSharedUpdate() ? $question->answer : $question->content;
+@endphp
+
 <div class="flex items-start gap-3 sm:gap-4">
     <figure class="{{ $repost->user->is_company_verified ? 'rounded-2xl' : 'rounded-full' }} h-10 w-10 sm:h-12 sm:w-12 shrink-0 overflow-hidden border border-slate-200/70 bg-slate-100 dark:border-slate-800/30 dark:bg-[#10182b]">
         <img
@@ -40,9 +44,9 @@
             reposted your {{ $question->isSharedUpdate() ? 'post' : 'question' }}:
         </p>
 
-        @if (filled($question->content))
+        @if (filled($snippet))
             <div class="mt-1.5 line-clamp-3 text-sm leading-6 break-words text-slate-700 dark:text-slate-200">
-                {!! $question->content !!}
+                {!! $snippet !!}
             </div>
         @endif
     </div>

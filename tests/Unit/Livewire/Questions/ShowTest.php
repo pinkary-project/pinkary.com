@@ -345,8 +345,63 @@ test('repost attribution shows the username and truncates long names', function 
     ])
         ->assertSee($user->name)
         ->assertSee('reposted')
+        ->assertDontSee('View full thread')
         ->assertDontSee('@longusername reposted')
         ->assertSeeHtml('class="min-w-0 flex-1 truncate"');
+});
+
+test('reposted replies link to their full parent chain', function (): void {
+    $root = Question::factory()->sharedUpdate()->create(['answer' => 'Thread root']);
+    $parent = Question::factory()->sharedUpdate()->create([
+        'parent_id' => $root->id,
+        'root_id' => $root->id,
+        'answer' => 'Earlier reply',
+    ]);
+    $reply = Question::factory()->sharedUpdate()->create([
+        'parent_id' => $parent->id,
+        'root_id' => $root->id,
+        'answer' => 'Reposted reply',
+    ]);
+    $repost = Repost::factory()->create(['question_id' => $reply->id]);
+
+    $component = Livewire::test(Show::class, [
+        'questionId' => $reply->id,
+        'repostId' => $repost->id,
+        'inIndex' => true,
+    ]);
+
+    $document = new DOMDocument();
+    $document->loadHTML($component->html(), LIBXML_NOERROR | LIBXML_NOWARNING);
+    $threadUrl = new DOMXPath($document)->evaluate('string(//a[normalize-space(.)="View full thread"]/@href)');
+
+    expect($threadUrl)->toBe(route('questions.show', [
+        'username' => $reply->to->username,
+        'question' => $reply,
+    ]));
+
+    $this->get($threadUrl)->assertOk()
+        ->assertSeeInOrder(['Thread root', 'Earlier reply', 'Reposted reply']);
+});
+
+test('ordinary replies do not show the repost thread link', function (): void {
+    $parent = Question::factory()->sharedUpdate()->create();
+    $reply = Question::factory()->sharedUpdate()->create(['parent_id' => $parent->id]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $reply->id,
+        'inIndex' => true,
+    ])->assertDontSee('View full thread');
+});
+
+test('the full reply view does not repeat the repost thread link', function (): void {
+    $parent = Question::factory()->sharedUpdate()->create();
+    $reply = Question::factory()->sharedUpdate()->create(['parent_id' => $parent->id]);
+    $repost = Repost::factory()->create(['question_id' => $reply->id]);
+
+    Livewire::test(Show::class, [
+        'questionId' => $reply->id,
+        'repostId' => $repost->id,
+    ])->assertDontSee('View full thread');
 });
 
 test('post author names truncate in the feed header', function (): void {

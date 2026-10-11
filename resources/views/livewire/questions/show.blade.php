@@ -191,6 +191,17 @@
                         <livewire:questions.poll-voting :questionId="$question->id" :key="'poll-'.$question->id" />
                     @endif
 
+                    @if ($inIndex && $repost !== null && $question->parent_id !== null)
+                        <a
+                            href="{{ route('questions.show', ['username' => $question->to->username, 'question' => $question]) }}"
+                            class="mt-2 inline-flex text-sm font-medium text-pink-500 transition-colors hover:text-pink-400 hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500"
+                            data-navigate-ignore="true"
+                            wire:navigate
+                        >
+                            {{ __('View full thread') }}
+                        </a>
+                    @endif
+
                     <div class="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-2 sm:flex-nowrap sm:gap-x-3">
                         <div class="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-x-3">
                             <a
