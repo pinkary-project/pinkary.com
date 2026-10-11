@@ -14,7 +14,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final readonly class HashtagQuestionController
 {
-    /** List public posts that contain a hashtag. */
     public function index(
         PaginatedRequest $request,
         Hashtag $hashtag,
