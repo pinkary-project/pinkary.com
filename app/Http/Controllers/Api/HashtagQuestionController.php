@@ -14,6 +14,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final readonly class HashtagQuestionController
 {
+    /** List a hashtag's posts, newest thread activity first. */
     public function index(
         PaginatedRequest $request,
         Hashtag $hashtag,

@@ -49,6 +49,7 @@ arch('avoid mutation')
         'App\Providers',
         'App\View',
         App\Services\Autocomplete::class,
+        App\Services\BoundedResponseBody::class,
     ]);
 
 arch('avoid inheritance')
@@ -69,6 +70,7 @@ arch('avoid inheritance')
         'App\Providers',
         'App\View',
         'App\Services\Autocomplete\Types',
+        App\Services\BoundedResponseBody::class,
     ]);
 
 arch('annotations')

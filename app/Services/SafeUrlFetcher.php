@@ -123,6 +123,8 @@ final readonly class SafeUrlFetcher
     }
 
     /**
+     * Resolve every A and AAAA address for the host.
+     *
      * @return list<string>
      */
     private function dnsAddresses(string $host): array
@@ -146,6 +148,7 @@ final readonly class SafeUrlFetcher
         return array_values(array_unique($addresses));
     }
 
+    /** Determine whether an IP address is globally routable. */
     private function isGlobalAddress(string $address): bool
     {
         if (filter_var($address, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE) === false) {
