@@ -43,7 +43,8 @@ final readonly class RecentQuestionsFeed
                         ->where('name', 'like', $this->hashtag);
                 })
                 ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')
-                ->orderByDesc('questions.updated_at');
+                ->orderByDesc('questions.updated_at')
+                ->orderByDesc('questions.id');
         }
 
         $latestQuestions = Question::query()
