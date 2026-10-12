@@ -13,7 +13,7 @@ final readonly class FormattingProviderParsable implements ParsableContentProvid
      */
     public function parse(string $content): string
     {
-        $parts = preg_split('/(<(?:pre|code|a|img)\b[^>]*>.*?<\/(?:pre|code|a)>|<img\b[^>]*>)/is', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $parts = preg_split('/(<(?:pre|code|a)\b[^>]*>.*?<\/(?:pre|code|a)>|<img\b[^>]*>)/is', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         if ($parts === false) {
             return $content;

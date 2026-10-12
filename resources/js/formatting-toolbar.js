@@ -1,74 +1,68 @@
+function replaceSelection(event, placeholder, buildReplacement) {
+    const textarea = event.currentTarget
+        .closest("[x-data]")
+        ?.querySelector('textarea[x-ref="content"]');
+
+    if (!textarea) {
+        return null;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const replacement = buildReplacement(
+        textarea.value.slice(start, end) || placeholder,
+    );
+
+    if (
+        textarea.maxLength > 0 &&
+        textarea.value.length - (end - start) + replacement.length >
+            textarea.maxLength
+    ) {
+        return null;
+    }
+
+    textarea.setRangeText(replacement, start, end, "end");
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    textarea.focus();
+
+    return { textarea, start, end };
+}
+
 export function formattingToolbar() {
     return {
         format(event, prefix, suffix = prefix, placeholder = "text") {
-            const textarea = event.currentTarget
-                .closest("[x-data]")
-                ?.querySelector('textarea[x-ref="content"]');
+            const result = replaceSelection(
+                event,
+                placeholder,
+                (selected) => `${prefix}${selected}${suffix}`,
+            );
 
-            if (!textarea) {
-                return;
-            }
-
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selected = textarea.value.slice(start, end) || placeholder;
-            const replacement = `${prefix}${selected}${suffix}`;
-
-            if (
-                textarea.maxLength > 0 &&
-                textarea.value.length - (end - start) + replacement.length >
-                    textarea.maxLength
-            ) {
-                return;
-            }
-
-            textarea.setRangeText(replacement, start, end, "end");
-            textarea.dispatchEvent(new Event("input", { bubbles: true }));
-            textarea.focus();
-
-            if (start === end) {
-                textarea.setSelectionRange(
-                    start + prefix.length,
-                    start + prefix.length + placeholder.length,
+            if (result && result.start === result.end) {
+                result.textarea.setSelectionRange(
+                    result.start + prefix.length,
+                    result.start + prefix.length + placeholder.length,
                 );
             }
         },
 
         quote(event) {
-            const textarea = event.currentTarget
-                .closest("[x-data]")
-                ?.querySelector('textarea[x-ref="content"]');
-
-            if (!textarea) {
-                return;
-            }
-
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selected = textarea.value.slice(start, end) || "quoted text";
-            const replacement = selected
-                .split("\n")
-                .map((line) => `> ${line}`)
-                .join("\n");
-
-            if (
-                textarea.maxLength > 0 &&
-                textarea.value.length - (end - start) + replacement.length >
-                    textarea.maxLength
-            ) {
-                return;
-            }
-
-            textarea.setRangeText(replacement, start, end, "end");
-            textarea.dispatchEvent(new Event("input", { bubbles: true }));
-            textarea.focus();
+            replaceSelection(event, "quoted text", (selected) =>
+                selected
+                    .split("\n")
+                    .map((line) => `> ${line}`)
+                    .join("\n"),
+            );
         },
 
         link(event) {
-            const url = window.prompt("Enter the link URL", "https://");
+            let url = window.prompt("Enter the link URL", "https://")?.trim();
 
-            if (!url || !/^https?:\/\//i.test(url)) {
+            if (!url) {
                 return;
+            }
+
+            if (!/^https?:\/\//i.test(url)) {
+                url = `https://${url}`;
             }
 
             this.format(event, "[", `](${url})`, "link text");
