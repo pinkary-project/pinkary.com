@@ -20,15 +20,12 @@ final class PendingNotifications extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
+    /** @param  array<int, string>  $notificationIds */
     public function __construct(
         public readonly User $user,
         public readonly int $pendingNotificationsCount,
-    ) {
-        //
-    }
+        public readonly array $notificationIds = [],
+    ) {}
 
     /**
      * Get the message envelope.
@@ -60,6 +57,12 @@ final class PendingNotifications extends Mailable implements ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
+        if ($this->notificationIds !== []) {
+            $this->user->notifications()
+                ->whereKey($this->notificationIds)
+                ->update(['email_reminded_at' => null]);
+        }
+
         $statusCode = $throwable instanceof EmailNotValid
             ? 422
             : ($throwable instanceof HttpTransportException ? $throwable->getResponse()->getStatusCode() : null);
