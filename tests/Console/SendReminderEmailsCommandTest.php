@@ -8,7 +8,7 @@ use App\Mail\PendingNotifications;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
-test('sends daily emails', function (): void {
+it('sends daily emails', function (): void {
     User::factory(5)->create();
 
     User::factory(2)->create([
@@ -41,7 +41,7 @@ test('sends daily emails', function (): void {
     Mail::assertQueued(PendingNotifications::class, 5);
 });
 
-test('sends weekly emails', function (): void {
+it('sends weekly emails', function (): void {
     User::factory(5)->create();
 
     User::factory(2)->create([
@@ -74,7 +74,7 @@ test('sends weekly emails', function (): void {
     Mail::assertQueued(PendingNotifications::class, 2);
 });
 
-test('mails getting notification count', function (): void {
+it('mails getting notification count', function (): void {
     $user = User::factory()->create([
         'mail_preference_time' => UserMailPreference::Daily,
     ]);
@@ -104,7 +104,7 @@ test('mails getting notification count', function (): void {
     Mail::assertQueued(PendingNotifications::class, fn (PendingNotifications $mail): bool => $mail->pendingNotificationsCount === 3);
 });
 
-test('skips suppressed emails', function (): void {
+it('skips suppressed emails', function (): void {
     $suppressed = User::factory()->create([
         'mail_preference_time' => UserMailPreference::Daily,
     ]);
@@ -137,7 +137,7 @@ test('skips suppressed emails', function (): void {
     Mail::assertQueued(PendingNotifications::class, fn (PendingNotifications $mail): bool => $mail->user->is($recipient));
 });
 
-test('queues an email for due unread notifications and leaves other notifications untouched', function (): void {
+it('queues an email for due unread notifications and leaves other notifications untouched', function (): void {
     $this->travelTo('2026-10-01 12:00:00');
 
     $recipient = User::factory()->create([
@@ -190,9 +190,13 @@ test('queues an email for due unread notifications and leaves other notification
     $this->artisan(SendUnreadNotificationEmailsCommand::class)
         ->assertExitCode(0);
 
+    $this->artisan(SendUnreadNotificationEmailsCommand::class)
+        ->assertExitCode(0);
+
     Mail::assertQueued(PendingNotifications::class, fn (PendingNotifications $mail): bool => $mail->user->is($recipient)
         && $mail->pendingNotificationsCount === 2
-        && $mail->notificationIds === [$eligibleNotification->id]);
+        && $mail->notificationIds === [$eligibleNotification->id]
+        && $mail->afterCommit === true);
 
     $this->assertDatabaseHas('notifications', [
         'id' => $eligibleNotification->id,
@@ -205,7 +209,7 @@ test('queues an email for due unread notifications and leaves other notification
     ]);
 });
 
-test('sends the same unread notification again after 30 days', function (): void {
+it('sends the same unread notification again after 30 days', function (): void {
     $this->travelTo('2026-10-01 12:00:00');
 
     $recipient = User::factory()->create([
@@ -248,7 +252,9 @@ test('sends the same unread notification again after 30 days', function (): void
     ]);
 });
 
-test('allows a reminder to be retried after the queued email fails', function (): void {
+it('allows a reminder to be retried after the queued email fails', function (): void {
+    $this->travelTo('2026-10-01 12:00:00.123456');
+
     $recipient = User::factory()->create([
         'mail_preference_time' => UserMailPreference::Daily,
     ]);
@@ -264,15 +270,84 @@ test('allows a reminder to be retried after the queued email fails', function ()
         ->whereJsonContains('data->question_id', $question->id)
         ->firstOrFail();
 
-    $recipient->notifications()->whereKey($notification->id)->update([
-        'email_reminded_at' => now(),
-    ]);
+    $remindedAt = now();
+    $recipient->notifications()->whereKey($notification->id)->update(['email_reminded_at' => $remindedAt]);
 
-    new PendingNotifications($recipient, 1, [$notification->id])
+    new PendingNotifications($recipient, 1, [$notification->id], $remindedAt)
         ->failed(new RuntimeException('Mail delivery failed.'));
 
     $this->assertDatabaseHas('notifications', [
         'id' => $notification->id,
         'email_reminded_at' => null,
+    ]);
+});
+
+it('releases the reminder when queue dispatch fails', function (): void {
+    $recipient = User::factory()->create([
+        'mail_preference_time' => UserMailPreference::Daily,
+    ]);
+
+    $questioner = User::factory()->create();
+
+    $question = $questioner->questionsSent()->create([
+        'to_id' => $recipient->id,
+        'content' => 'Please answer me.',
+    ]);
+
+    $notification = $recipient->notifications()
+        ->whereJsonContains('data->question_id', $question->id)
+        ->firstOrFail();
+
+    $pendingMail = Mockery::mock(Illuminate\Mail\PendingMail::class);
+    $pendingMail->shouldReceive('queue')
+        ->once()
+        ->with(Mockery::type(PendingNotifications::class))
+        ->andThrow(new RuntimeException('Queue dispatch failed.'));
+
+    Mail::shouldReceive('to')
+        ->once()
+        ->withArgs(fn (User $user): bool => $user->is($recipient))
+        ->andReturn($pendingMail);
+
+    expect(fn () => $this->artisan(SendUnreadNotificationEmailsCommand::class))
+        ->toThrow(RuntimeException::class, 'Queue dispatch failed.');
+
+    $this->assertDatabaseHas('notifications', [
+        'id' => $notification->id,
+        'email_reminded_at' => null,
+    ]);
+});
+
+it('keeps a newer reminder when an older queued email later fails', function (): void {
+    $this->travelTo('2026-10-01 12:00:00.123456');
+
+    $recipient = User::factory()->create([
+        'mail_preference_time' => UserMailPreference::Daily,
+    ]);
+
+    $questioner = User::factory()->create();
+
+    $question = $questioner->questionsSent()->create([
+        'to_id' => $recipient->id,
+        'content' => 'Please answer me.',
+    ]);
+
+    $notification = $recipient->notifications()
+        ->whereJsonContains('data->question_id', $question->id)
+        ->firstOrFail();
+
+    $olderReminderAt = now();
+    $recipient->notifications()->whereKey($notification->id)->update(['email_reminded_at' => $olderReminderAt]);
+
+    $this->travel(30)->days();
+    $newerReminderAt = now()->startOfSecond();
+    $recipient->notifications()->whereKey($notification->id)->update(['email_reminded_at' => $newerReminderAt]);
+
+    new PendingNotifications($recipient, 1, [$notification->id], $olderReminderAt)
+        ->failed(new RuntimeException('An older mail delivery failed.'));
+
+    $this->assertDatabaseHas('notifications', [
+        'id' => $notification->id,
+        'email_reminded_at' => $newerReminderAt,
     ]);
 });

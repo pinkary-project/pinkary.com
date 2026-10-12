@@ -6,6 +6,7 @@ namespace App\Mail;
 
 use App\Actions\Mail\RecordSuppressedEmail;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -20,12 +21,19 @@ final class PendingNotifications extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    /** Reminder attempt timestamp, stored at database precision. */
+    public readonly ?CarbonImmutable $emailRemindedAt;
+
     /** @param  array<int, string>  $notificationIds */
     public function __construct(
         public readonly User $user,
         public readonly int $pendingNotificationsCount,
         public readonly array $notificationIds = [],
-    ) {}
+        ?CarbonImmutable $emailRemindedAt = null,
+    ) {
+        $this->emailRemindedAt = $emailRemindedAt?->startOfSecond();
+        $this->afterCommit();
+    }
 
     /**
      * Get the message envelope.
@@ -57,9 +65,10 @@ final class PendingNotifications extends Mailable implements ShouldQueue
      */
     public function failed(Throwable $throwable): void
     {
-        if ($this->notificationIds !== []) {
+        if ($this->notificationIds !== [] && $this->emailRemindedAt instanceof CarbonImmutable) {
             $this->user->notifications()
                 ->whereKey($this->notificationIds)
+                ->where('email_reminded_at', $this->emailRemindedAt)
                 ->update(['email_reminded_at' => null]);
         }
 
