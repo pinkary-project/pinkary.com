@@ -12,7 +12,6 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Throwable;
 
 final class SendUnreadNotificationEmailsCommand extends Command
 {
@@ -52,7 +51,7 @@ final class SendUnreadNotificationEmailsCommand extends Command
             })
             ->whereNotIn('email', SuppressedEmail::query()->select('email'))
             ->each(function (User $user) use ($reminderCutoff): void {
-                $reminder = DB::transaction(function () use ($user, $reminderCutoff): ?array {
+                DB::transaction(function () use ($user, $reminderCutoff): void {
                     $notifications = $user->unreadNotifications()
                         ->where(function (Builder $query) use ($reminderCutoff): void {
                             $query->whereNull('email_reminded_at')
@@ -62,7 +61,7 @@ final class SendUnreadNotificationEmailsCommand extends Command
                         ->get(['id']);
 
                     if ($notifications->isEmpty()) {
-                        return null;
+                        return;
                     }
 
                     $notificationIds = $notifications->modelKeys();
@@ -71,32 +70,13 @@ final class SendUnreadNotificationEmailsCommand extends Command
                     $user->notifications()->whereKey($notificationIds)
                         ->update(['email_reminded_at' => $remindedAt]);
 
-                    return [
-                        'notificationIds' => $notificationIds,
-                        'emailRemindedAt' => $remindedAt,
-                        'pendingNotificationsCount' => $user->unreadNotifications()->count(),
-                    ];
-                });
-
-                if ($reminder === null) {
-                    return;
-                }
-
-                try {
                     Mail::to($user)->queue(new PendingNotifications(
                         $user,
-                        $reminder['pendingNotificationsCount'],
-                        $reminder['notificationIds'],
-                        $reminder['emailRemindedAt'],
+                        $user->unreadNotifications()->count(),
+                        $notificationIds,
+                        $remindedAt,
                     ));
-                } catch (Throwable $exception) {
-                    $user->notifications()
-                        ->whereKey($reminder['notificationIds'])
-                        ->where('email_reminded_at', $reminder['emailRemindedAt'])
-                        ->update(['email_reminded_at' => null]);
-
-                    throw $exception;
-                }
+                });
             });
     }
 }

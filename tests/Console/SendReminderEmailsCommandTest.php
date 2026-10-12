@@ -196,7 +196,7 @@ it('queues an email for due unread notifications and leaves other notifications 
     Mail::assertQueued(PendingNotifications::class, fn (PendingNotifications $mail): bool => $mail->user->is($recipient)
         && $mail->pendingNotificationsCount === 2
         && $mail->notificationIds === [$eligibleNotification->id]
-        && $mail->afterCommit === true);
+        && $mail->afterCommit === false);
 
     $this->assertDatabaseHas('notifications', [
         'id' => $eligibleNotification->id,
@@ -282,7 +282,15 @@ it('allows a reminder to be retried after the queued email fails', function (): 
     ]);
 });
 
-it('releases the reminder when queue dispatch fails', function (): void {
+it('stores the reminder and queued email in the same database transaction', function (): void {
+    config([
+        'queue.default' => 'database',
+        'queue.connections.database.driver' => 'database',
+        'queue.connections.database.connection' => null,
+        'queue.connections.database.table' => 'jobs',
+        'queue.connections.database.after_commit' => true,
+    ]);
+
     $recipient = User::factory()->create([
         'mail_preference_time' => UserMailPreference::Daily,
     ]);
@@ -298,19 +306,41 @@ it('releases the reminder when queue dispatch fails', function (): void {
         ->whereJsonContains('data->question_id', $question->id)
         ->firstOrFail();
 
-    $pendingMail = Mockery::mock(Illuminate\Mail\PendingMail::class);
-    $pendingMail->shouldReceive('queue')
-        ->once()
-        ->with(Mockery::type(PendingNotifications::class))
-        ->andThrow(new RuntimeException('Queue dispatch failed.'));
+    $this->artisan(SendUnreadNotificationEmailsCommand::class)
+        ->assertExitCode(0);
 
-    Mail::shouldReceive('to')
-        ->once()
-        ->withArgs(fn (User $user): bool => $user->is($recipient))
-        ->andReturn($pendingMail);
+    $this->assertDatabaseCount('jobs', 1);
+    $this->assertDatabaseHas('notifications', [
+        'id' => $notification->id,
+        'email_reminded_at' => now()->startOfSecond(),
+    ]);
+});
+
+it('rolls back the reminder when database queue dispatch fails', function (): void {
+    config([
+        'queue.default' => 'database',
+        'queue.connections.database.driver' => 'database',
+        'queue.connections.database.connection' => null,
+        'queue.connections.database.table' => 'missing_jobs',
+    ]);
+
+    $recipient = User::factory()->create([
+        'mail_preference_time' => UserMailPreference::Daily,
+    ]);
+
+    $questioner = User::factory()->create();
+
+    $question = $questioner->questionsSent()->create([
+        'to_id' => $recipient->id,
+        'content' => 'Please answer me.',
+    ]);
+
+    $notification = $recipient->notifications()
+        ->whereJsonContains('data->question_id', $question->id)
+        ->firstOrFail();
 
     expect(fn () => $this->artisan(SendUnreadNotificationEmailsCommand::class))
-        ->toThrow(RuntimeException::class, 'Queue dispatch failed.');
+        ->toThrow(Illuminate\Database\QueryException::class);
 
     $this->assertDatabaseHas('notifications', [
         'id' => $notification->id,

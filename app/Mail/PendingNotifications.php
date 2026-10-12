@@ -32,7 +32,7 @@ final class PendingNotifications extends Mailable implements ShouldQueue
         ?CarbonImmutable $emailRemindedAt = null,
     ) {
         $this->emailRemindedAt = $emailRemindedAt?->startOfSecond();
-        $this->afterCommit();
+        $this->beforeCommit();
     }
 
     /**
