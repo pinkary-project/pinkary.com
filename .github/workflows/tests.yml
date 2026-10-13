@@ -53,7 +53,7 @@ jobs:
       - name: Set up Node & NPM
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '22.x'
+          node-version: '26.x'
 
       - name: Setup Problem Matches
         run: |
