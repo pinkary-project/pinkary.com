@@ -68,12 +68,11 @@ final readonly class MetaData
      */
     public function ensureCorrectSize(string $value): string
     {
-        if (! Str::contains($value, 'iframe')) {
+        if (! str_contains($value, 'iframe')) {
             return $value;
         }
 
         $doc = new DOMDocument();
-        // @phpstan-ignore argument.type
         @$doc->loadHTML($value);
         $iframe = $doc->getElementsByTagName('iframe')->item(0);
 
@@ -149,7 +148,7 @@ final readonly class MetaData
             // Laravel Http Client, Guzzle, and PSR-7
         }
 
-        return $data->filter(fn (mixed $value): bool => is_string($value) && $value !== '');
+        return $data;
     }
 
     /**

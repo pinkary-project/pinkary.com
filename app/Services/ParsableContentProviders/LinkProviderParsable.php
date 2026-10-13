@@ -37,11 +37,9 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         }
 
         if ($this->imagesExist($content)) {
-            $shouldShowPreview = false;
             $previewMetadata = null;
             $previewIndex = null;
         } else {
-            $shouldShowPreview = true;
             [$previewIndex, $previewMetadata] = $this->findFirstValidPreview($tokens);
         }
 
@@ -49,7 +47,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             fn (string $token, int $index): string => $this
                 ->parseToken(
                     token: $token,
-                    showPreview: ($index === $previewIndex && $shouldShowPreview),
+                    showPreview: $index === $previewIndex,
                     metadata: $previewMetadata
                 ),
             $tokens,

@@ -7,6 +7,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Actions/** | .ai/rules/actions.md |
 | app/** | .ai/rules/app.md |
 | app/Http/Controllers/** | .ai/rules/controllers.md |
+| package.json, composer.json | .ai/rules/dependencies.md |
 | app/Enums/** | .ai/rules/enums.md |
 | app/Livewire/** | .ai/rules/livewire.md |
 | database/migrations/** | .ai/rules/migrations.md |

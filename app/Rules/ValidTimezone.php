@@ -31,7 +31,7 @@ final readonly class ValidTimezone implements ValidationRule
     private function getTimezones(): array
     {
         return [
-            null => 'Select a timezone',
+            '' => 'Select a timezone',
             'Pacific/Midway' => 'Midway (UTC-11:00)',
             'Pacific/Niue' => 'Niue (UTC-11:00)',
             'Pacific/Pago_Pago' => 'Pago Pago (UTC-11:00)',
