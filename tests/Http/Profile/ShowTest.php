@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use App\Jobs\IncrementViews;
 use App\Livewire\PeopleToFollow;
+use App\Livewire\Questions\Create;
 use App\Models\Question;
 use App\Models\User;
+use RyanChandler\LaravelCloudflareTurnstile\Facades\Turnstile;
 
 beforeEach(function (): void {
     $this->user = User::factory()->create();
@@ -15,6 +17,18 @@ test('guest', function (): void {
     $response = $this->get(route('profile.show', ['username' => $this->user->username]));
 
     $response->assertSee($this->user->name);
+});
+
+test('guest does not see captcha or get redirected on the profile composer', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $response = $this->get(route('profile.show', ['username' => $this->user->username]));
+
+    $response->assertOk()
+        ->assertSee($this->user->name)
+        ->assertSeeLivewire(Create::class)
+        ->assertDontSee('cf-turnstile', escape: false);
 });
 
 test('auth', function (): void {

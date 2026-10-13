@@ -13,6 +13,27 @@
     data-rh="true"
 />
 <meta name="mobile-web-app-capable" content="yes" />
+
+<script>
+    (function () {
+        @auth
+        return;
+        @endauth
+
+        var accessDeniedUrl = @json(route('error.access-denied'));
+
+        var isAgenticBrowser = function () {
+            if (navigator.webdriver) return true;
+            if (window.__playwright || window.__puppeteer) return true;
+
+            return false;
+        };
+
+        if (isAgenticBrowser()) {
+            window.location.href = accessDeniedUrl;
+        }
+    })();
+</script>
 <meta name="apple-mobile-web-app-title" content="Pinkary" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
@@ -67,6 +88,16 @@
             data-rh="true"
         />
     @endif
+@elseif (request()->routeIs('changelog'))
+    <title>Changelog / Pinkary</title>
+    <meta property="og:type" content="website" data-rh="true" />
+    <meta property="og:title" content="Changelog / {{ config('app.name', 'Pinkary') }}" data-rh="true" />
+    <meta
+        property="og:description"
+        content="A changelog of the latest Pinkary feature releases, product updates and important bug fixes."
+        data-rh="true"
+    />
+    <meta property="og:image" content="https://pinkary.com/img/logo-mid.png" data-rh="true" />
 @else
     <title>{{ config('app.name', 'Pinkary') }} - One Link. All Your Socials.</title>
     <meta property="og:type" content="website" data-rh="true" />

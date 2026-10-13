@@ -39,7 +39,7 @@ final class QuestionFactory extends Factory
             'content' => $this->faker->sentence,
             'anonymously' => $this->faker->boolean,
             'answer' => $this->faker->sentence,
-            'answer_created_at' => $this->faker->dateTime,
+            'answer_created_at' => $this->faker->dateTimeBetween('-1 year'),
             'pinned' => false,
             'views' => $this->faker->numberBetween(0, 1000),
         ];

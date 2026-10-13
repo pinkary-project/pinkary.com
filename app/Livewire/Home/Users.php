@@ -131,7 +131,8 @@ final class Users extends Component
      */
     private function verifiedUsers(int $limit = 2): Collection
     {
-        return User::query()
+        /** @var array<int, int> $verifiedUserIds */
+        $verifiedUserIds = Cache::remember('verified-user-ids', now()->endOfDay(), fn (): array => User::query()
             ->whereHas('links', function (Builder $query): void {
                 $query->where('url', 'like', '%twitter.com%')
                     ->orWhere('url', 'like', '%github.com%')
@@ -144,8 +145,13 @@ final class Users extends Component
                         config()->array('sponsors.github_usernames', [])
                     ));
             })
-            ->limit($limit)
+            ->pluck('id')
+            ->toArray());
+
+        return User::query()
+            ->whereIn('id', $verifiedUserIds)
             ->inRandomOrder()
+            ->limit($limit)
             ->get();
     }
 }

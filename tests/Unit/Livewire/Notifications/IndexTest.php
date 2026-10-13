@@ -2,10 +2,19 @@
 
 declare(strict_types=1);
 
+use App\Jobs\DeleteOrphanNotifications;
 use App\Livewire\Notifications\Index;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
+use App\Notifications\QuestionCreated;
+use App\Notifications\QuestionReposted;
+use App\Notifications\UserFollowed;
+use App\Notifications\UserMentioned;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
@@ -45,6 +54,84 @@ test('displays notifications', function (): void {
         ]);
 
     $component->assertSee('Ignore all');
+});
+
+test('renders notifications without per-notification question queries', function (): void {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+
+    Question::factory(3)->create([
+        'to_id' => $user->id,
+        'from_id' => $other->id,
+        'content' => 'Question content',
+    ]);
+
+    expect($user->notifications()->count())->toBe(3);
+
+    DB::enableQueryLog();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $questionQueries = collect(DB::getQueryLog())
+        ->filter(fn (array $entry): bool => str_starts_with($entry['query'], 'select') && str_contains($entry['query'], '`questions`'))
+        ->count();
+
+    DB::disableQueryLog();
+
+    expect($questionQueries)->toBe(1)
+        ->and($component->viewData('questions')->count())->toBe(3);
+});
+
+test('notifications referencing deleted questions are skipped, not deleted', function (): void {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+
+    Question::factory()->create([
+        'to_id' => $user->id,
+        'from_id' => $other->id,
+    ]);
+
+    DatabaseNotification::query()->create([
+        'id' => Str::uuid()->toString(),
+        'type' => QuestionCreated::class,
+        'notifiable_type' => $user::class,
+        'notifiable_id' => $user->getKey(),
+        'data' => ['question_id' => Str::uuid()->toString()],
+    ]);
+
+    expect($user->notifications()->count())->toBe(2);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    expect($component->viewData('questions')->count())->toBe(1)
+        ->and($user->notifications()->count())->toBe(2);
+});
+
+test('orphan notifications are deleted by the cleanup job', function (): void {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+
+    $keptQuestion = Question::factory()->create([
+        'to_id' => $user->id,
+        'from_id' => $other->id,
+    ]);
+
+    DatabaseNotification::query()->create([
+        'id' => Str::uuid()->toString(),
+        'type' => QuestionCreated::class,
+        'notifiable_type' => $user::class,
+        'notifiable_id' => $user->getKey(),
+        'data' => ['question_id' => Str::uuid()->toString()],
+    ]);
+
+    expect($user->notifications()->count())->toBe(2);
+
+    new DeleteOrphanNotifications()->handle();
+
+    expect($user->notifications()->count())->toBe(1)
+        ->and($user->notifications()->first()->data['question_id'])->toBe($keptQuestion->id);
 });
 
 test('ignores all notifications', function (): void {
@@ -99,4 +186,113 @@ test('ignores all notifications viewed by user', function (): void {
         ->and($user->questionsReceived()->where('is_ignored', true)->count())->toBe(2);
 
     $component->assertSee('Ignore all');
+});
+
+test('displays mention notifications with author avatar and username', function (): void {
+    $userA = User::factory()->create(['username' => 'alice']);
+    $userB = User::factory()->create(['username' => 'bob']);
+
+    $question = Question::factory()->create([
+        'to_id' => $userB->id,
+        'from_id' => $userA->id,
+        'content' => 'Hello @bob',
+        'answer' => null,
+    ]);
+
+    $userB->notify(new UserMentioned($question));
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userB->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('@alice')
+        ->assertSee('Hello')
+        ->assertSee('@bob');
+});
+
+test('displays user followed notification with follower username', function (): void {
+    $follower = User::factory()->create(['username' => 'alice']);
+    $user = User::factory()->create(['username' => 'bob']);
+
+    $user->notify(new UserFollowed($follower));
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('@alice')
+        ->assertSee('followed you');
+});
+
+test('shared update repost notifications show the update text', function (): void {
+    $owner = User::factory()->create();
+    $reposter = User::factory()->create();
+    $update = Question::factory()->sharedUpdate()->create([
+        'from_id' => $owner->id,
+        'to_id' => $owner->id,
+        'answer' => 'A shared update worth reading.',
+    ]);
+
+    Repost::factory()->create([
+        'user_id' => $reposter->id,
+        'question_id' => $update->id,
+    ]);
+
+    expect($owner->notifications()->where('type', QuestionReposted::class)->exists())->toBeTrue();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($owner->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('reposted your post:')
+        ->assertSee('A shared update worth reading.')
+        ->assertDontSee('__UPDATE__');
+});
+
+test('orphan follower notifications are skipped and can be cleaned up', function (): void {
+    $user = User::factory()->create();
+
+    DatabaseNotification::query()->create([
+        'id' => Str::uuid()->toString(),
+        'type' => UserFollowed::class,
+        'notifiable_type' => $user::class,
+        'notifiable_id' => $user->getKey(),
+        'data' => ['follower_id' => 999999],
+    ]);
+
+    expect($user->notifications()->count())->toBe(1);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    expect($component->viewData('followers')->count())->toBe(0);
+
+    new DeleteOrphanNotifications()->handle();
+
+    expect($user->notifications()->count())->toBe(0);
+});
+
+test('displays notifications from verified users without missing attribute exceptions', function (): void {
+    $follower = User::factory()->create([
+        'username' => 'alice',
+        'is_verified' => true,
+    ]);
+    $user = User::factory()->create(['username' => 'bob']);
+
+    $question = Question::factory()->create([
+        'to_id' => $user->id,
+        'from_id' => $follower->id,
+        'content' => 'Question from verified user',
+    ]);
+
+    $user->notify(new QuestionCreated($question));
+    $user->notify(new UserFollowed($follower));
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user->fresh())->test(Index::class);
+
+    $component
+        ->assertSee('@alice')
+        ->assertSee('Question from verified user')
+        ->assertSee('followed you');
 });

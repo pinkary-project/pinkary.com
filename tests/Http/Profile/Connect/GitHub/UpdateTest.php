@@ -150,7 +150,7 @@ test('fetches github avatar if no custom avatar uploaded', function (): void {
     Queue::assertPushed(UpdateUserAvatar::class);
 
     $job = new UpdateUserAvatar(
-        user: $user,
+        user: $user->fresh(),
         service: 'github',
     );
 

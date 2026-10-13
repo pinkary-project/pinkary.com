@@ -1,74 +1,57 @@
 <x-app-layout>
     <x-slot name="title">Changelog</x-slot>
 
-    <div class="flex flex-col items-center justify-center">
-        <div class="min-h-screen w-full max-w-md px-2 sm:px-0">
-            <p class="text-slate-600 dark:text-slate-400">
-                A changelog of the latest Pinkary feature releases, product updates and important bug fixes.
-            </p>
+    <div class="mx-auto w-full max-w-176 px-4 pb-20">
+        <p class="text-sm text-slate-600 sm:text-base dark:text-slate-400">
+            A changelog of the latest Pinkary feature releases, product updates and important bug fixes.
+        </p>
 
-            <div class="relative mt-12 mb-20 py-1">
-                <div class="absolute top-0 bottom-0 left-0 hidden w-6 justify-center sm:flex">
-                    <div class="w-px border-r border-dashed border-slate-300 dark:border-slate-700"></div>
-                </div>
-
-                <ul role="list" class="space-y-6 sm:space-y-12">
-                    @foreach ($releases as $version => $release)
-                        <li class="relative flex">
-                            <div class="relative mt-3.5 mr-4 hidden size-6 flex-none items-center justify-center sm:flex">
-                                <div class="size-1.5 rounded-full bg-pink-500 ring-1 ring-pink-500"></div>
-                            </div>
-
-                            <div class="relative flex-1 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm shadow-slate-200 dark:border-slate-900 dark:bg-transparent dark:shadow-none">
-                                <header class="flex w-full flex-1 items-center justify-between border-b border-slate-200 px-4 py-3.5 text-slate-800 dark:border-slate-900 dark:text-slate-200">
-                                    <h2 class="font-bold">Version {{ $version }}</h2>
-                                    <time
-                                        datetime="{{ $release['publishedAt'] }}"
-                                        class="flex-none py-0.5 text-xs leading-5 text-slate-600 dark:font-semibold dark:text-slate-500"
-                                    >
-                                        {{ $release['publishedAt'] }}
-                                    </time>
-                                </header>
-                                <div class="prose prose-sm dark:prose-invert prose-h3:text-sm px-4 py-3.5">
-                                    @if ($release['changes'])
-                                        <h3>Improvements & Bug fixes</h3>
-                                        <ul>
-                                            @foreach ($release['changes'] as $change)
-                                                <li>{{ $change }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                </div>
-                                <div class="absolute top-[-200px] right-[-200px] z-10 transform-gpu opacity-20 blur-3xl">
-                                    <div
-                                        class="size-[600px] bg-linear-to-r from-pink-50 to-pink-200 dark:from-pink-900 dark:to-pink-500"
-                                        style="
-                                            clip-path: polygon(
-                                                50% 0%,
-                                                61% 35%,
-                                                98% 35%,
-                                                68% 57%,
-                                                79% 91%,
-                                                50% 70%,
-                                                21% 91%,
-                                                32% 57%,
-                                                2% 35%,
-                                                39% 35%
-                                            );
-                                        "
-                                    ></div>
-                                </div>
-
-                                <div class="absolute inset-x-0 -bottom-2 flex h-2 justify-center overflow-hidden">
-                                    <div class="absolute right-5 -mt-px flex h-[2px] w-2/3">
-                                        <div class="w-full flex-none bg-linear-to-r from-slate-950 via-pink-400 to-slate-950 blur-sm"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
+        <div class="relative mt-10">
+            <div class="absolute top-3 bottom-3 left-0 hidden w-6 justify-center sm:flex" aria-hidden="true">
+                <div class="w-px bg-slate-200 dark:bg-slate-800"></div>
             </div>
+
+            <ul role="list" class="space-y-6 sm:space-y-8">
+                @foreach ($releases as $version => $release)
+                    <li class="relative flex items-start">
+                        <div class="relative mt-4 mr-4 hidden size-6 shrink-0 items-center justify-center sm:flex">
+                            <div class="size-2 rounded-full bg-pink-500 ring-4 ring-slate-100 dark:ring-[#060c18]"></div>
+                        </div>
+
+                        <div class="relative flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-xs transition hover:border-slate-300 sm:p-5 dark:border-slate-800/60 dark:bg-[#07101f]/90 dark:hover:border-slate-700/60">
+                            <header class="flex w-full flex-1 items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800/60">
+                                <h2 class="font-mona font-bold text-slate-950 dark:text-white">
+                                    Version {{ $version }}
+                                </h2>
+
+                                <time
+                                    datetime="{{ $release['publishedAt'] }}"
+                                    class="text-xs text-slate-500 dark:text-slate-400"
+                                >
+                                    {{ $release['publishedAt'] }}
+                                </time>
+                            </header>
+
+                            @if ($release['changes'])
+                                <div class="mt-3.5">
+                                    <h3 class="text-xs font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                                        Improvements &amp; Bug fixes
+                                    </h3>
+
+                                    <ul role="list" class="mt-3 space-y-2">
+                                        @foreach ($release['changes'] as $change)
+                                            <li class="flex items-start gap-2.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                                                <span class="mt-2 size-1.5 shrink-0 rounded-full bg-pink-500"></span>
+                                                <span>{{ $change }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 </x-app-layout>

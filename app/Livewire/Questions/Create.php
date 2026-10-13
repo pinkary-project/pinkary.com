@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Actions\Channels\CreateChannel;
+use App\Actions\Questions\CreateQuestion;
+use App\Enums\UserQuestionPreference;
+use App\Livewire\Concerns\HasChannelPicker;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
+use App\Models\Channel;
 use App\Models\Question;
 use App\Models\User;
+use App\Rules\ImageUpload;
 use App\Rules\MaxUploads;
 use App\Rules\NoBlankCharacters;
-use Closure;
+use App\Services\ImageProcessor;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
-use Intervention\Image\Drivers;
-use Intervention\Image\ImageManager;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -27,31 +32,42 @@ use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 /**
  * @property-read bool $isSharingUpdate
+ * @property-read bool $canPoll
+ * @property-read bool $canThread
  * @property-read int $maxContentLength
- * @property-read int $needsCaptcha
+ * @property-read int $maxThreadPosts
+ * @property-read bool $needsCaptcha
  * @property-read string $turnstileId
+ * @property-read Collection<int, Channel> $availableChannels
+ * @property-read Channel|null $selectedChannel
  */
 final class Create extends Component
 {
+    use HasChannelPicker;
     use NeedsVerifiedEmail;
     use WithFileUploads;
 
     /**
      * The disk to store the images.
      */
-    public const ?string IMAGE_DISK = null;
+    public const ?string IMAGE_DISK = ImageProcessor::DISK;
+
+    /**
+     * Max number of posts allowed in a thread.
+     */
+    public const int MAX_THREAD_POSTS = 10;
 
     /**
      * Max number of images allowed.
      */
     #[Locked]
-    public int $uploadLimit = 3;
+    public int $uploadLimit = ImageUpload::MAX_PER_POST;
 
     /**
-     * Max file size allowed.
+     * Max file size allowed, in kilobytes.
      */
     #[Locked]
-    public int $maxFileSize = 1024 * 8;
+    public int $maxFileSize = ImageUpload::MAX_KILOBYTES;
 
     /**
      * The component's user ID.
@@ -66,9 +82,29 @@ final class Create extends Component
     public ?string $parentId = null;
 
     /**
+     * Optional custom draft key.
+     */
+    #[Locked]
+    public ?string $customDraftKey = null;
+
+    /**
      * The component's content.
      */
     public string $content = '';
+
+    /**
+     * Additional posts forming a thread, published together with the main post.
+     *
+     * @var array<int, string>
+     */
+    public array $threadPosts = [];
+
+    /**
+     * Poll state for each additional thread post.
+     *
+     * @var array<int, array{isPoll: bool, options: array<int, string>, duration: int}>
+     */
+    public array $threadPolls = [];
 
     /**
      * Uploaded images.
@@ -76,6 +112,11 @@ final class Create extends Component
      * @var array<int, UploadedFile>
      */
     public array $images = [];
+
+    /**
+     * Draft key containing images handed off to this composer.
+     */
+    public ?string $imageSourceDraftKey = null;
 
     /**
      * The component's anonymously state.
@@ -107,16 +148,18 @@ final class Create extends Component
     /**
      * The updated lifecycle hook.
      */
-    public function updated(mixed $property): void
+    public function updated(mixed $property, ImageProcessor $imageProcessor): void
     {
+        if ($property !== 'images') {
+            return;
+        }
+
         if ($this->doesNotHaveVerifiedEmail()) {
             return;
         }
 
-        if ($property === 'images') {
-            $this->runImageValidation();
-            $this->uploadImages();
-        }
+        $this->runImageValidation();
+        $this->uploadImages($imageProcessor);
     }
 
     /**
@@ -134,48 +177,24 @@ final class Create extends Component
                     'bail',
                     new MaxUploads($this->uploadLimit),
                 ],
-                'images.*' => [
-                    File::image()
-                        ->types(['jpeg', 'png', 'gif', 'webp', 'jpg'])
-                        ->max($this->maxFileSize)
-                        ->dimensions(
-                            Rule::dimensions()->maxWidth(4000)->maxHeight(4000)
-                        ),
-
-                    static function (string $attribute, mixed $value, Closure $fail): void {
-                        /** @var UploadedFile $value */
-                        $dimensions = $value->dimensions();
-                        if (is_array($dimensions)) {
-                            /** @var array<int, int> $dimensions */
-                            [$width, $height] = $dimensions;
-                            $aspectRatio = $width / $height;
-                            $maxAspectRatio = 2 / 5;
-                            if ($aspectRatio < $maxAspectRatio) {
-                                $fail('The image aspect ratio must be less than 2/5.');
-                            }
-                        } else {
-                            $fail('The image aspect ratio could not be determined.');
-                        }
-                    },
-
-                ],
+                'images.*' => ImageUpload::rules(),
             ],
-            messages: [
-                'images.*.image' => 'The file must be an image.',
-                'images.*.mimes' => 'The image must be a file of type: :values.',
-                'images.*.max' => 'The image may not be greater than :max kilobytes.',
-                'images.*.dimensions' => 'The image must be less than :max_width x :max_height pixels.',
-            ]
+            messages: ImageUpload::messages()
         );
     }
 
     /**
      * Mount the component.
      */
-    public function mount(#[CurrentUser] ?User $user): void
+    public function mount(#[CurrentUser] ?User $user, ?int $channelId = null): void
     {
         if ($user instanceof User) {
             $this->anonymously = $user->prefers_anonymous_questions;
+        }
+
+        if ($channelId !== null) {
+            $this->channelId = $channelId;
+            $this->initialChannelId = $channelId;
         }
     }
 
@@ -186,6 +205,33 @@ final class Create extends Component
     public function isSharingUpdate(): bool
     {
         return $this->toId === auth()->id();
+    }
+
+    /**
+     * Determine if the composer allows polls.
+     */
+    #[Computed]
+    public function canPoll(): bool
+    {
+        return $this->isSharingUpdate || filled($this->parentId);
+    }
+
+    /**
+     * Determine if the composer can publish a thread of multiple posts.
+     */
+    #[Computed]
+    public function canThread(): bool
+    {
+        return filled($this->parentId) === false && $this->isSharingUpdate;
+    }
+
+    /**
+     * Get the maximum number of posts a thread can contain.
+     */
+    #[Computed]
+    public function maxThreadPosts(): int
+    {
+        return self::MAX_THREAD_POSTS;
     }
 
     /**
@@ -216,6 +262,10 @@ final class Create extends Component
     #[Computed]
     public function draftKey(): string
     {
+        if ($this->customDraftKey !== null) {
+            return $this->customDraftKey;
+        }
+
         return filled($this->parentId)
             ? "reply_{$this->parentId}"
             : 'post_new';
@@ -238,7 +288,11 @@ final class Create extends Component
     #[Computed]
     public function needsCaptcha(): bool
     {
-        return app()->isProduction() && (int) auth()->user()?->followers()->count() === 0;
+        $user = auth()->user();
+
+        return app()->isProduction()
+            && $user instanceof User
+            && $user->followers()->count() === 0;
     }
 
     /**
@@ -247,6 +301,7 @@ final class Create extends Component
     #[On([
         'link-settings.updated',
         'question.created',
+        'following.updated',
     ])]
     public function refresh(): void
     {
@@ -256,8 +311,12 @@ final class Create extends Component
     /**
      * Stores a new question.
      */
-    public function store(#[CurrentUser] ?User $user): void
-    {
+    public function store(
+        #[CurrentUser] ?User $user,
+        CreateQuestion $createQuestion,
+        CreateChannel $createChannel,
+        ImageProcessor $imageProcessor,
+    ): void {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
@@ -268,17 +327,35 @@ final class Create extends Component
             return;
         }
 
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
-            $this->addError('content', 'You can only send 3 questions per minute.');
-
-            return;
+        if (! $this->isSharingUpdate && blank($this->parentId) && $this->toId !== null) {
+            $this->authorize('askQuestion', User::query()->findOrFail($this->toId));
         }
 
-        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() > 30) {
-            $this->addError('content', 'You can only send 30 questions per day.');
+        // Treat whitespace-only rows as empty and keep each row's poll state aligned.
+        /** @var array<int, array{isPoll: bool, options: array<int, string>, duration: int}> $threadPolls */
+        $threadPolls = $this->threadPolls;
+        $threadPosts = [];
+        $normalizedThreadPolls = [];
 
-            return;
+        foreach ($this->threadPosts as $index => $post) {
+            if (mb_trim($post) === '') {
+                continue;
+            }
+
+            $threadPosts[] = $post;
+            $normalizedThreadPolls[] = $threadPolls[$index] ?? $this->emptyThreadPoll();
         }
+
+        $this->threadPosts = $threadPosts;
+        $this->threadPolls = $normalizedThreadPolls;
+        $threadPolls = $normalizedThreadPolls;
+
+        /** @var array<string, mixed> $validated */
+        $validated = $this->validate($this->validationRules(), [
+            'threadPosts.max' => __('A thread can have a maximum of :max extra posts.'),
+            'threadPosts.*.min' => __('Each post must be at least 1 character.'),
+            'threadPosts.*.max' => __('A post may not be greater than :max characters.'),
+        ]);
 
         // Require captcha for users with zero followers (bot protection).
         if ($this->needsCaptcha) {
@@ -289,13 +366,34 @@ final class Create extends Component
             ]);
         }
 
-        /** @var array<string, mixed> $validated */
-        $validated = $this->validate([
-            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
-            'content' => ['required', 'string', 'min: 3', 'max:'.$this->maxContentLength, new NoBlankCharacters],
-        ]);
+        $threadPosts = $this->canThread ? collect($this->threadPosts) : collect();
+
+        // The thread posts are not a database column on questions.
+        unset($validated['threadPosts']);
+
+        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subMinute())->count() >= 3) {
+            $this->addError('content', "You can only send 3 {$this->publishableItem()} per minute.");
+
+            return;
+        }
+
+        // Each post of a thread counts towards the daily limit.
+        if (! app()->isLocal() && $user->questionsSent()->where('created_at', '>=', now()->subDay())->count() + 1 + $threadPosts->count() > 30) {
+            $this->addError('content', "You can only send 30 {$this->publishableItem()} per day.");
+
+            return;
+        }
+
+        /** @var array<int, string> $validOptions */
+        $validOptions = [];
 
         if ($this->isPoll) {
+            if (! $this->canPoll) {
+                $this->addError('pollOptions', 'Polls are not allowed when asking a question.');
+
+                return;
+            }
+
             $this->validate([
                 'pollDuration' => ['required', 'integer', 'min:1', 'max:7'],
             ]);
@@ -338,6 +436,15 @@ final class Create extends Component
             }
         }
 
+        $threadPollOptions = [];
+        foreach ($threadPolls as $index => $threadPoll) {
+            $threadPollOptions[$index] = $this->validatedPollOptions($threadPoll, "threadPolls.{$index}");
+
+            if ($threadPoll['isPoll'] && $threadPollOptions[$index] === null) {
+                return;
+            }
+        }
+
         if ($this->isSharingUpdate) {
             $validated['answer_created_at'] = now();
             $validated['answer'] = $validated['content'];
@@ -349,41 +456,99 @@ final class Create extends Component
             $validated['root_id'] = Question::whereKey($this->parentId)->value('root_id') ?? $this->parentId;
         }
 
-        $question = $user->questionsSent()->create([
-            ...$validated,
-            'to_id' => $this->toId,
-            'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
-        ]);
+        $finalChannelId = null;
 
-        if ($this->isPoll) {
-            $options = [];
+        if ($this->isSharingUpdate && blank($this->parentId)) {
+            $finalChannelId = $this->resolveChannelId($user, $createChannel);
 
-            foreach ($validOptions as $optionText) {
-                $options[] = [
-                    'text' => mb_trim($optionText),
-                    'votes_count' => 0,
-                ];
+            if ($finalChannelId === false) {
+                return;
             }
-
-            $question->pollOptions()->createMany($options);
         }
 
-        $this->deleteUnusedImages();
+        if ($finalChannelId !== null) {
+            $validated['channel_id'] = $finalChannelId;
+        }
 
-        $this->reset(['content', 'isPoll', 'pollDuration']);
+        /** @var array<int, array<string, mixed>> $payloads */
+        $payloads = [
+            [
+                ...$validated,
+                'to_id' => $this->toId,
+                'poll_expires_at' => $this->isPoll ? now()->addDays($this->pollDuration) : null,
+            ],
+        ];
+
+        foreach ($threadPosts as $index => $postContent) {
+            $pollExpiresAt = null;
+
+            if ($this->threadPolls[$index]['isPoll'] ?? false) {
+                $pollExpiresAt = now()->addDays((int) $this->threadPolls[$index]['duration']);
+            }
+
+            $payloads[] = [
+                'to_id' => $this->toId,
+                'content' => '__UPDATE__',
+                'answer' => $postContent,
+                'answer_created_at' => now(),
+                'poll_expires_at' => $pollExpiresAt,
+            ];
+        }
+
+        /** @var list<string> $pollOptions */
+        $pollOptions = $this->isPoll ? array_values($validOptions) : [];
+
+        /** @var array<int, array<int, string>> $normalizedThreadPollOptions */
+        $normalizedThreadPollOptions = [];
+        foreach ($threadPollOptions as $index => $options) {
+            $normalizedThreadPollOptions[$index] = $options ?? [];
+        }
+
+        $questions = $createQuestion->handle(
+            $user,
+            $payloads,
+            $pollOptions,
+            $normalizedThreadPollOptions,
+            $finalChannelId,
+        );
+
+        $question = $questions[0];
+
+        if ($finalChannelId !== null) {
+            $channel = Channel::find($finalChannelId);
+            if ($channel instanceof Channel) {
+                $this->dispatch('channel-count-updated', channelId: $finalChannelId, count: $channel->questions_count);
+            }
+        }
+
+        $this->transferImagesFromSourceDraft();
+        $this->deleteUnusedImages($imageProcessor);
+
+        $this->reset(['content', 'isPoll', 'pollDuration', 'threadPosts', 'threadPolls', 'imageSourceDraftKey', 'channelName']);
+        $this->channelId = $this->initialChannelId;
+        unset($this->selectedChannel);
         $this->pollOptions = ['', ''];
 
         $this->anonymously = $user->prefers_anonymous_questions;
 
         $this->dispatch('question.created');
+        $this->dispatch('close-modal', 'post-create');
 
         $message = match (true) {
+            $threadPosts->isNotEmpty() => 'Thread sent.',
             filled($this->parentId) => 'Comment sent.',
             $this->isSharingUpdate => 'Update sent.',
             default => 'Question sent.'
         };
 
-        $this->dispatch('notification.created', message: $message);
+        if ($this->isSharingUpdate) {
+            $this->dispatch('notification.created', message: $message, url: route('questions.show', [
+                'username' => $question->to->username,
+                'question' => $question,
+            ]), actionText: 'View update');
+        } else {
+            $this->dispatch('notification.created', message: $message);
+        }
 
         if (filled($this->parentId)) {
             $this->js(<<<'JS'
@@ -403,6 +568,14 @@ final class Create extends Component
             $user = $user->findOrFail($this->toId);
         }
 
+        if (! $this->isSharingUpdate && blank($this->parentId) && filled($this->toId) && Gate::denies('askQuestion', $user)) {
+            return view('livewire.questions.unavailable', [
+                'message' => $user->question_preference === UserQuestionPreference::NoOne
+                    ? __("This user isn't accepting questions right now.")
+                    : __("This user isn't accepting questions from you right now."),
+            ]);
+        }
+
         return view('livewire.questions.create', [
             'user' => $user,
         ]);
@@ -411,100 +584,136 @@ final class Create extends Component
     /**
      * Validate and delete the image if it meets criteria.
      */
-    public function deleteImageAfterValidation(string $path): void
+    public function deleteImageAfterValidation(string $path, ImageProcessor $imageProcessor): void
     {
-        if (! $this->validateImagePath($path)) {
+        if (! $this->validateImagePath($path, $imageProcessor)) {
             return;
         }
 
-        $this->deleteImage($path);
+        $this->deleteImage($path, $imageProcessor);
+    }
+
+    /**
+     * Delete images handed off from another composer when its draft is discarded.
+     */
+    public function discardSourceImages(ImageProcessor $imageProcessor): void
+    {
+        if ($this->imageSourceDraftKey === null || $this->imageSourceDraftKey === $this->draftKey()) {
+            return;
+        }
+
+        $sourceSessionKey = 'images.'.$this->imageSourceDraftKey;
+        $sourceImages = session()->get($sourceSessionKey, []);
+
+        if (is_array($sourceImages)) {
+            collect($sourceImages)
+                ->filter(fn (mixed $path): bool => is_string($path) && Str::startsWith($path, 'images/'))
+                ->each(fn (string $path): bool => $imageProcessor->delete($path));
+        }
+
+        session()->forget($sourceSessionKey);
+        $this->reset('imageSourceDraftKey');
+    }
+
+    /**
+     * Get the user-facing name for the current composer item.
+     */
+    private function publishableItem(): string
+    {
+        return $this->isSharingUpdate() || filled($this->parentId) ? 'posts' : 'questions';
+    }
+
+    /**
+     * Return the default poll state for an additional thread post.
+     *
+     * @return array{isPoll: bool, options: array<int, string>, duration: int}
+     */
+    private function emptyThreadPoll(): array
+    {
+        return ['isPoll' => false, 'options' => ['', ''], 'duration' => 1];
+    }
+
+    /**
+     * Validate a poll belonging to a specific composer row.
+     *
+     * @param  array<string, mixed>  $poll
+     * @return array<int, string>|null
+     */
+    private function validatedPollOptions(array $poll, string $attribute): ?array
+    {
+        if (! ($poll['isPoll'] ?? false)) {
+            return null;
+        }
+
+        $durationValue = $poll['duration'] ?? null;
+        $duration = is_int($durationValue)
+            ? $durationValue
+            : (is_numeric($durationValue) ? (int) $durationValue : 0);
+        if ($duration < 1 || $duration > 7) {
+            $this->addError("{$attribute}.duration", 'Poll duration must be between 1 and 7 days.');
+
+            return null;
+        }
+
+        $options = array_values(array_map(
+            static fn (mixed $option): string => is_string($option) ? $option : '',
+            is_array($poll['options'] ?? null) ? $poll['options'] : [],
+        ));
+
+        if (count($options) < 2 || count($options) > 4 || in_array('', array_map(mb_trim(...), $options), true)) {
+            $this->addError("{$attribute}.options", 'Polls must have 2 to 4 non-empty options.');
+
+            return null;
+        }
+
+        foreach ($options as $option) {
+            if (mb_strlen($option) > 40) {
+                $this->addError("{$attribute}.options", 'Poll options cannot exceed 40 characters.');
+
+                return null;
+            }
+        }
+
+        return $options;
     }
 
     /**
      * Validate if the image path is eligible for deletion.
      */
-    private function validateImagePath(string $path): bool
+    private function validateImagePath(string $path, ImageProcessor $imageProcessor): bool
     {
         $images = $this->getSessionImages();
 
-        return in_array($path, $images, true) && $this->isValidImageFile($path);
-    }
-
-    /**
-     * Check if the path exists and is a valid image file.
-     */
-    private function isValidImageFile(string $path): bool
-    {
-        if (! Storage::disk(self::IMAGE_DISK)->exists($path)) {
-            return false;
-        }
-
-        $imageContent = Storage::disk(self::IMAGE_DISK)->get($path) ?: '';
-
-        return @getimagesizefromstring($imageContent) !== false;
-    }
-
-    /**
-     * Optimize the images.
-     */
-    private function optimizeImage(UploadedFile $image): string|false
-    {
-        $today = today()->format('Y-m-d');
-
-        $imagePath = 'images/'.$today;
-
-        if ($image->getMimeType() === 'image/gif') {
-            return $image->store(
-                $imagePath, [
-                    'disk' => self::IMAGE_DISK,
-                    'visibility' => 'public',
-                ]
-            );
-        }
-
-        $resizer = $this->resizer()->read($image)
-            ->scaleDown(750, 750);
-
-        $imagePath .= '/'.$image->hashName();
-
-        return Storage::disk(self::IMAGE_DISK)->put(
-            $imagePath,
-            $resizer->encodeByExtension(
-                $image->getClientOriginalExtension(),
-                quality: 80
-            )->toFilePointer(),
-            ['visibility' => 'public'],
-        ) ? $imagePath : false;
+        return in_array($path, $images, true) && $imageProcessor->isValid($path);
     }
 
     /**
      * Handle the image deletes.
      */
-    private function deleteImage(string $path): void
+    private function deleteImage(string $path, ImageProcessor $imageProcessor): void
     {
-        if (! str_starts_with($path, 'images/')) {
-            return;
+        if ($imageProcessor->delete($path)) {
+            $this->cleanSession($path);
         }
-
-        Storage::disk(self::IMAGE_DISK)->delete($path);
-        $this->cleanSession($path);
     }
 
     /**
      * Handle the image uploads.
      */
-    private function uploadImages(): void
+    private function uploadImages(ImageProcessor $imageProcessor): void
     {
-        collect($this->images)->each(function (UploadedFile $image): void {
+        $sessionKey = 'images.'.$this->draftKey();
 
-            $path = $this->optimizeImage($image);
+        collect($this->images)->each(function (UploadedFile $image) use ($imageProcessor, $sessionKey): void {
+
+            $path = $imageProcessor->process($image);
 
             if ($path) {
-                session()->push('images', $path);
+                session()->push($sessionKey, $path);
 
                 $this->dispatch(
                     'image.uploaded',
-                    path: Storage::disk(self::IMAGE_DISK)->url($path),
+                    path: $imageProcessor->url($path),
                     originalName: $image->getClientOriginalName()
                 );
             } else { // @codeCoverageIgnoreStart
@@ -521,22 +730,78 @@ final class Create extends Component
      */
     private function cleanSession(string $path): void
     {
+        $sessionKey = 'images.'.$this->draftKey();
+
         $remainingImages = collect($this->getSessionImages())
             ->reject(fn (string $imagePath): bool => $imagePath === $path);
 
-        session()->put('images', $remainingImages->toArray());
+        session()->put($sessionKey, $remainingImages->toArray());
+    }
+
+    /**
+     * Get the validation rules for storing.
+     *
+     * @return array<string, mixed>
+     */
+    private function validationRules(): array
+    {
+        $rules = [
+            'anonymously' => ['boolean', Rule::excludeIf($this->isSharingUpdate)],
+            'content' => ['required', 'string', 'min:1', 'max:'.$this->maxContentLength, new NoBlankCharacters],
+        ];
+
+        if ($this->canThread) {
+            $rules['threadPosts'] = ['array', 'max:'.(self::MAX_THREAD_POSTS - 1)];
+            $rules['threadPosts.*'] = [
+                'nullable',
+                'string',
+                'min:1',
+                'max:'.$this->maxContentLength,
+                new NoBlankCharacters,
+            ];
+        }
+
+        return $rules;
     }
 
     /**
      * Delete any unused images.
      */
-    private function deleteUnusedImages(): void
+    private function deleteUnusedImages(ImageProcessor $imageProcessor): void
     {
-        collect($this->getSessionImages())
-            ->reject(fn (string $path): bool => str_contains($this->content, $path))
-            ->each(fn (string $path): ?bool => $this->deleteImage($path));
+        $publishedContent = implode("\n", [$this->content, ...$this->threadPosts]);
 
-        session()->forget('images');
+        collect($this->getSessionImages())
+            ->reject(fn (string $path): bool => str_contains($publishedContent, $path))
+            ->each(fn (string $path): ?bool => $this->deleteImage($path, $imageProcessor));
+
+        session()->forget('images.'.$this->draftKey());
+    }
+
+    /**
+     * Move images handed off by another composer into this draft's session.
+     */
+    private function transferImagesFromSourceDraft(): void
+    {
+        if ($this->imageSourceDraftKey === null || $this->imageSourceDraftKey === $this->draftKey()) {
+            return;
+        }
+
+        $sourceSessionKey = 'images.'.$this->imageSourceDraftKey;
+        $sourceImages = session()->get($sourceSessionKey, []);
+
+        if (! is_array($sourceImages) || $sourceImages === []) {
+            return;
+        }
+
+        /** @var array<int, mixed> $sourceImages */
+        session()->put('images.'.$this->draftKey(), collect($this->getSessionImages())
+            ->merge($sourceImages)
+            ->filter(fn (mixed $path): bool => is_string($path))
+            ->unique()
+            ->values()
+            ->all());
+        session()->forget($sourceSessionKey);
     }
 
     /**
@@ -547,19 +812,8 @@ final class Create extends Component
     private function getSessionImages(): array
     {
         /** @var array<int, string> $images */
-        $images = session()->get('images', []);
+        $images = session()->get('images.'.$this->draftKey(), []);
 
         return $images;
-    }
-
-    /**
-     * Creates a new image resizer.
-     */
-    private function resizer(): ImageManager
-    {
-        return new ImageManager(
-            new Drivers\Imagick\Driver(),
-            strip: true,
-        );
     }
 }

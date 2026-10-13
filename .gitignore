@@ -8,6 +8,7 @@
 .env
 .env.backup
 .env.production
+.env.testing
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -25,9 +26,13 @@ debugbar
 boost.json
 CLAUDE.md
 AGENTS.md
+opencode.json
 /.claude/skills
 /.cursor
 /.junie
 /.agents
 /.codex
+/.grok
 /.github/skills
+
+storage/auditor-*

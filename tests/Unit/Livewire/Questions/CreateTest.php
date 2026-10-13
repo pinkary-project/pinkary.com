@@ -5,9 +5,9 @@ declare(strict_types=1);
 use App\Livewire\Questions\Create;
 use App\Models\Question;
 use App\Models\User;
+use App\Services\ImageProcessor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use RyanChandler\LaravelCloudflareTurnstile\Facades\Turnstile;
@@ -67,6 +67,7 @@ test('store', function (): void {
 
     $component->assertDispatched('notification.created', message: 'Question sent.');
     $component->assertDispatched('question.created');
+    $component->assertDispatched('close-modal', 'post-create');
 
     $question = Question::first();
 
@@ -76,6 +77,27 @@ test('store', function (): void {
         ->and($question->anonymously)->toBeTrue()
         ->and($question->parent_id)->toBeNull()
         ->and($question->root_id)->toBeNull();
+});
+
+test('cannot store a shared update longer than 1000 characters', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', str_repeat('a', 1001))
+        ->call('store')
+        ->assertHasErrors(['content' => 'max']);
+});
+
+test('accepts custom draft key for isolated drafting', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->assertSet('customDraftKey', 'post_modal');
 });
 
 test('users with zero followers pass captcha and can store', function (): void {
@@ -125,6 +147,52 @@ test('renders the captcha on replies, whose parent id contains characters turnst
 
     $component->assertOk()
         ->assertSeeHtml('data-callback="reply_'.str_replace('-', '_', $parent->id).'_turnstile_globalCallback"');
+});
+
+test('guests are not shown the captcha', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->create();
+
+    $component = Livewire::test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->assertOk()
+        ->assertDontSee('cf-turnstile', escape: false)
+        ->assertNoRedirect();
+
+    expect($component->instance()->needsCaptcha)->toBeFalse();
+});
+
+test('captcha completion does not redirect guests', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->create();
+
+    Livewire::test(Create::class, [
+        'toId' => $user->id,
+    ])
+        ->set('cfTurnstileResponse', Turnstile::dummy())
+        ->assertOk()
+        ->assertNoRedirect();
+});
+
+test('captcha completion does not redirect unverified users', function (): void {
+    app()->detectEnvironment(fn (): string => 'production');
+    Turnstile::fake();
+
+    $user = User::factory()->unverified()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+        ])
+        ->set('cfTurnstileResponse', Turnstile::dummy())
+        ->assertOk()
+        ->assertNoRedirect();
 });
 
 test('store auth', function (): void {
@@ -252,6 +320,426 @@ test('store comment on a comment', function (): void {
         ->and($comment->root_id)->toBe($question->id);
 });
 
+test('stores a thread with multiple posts', function (): void {
+    $user = User::factory()->create();
+
+    expect(Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'First post');
+    $component->set('threadPosts', ['Second post', 'Third post']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(3);
+
+    /** @var Question $root */
+    $root = Question::query()->where('answer', 'First post')->firstOrFail();
+
+    /** @var Question $second */
+    $second = Question::query()->where('answer', 'Second post')->firstOrFail();
+
+    /** @var Question $third */
+    $third = Question::query()->where('answer', 'Third post')->firstOrFail();
+
+    $this->assertDatabaseHas('questions', ['id' => $root->id, 'content' => '__UPDATE__']);
+
+    expect($root->parent_id)->toBeNull()
+        ->and($root->root_id)->toBeNull()
+        ->and($second->from_id)->toBe($user->id)
+        ->and($second->to_id)->toBe($user->id)
+        ->and($second->parent_id)->toBe($root->id)
+        ->and($second->root_id)->toBe($root->id)
+        ->and($third->parent_id)->toBe($second->id)
+        ->and($third->root_id)->toBe($root->id);
+
+    $component->assertSet('threadPosts', []);
+    $component->assertDispatched('notification.created', message: 'Thread sent.');
+    $component->assertDispatched('question.created');
+    $component->assertDispatched('close-modal', 'post-create');
+});
+
+test('drops empty thread posts when storing', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['', '   ', 'Second real post']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(2)
+        ->and(Question::query()->where('answer', 'Second real post')->exists())->toBeTrue();
+});
+
+test('accepts single character thread posts', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['x']);
+
+    $component->call('store');
+
+    $component->assertHasNoErrors();
+
+    expect(Question::count())->toBe(2)
+        ->and(Question::query()->where('answer', 'x')->exists())->toBeTrue();
+});
+
+test('rejects more than nine extra thread posts', function (): void {
+    $user = User::factory()->create();
+
+    expect(Question::count())->toBe(0);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', array_fill(0, 10, 'Another post'));
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'threadPosts' => 'A thread can have a maximum of '.(Create::MAX_THREAD_POSTS - 1).' extra posts.',
+    ]);
+
+    expect(Question::count())->toBe(0);
+});
+
+test('ignores extra thread posts when asking another user', function (): void {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($userA)->test(Create::class, [
+        'toId' => $userB->id,
+    ]);
+
+    $component->set('content', 'What do you think?');
+    $component->set('threadPosts', ['Sneaky extra']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(1);
+
+    $component->assertDispatched('notification.created', message: 'Question sent.');
+});
+
+test('ignores extra thread posts when commenting on a question', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'parentId' => $question->id,
+    ]);
+
+    $this->travel(1)->seconds();
+
+    $component->set('content', 'My comment');
+    $component->set('threadPosts', ['Ignored extra']);
+
+    $component->call('store');
+
+    expect(Question::count())->toBe(2);
+
+    $component->assertDispatched('notification.created', message: 'Comment sent.');
+});
+
+test('a whole thread counts against the per minute limit', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    foreach ([1, 2] as $i) {
+        $component->set('content', "Update {$i}");
+        $component->set('threadPosts', ["Extra {$i}"]);
+
+        $component->call('store');
+
+        $component->assertHasNoErrors();
+    }
+
+    expect(Question::count())->toBe(4);
+
+    $component->set('content', 'One thread too many');
+    $component->set('threadPosts', ['Extra three']);
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'content' => 'You can only send 3 posts per minute.',
+    ]);
+
+    expect(Question::count())->toBe(4);
+});
+
+test('each thread post counts towards the daily limit', function (): void {
+    $user = User::factory()->create();
+
+    Question::factory()
+        ->count(29)
+        ->sequence(fn (Illuminate\Database\Eloquent\Factories\Sequence $sequence): array => [
+            'from_id' => $user->id,
+            'created_at' => now()->subMinutes($sequence->index + 2),
+        ])
+        ->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['Extra one here', 'Extra two here']);
+
+    $component->call('store');
+
+    $component->assertHasErrors([
+        'content' => 'You can only send 30 posts per day.',
+    ]);
+
+    expect(Question::count())->toBe(29);
+});
+
+test('a thread fitting the remaining daily quota is allowed', function (): void {
+    $user = User::factory()->create();
+
+    Question::factory()
+        ->count(27)
+        ->sequence(fn (Illuminate\Database\Eloquent\Factories\Sequence $sequence): array => [
+            'from_id' => $user->id,
+            'created_at' => now()->subMinutes($sequence->index + 2),
+        ])
+        ->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Main update');
+    $component->set('threadPosts', ['Extra one here', 'Extra two here']);
+
+    $component->call('store');
+
+    $component->assertHasNoErrors();
+
+    expect(Question::count())->toBe(30);
+});
+
+test('a poll can be included in a thread', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'What is your favorite color?');
+    $component->set('isPoll', true);
+    $component->set('pollOptions', ['Red', 'Blue']);
+    $component->set('threadPosts', ['Should be included']);
+    $component->set('threadPolls', [[
+        'isPoll' => true,
+        'options' => ['Maybe', 'Definitely'],
+        'duration' => 2,
+    ]]);
+
+    $component->call('store');
+
+    $threadPost = Question::where('answer', 'Should be included')->first();
+
+    expect(Question::count())->toBe(2)
+        ->and($threadPost->pollOptions)->toHaveCount(2)
+        ->and($threadPost->pollOptions->pluck('text')->all())->toBe(['Maybe', 'Definitely']);
+
+    $component->assertDispatched('notification.created', message: 'Thread sent.');
+});
+
+test('rejects an invalid thread poll duration', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => true,
+            'options' => ['Yes', 'No'],
+            'duration' => 'invalid',
+        ]])
+        ->call('store')
+        ->assertHasErrors(['threadPolls.0.duration']);
+});
+
+test('accepts a non-poll thread post', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => false,
+            'options' => ['', ''],
+            'duration' => 1,
+        ]])
+        ->call('store')
+        ->assertHasNoErrors();
+
+    expect(Question::where('answer', 'Thread post')->exists())->toBeTrue();
+});
+
+test('rejects invalid thread poll options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => true,
+            'options' => ['Yes', ''],
+            'duration' => 1,
+        ]])
+        ->call('store')
+        ->assertHasErrors(['threadPolls.0.options']);
+});
+
+test('rejects oversized thread poll options', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'Main post')
+        ->set('threadPosts', ['Thread post'])
+        ->set('threadPolls', [[
+            'isPoll' => true,
+            'options' => [str_repeat('x', 41), 'No'],
+            'duration' => 1,
+        ]])
+        ->call('store')
+        ->assertHasErrors(['threadPolls.0.options']);
+});
+
+test('transfers handed-off images when the modal post is stored', function (): void {
+    $user = User::factory()->create();
+    $path = 'images/2026-01-01/handed-off.png';
+    Storage::disk(Create::IMAGE_DISK)->put($path, 'image');
+    session(['images.post_new' => [$path]]);
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->set('content', 'Inline thoughts ![handed-off.png](/images/2026-01-01/handed-off.png)');
+    $component->set('imageSourceDraftKey', 'post_new');
+    $component->call('store');
+
+    expect(session('images.post_new'))->toBeNull()
+        ->and(session('images.post_modal'))->toBeNull();
+    Storage::disk(Create::IMAGE_DISK)->assertExists($path);
+});
+
+test('discards images handed off from another composer', function (): void {
+    $user = User::factory()->create();
+    $path = 'images/2026-01-01/discarded.png';
+    Storage::disk(Create::IMAGE_DISK)->put($path, 'image');
+    session(['images.post_new' => [$path]]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->set('imageSourceDraftKey', 'post_new')->call('discardSourceImages');
+
+    expect(session('images.post_new'))->toBeNull();
+    Storage::disk(Create::IMAGE_DISK)->assertMissing($path);
+});
+
+test('ignores a same-draft image discard request', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $component->set('imageSourceDraftKey', 'post_modal')->call('discardSourceImages');
+
+    $component->assertSet('imageSourceDraftKey', 'post_modal');
+});
+
+test('ignores an empty handed-off image session', function (): void {
+    $user = User::factory()->create();
+    session(['images.post_new' => []]);
+
+    Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+            'customDraftKey' => 'post_modal',
+        ])
+        ->set('content', 'Main post')
+        ->set('imageSourceDraftKey', 'post_new')
+        ->call('store');
+
+    expect(session('images.post_new'))->toBeEmpty();
+});
+
+test('ignores an invalid handed-off image session', function (): void {
+    $user = User::factory()->create();
+    session(['images.post_new' => 'invalid']);
+
+    Livewire::actingAs($user)
+        ->test(Create::class, [
+            'toId' => $user->id,
+            'customDraftKey' => 'post_modal',
+        ])
+        ->set('content', 'Main post')
+        ->set('imageSourceDraftKey', 'post_new')
+        ->call('store');
+
+    expect(session('images.post_new'))->toBe('invalid');
+});
+
+test('inline composers retain their draft state without a modal handoff event', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->set('content', 'Existing draft');
+
+    $component->assertSet('content', 'Existing draft')
+        ->assertSet('threadPosts', [])
+        ->assertSet('imageSourceDraftKey', null);
+});
+
 test('max 30 questions per day', function (): void {
     $user = User::factory()->create();
 
@@ -260,19 +748,23 @@ test('max 30 questions per day', function (): void {
         'toId' => $user->id,
     ]);
 
-    for ($i = 0; $i <= 30; $i++) {
+    for ($i = 0; $i <= 29; $i++) {
         $component->set('content', 'Hello World');
         $component->call('store');
         $this->travelTo(now()->addMinutes($i));
         $component->assertHasNoErrors();
     }
 
+    expect(Question::count())->toBe(30);
+
     $component->set('content', 'Hello World');
     $component->call('store');
 
     $component->assertHasErrors([
-        'content' => 'You can only send 30 questions per day.',
+        'content' => 'You can only send 30 posts per day.',
     ]);
+
+    expect(Question::count())->toBe(30);
 });
 
 test('cannot store with blank characters', function (): void {
@@ -294,13 +786,31 @@ test('cannot store with blank characters', function (): void {
     ]);
 });
 
-test('poll should have at least 2 options', function (): void {
+test('shows validation error when content is missing', function (): void {
     $userA = User::factory()->create();
     $userB = User::factory()->create();
+
+    expect(Question::count())->toBe(0);
 
     /** @var Testable $component */
     $component = Livewire::actingAs($userA)->test(Create::class, [
         'toId' => $userB->id,
+    ]);
+
+    $component->set('content', '');
+    $component->call('store');
+
+    $component->assertHasErrors(['content' => 'required']);
+
+    expect(Question::count())->toBe(0);
+});
+
+test('poll should have at least 2 options', function (): void {
+    $user = User::factory()->create();
+
+    /** @var Testable $component */
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
     ]);
 
     $component->set('isPoll', true);
@@ -315,12 +825,11 @@ test('poll should have at least 2 options', function (): void {
 });
 
 test('poll should have at most 4 options', function (): void {
-    $userA = User::factory()->create();
-    $userB = User::factory()->create();
+    $user = User::factory()->create();
 
     /** @var Testable $component */
-    $component = Livewire::actingAs($userA)->test(Create::class, [
-        'toId' => $userB->id,
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
     ]);
 
     $component->set('isPoll', true);
@@ -334,7 +843,7 @@ test('poll should have at most 4 options', function (): void {
     ]);
 });
 
-test('poll button is visible only for shared updates', function (): void {
+test('poll button is visible for shared updates and comments', function (): void {
     $user = User::factory()->create();
 
     $component = Livewire::actingAs($user)
@@ -342,21 +851,37 @@ test('poll button is visible only for shared updates', function (): void {
 
     $component->assertSee('Create a poll');
 
-    $otherUser = User::factory()->create();
-    $component = Livewire::actingAs($user)
-        ->test(Create::class, ['toId' => $otherUser->id]);
-
-    $component->assertDontSee('Create a poll');
-});
-
-test('poll button is not visible for replies', function (): void {
-    $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
 
     $component = Livewire::actingAs($user)
         ->test(Create::class, ['toId' => $user->id, 'parentId' => $question->id]);
 
+    $component->assertSee('Create a poll');
+});
+
+test('poll button is not visible when asking a question', function (): void {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    $component = Livewire::actingAs($userA)
+        ->test(Create::class, ['toId' => $userB->id]);
+
     $component->assertDontSee('Create a poll');
+});
+
+test('cannot store a poll when asking a question', function (): void {
+    $userA = User::factory()->create();
+    $userB = User::factory()->create();
+
+    Livewire::actingAs($userA)
+        ->test(Create::class, ['toId' => $userB->id])
+        ->set('content', 'What do you think?')
+        ->set('isPoll', true)
+        ->set('pollOptions', ['Option 1', 'Option 2'])
+        ->call('store')
+        ->assertHasErrors(['pollOptions' => 'Polls are not allowed when asking a question.']);
+
+    expect(Question::count())->toBe(0);
 });
 
 test('can create a poll with valid options', function (): void {
@@ -698,7 +1223,7 @@ test('updated lifecycle method', function (): void {
         ->test(Create::class, [
             'toId' => $user->id,
         ]);
-    expect($component->invade()->updated('images'))->toBeNull();
+    expect($component->invade()->updated('images', app(ImageProcessor::class)))->toBeNull();
 });
 
 test('updated method invokes handleUploads', function (): void {
@@ -712,10 +1237,12 @@ test('updated method invokes handleUploads', function (): void {
     $component->set('images', [$file]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
-    expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($path);
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    expect(session($sessionKey))->toBeArray()
+        ->and(session($sessionKey))->toContain($path);
 
     $component->assertDispatched('image.uploaded');
 
@@ -734,18 +1261,20 @@ test('unused image cleanup when store is called', function (): void {
     $component->set('images', [$file]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
     Storage::disk()->assertExists($path);
 
-    expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($path);
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    expect(session($sessionKey))->toBeArray()
+        ->and(session($sessionKey))->toContain($path);
 
     $component->set('content', 'Hello World');
     $component->call('store');
 
     Storage::disk()->assertMissing($path);
-    expect(session('images'))->toBeNull();
+    expect(session($sessionKey))->toBeNull();
 });
 
 test('used images are NOT cleanup when store is called', function (): void {
@@ -762,8 +1291,10 @@ test('used images are NOT cleanup when store is called', function (): void {
 
     Storage::disk()->assertExists($path);
 
-    expect(session('images'))->toBeArray()
-        ->and(session('images'))->toContain($path);
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    expect(session($sessionKey))->toBeArray()
+        ->and(session($sessionKey))->toContain($path);
 
     $url = Storage::disk()->url($path);
 
@@ -771,7 +1302,55 @@ test('used images are NOT cleanup when store is called', function (): void {
     $component->call('store');
 
     Storage::disk()->assertExists($path);
-    expect(session('images'))->toBeNull();
+    expect(session($sessionKey))->toBeNull();
+});
+
+test('posting one form does not delete another draft\'s tracked images', function (): void {
+    $user = User::factory()->create(['is_verified' => true]);
+    $parentQuestion = Question::factory()->create();
+
+    /** @var Testable $componentA */
+    $componentA = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'parentId' => $parentQuestion->id,
+    ]);
+
+    /** @var Testable $componentB */
+    $componentB = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+        'customDraftKey' => 'post_modal',
+    ]);
+
+    $method = new ReflectionMethod(Create::class, 'uploadImages');
+
+    $componentA->set('images', [UploadedFile::fake()->image('photo-a.jpg')]);
+    $method->invoke($componentA->instance(), app(ImageProcessor::class));
+
+    $componentB->set('images', [UploadedFile::fake()->image('photo-b.jpg')]);
+    $method->invoke($componentB->instance(), app(ImageProcessor::class));
+
+    $sessionKeyA = 'images.reply_'.$parentQuestion->id;
+    $sessionKeyB = 'images.'.$componentB->instance()->draftKey();
+
+    expect(session($sessionKeyA))->toBeArray()->not->toBeEmpty()
+        ->and(session($sessionKeyB))->toBeArray()->not->toBeEmpty();
+
+    $pathA = session($sessionKeyA)[0];
+    $pathB = session($sessionKeyB)[0];
+
+    Storage::disk()->assertExists($pathA);
+    Storage::disk()->assertExists($pathB);
+
+    // Posting from draft A deletes its own unused image and clears only its own session key.
+    $componentA->set('content', 'Hello World');
+    $componentA->call('store');
+
+    Storage::disk()->assertMissing($pathA);
+    expect(session($sessionKeyA))->toBeNull()
+        // Draft B keeps its tracked image and its session entry intact.
+        ->and(session($sessionKeyB))->toContain($pathB);
+
+    Storage::disk()->assertExists($pathB);
 });
 
 test('delete image', function (): void {
@@ -786,69 +1365,14 @@ test('delete image', function (): void {
     Storage::disk()->assertExists($path);
 
     $method = new ReflectionMethod(Create::class, 'deleteImage');
-    $method->invoke($component->instance(), $path);
+    $method->invoke($component->instance(), $path, app(ImageProcessor::class));
 
     $pathAgain = $file->store('images', ['disk' => Create::IMAGE_DISK]);
     Storage::disk()->assertExists($pathAgain);
 
-    $method->invoke($component->instance(), $pathAgain);
+    $method->invoke($component->instance(), $pathAgain, app(ImageProcessor::class));
 
     Storage::disk()->assertMissing($pathAgain);
-});
-
-test('optimizeImage method resizes and saves the image', function (): void {
-
-    $user = User::factory()->create();
-    $testImage = UploadedFile::fake()->image('test.jpg', 1200, 1200); // Larger than 1000x1000
-
-    $component = Livewire::actingAs($user)->test(Create::class, [
-        'toId' => $user->id,
-    ]);
-
-    $method = new ReflectionMethod(Create::class, 'optimizeImage');
-    $path = $method->invoke($component->instance(), $testImage);
-
-    Storage::disk()->assertExists($path);
-
-    $optimizedImagePath = Storage::disk()->path($path);
-
-    $originalImageSize = filesize($testImage->getPathname());
-    $optimizedImageSize = filesize($optimizedImagePath);
-
-    expect($optimizedImageSize)->toBeLessThan($originalImageSize);
-
-    $manager = ImageManager::imagick();
-    $image = $manager->read($optimizedImagePath);
-
-    expect($image->width())->toBeLessThanOrEqual(1000)
-        ->and($image->height())->toBeLessThanOrEqual(1000);
-});
-
-test('it skips the optimization for gif', function (): void {
-
-    $user = User::factory()->create();
-
-    $testImage = UploadedFile::fake()->image('test.gif', 1200, 1200); // Larger than 1000x1000
-
-    $component = Livewire::actingAs($user)->test(Create::class, [
-        'toId' => $user->id,
-    ]);
-
-    $method = new ReflectionMethod(Create::class, 'optimizeImage');
-    $path = $method->invoke($component->instance(), $testImage);
-
-    Storage::disk()->assertExists($path);
-
-    // cross check the image
-    $optimizedImagePath = Storage::disk()->path($path);
-    $originalImageSize = filesize($testImage->getPathname());
-    $optimizedImageSize = filesize($optimizedImagePath);
-    expect($optimizedImageSize)->toBe($originalImageSize);
-
-    $manager = ImageManager::imagick();
-    $image = $manager->read($optimizedImagePath);
-    expect($image->width())->toBe(1200)
-        ->and($image->height())->toBe(1200);
 });
 
 test('maxFileSize and maxImages', function (): void {
@@ -872,7 +1396,7 @@ test('non verified users can upload images', function (): void {
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
     $component->assertHasNoErrors();
 });
@@ -889,7 +1413,7 @@ test('company verified users can upload images', function (): void {
     $component->set('images', [UploadedFile::fake()->image('test.jpg')]);
 
     $method = new ReflectionMethod(Create::class, 'uploadImages');
-    $method->invoke($component->instance());
+    $method->invoke($component->instance(), app(ImageProcessor::class));
 
     $component->assertHasNoErrors();
 });
@@ -1030,4 +1554,57 @@ test('only verified users can create questions', function (): void {
     $component->call('store');
 
     $component->assertRedirect(route('verification.notice'));
+});
+
+test('delete image after validation ignores untracked or missing images', function (): void {
+    $user = User::factory()->create();
+    $untrackedPath = UploadedFile::fake()->image('untracked.jpg')->store('images', ['disk' => Create::IMAGE_DISK]);
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    Storage::disk()->assertExists($untrackedPath);
+
+    $method = new ReflectionMethod(Create::class, 'deleteImageAfterValidation');
+
+    // An untracked path is never deleted.
+    $method->invoke($component->instance(), $untrackedPath, app(ImageProcessor::class));
+
+    Storage::disk()->assertExists($untrackedPath);
+
+    // A tracked but missing path is silently ignored.
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+    session([$sessionKey => ['images/missing.png']]);
+
+    $method->invoke($component->instance(), 'images/missing.png', app(ImageProcessor::class));
+
+    expect(session($sessionKey))->toContain('images/missing.png');
+});
+
+test('delete image after validation removes tracked images and guards other folders', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $sessionKey = 'images.'.$component->instance()->draftKey();
+
+    $trackedPath = UploadedFile::fake()->image('tracked.png')->store('images', ['disk' => Create::IMAGE_DISK]);
+    session([$sessionKey => [$trackedPath]]);
+
+    new ReflectionMethod(Create::class, 'deleteImageAfterValidation')
+        ->invoke($component->instance(), $trackedPath, app(ImageProcessor::class));
+
+    Storage::disk()->assertMissing($trackedPath);
+
+    // Files outside the images folder are kept even when tracked.
+    $outsidePath = UploadedFile::fake()->image('outside.png')->store('uploads', ['disk' => Create::IMAGE_DISK]);
+    session([$sessionKey => [$outsidePath]]);
+
+    new ReflectionMethod(Create::class, 'deleteImage')
+        ->invoke($component->instance(), $outsidePath, app(ImageProcessor::class));
+
+    Storage::disk()->assertExists($outsidePath);
 });

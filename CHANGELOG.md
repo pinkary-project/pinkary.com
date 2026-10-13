@@ -1,3 +1,111 @@
+## Version 2.8.0
+> 11 October, 2026
+
+- Adds reposting for posts and replies, with feed support and notifications.
+- Adds an in-development mobile API for authentication, feeds, post publishing, social actions, notifications, and batched post view tracking, with two-factor sign-in and Turnstile challenges. The API is not stable and may change.
+- Lets users choose who can ask them questions.
+- Improves feed reading with horizontal image strips and inline expansion for long posts.
+- Fixes long post content overflowing the feed and select option colors in dark mode.
+- Internal improvements, including admin user sorting, dependency updates, and bug fixes.
+
+## Version 2.7.0
+> 23 September, 2026
+
+- Adds multi-account support, allowing users to add, manage, and seamlessly switch between multiple accounts.
+- Adds Twitter-style circular character counter when composing posts.
+- Positions desktop toast notifications at the bottom right.
+- Links the footer brand to the home page.
+- Removes the back-to-top button.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.6.1
+> 12 September, 2026
+
+- Fixes feed, notifications, and bookmark containers not stretching to the footer.
+- Fixes channel picker showing when editing comments and replies; channels are now only available for root posts.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.6.0
+> 12 September, 2026
+
+- Adds real-time notifications when someone follows you.
+- Redesigns the notifications feed to match the post layout with reactive Livewire pagination.
+- Adds a theme toggle component with system, light, and dark mode for guests.
+- Restricts creation and usage of reserved channel slugs to administrators.
+- Fixes autocomplete handling for non-string query inputs.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.5.0
+> 12 September, 2026
+
+- Personalizes the verification email greeting.
+- Speeds up feeds and posts with cached rendering and bounded link previews.
+- Fixes light mode checkbox visibility.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.4.0
+> 11 September, 2026
+
+- Adds automatic email suppression for permanently undeliverable addresses.
+- Fixes an error when following the same person twice in quick succession.
+- Fixes background cleanup of unused images failing on unanswered questions.
+- Fixes password input width alignment on the account deletion form.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.3.0
+> 10 September, 2026
+
+- Disallows email aliases on registration and profile updates.
+- Redesigns the changelog page.
+- Fixes hashtag page styling in light mode.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.2.1
+> 10 September, 2026
+
+- Adds reusable password input with show/hide toggle across auth and profile forms.
+- Fixes captcha display for guests and unverified users in profile and question creation.
+- Fixes flash notifications overlapping by correcting z-index.
+- Refactors business logic into dedicated Action classes and centralizes image handling.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.2.0
+> 8 September, 2026
+
+- Adds channels for posts, allowing users to categorize updates and browse posts by topic.
+- Adds dedicated channel pages with live feeds and dynamic post count updates.
+- Adds channel picker to the composer and post modal with real-time channel search and creation.
+- Rounds composer submit buttons for design consistency.
+- Fixes thread composer autocomplete and notifications.
+- Refactors timezone update endpoint to return 204 No Content.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.1.0
+> 30 August, 2026
+
+- Adds a thread composer to publish multiple connected posts at once, with per-post images and polls.
+- Replaces native browser alerts with the in-app confirmation modal when discarding drafts.
+- Blocks AI crawlers and agentic browsers with a friendly message.
+- Speeds up page rendering and feeds with Blaze.
+- Improves the avatar upload form with clearer submission states.
+- Internal improvements, dependency updates, and bug fixes.
+
+## Version 2.0.0
+> 20 August, 2026
+
+- Major UI overhaul with modernized layout and styling across the application.
+- Adds People to Follow widget with direct follow/unfollow actions.
+- Adds dedicated Post buttons to desktop navigation sidebar and mobile floating action button.
+- Replaces link delete browser alert with a confirmation modal.
+- Adds email blocking functionality.
+- Adds MySQL database support, Docker MySQL service, and S3 file upload migration commands.
+- Update to Laravel 13, Livewire v4, Tailwind CSS v4.
+- Adds Laravel Boost integration and coding conventions.
+- Improves link preview UI and mobile links toggle.
+- Fixes default feed selection and recent feed display on subsequent visits.
+- Fixes Cloudflare Turnstile integration and image handling hooks.
+- Internal improvements, dependency updates, and bug fixes.
+
 ## Version 1.47.0
 > 31 March, 2026
 

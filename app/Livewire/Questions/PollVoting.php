@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Actions\Questions\UpdatePollVote;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\PollOption;
 use App\Models\PollVote;
@@ -29,8 +30,11 @@ final class PollVoting extends Component
     /**
      * Vote for a poll option.
      */
-    public function vote(int $pollOptionId, #[CurrentUser] ?User $user): void
-    {
+    public function vote(
+        int $pollOptionId,
+        #[CurrentUser] ?User $user,
+        UpdatePollVote $updatePollVote,
+    ): void {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
@@ -52,27 +56,7 @@ final class PollVoting extends Component
         $pollOption = PollOption::where('question_id', $question->id)
             ->findOrFail($pollOptionId);
 
-        $existingVote = PollVote::whereHas('pollOption', function (Builder $query) use ($question): void {
-            $query->where('question_id', $question->id);
-        })->where('user_id', $user->id)->first();
-
-        if ($existingVote) {
-            $existingVote->pollOption->decrement('votes_count');
-            $existingVote->delete();
-
-            if ($existingVote->poll_option_id === $pollOptionId) {
-                $this->dispatch('poll.voted');
-
-                return;
-            }
-        }
-
-        PollVote::create([
-            'user_id' => $user->id,
-            'poll_option_id' => $pollOptionId,
-        ]);
-
-        $pollOption->increment('votes_count');
+        $updatePollVote->handle($user, $question, $pollOption);
 
         $this->dispatch('poll.voted');
     }
@@ -88,9 +72,10 @@ final class PollVoting extends Component
 
         $userVote = null;
         if (auth()->check()) {
-            $userVote = PollVote::whereHas('pollOption', function (Builder $query) use ($question): void {
-                $query->where('question_id', $question->id);
-            })->where('user_id', auth()->id())->first();
+            $userVote = PollVote::query()
+                ->where('user_id', (int) auth()->id())
+                ->where('question_id', $question->id)
+                ->first();
         }
 
         $totalVotes = $question->pollOptions->sum('votes_count');

@@ -241,3 +241,49 @@ test('users has is_follower and is_following attributes only when authenticated'
             ->and($user->is_following)->toBeBool();
     });
 });
+
+test('verified users are cached for a day', function (): void {
+    $verifiedUsers = User::factory(2)
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
+        ->create(['is_verified' => true]);
+
+    Cache::forget('verified-user-ids');
+
+    Livewire::test(Users::class);
+
+    expect(Cache::has('verified-user-ids'))->toBeTrue()
+        ->and(Cache::get('verified-user-ids'))->toEqual($verifiedUsers->pluck('id')->all());
+
+    Cache::forget('verified-user-ids');
+});
+
+test('cached verified users are refreshed after a day', function (): void {
+    $verifiedUsers = User::factory(2)
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
+        ->create(['is_verified' => true]);
+
+    Cache::forget('verified-user-ids');
+
+    $component = Livewire::test(Users::class);
+
+    expect(Cache::has('verified-user-ids'))->toBeTrue();
+
+    $this->travel(1)->days();
+
+    $newVerifiedUser = User::factory()
+        ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://twitter.com/{$user->username}"])
+        ->create(['is_verified' => true]);
+
+    expect(Cache::has('verified-user-ids'))->toBeFalse();
+
+    $component->refresh();
+
+    expect(Cache::has('verified-user-ids'))->toBeTrue();
+
+    $cachedVerifiedUsers = Cache::get('verified-user-ids');
+
+    expect($cachedVerifiedUsers)->toContain($newVerifiedUser->id)
+        ->and($cachedVerifiedUsers)->toHaveCount(3);
+
+    Cache::forget('verified-user-ids');
+});

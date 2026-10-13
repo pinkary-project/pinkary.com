@@ -34,11 +34,13 @@ final readonly class Mentions extends Type
      *
      * @return Collection<int, Result>
      */
-    public function search(?string $query): Collection
+    public function search(?string $query, ?int $userId = null): Collection
     {
+        $userId ??= auth()->id();
+
         return Collection::make(
             User::query()
-                ->when(auth()->id(), fn (Builder $constraint, string|int $id) => $constraint->whereKeyNot($id))
+                ->when($userId, fn (Builder $constraint, string|int $id) => $constraint->whereKeyNot($id))
                 ->whereNotNull('email_verified_at')
                 ->where(fn (Builder $groupedConstraint) => $groupedConstraint
                     ->where('name', 'like', "{$query}%")
@@ -47,7 +49,11 @@ final readonly class Mentions extends Type
                 ->withCount('followers')
                 ->withExists([
                     'followers as is_followed_by_user' => fn (Builder $follower): Builder => $follower
-                        ->where('follower_id', '=', auth()->id()),
+                        ->when(
+                            $userId,
+                            fn (Builder $constraint): Builder => $constraint->where('follower_id', '=', $userId),
+                            fn (Builder $constraint): Builder => $constraint->whereRaw('1 = 0'),
+                        ),
                 ])
                 ->orderByDesc('is_followed_by_user')
                 ->orderByDesc('followers_count')

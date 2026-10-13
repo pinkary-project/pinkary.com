@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Actions\Users\DeleteUser;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\BlockedAccount;
 use App\Models\User;
@@ -33,6 +34,7 @@ final class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
@@ -50,13 +52,13 @@ final class UserResource extends Resource
                 Action::make('delete')
                     ->requiresConfirmation()
                     ->color(Color::Red)
-                    ->action(function (User $record): void {
-                        DB::transaction(function () use ($record): void {
+                    ->action(function (User $record, DeleteUser $deleteUser): void {
+                        DB::transaction(function () use ($record, $deleteUser): void {
                             BlockedAccount::firstOrCreate([
                                 'email' => $record->email,
                             ]);
 
-                            $record->purge();
+                            $deleteUser->handle($record);
                         });
                     }),
             ]);

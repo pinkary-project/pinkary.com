@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\Questions\RefreshParsedContent;
 use App\Contracts\Models\Viewable;
+use App\Models\Scopes\WhereNotModerated;
 use App\Observers\QuestionObserver;
-use App\Services\ParsableContent;
 use Carbon\CarbonImmutable;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int $to_id
  * @property bool $pinned
  * @property string $content
+ * @property string|null $parsed
  * @property bool $anonymously
  * @property string|null $answer
  * @property CarbonImmutable|null $answer_created_at
@@ -37,21 +39,36 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int $views
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
+ * @property int|null $channel_id
+ * @property string|null $quoted_question_id
  * @property-read User $from
  * @property-read User $to
+ * @property-read Channel|null $channel
  * @property-read Collection<int, Like> $likes
+ * @property-read Collection<int, Repost> $reposts
+ * @property-read User|null $repostedBy
  * @property-read Collection<int, User> $mentions
  * @property-read Question|null $parent
  * @property-read Collection<int, Question> $children
  * @property-read Collection<int, Question> $descendants
+ * @property-read Question|null $quotedQuestion
+ * @property-read Collection<int, Question> $quotes
  * @property-read Collection<int, Hashtag> $hashtags
  * @property-read Collection<int, PollOption> $pollOptions
+ * @property-read Collection<int, Question> $threadChain
  */
 #[ObservedBy(QuestionObserver::class)]
 final class Question extends Model implements Viewable
 {
     /** @use HasFactory<QuestionFactory> */
     use HasFactory, HasUuids;
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = ['parsed'];
 
     /**
      * Increment the views for the given question IDs.
@@ -71,9 +88,11 @@ final class Question extends Model implements Viewable
      */
     public function getContentAttribute(?string $value): ?string
     {
-        $content = new ParsableContent();
+        if (in_array($value, [null, '', '0'], true)) {
+            return null;
+        }
 
-        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
+        return app(RefreshParsedContent::class)->handle($this, 'content', 'c', $value);
     }
 
     /**
@@ -81,9 +100,11 @@ final class Question extends Model implements Viewable
      */
     public function getAnswerAttribute(?string $value): ?string
     {
-        $content = new ParsableContent();
+        if (in_array($value, [null, '', '0'], true)) {
+            return null;
+        }
 
-        return in_array($value, [null, '', '0'], true) ? null : $content->parse($value);
+        return app(RefreshParsedContent::class)->handle($this, 'answer', 'a', $value);
     }
 
     /**
@@ -142,6 +163,7 @@ final class Question extends Model implements Viewable
             'is_ignored' => 'boolean',
             'poll_expires_at' => 'datetime',
             'views' => 'integer',
+            'channel_id' => 'integer',
         ];
     }
 
@@ -183,6 +205,58 @@ final class Question extends Model implements Viewable
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get the reposts for the question.
+     *
+     * @return HasMany<Repost, $this>
+     */
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(Repost::class);
+    }
+
+    /**
+     * Get the post quoted by this post.
+     *
+     * @return BelongsTo<Question, $this>
+     */
+    public function quotedQuestion(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'quoted_question_id');
+    }
+
+    /**
+     * Get the posts quoting this post.
+     *
+     * @return HasMany<Question, $this>
+     */
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(self::class, 'quoted_question_id');
+    }
+
+    /**
+     * Get the user who created the feed repost event.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function repostedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reposted_by_id');
+    }
+
+    /** Read the optional feed repost id when a query selected it. */
+    public function getRepostIdAttribute(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    /** Read the optional feed reposter id when a query selected it. */
+    public function getRepostedByIdAttribute(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
     }
 
     /**
@@ -231,8 +305,7 @@ final class Question extends Model implements Viewable
     public function root(): BelongsTo
     {
         return $this->belongsTo(self::class, 'root_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -241,8 +314,7 @@ final class Question extends Model implements Viewable
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -251,8 +323,7 @@ final class Question extends Model implements Viewable
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -261,8 +332,7 @@ final class Question extends Model implements Viewable
     public function descendants(): HasMany
     {
         return $this->hasMany(self::class, 'root_id')
-            ->where('is_ignored', false)
-            ->where('is_reported', false);
+            ->tap(new WhereNotModerated);
     }
 
     /**
@@ -271,6 +341,14 @@ final class Question extends Model implements Viewable
     public function hashtags(): BelongsToMany
     {
         return $this->belongsToMany(Hashtag::class);
+    }
+
+    /**
+     * @return BelongsTo<Channel, $this>
+     */
+    public function channel(): BelongsTo
+    {
+        return $this->belongsTo(Channel::class);
     }
 
     /**
@@ -309,5 +387,29 @@ final class Question extends Model implements Viewable
         }
 
         return $this->poll_expires_at?->diffForHumans();
+    }
+
+    /**
+     * @return HasMany<PollVote, $this>
+     */
+    public function pollVotes(): HasMany
+    {
+        return $this->hasMany(PollVote::class);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, string>
+     */
+    public function ancestorIds(int $limit = 10): \Illuminate\Support\Collection
+    {
+        $ids = [];
+        $parentId = $this->parent_id;
+
+        while (is_string($parentId) && count($ids) < $limit) {
+            $ids[] = $parentId;
+            $parentId = self::query()->whereKey($parentId)->value('parent_id');
+        }
+
+        return collect(array_reverse($ids));
     }
 }

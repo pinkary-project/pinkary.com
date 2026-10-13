@@ -4,7 +4,7 @@
     @include('layouts.components.head')
 </head>
 @php
-    $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show');
+    $showDiscoverLayout = request()->routeIs('home.*') || request()->routeIs('hashtag.show') || request()->routeIs('channels.*');
     $showUtilityRail = request()->routeIs('bookmarks.*') || request()->routeIs('notifications.*');
     $showRightRail = $showDiscoverLayout || $showUtilityRail || request()->routeIs('profile.show') || request()->routeIs('questions.show');
     $globalSearchQuery = request()->routeIs('home.users')
@@ -23,12 +23,12 @@
     </div>
 
     <div class="relative flex min-h-screen flex-col">
-        <div class="mx-auto flex w-full max-w-7xl flex-1 px-0 pb-28 lg:grid lg:pb-0 {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_20rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
+        <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col px-0 lg:grid {{ $showRightRail ? 'lg:grid-cols-[18rem_minmax(0,1fr)_22.5rem]' : 'lg:grid-cols-[18rem_minmax(0,1fr)]' }}">
             <aside class="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
                 @include('layouts.navigation')
             </aside>
 
-            <div class="min-w-0 flex-1 {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-4' : '' }}">
+            <div class="flex min-w-0 flex-1 flex-col {{ $showDiscoverLayout ? 'lg:col-start-2' : '' }} {{ $showRightRail ? 'lg:pr-2' : '' }}">
                 @if ($showDiscoverLayout)
                     <form
                         x-data="{ query: @js($globalSearchQuery) }"
@@ -103,13 +103,13 @@
                     </div>
                 @endif
 
-                <main class="w-full">{{ $slot }}</main>
+                <main class="[&>*]:flex [&>*]:flex-1 [&>*]:flex-col flex w-full flex-1 flex-col">{{ $slot }}</main>
 
                 <x-image-lightbox />
             </div>
 
             @if ($showRightRail)
-                <aside class="hidden lg:col-start-3 lg:block lg:pl-4 {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
+                <aside class="hidden lg:col-start-3 lg:block lg:pl-2 {{ $showDiscoverLayout ? 'lg:pt-[57px]' : 'lg:pt-4' }}">
                     <div class="lg:sticky lg:top-4">
                         <livewire:people-to-follow
                             :context="$peopleToFollowContext"
@@ -122,10 +122,180 @@
         </div>
 
         @persist('footer')
-            <x-back-to-top :offset="300" />
             <x-footer />
         @endpersist
     </div>
+
+    @auth
+        <button
+            x-data="{ isMenuOpen: false }"
+            x-on:dropdown-toggled.window="isMenuOpen = $event.detail.open"
+            x-show="! isMenuOpen"
+            x-transition:enter="transition duration-150 ease-out"
+            x-transition:enter-start="scale-90 opacity-0"
+            x-transition:enter-end="scale-100 opacity-100"
+            x-transition:leave="transition duration-100 ease-in"
+            x-transition:leave-start="scale-100 opacity-100"
+            x-transition:leave-end="scale-90 opacity-0"
+            type="button"
+            x-on:click="$dispatch('open-modal', 'post-create')"
+            class="fixed right-5 bottom-20 z-40 flex size-12 items-center justify-center rounded-full bg-pink-500 text-white shadow-lg shadow-pink-500/30 transition hover:scale-105 hover:bg-pink-600 focus:outline-none active:scale-95 lg:hidden"
+            title="Post"
+            aria-label="Post"
+        >
+            <x-icons.compose class="size-5" />
+        </button>
+
+        <x-modal
+            max-width="2xl"
+            name="post-create"
+            focusable
+            focus-target="last-thread-post"
+            x-on:question.created.window="
+                window.__postJustPublished = true;
+                close('post-create');
+            "
+        >
+            <div
+                class="flex max-h-[calc(100dvh-3rem)] flex-col"
+                x-init="
+                    $watch('show', (value) => {
+                        if (value) {
+                            const composer = $el.querySelector('[data-post-composer]');
+                            const picker = composer ? composer.querySelector('[data-channel-picker]') : null;
+                            const channelMeta = document.querySelector('[data-current-channel-id]');
+                            if (channelMeta) {
+                                const channelId = parseInt(channelMeta.getAttribute('data-current-channel-id'), 10);
+                                const channelName = channelMeta.getAttribute('data-current-channel-name');
+                                if (channelId && channelName) {
+                                    $nextTick(() => {
+                                        const pickerState = picker ? Alpine.$data(picker) : null;
+                                        if (pickerState) {
+                                            pickerState.select({ id: channelId, name: channelName });
+                                        }
+                                    });
+                                }
+                            } else {
+                                const state = composer ? Alpine.$data(composer) : null;
+                                const pickerHasChannel = picker && picker.hasAttribute('data-selected-id');
+                                if (state && ! state.hasDraft() && ! pickerHasChannel) {
+                                    $nextTick(() => {
+                                        const pickerState = picker ? Alpine.$data(picker) : null;
+                                        if (pickerState) {
+                                            pickerState.select(null);
+                                        }
+                                    });
+                                }
+                            }
+
+                            return;
+                        }
+
+                        if (window.__postJustPublished) {
+                            window.__postJustPublished = false;
+
+                            return;
+                        }
+
+                        const composer = $el.querySelector('[data-post-composer]');
+
+                        if (! composer) {
+                            return;
+                        }
+
+                        const state = Alpine.$data(composer);
+
+                        if (! state || ! state.hasDraft()) {
+                            return;
+                        }
+
+                        $dispatch('open-modal', 'discard-post-draft');
+                    })
+                "
+            >
+                <div class="border-b border-slate-200/70 px-4 pt-4 pb-3 sm:px-6 sm:pt-6 dark:border-slate-800/40">
+                    <h3 class="text-base font-semibold text-slate-950 dark:text-white">{{ __('Share an update') }}</h3>
+                </div>
+
+                <div class="flex min-h-0 flex-1 flex-col px-4 pt-4 pb-4 sm:px-6 sm:pb-6">
+                    <livewire:questions.create
+                        :to-id="auth()->id()"
+                        :custom-draft-key="'post_modal'"
+                        key="global-modal-create-post"
+                    />
+                </div>
+            </div>
+        </x-modal>
+
+        <x-modal name="discard-post-draft" max-width="md" class="z-110">
+            <div class="p-8">
+                <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">{{ __('Discard this post?') }}</h2>
+                <div class="mt-4 text-slate-500 dark:text-slate-400">
+                    <p>{{ __('Are you sure you want to discard this post? Your progress will be lost.') }}</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between">
+                    <x-secondary-button
+                        x-on:click="
+                            $dispatch('close-modal', 'discard-post-draft');
+                            $dispatch('open-modal', 'post-create');
+                        "
+                    >
+                        {{ __('Keep editing') }}
+                    </x-secondary-button>
+                    <x-primary-button
+                        x-on:click="
+                            const composer = document.querySelector('[data-post-composer][data-draft-key=post_modal]');
+                            const state = composer ? Alpine.$data(composer) : null;
+                            if (state) {
+                                state.discardDraft();
+                            }
+                            $dispatch('close-modal', 'discard-post-draft');
+                        "
+                    >
+                        {{ __('Discard') }}
+                    </x-primary-button>
+                </div>
+            </div>
+        </x-modal>
+
+        <x-modal name="confirm-remove-account" max-width="md" class="z-110">
+            <div
+                class="p-8"
+                x-data="{ username: '', action: '' }"
+                x-on:set-remove-account.window="
+                    username = $event.detail.username;
+                    action = $event.detail.action;
+                "
+            >
+                <form method="POST" x-bind:action="action">
+                    @csrf
+                    <h2 class="text-lg font-medium text-slate-950 dark:text-slate-50">
+                        {{ __('Log out of account?') }}
+                    </h2>
+                    <div class="mt-4 text-slate-500 dark:text-slate-400">
+                        <p>
+                            {{ __('Are you sure you want to log out of') }}
+                            <span
+                                class="font-semibold text-slate-700 dark:text-slate-200"
+                                x-text="'@' + username"
+                            ></span
+                            >? {{ __('You can log back into this account at any time.') }}
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between">
+                        <x-secondary-button
+                            type="button"
+                            x-on:click="$dispatch('close-modal', 'confirm-remove-account')"
+                        >
+                            {{ __('Cancel') }}
+                        </x-secondary-button>
+                        <x-danger-button type="submit"> {{ __('Log Out') }} </x-danger-button>
+                    </div>
+                </form>
+            </div>
+        </x-modal>
+    @endauth
+
     @livewireScriptConfig
 
     <script>

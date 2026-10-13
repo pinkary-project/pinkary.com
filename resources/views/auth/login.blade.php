@@ -1,8 +1,32 @@
 <x-guest-layout>
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{{ __('Log in') }}</h1>
-        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">{{ __('Continue to your Pinkary account.') }}</p>
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
+            {{ auth()->check() ? __('Add Account') : __('Log in') }}
+        </h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            @auth
+                {{ __('Sign in with another Pinkary account to switch between them easily.') }}
+            @else
+                {{ __('Continue to your Pinkary account.') }}
+            @endauth
+        </p>
     </div>
+
+    @auth
+        <div class="mb-6 flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/5">
+            <img
+                src="{{ auth()->user()->avatar_url }}"
+                alt="{{ auth()->user()->username }}"
+                class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} size-8 shrink-0"
+            />
+            <div class="min-w-0">
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Currently signed in as') }}</p>
+                <p class="truncate text-sm font-semibold text-slate-950 dark:text-white">
+                    {{ '@' . auth()->user()->username }}
+                </p>
+            </div>
+        </div>
+    @endauth
 
     <form method="POST" action="{{ route('login') }}" onsubmit="event.submitter.disabled = true" class="space-y-5">
         @csrf
@@ -25,26 +49,13 @@
         <div>
             <x-input-label for="password" :value="__('Password')" class="text-slate-600 dark:text-slate-400" />
 
-            <div class="relative" x-data="{ showPassword: false }">
-                <x-text-input
-                    id="password"
-                    class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 pr-10 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
-                    x-bind:type="showPassword ? 'text' : 'password'"
-                    name="password"
-                    required
-                    autocomplete="current-password"
-                />
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <button
-                        type="button"
-                        x-on:click="showPassword = ! showPassword"
-                        class="rounded-md text-slate-400 transition hover:text-slate-600 focus:ring-4 focus:ring-pink-500/20 focus:outline-none dark:text-gray-500 dark:hover:text-gray-300"
-                    >
-                        <x-icons.eye x-show="showPassword" class="size-5" />
-                        <x-icons.eye-off x-show="! showPassword" class="size-5" />
-                    </button>
-                </div>
-            </div>
+            <x-password-input
+                id="password"
+                class="mt-2 block w-full rounded-md border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-950 shadow-none placeholder:text-slate-400 focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-600"
+                name="password"
+                required
+                autocomplete="current-password"
+            />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -72,7 +83,7 @@
 
         <div>
             <x-primary-button class="w-full justify-center rounded-md border-pink-500 bg-pink-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-pink-600 focus:ring-4 focus:ring-pink-500/20">
-                {{ __('Log In') }}
+                {{ auth()->check() ? __('Add Account') : __('Log In') }}
             </x-primary-button>
         </div>
     </form>
@@ -81,14 +92,16 @@
         <div class="border-t border-slate-200/80 dark:border-white/5"></div>
     </div>
 
-    <div class="text-center text-sm text-slate-500 dark:text-slate-400">
-        Don't have an account?
-        <a
-            href="{{ route('register') }}"
-            class="font-medium text-pink-500 transition hover:text-pink-400"
-            wire:navigate
-        >
-            {{ __('Create one') }}
-        </a>
-    </div>
+    @guest
+        <div class="text-center text-sm text-slate-500 dark:text-slate-400">
+            Don't have an account?
+            <a
+                href="{{ route('register') }}"
+                class="font-medium text-pink-500 transition hover:text-pink-400"
+                wire:navigate
+            >
+                {{ __('Create one') }}
+            </a>
+        </div>
+    @endguest
 </x-guest-layout>

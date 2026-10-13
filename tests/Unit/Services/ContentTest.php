@@ -31,6 +31,7 @@ test('only links with images or html oEmbeds are parsed', function (): void {
                 </head>
             </html>
         ', 200),
+        'https://laravel.com/img/og-image.jpg' => Http::response(''),
     ]);
 
     expect($provider->parse($content))

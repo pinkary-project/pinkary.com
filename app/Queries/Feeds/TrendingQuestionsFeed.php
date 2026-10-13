@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class TrendingQuestionsFeed
@@ -50,9 +51,8 @@ final readonly class TrendingQuestionsFeed
                         (((likes_count * {$likesBias} + 1.0) * (children_count * {$commentsBias} + 1.0))
                         / (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(answer_created_at) + {$timeBias} + 1.0)) desc
                     SQL)
-                    ->where('is_reported', false)
-                    ->where('is_ignored', false)
-                    ->where('answer_created_at', '>=', now()->subDays($maxDaysSincePosted)),
+                    ->where('answer_created_at', '>=', now()->subDays($maxDaysSincePosted))
+                    ->tap(new WhereNotModerated),
                 'trending_questions'
             );
     }

@@ -29,7 +29,7 @@
                             <a
                                 href="{{ route('home.feed') }}"
                                 wire:navigate
-                                class="flex rounded-md bg-slate-950 px-2 py-2 text-white dark:bg-[#1a2438]"
+                                class="flex rounded-md bg-pink-500 px-2 py-2 text-white"
                             >
                                 Home
                             </a>

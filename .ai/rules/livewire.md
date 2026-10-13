@@ -6,7 +6,7 @@ paths:
 # Livewire
 
 ## Authorize via $this->authorize()
-Call `$this->authorize('ability', $model)` inside Livewire component methods to enforce policies. Do not use `@can`, `can:` middleware, `#[Authorize]`, or `$user->can()`.
+Call `$this->authorize('ability', $model)` inside Livewire component methods to enforce policies. Do not use `@can`, `can:` middleware, `#[Authorize]`, or `$user->can()`. After authorize/validate, persist through `App\Actions\*` classes. Keep redirects, flashes, and `$this->dispatch()` in the component.
 
 ## Explicit eager loading
 Add relations with an explicit `->with()` call at the query call site; do not declare a model-level `protected $with` default.

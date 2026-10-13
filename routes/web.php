@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AccountLogoutAllController;
+use App\Http\Controllers\AccountRemoveController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
+use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
@@ -17,37 +21,44 @@ use App\Http\Controllers\UserTimezoneController;
 use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/about', 'about')->name('about');
+Route::view('/error-access-denied', 'errors.access-denied')->name('error.access-denied');
 
-Route::get('/', HomeController::class)->name('home.feed');
-Route::redirect('/for-you', '/following')->name('home.for_you');
-Route::view('/following', 'home/following')->name('home.following');
-Route::view('/trending', 'home/trending-questions')->name('home.trending');
-Route::view('/users', 'home/users')->name('home.users');
+Route::middleware('block.bots')->group(function () {
+    Route::view('/about', 'about')->name('about');
 
-Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
+    Route::get('/', HomeController::class)->name('home.feed');
+    Route::redirect('/for-you', '/following')->name('home.for_you');
+    Route::view('/following', 'home/following')->name('home.following');
+    Route::view('/trending', 'home/trending-questions')->name('home.trending');
+    Route::view('/users', 'home/users')->name('home.users');
 
-Route::view('/terms', 'terms')->name('terms');
-Route::view('/privacy', 'privacy')->name('privacy');
-Route::view('/support', 'support')->name('support');
-Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
+    Route::get('/channels/{channel:slug}', ChannelController::class)->name('channels.show');
 
-Route::view('/verified', 'verified')->name('verified');
+    Route::get('/hashtag/{hashtag}', HashtagController::class)->name('hashtag.show');
 
-Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
+    Route::view('/terms', 'terms')->name('terms');
+    Route::view('/privacy', 'privacy')->name('privacy');
+    Route::view('/support', 'support')->name('support');
+    Route::view('/brand/resources', 'brand.resources')->name('brand.resources');
 
-Route::get('/changelog', [ChangelogController::class, 'show'])->name('changelog');
-Route::post('/profile/timezone', [UserTimezoneController::class, 'update'])->name('profile.timezone.update');
+    Route::view('/verified', 'verified')->name('verified');
 
-Route::prefix('/@{username}')->group(function () {
-    Route::get('/', [UserController::class, 'show'])
-        ->name('profile.show')
-        ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+    Route::redirect('/sponsors', 'https://github.com/sponsors/nunomaduro/')->name('sponsors');
 
-    Route::get('questions/{question}', [QuestionController::class, 'show'])
-        ->name('questions.show')
-        ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+    Route::get('/changelog', [ChangelogController::class, 'show'])->name('changelog');
+
+    Route::prefix('/@{username}')->group(function () {
+        Route::get('/', [UserController::class, 'show'])
+            ->name('profile.show')
+            ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+
+        Route::get('questions/{question}', [QuestionController::class, 'show'])
+            ->name('questions.show')
+            ->middleware(EnsureVerifiedEmailsForSignInUsers::class);
+    });
 });
+
+Route::post('/profile/timezone', [UserTimezoneController::class, 'update'])->name('profile.timezone.update');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('bookmarks', [BookmarksController::class, 'index'])->name('bookmarks.index');
@@ -84,6 +95,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/profile/verified', [UserIsVerifiedController::class, 'update'])
         ->name('profile.verified.update');
+
+    Route::post('/accounts/switch/{username}', AccountController::class)
+        ->name('accounts.switch');
+
+    Route::post('/accounts/remove/{username}', AccountRemoveController::class)
+        ->name('accounts.remove');
+
+    Route::post('/accounts/logout-all', AccountLogoutAllController::class)
+        ->name('accounts.logout-all');
 });
 
 require __DIR__.'/auth.php';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Links;
 
+use App\Actions\Links\UpdateLink;
 use App\Models\Link;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ final class Edit extends Component
      *
      * @throws AuthorizationException
      */
-    public function update(Request $request): void
+    public function update(Request $request, UpdateLink $updateLink): void
     {
         if (! Str::startsWith($this->url, ['http://', 'https://'])) {
             $this->url = "https://{$this->url}";
@@ -52,11 +53,7 @@ final class Edit extends Component
 
         $this->authorize('update', $link);
 
-        if ($link->url !== $validated['url']) {
-            $validated['click_count'] = 0;
-        }
-
-        $link->update($validated);
+        $updateLink->handle($link, $validated);
 
         $this->dispatch('link.updated');
         $this->dispatch('close-modal', 'link-edit-modal');

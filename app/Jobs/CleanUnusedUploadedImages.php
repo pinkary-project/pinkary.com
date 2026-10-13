@@ -60,6 +60,8 @@ final class CleanUnusedUploadedImages implements ShouldQueue
     /**
      * Extract images from the recent questions
      *
+     * Keep image references disk-relative so cleanup can match stored files.
+     *
      * @param  Collection<int, Question>  $questions
      * @return array<int, string>
      */
@@ -68,14 +70,14 @@ final class CleanUnusedUploadedImages implements ShouldQueue
         /** @var array<int, string> $images */
         $images = $questions
             ->map(function (Question $question): array {
-                /** @var string $questionContent */
-                $questionContent = $question->getRawOriginal('content');
+                $rawContent = $question->getRawOriginal('content');
+                $questionContent = is_string($rawContent) ? $rawContent : '';
                 preg_match_all(
                     '/!\[.*?]\((.*?)\)/',
                     $questionContent, $contentMatches
                 );
-                /** @var string $answerContent */
-                $answerContent = $question->getRawOriginal('answer');
+                $rawAnswer = $question->getRawOriginal('answer');
+                $answerContent = is_string($rawAnswer) ? $rawAnswer : '';
                 preg_match_all(
                     '/!\[.*?]\((.*?)\)/',
                     $answerContent, $answerMatches
@@ -84,7 +86,9 @@ final class CleanUnusedUploadedImages implements ShouldQueue
                 return array_merge($contentMatches[1], $answerMatches[1]);
             })
             ->flatten()
+            ->filter(fn (mixed $reference): bool => is_string($reference) && $reference !== '')
             ->unique()
+            ->values()
             ->toArray();
 
         return $images;

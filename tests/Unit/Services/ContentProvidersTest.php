@@ -198,8 +198,8 @@ test('attaches preview only to the last valid preview link among multiple links'
     Http::clearResolvedInstances();
 
     Http::fake([
-        'https://example1.com/' => Http::response('<html><head></head><body></body></html>'),
-        'https://laravel.com/' => Http::response(<<<'HTML'
+        'https://example1.com' => Http::response('<html><head></head><body></body></html>'),
+        'https://laravel.com' => Http::response(<<<'HTML'
             <html>
             <head>
                 <meta property="og:title" content="Laravel - The PHP Framework For Web Artisans">
@@ -208,7 +208,8 @@ test('attaches preview only to the last valid preview link among multiple links'
             <body></body>
             </html>
         HTML),
-        'https://example3.com/' => Http::response('<html><head></head><body></body></html>'),
+        'https://example3.com' => Http::response('<html><head></head><body></body></html>'),
+        'https://laravel.com/img/og-image.jpg' => Http::response(''),
     ]);
 
     $content = 'Links: https://example1.com, https://laravel.com, https://example3.com,';
@@ -274,22 +275,22 @@ test('malformed links are correctly handled by content parser', function (string
     $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
     expect($provider->parse($content))->toMatchSnapshot();
 })->with([
-    'http://example..com',
-    'htt://example.com',
-    'protocol://example.com',
-    'http//example.com',
-    'http://exa_mple.com',
-    'http://example',
-    'http://.example.com',
-    'http://example=com',
-    'www.example.com',
-    'http:/example.com',
-    'http:///example.com',
-    'http://example.com?this<>=that',
-    'http://example.com?this=that#this<>=that',
-    'http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
-    'http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]:8080',
-    'http://example.com:abcd',
+    'double-dot-domain' => 'http://example..com',
+    'invalid-scheme' => 'htt://example.com',
+    'unsupported-scheme' => 'protocol://example.com',
+    'missing-colon' => 'http//example.com',
+    'underscore-domain' => 'http://exa_mple.com',
+    'missing-top-level-domain' => 'http://example',
+    'leading-dot-domain' => 'http://.example.com',
+    'equals-in-domain' => 'http://example=com',
+    'missing-scheme' => 'www.example.com',
+    'single-slash-scheme' => 'http:/example.com',
+    'triple-slash-scheme' => 'http:///example.com',
+    'invalid-query-characters' => 'http://example.com?this<>=that',
+    'invalid-query-and-fragment-characters' => 'http://example.com?this=that#this<>=that',
+    'ipv6-host' => 'http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+    'ipv6-host-with-port' => 'http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]:8080',
+    'non-numeric-port' => 'http://example.com:abcd',
     'http://example.com/👍',
 ]);
 

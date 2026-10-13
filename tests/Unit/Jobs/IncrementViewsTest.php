@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Jobs\IncrementViews;
 use App\Models\Question;
 use App\Models\User;
-use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Eloquent\Collection;
 
 it('increments models when not viewed before', function (): void {
@@ -32,8 +31,10 @@ it('caches viewed items', function (): void {
     $models->fresh()->each(function ($model): void {
         expect($model->views)->toBe(1);
     });
-    expect(Cache::get("viewed.{$job->getModelName()}.for.user.{$user->id}"))
-        ->toBe($models->pluck('id')->toArray());
+
+    $models->each(function (Question $model) use ($user): void {
+        expect(Cache::has("viewed:question:{$model->id}:{$user->id}"))->toBeTrue();
+    });
 });
 
 it('does not increment models when already viewed', function (): void {
@@ -41,10 +42,11 @@ it('does not increment models when already viewed', function (): void {
 
     $user = User::factory()->create();
 
+    $models->each(function (Question $model) use ($user): void {
+        Cache::put("viewed:question:{$model->id}:{$user->id}", true, now()->addMinutes(10));
+    });
+
     $job = new IncrementViews($models, $user->id);
-
-    Cache::put("viewed.{$job->getModelName()}.for.user.{$user->id}", $models->pluck('id')->toArray(), now()->addMinutes(10));
-
     $job->handle();
 
     $models->each(function ($model): void {
@@ -52,16 +54,22 @@ it('does not increment models when already viewed', function (): void {
     });
 });
 
-it('releases lock when exception occurs', function (): void {
-    $models = Question::factory()->count(3)->create();
+it('does not double-count views when dispatched twice', function (): void {
+    $models = Question::factory()->count(3)->create(['views' => 0]);
 
-    Cache::shouldReceive('lock')->andThrow(new LockTimeoutException);
+    $user = User::factory()->create();
 
-    $job = new IncrementViews($models, 1);
-    $job->handle();
+    new IncrementViews($models, $user->id)->handle();
+    new IncrementViews($models, $user->id)->handle();
 
-    expect(Cache::lock("viewed.{$job->getModelName()}.for.user.1")->get())->toBeTrue();
-})->throws(LockTimeoutException::class);
+    $models->fresh()->each(function ($model): void {
+        expect($model->views)->toBe(1);
+    });
+
+    $models->each(function (Question $model) use ($user): void {
+        expect(Cache::has("viewed:question:{$model->id}:{$user->id}"))->toBeTrue();
+    });
+});
 
 it('caches using session id when no user', function (): void {
     $models = Question::factory()->count(3)->create(['views' => 0]);
@@ -77,8 +85,9 @@ it('caches using session id when no user', function (): void {
         expect($model->views)->toBe(1);
     });
 
-    expect(Cache::get("viewed.{$job->getModelName()}.for.user.{$sessionId}"))
-        ->toBe($models->pluck('id')->toArray());
+    $models->each(function (Question $model) use ($sessionId): void {
+        expect(Cache::has("viewed:question:{$model->id}:{$sessionId}"))->toBeTrue();
+    });
 });
 
 it('does not increment models when is a bot', function (): void {
@@ -99,6 +108,13 @@ it('handles empty models', function (): void {
 
     $job = (fn () => $pendingDispatch->job)->call($pendingDispatch);
 
-    $key = "viewed.{$job->getModelName()}.for.user.{$user->id}";
-    expect(Cache::has($key))->toBeFalse();
+    $job->handle();
+
+    expect(Cache::has("viewed:user:{$user->id}:{$user->id}"))->toBeFalse();
+});
+
+it('returns an empty model name when there are no viewables', function (): void {
+    $job = new IncrementViews(new Collection(), 'session-id');
+
+    expect($job->getModelName())->toBeEmpty();
 });

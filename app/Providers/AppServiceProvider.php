@@ -7,14 +7,17 @@ namespace App\Providers;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Livewire\Blaze\Blaze;
 use Livewire\Livewire;
 
 final class AppServiceProvider extends ServiceProvider
@@ -28,7 +31,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->configurePasswordValidation();
         $this->configureDates();
+        $this->configureEmailVerification();
         $this->configurePasswordResetUrl();
+        $this->configureBlaze();
 
         Route::bind('username', fn (string $username): User => User::where(DB::raw('LOWER(username)'), mb_strtolower($username))->firstOrFail());
 
@@ -80,10 +85,39 @@ final class AppServiceProvider extends ServiceProvider
     }
 
     /**
+     * Personalize the verification email without changing Laravel's signed URL or expiry.
+     */
+    private function configureEmailVerification(): void
+    {
+        VerifyEmail::toMailUsing(function (mixed $notifiable, string $url): MailMessage {
+            $name = $notifiable instanceof User ? $notifiable->name : __('there');
+
+            return (new MailMessage)
+                ->subject(__('Verify Email Address'))
+                ->greeting(__('Hello, :name!', ['name' => $name]))
+                ->line(__('Please click the button below to verify your email address.'))
+                ->action(__('Verify Email Address'), $url)
+                ->line(__('If you did not create an account, no further action is required.'));
+        });
+    }
+
+    /**
      * Configure the password validation rules.
      */
     private function configurePasswordValidation(): void
     {
         Password::defaults(fn () => $this->app->isProduction() ? Password::min(8)->uncompromised() : null);
+    }
+
+    /**
+     * Configure Blaze optimizations for anonymous Blade components.
+     */
+    private function configureBlaze(): void
+    {
+        Blaze::optimize()
+            ->in(resource_path('views/components'))
+            ->in(resource_path('views/components/footer.blade.php'), compile: false)
+            ->in(resource_path('views/components/link-preview-card.blade.php'), compile: false)
+            ->in(resource_path('views/components/icons'), memo: true);
     }
 }

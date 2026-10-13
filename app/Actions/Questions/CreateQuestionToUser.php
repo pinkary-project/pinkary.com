@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Actions\Questions;
+
+use App\Models\Question;
+use App\Models\User;
+use App\Queries\Feeds\FeedQuestion;
+
+final readonly class CreateQuestionToUser
+{
+    /**
+     * @param  CreateQuestion  $createQuestion  Persists the question through the shared writer.
+     * @param  EnsureCanPublish  $ensureCanPublish  Refuses the post when the
+     *                                              author is over their quota.
+     */
+    public function __construct(
+        private CreateQuestion $createQuestion,
+        private EnsureCanPublish $ensureCanPublish,
+    ) {}
+
+    /** Ask a question to another user. */
+    public function handle(User $from, User $to, string $content, bool $anonymously = false): Question
+    {
+        $this->ensureCanPublish->handle($from, 1, 'questions');
+
+        $question = $this->createQuestion->handle($from, [[
+            'to_id' => $to->id,
+            'content' => $content,
+            'anonymously' => $anonymously,
+        ]], [], [], null)[0];
+
+        return (new FeedQuestion)(Question::query()->whereKey($question->id), $from->id)->firstOrFail();
+    }
+}

@@ -35,8 +35,11 @@ Alpine.data('shareProfile', shareProfile)
 import { copyUrl } from './copy-url.js'
 Alpine.data('copyUrl', copyUrl)
 
-import { showMore } from './show-more.js'
-Alpine.data('showMore', showMore)
+import { feedContent } from './feed-content.js';
+Alpine.data('feedContent', feedContent);
+
+import { imageGallery } from './image-gallery.js';
+Alpine.data('imageGallery', imageGallery);
 
 import { clickHandler } from './click-handler.js'
 Alpine.data('clickHandler', clickHandler)
@@ -60,6 +63,8 @@ Alpine.data('likeButton', likeButton);
 
 import { bookmarkButton } from './bookmark-button.js';
 Alpine.data('bookmarkButton', bookmarkButton);
+import { repostButton } from './repost-button.js';
+Alpine.data('repostButton', repostButton);
 import { followButton } from './follow-button.js'
 Alpine.data('followButton', followButton)
 
@@ -74,5 +79,8 @@ Alpine.data('poll', poll);
 
 import { formattingToolbar } from './formatting-toolbar.js';
 Alpine.data('formattingToolbar', formattingToolbar);
+
+import { questionComposer } from './question-composer.js';
+Alpine.data('questionComposer', questionComposer);
 
 Livewire.start()

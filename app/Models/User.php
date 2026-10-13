@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Contracts\Models\Viewable;
 use App\Enums\UserDefaultFeed;
 use App\Enums\UserMailPreference;
+use App\Enums\UserQuestionPreference;
 use App\Services\ParsableBio;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
@@ -24,9 +25,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property bool $prefers_anonymous_questions
+ * @property UserQuestionPreference $question_preference
  * @property string|null $avatar
  * @property string $avatar_url
  * @property string|null $bio
@@ -54,20 +57,27 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property ?CarbonImmutable $avatar_updated_at
  * @property string $username
  * @property int $views
+ * @property int $followers_count
+ * @property int $following_count
+ * @property int $posts_count
+ * @property bool $followed_by_me
+ * @property bool $follows_me
  * @property bool $is_uploaded_avatar
  * @property-read Collection<int, Link> $links
  * @property-read Collection<int, Question> $questionsReceived
  * @property-read Collection<int, Question> $questionsSent
+ * @property-read Collection<int, Repost> $reposts
  * @property-read Question $pinnedQuestion
  * @property-read Collection<int, DatabaseNotification> $unreadNotifications
  * @property-read Collection<int, DatabaseNotification> $readNotifications
  * @property-read Collection<int, User> $following
  * @property-read Collection<int, User> $followers
+ * @property-read Collection<int, Channel> $channels
  */
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Viewable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -92,11 +102,19 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     }
 
     /**
+     * Determine if the user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->email === 'enunomaduro@gmail.com' || $this->email === 'mrpunyapal@gmail.com';
+    }
+
+    /**
      * Determine if the user can access the admin given panel.
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasVerifiedEmail() && ($this->email === 'enunomaduro@gmail.com' || $this->email === 'mrpunyapal@gmail.com');
+        return $this->hasVerifiedEmail() && $this->isAdmin();
     }
 
     /**
@@ -137,6 +155,26 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function questionsReceived(): HasMany
     {
         return $this->hasMany(Question::class, 'to_id');
+    }
+
+    /**
+     * Get the user's reposts.
+     *
+     * @return HasMany<Repost, $this>
+     */
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(Repost::class);
+    }
+
+    /**
+     * Get the user's channels.
+     *
+     * @return HasMany<Channel, $this>
+     */
+    public function channels(): HasMany
+    {
+        return $this->hasMany(Channel::class);
     }
 
     /**
@@ -223,7 +261,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getLinkShapeAttribute(): string
     {
-        $settings = $this->settings ?: [];
+        $settings = array_key_exists('settings', $this->attributes) ? ($this->settings ?: []) : [];
 
         $linkShape = data_get($settings, 'link_shape', 'rounded-lg');
 
@@ -235,7 +273,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
      */
     public function getGradientAttribute(): string
     {
-        $settings = $this->settings ?: [];
+        $settings = array_key_exists('settings', $this->attributes) ? ($this->settings ?: []) : [];
 
         $gradient = data_get($settings, 'gradient', 'from-blue-500 to-purple-600');
 
@@ -255,6 +293,8 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         $this->following()->detach();
 
         $this->notifications()->delete();
+
+        $this->reposts->each->delete();
 
         $this->questionsReceived->each->delete();
         $this->questionsSent->each->delete();
@@ -315,6 +355,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'password' => 'hashed',
             'settings' => 'array',
             'prefers_anonymous_questions' => 'boolean',
+            'question_preference' => UserQuestionPreference::class,
             'avatar_updated_at' => 'datetime',
             'mail_preference_time' => UserMailPreference::class,
             'default_feed' => UserDefaultFeed::class,

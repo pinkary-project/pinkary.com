@@ -4,9 +4,19 @@ declare(strict_types=1);
 
 namespace App\Livewire\Questions;
 
+use App\Actions\Questions\CreateBookmark;
+use App\Actions\Questions\CreateLike;
+use App\Actions\Questions\CreateRepost;
+use App\Actions\Questions\DeleteBookmark;
+use App\Actions\Questions\DeleteLike;
+use App\Actions\Questions\DeleteRepost;
+use App\Actions\Questions\UpdateQuestionPin;
+use App\Actions\Questions\UpdateQuestionStatus;
 use App\Livewire\Concerns\NeedsVerifiedEmail;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
+use App\Services\FeedContent;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
@@ -25,6 +35,12 @@ final class Show extends Component
      */
     #[Locked]
     public string $questionId;
+
+    /**
+     * The repost event that opened this question in a feed.
+     */
+    #[Locked]
+    public ?int $repostId = null;
 
     /**
      * Determine if this is currently being viewed in the index (list) view.
@@ -55,6 +71,12 @@ final class Show extends Component
      */
     #[Locked]
     public bool $showBorder = false;
+
+    /**
+     * Determine if this is currently being viewed in a channel feed.
+     */
+    #[Locked]
+    public bool $inChannel = false;
 
     /**
      * The previous question ID, where the user came from.
@@ -98,7 +120,7 @@ final class Show extends Component
     /**
      * Ignores the question.
      */
-    public function ignore(): void
+    public function ignore(UpdateQuestionStatus $updateQuestionStatus): void
     {
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
@@ -110,19 +132,19 @@ final class Show extends Component
             return;
         }
 
+        $question = Question::findOrFail($this->questionId);
+
         if ($this->inIndex) {
-            $this->dispatch('notification.created', message: 'Question ignored.');
+            $this->dispatch('notification.created', message: $question->isSharedUpdate() ? 'Post ignored.' : 'Question ignored.');
 
             $this->dispatch('question.ignore', questionId: $this->questionId);
 
             return;
         }
 
-        $question = Question::findOrFail($this->questionId);
-
         $this->authorize('ignore', $question);
 
-        $question->update(['is_ignored' => true]);
+        $updateQuestionStatus->handle($question, ignored: true);
 
         $this->redirectRoute('profile.show', ['username' => $question->to->username], navigate: true);
     }
@@ -131,7 +153,7 @@ final class Show extends Component
      * Bookmark the question.
      */
     #[Renderless]
-    public function bookmark(): void
+    public function bookmark(CreateBookmark $createBookmark): void
     {
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
@@ -145,9 +167,10 @@ final class Show extends Component
 
         $question = Question::findOrFail($this->questionId);
 
-        $bookmark = $question->bookmarks()->firstOrCreate([
-            'user_id' => auth()->id(),
-        ]);
+        /** @var User $user */
+        $user = auth()->user();
+
+        $bookmark = $createBookmark->handle($question, $user);
 
         if ($bookmark->wasRecentlyCreated) {
             $this->dispatch('notification.created', message: 'Bookmark added.');
@@ -158,7 +181,7 @@ final class Show extends Component
      * Like the question.
      */
     #[Renderless]
-    public function like(): void
+    public function like(CreateLike $createLike): void
     {
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
@@ -172,15 +195,78 @@ final class Show extends Component
 
         $question = Question::findOrFail($this->questionId);
 
-        $question->likes()->firstOrCreate([
-            'user_id' => auth()->id(),
-        ]);
+        /** @var User $user */
+        $user = auth()->user();
+
+        $createLike->handle($question, $user);
+    }
+
+    /**
+     * Repost the question.
+     */
+    #[Renderless]
+    public function repost(CreateRepost $createRepost): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        $this->authorize('repost', $question);
+
+        /** @var User $user */
+        $user = auth()->user();
+        $repost = $createRepost->handle($question, $user);
+
+        if ($repost->wasRecentlyCreated) {
+            $this->dispatch('question.reposted', id: $question->id);
+        }
+    }
+
+    /**
+     * Remove the user's repost.
+     */
+    #[Renderless]
+    public function unrepost(DeleteRepost $deleteRepost): void
+    {
+        if (! auth()->check()) {
+            $this->redirectRoute('login', navigate: true);
+
+            return;
+        }
+
+        if ($this->doesNotHaveVerifiedEmail()) {
+            return;
+        }
+
+        $question = Question::findOrFail($this->questionId);
+
+        /** @var User $user */
+        $user = auth()->user();
+        $repost = $question->reposts()->whereBelongsTo($user)->first();
+
+        if ($repost === null) {
+            return;
+        }
+
+        $this->authorize('delete', $repost);
+
+        if ($deleteRepost->handle($repost)) {
+            $this->dispatch('question.unreposted', id: $question->id);
+        }
     }
 
     /**
      * Pin a question.
      */
-    public function pin(#[CurrentUser] ?User $user): void
+    public function pin(#[CurrentUser] ?User $user, UpdateQuestionPin $updateQuestionPin): void
     {
         if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
@@ -196,8 +282,7 @@ final class Show extends Component
 
         $this->authorize('pin', $question);
 
-        Question::withoutTimestamps(fn () => $user->pinnedQuestion()->update(['pinned' => false]));
-        Question::withoutTimestamps(fn () => $question->update(['pinned' => true]));
+        $updateQuestionPin->handle($user, $question, true);
 
         $this->dispatch('question.updated');
     }
@@ -205,9 +290,9 @@ final class Show extends Component
     /**
      * Unpin a pinned question.
      */
-    public function unpin(): void
+    public function unpin(#[CurrentUser] ?User $user, UpdateQuestionPin $updateQuestionPin): void
     {
-        if (! auth()->check()) {
+        if (! $user instanceof User) {
             $this->redirectRoute('login', navigate: true);
 
             return;
@@ -221,7 +306,7 @@ final class Show extends Component
 
         $this->authorize('update', $question);
 
-        Question::withoutTimestamps(fn () => $question->update(['pinned' => false]));
+        $updateQuestionPin->handle($user, $question, false);
 
         $this->dispatch('question.updated');
     }
@@ -230,7 +315,7 @@ final class Show extends Component
      * Unbookmark the question.
      */
     #[Renderless]
-    public function unbookmark(): void
+    public function unbookmark(DeleteBookmark $deleteBookmark): void
     {
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
@@ -247,7 +332,7 @@ final class Show extends Component
         if ($bookmark = $question->bookmarks()->where('user_id', auth()->id())->first()) {
             $this->authorize('delete', $bookmark);
 
-            if ($bookmark->delete()) {
+            if ($deleteBookmark->handle($bookmark)) {
                 $this->dispatch('notification.created', message: 'Bookmark removed.');
             }
         }
@@ -259,7 +344,7 @@ final class Show extends Component
      * Unlike the question.
      */
     #[Renderless]
-    public function unlike(): void
+    public function unlike(DeleteLike $deleteLike): void
     {
         if (! auth()->check()) {
             $this->redirectRoute('login', navigate: true);
@@ -276,7 +361,7 @@ final class Show extends Component
         if ($like = $question->likes()->where('user_id', auth()->id())->first()) {
             $this->authorize('delete', $like);
 
-            $like->delete();
+            $deleteLike->handle($like);
         }
     }
 
@@ -291,7 +376,7 @@ final class Show extends Component
     /**
      * Render the component.
      */
-    public function render(): View
+    public function render(FeedContent $feedContent): View
     {
         $question = Question::where('id', $this->questionId)
             ->with(['to', 'from'])
@@ -299,16 +384,24 @@ final class Show extends Component
                 $query->where('user_id', auth()->id());
             }, 'likes as is_liked' => function (Builder $query): void {
                 $query->where('user_id', auth()->id());
+            }, 'reposts as is_reposted' => function (Builder $query): void {
+                $query->where('user_id', auth()->id());
             }])
             ->when(! $this->inThread || $this->commenting, function (Builder $query): void {
                 $query->with('parent');
             })
-            ->withCount(['likes', 'children', 'bookmarks'])
+            ->withCount(['likes', 'children', 'bookmarks', 'reposts'])
             ->firstOrFail();
+
+        $repost = $this->repostId === null
+            ? null
+            : Repost::query()->with('user')->find($this->repostId);
 
         return view('livewire.questions.show', [
             'user' => $question->to,
             'question' => $question,
+            'repost' => $repost,
+            'feedContent' => $this->inIndex ? $feedContent->parse($question->answer ?? '') : null,
         ]);
     }
 }

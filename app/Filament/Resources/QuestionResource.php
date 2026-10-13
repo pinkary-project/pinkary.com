@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Actions\Questions\UpdateQuestionStatus;
 use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
 use App\Models\User;
@@ -71,8 +72,8 @@ final class QuestionResource extends Resource
             ->actions([
                 Action::make('ignore')
                     ->color('gray')
-                    ->action(function (Question $record): void {
-                        $record->update(['is_ignored' => true]);
+                    ->action(function (Question $record, UpdateQuestionStatus $updateQuestionStatus): void {
+                        $updateQuestionStatus->handle($record, ignored: true);
                     })
                     ->visible(fn (Question $record): bool => ! $record->is_ignored)
                     ->requiresConfirmation(),

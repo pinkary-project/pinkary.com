@@ -39,6 +39,7 @@ arch('avoid mutation')
         'App\Console\Commands',
         'App\Exceptions',
         'App\Filament',
+        'App\Http\Resources',
         'App\Http\Requests',
         'App\Jobs',
         'App\Livewire',
@@ -48,6 +49,7 @@ arch('avoid mutation')
         'App\Providers',
         'App\View',
         App\Services\Autocomplete::class,
+        App\Services\BoundedResponseBody::class,
     ]);
 
 arch('avoid inheritance')
@@ -58,6 +60,7 @@ arch('avoid inheritance')
         'App\Console\Commands',
         'App\Exceptions',
         'App\Filament',
+        'App\Http\Resources',
         'App\Http\Requests',
         'App\Jobs',
         'App\Livewire',
@@ -67,6 +70,7 @@ arch('avoid inheritance')
         'App\Providers',
         'App\View',
         'App\Services\Autocomplete\Types',
+        App\Services\BoundedResponseBody::class,
     ]);
 
 arch('annotations')

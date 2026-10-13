@@ -4,26 +4,35 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
+use App\Actions\Mail\RecordSuppressedEmail;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Spatie\MailcoachMailer\Exceptions\EmailNotValid;
+use Symfony\Component\Mailer\Exception\HttpTransportException;
+use Throwable;
 
 final class PendingNotifications extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
+    /** Reminder attempt timestamp, stored at database precision. */
+    public readonly ?CarbonImmutable $emailRemindedAt;
+
+    /** @param  array<int, string>  $notificationIds */
     public function __construct(
         public readonly User $user,
         public readonly int $pendingNotificationsCount,
+        public readonly array $notificationIds = [],
+        ?CarbonImmutable $emailRemindedAt = null,
     ) {
-        //
+        $this->emailRemindedAt = $emailRemindedAt?->startOfSecond();
+        $this->beforeCommit();
     }
 
     /**
@@ -49,6 +58,29 @@ final class PendingNotifications extends Mailable implements ShouldQueue
                 'pendingNotificationsCount' => $this->pendingNotificationsCount,
             ],
         );
+    }
+
+    /**
+     * Handle a permanent delivery failure by suppressing future mails.
+     */
+    public function failed(Throwable $throwable): void
+    {
+        if ($this->notificationIds !== [] && $this->emailRemindedAt instanceof CarbonImmutable) {
+            $this->user->notifications()
+                ->whereKey($this->notificationIds)
+                ->where('email_reminded_at', $this->emailRemindedAt)
+                ->update(['email_reminded_at' => null]);
+        }
+
+        $statusCode = $throwable instanceof EmailNotValid
+            ? 422
+            : ($throwable instanceof HttpTransportException ? $throwable->getResponse()->getStatusCode() : null);
+
+        if (! in_array($statusCode, [406, 422], true)) {
+            return;
+        }
+
+        app(RecordSuppressedEmail::class)->handle($this->user->email, "mailcoach-{$statusCode}");
     }
 
     /**

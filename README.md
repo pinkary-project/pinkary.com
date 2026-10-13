@@ -35,7 +35,17 @@ git checkout -b feat/your-feature # or fix/your-fix
 
 > **Don't push directly to the `main` branch**. Instead, create a new branch and push it to your branch.
 
-Next, install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
+Two ways to set up the project:
+
+### Automated Setup
+
+```bash
+composer setup
+```
+
+### Manual Setup
+
+Install the dependencies using [Composer](https://getcomposer.org) and [NPM](https://www.npmjs.com):
 
 ```bash
 composer install
@@ -63,13 +73,17 @@ Link the storage to the public folder:
 php artisan storage:link
 ```
 
-In a **separate terminal**, build the assets in watch mode:
+### Running the Project
+
+Regardless of which setup path you chose, run these in **separate terminals**.
+
+Build the assets in watch mode:
 
 ```bash
 npm run dev
 ```
 
-Also in a **separate terminal**, run the queue worker:
+Run the queue worker:
 
 ```bash
 php artisan queue:work

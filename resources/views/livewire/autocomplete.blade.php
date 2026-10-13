@@ -27,7 +27,11 @@
                         wire:key="{{ $result->id }}"
                         role="option"
                     >
-                        @include($result->view)
+                        @if ($result->view === 'components.autocomplete.mention-item')
+                            <x-autocomplete.mention-item :result="$result" />
+                        @elseif ($result->view === 'components.autocomplete.hashtag-item')
+                            <x-autocomplete.hashtag-item :result="$result" />
+                        @endif
                     </li>
                 @endif
             @empty

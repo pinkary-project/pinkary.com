@@ -11,7 +11,6 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Uri;
 
@@ -28,12 +27,24 @@ final readonly class MetaData
     public const int CARD_HEIGHT = 251;
 
     /**
+     * Timeout in seconds for the outbound requests made while rendering previews.
+     */
+    private const int HTTP_TIMEOUT_SECONDS = 3;
+
+    /**
+     * The oEmbed endpoints keyed by their supported hosts.
+     *
+     * @var array<string, list<string>>
+     */
+    private const array OEMBED_SERVICES = [
+        'https://www.youtube.com/oembed' => ['youtube.com', 'www.youtube.com', 'youtu.be', 'www.youtu.be'],
+        'https://vimeo.com/oembed' => ['vimeo.com', 'www.vimeo.com'],
+    ];
+
+    /**
      * Fetch the Open Graph data for a given URL.
      */
-    public function __construct(private string $url)
-    {
-        //
-    }
+    public function __construct(private string $url, private SafeUrlFetcher $fetcher = new SafeUrlFetcher()) {}
 
     /**
      * Fetch the parsed meta-data for the URL
@@ -43,7 +54,7 @@ final readonly class MetaData
     public function fetch(): Collection
     {
         /** @var Collection<string, string> $cachedData */
-        $cachedData = Cache::remember(
+        $cachedData = Cache::memo()->remember(
             Str::of($this->url)->slug()->prepend('preview_')->value(),
             now()->addYear(),
             fn (): Collection => $this->getData()
@@ -81,11 +92,13 @@ final readonly class MetaData
      */
     public function checkExistsAndSize(string $image): bool
     {
-        if (! (Http::head($image)->ok())) {
+        $response = $this->fetcher->get($image, timeout: self::HTTP_TIMEOUT_SECONDS);
+
+        if (! $response?->ok()) {
             return false;
         }
 
-        $dimensions = @getimagesize($image);
+        $dimensions = @getimagesizefromstring($response->body());
         $min_width = self::CARD_WIDTH / 0.66;
         $min_height = self::CARD_HEIGHT / 0.66;
 
@@ -99,48 +112,34 @@ final readonly class MetaData
      */
     private function getData(): Collection
     {
-        // If it’s a YouTube link, go straight to oEmbed
+        // If it’s a YouTube or Vimeo link, go straight to oEmbed
         // return early to bypass bot detection issues.
-        if (in_array(
-            needle: Uri::of($this->url)->host(),
-            haystack: ['youtube.com', 'www.youtube.com', 'youtu.be', 'www.youtu.be'],
-            strict: true
-        )) {
-            $oembed = $this->fetchOEmbed(
-                service: 'https://www.youtube.com/oembed',
-                options: [
-                    'maxwidth' => self::CARD_WIDTH,
-                    'maxheight' => self::CARD_HEIGHT,
-                ]
-            );
-            if ($oembed->isNotEmpty()) {
-                return $oembed;
-            }
-        }
-        // If it's a Vimeo link, go straight to oEmbed
-        // return early to bypass bot detection issues.
-        if (in_array(
-            needle: Uri::of($this->url)->host(),
-            haystack: ['vimeo.com', 'www.vimeo.com'],
-            strict: true
-        )) {
-            $oembed = $this->fetchOEmbed(
-                service: 'https://vimeo.com/oembed',
-                options: [
-                    'maxwidth' => self::CARD_WIDTH,
-                    'maxheight' => self::CARD_HEIGHT,
-                ]
-            );
-            if ($oembed->isNotEmpty()) {
-                return $oembed;
+        $host = Uri::of($this->url)->host();
+
+        foreach (self::OEMBED_SERVICES as $service => $hosts) {
+            if (in_array(
+                needle: $host,
+                haystack: $hosts,
+                strict: true
+            )) {
+                $oembed = $this->fetchOEmbed(
+                    service: $service,
+                    options: [
+                        'maxwidth' => self::CARD_WIDTH,
+                        'maxheight' => self::CARD_HEIGHT,
+                    ]
+                );
+                if ($oembed->isNotEmpty()) {
+                    return $oembed;
+                }
             }
         }
         $data = collect();
 
         try {
-            $response = Http::get($this->url);
+            $response = $this->fetcher->get($this->url, timeout: self::HTTP_TIMEOUT_SECONDS);
 
-            if ($response->ok() && $response->body() !== '') {
+            if ($response?->ok() && $response->body() !== '') {
                 $data = $this->parse(
                     $response->body()
                 );
@@ -164,11 +163,12 @@ final readonly class MetaData
         $data = collect();
 
         try {
-            $response = Http::get(
-                url: $service.'?url='.urlencode($this->url).'&'.http_build_query($options)
+            $response = $this->fetcher->get(
+                $service.'?url='.urlencode($this->url).'&'.http_build_query($options),
+                timeout: self::HTTP_TIMEOUT_SECONDS,
             );
 
-            if ($response->ok()) {
+            if ($response?->ok()) {
                 $data = $response->collect();
             }
         } catch (ConnectionException) {
@@ -244,9 +244,13 @@ final readonly class MetaData
         }
 
         if ($data->has('site_name') && $data->get('site_name') === 'X (formerly Twitter)') {
-            $response = Http::withHeader('User-Agent', 'Twitterbot')->get($this->url);
+            $response = $this->fetcher->get(
+                $this->url,
+                ['User-Agent' => 'Twitterbot'],
+                self::HTTP_TIMEOUT_SECONDS,
+            );
 
-            if ($response->ok() && $response->body() !== '') {
+            if ($response?->ok() && $response->body() !== '') {
                 $data = $this->parseContent($response->body());
                 if ($data->has('image')) {
                     $isSuitable = $this->checkExistsAndSize((string) $data->get('image'));

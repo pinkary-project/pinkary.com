@@ -349,6 +349,103 @@ test('prefers_anonymous_questions can be updated', function (): void {
     expect($user->refresh()->prefers_anonymous_questions)->toBeFalse();
 });
 
+test('profile form shows the saved question preference', function (): void {
+    $user = User::factory()->create(['question_preference' => 'following']);
+
+    $response = $this->actingAs($user)->get(route('profile.edit'))
+        ->assertOk()
+        ->assertSee('Who can ask you questions?')
+        ->assertSee('Following allows questions only from people you follow.')
+        ->assertSeeHtml('name="question_preference"')
+        ->assertSeeHtml('class="bg-white text-slate-950 dark:bg-[#0b1324] dark:text-white"');
+
+    expect((string) $response->getContent())
+        ->toMatch('/<select(?=[^>]*name="question_preference")[^>]*>.*?<option(?=[^>]*value="following")(?=[^>]*selected)[^>]*>\s*Following\s*<\/option>/s');
+});
+
+test('question preferences save with profile information for the signed in user', function (string $preference): void {
+    $user = User::factory()->create([
+        'username' => 'testuser',
+        'settings' => ['link_shape' => 'rounded-full'],
+    ]);
+    $other = User::factory()->create(['question_preference' => 'following']);
+
+    $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+        'question_preference' => $preference,
+        'user_id' => $other->id,
+    ])->assertSessionHasNoErrors()
+        ->assertRedirect(route('profile.edit'))
+        ->assertSessionHas('flash-message', 'Profile updated.');
+
+    expect($user->refresh()->question_preference->value)->toBe($preference)
+        ->and($user->settings)->toBe(['link_shape' => 'rounded-full'])
+        ->and($user->prefers_anonymous_questions)->toBeTrue()
+        ->and($other->refresh()->question_preference->value)->toBe('following');
+})->with(['everyone', 'following', 'no_one']);
+
+test('profile updates reject invalid question preferences', function (mixed $preference): void {
+    $user = User::factory()->create(['username' => 'testuser']);
+
+    $this->actingAs($user)->from(route('profile.edit'))->patch(route('profile.update'), [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+        'question_preference' => $preference,
+    ])->assertRedirect(route('profile.edit'))->assertSessionHasErrors('question_preference');
+
+    expect($user->refresh()->question_preference->value)->toBe('everyone');
+})->with([
+    'unknown' => ['followers'],
+    'empty' => [''],
+    'null' => [null],
+    'array' => [['following']],
+]);
+
+test('profile updates preserve an omitted question preference', function (): void {
+    $user = User::factory()->create(['username' => 'testuser', 'question_preference' => 'following']);
+
+    $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+    ])->assertSessionHasNoErrors();
+
+    expect($user->refresh()->question_preference->value)->toBe('following');
+});
+
+test('profile form retains the submitted question preference after validation fails', function (): void {
+    $user = User::factory()->create(['username' => 'testuser']);
+
+    $this->actingAs($user)->from(route('profile.edit'))->patch(route('profile.update'), [
+        'name' => '',
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+        'question_preference' => 'no_one',
+    ])->assertSessionHasErrors('name');
+
+    $response = $this->get(route('profile.edit'))->assertOk();
+
+    expect((string) $response->getContent())
+        ->toMatch('/<select(?=[^>]*name="question_preference")[^>]*>.*?<option(?=[^>]*value="no_one")(?=[^>]*selected)[^>]*>\s*No one\s*<\/option>/s')
+        ->and($user->refresh()->question_preference->value)->toBe('everyone');
+});
+
+test('guests cannot update question preferences through the profile form', function (): void {
+    $user = User::factory()->create();
+
+    $this->patch(route('profile.update'), ['question_preference' => 'no_one'])
+        ->assertRedirect(route('login'));
+
+    expect($user->refresh()->question_preference->value)->toBe('everyone');
+});
+
 test('default_feed can be updated', function (): void {
     $user = User::factory()->create([
         'username' => 'testuser',
@@ -488,4 +585,49 @@ test('user can re-fetch avatar from GitHub', function (): void {
         ->and($user->avatar_updated_at)->not->toBeNull()
         ->and($user->is_uploaded_avatar)->toBeFalse()
         ->and(session('flash-message'))->toBe('Updating avatar using GitHub.');
+});
+
+test('cannot update email to an email alias', function (): void {
+    $user = User::factory()->create([
+        'username' => 'myuser',
+        'email' => 'myemail@gmail.com',
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => 'myemail+alias@gmail.com',
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response
+        ->assertStatus(302)
+        ->assertSessionHasErrors([
+            'email' => 'The email cannot contain an email alias.',
+        ]);
+
+    expect($user->fresh()->email)->toBe('myemail@gmail.com');
+});
+
+test('user can update profile while keeping their email', function (): void {
+    $user = User::factory()->create([
+        'username' => 'myuser',
+        'email' => 'myemail@gmail.com',
+    ]);
+
+    $response = $this
+        ->actingAs($user)
+        ->patch('/profile', [
+            'name' => 'Updated Name',
+            'username' => $user->username,
+            'email' => 'myemail@gmail.com',
+            'mail_preference_time' => 'daily',
+            'prefers_anonymous_questions' => false,
+        ]);
+
+    $response->assertSessionHasNoErrors();
+    expect($user->fresh()->name)->toBe('Updated Name');
 });

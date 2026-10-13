@@ -26,23 +26,59 @@
     display: none;
 }
 
+@keyframes thread-post-enter {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 :not(.answer)>pre {
     padding-left: 1rem;
     padding-right: 1rem;
 }
 
-.answer img,
-.answer figure,
+.answer > p img,
+.answer > p figure,
 .answer p > a:has(img) {
     @apply w-full rounded-xl overflow-hidden;
     display: block;
     margin-top: 0.35rem;
 }
 
-.answer img:first-child,
-.answer figure:first-child,
+.answer > p img:first-child,
+.answer > p figure:first-child,
 .answer p > a:has(img):first-child {
     margin-top: 0;
+}
+
+.answer.answer-inline-media img:not(:where(#link-preview-card *)) {
+    @apply block h-auto w-auto max-h-64;
+    max-width: min(100%, 32rem);
+    margin-inline: 0;
+
+    @media (width >= 40rem) {
+        @apply max-h-80;
+    }
+}
+
+.answer.answer-inline-media img:not(:where(#link-preview-card *)) + br {
+    display: none;
+}
+
+.answer pre,
+.answer table {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.answer pre {
+    white-space: pre;
 }
 
 .hover\:darken-gradient:hover {

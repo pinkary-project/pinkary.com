@@ -82,6 +82,25 @@ test('autocompleteResults computed property returns correct data', function (): 
         ->and($result->first()->id)->toBe($user->id);
 });
 
+test('autocomplete renders all matching mention results', function (): void {
+    App\Models\User::factory()->create([
+        'username' => 'maria',
+        'name' => 'Maria',
+        'email_verified_at' => now(),
+    ]);
+    App\Models\User::factory()->create([
+        'username' => 'matt',
+        'name' => 'Matt',
+        'email_verified_at' => now(),
+    ]);
+
+    $component = Livewire::test(Autocomplete::class);
+    $component->set('matchedTypes', ['mentions']);
+    $component->set('query', 'ma');
+
+    $component->assertSeeInOrder(['Maria', 'Matt']);
+});
+
 test('autocompleteResults returns empty collection when no matched types are set', function (): void {
     $component = Livewire::test(Autocomplete::class);
 
@@ -93,6 +112,71 @@ test('autocompleteResults returns empty collection when no matched types are set
 
     expect($result)->toBeInstanceOf(Collection::class)
         ->and($result->isEmpty())->toBeTrue();
+});
+
+test('autocompleteResults ignores unknown types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    $component->set('matchedTypes', ['invalid_type']);
+    $component->set('query', 'username');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->isEmpty())->toBeTrue();
+});
+
+test('autocompleteResults ignores non-string types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    // @phpstan-ignore-next-line
+    $component->set('matchedTypes', [1]);
+    $component->set('query', 'username');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->isEmpty())->toBeTrue();
+});
+
+test('setAutocompleteSearchParams ignores nested array types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    $component->call('setAutocompleteSearchParams', [['mentions'], 'mentions'], 'username');
+
+    $component->assertSet('matchedTypes', ['mentions'])
+        ->assertSet('query', 'username');
+});
+
+test('autocompleteResults ignores nested array types', function (): void {
+    $component = Livewire::test(Autocomplete::class);
+
+    // @phpstan-ignore-next-line
+    $component->set('matchedTypes', [['mentions']]);
+    $component->set('query', 'username');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->isEmpty())->toBeTrue();
+});
+
+test('autocompleteResults ignores unknown types but keeps valid ones', function (): void {
+    $user = App\Models\User::factory()->create(['username' => 'bazz']);
+
+    $component = Livewire::test(Autocomplete::class);
+    $component->set('matchedTypes', ['mentions', 'invalid_type']);
+    $component->set('query', 'baz');
+
+    /** @var Collection $result */
+    $result = $component->instance()->autocompleteResults;
+
+    expect($result)->toBeInstanceOf(Collection::class)
+        ->and($result->count())->toBe(1)
+        ->and($result->first()->id)->toBe($user->id);
 });
 
 test('component properties are initialized correctly', function (): void {

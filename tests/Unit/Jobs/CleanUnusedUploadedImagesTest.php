@@ -15,6 +15,24 @@ it('caches the last run time', function (): void {
         ->toBeInstanceOf(CarbonImmutable::class);
 });
 
+it('ignores questions with a null answer', function (): void {
+    Storage::fake();
+    $day = now()->format('Y-m-d');
+
+    $file = UploadedFile::fake()->image('image.jpg');
+    $path = $file->store("images/{$day}");
+
+    Question::factory()->create([
+        'content' => "![Image]({$path})",
+        'answer' => null,
+        'created_at' => now()->subMinutes(10),
+    ]);
+
+    CleanUnusedUploadedImages::dispatchSync();
+
+    Storage::disk()->assertExists($path);
+});
+
 it('cleans up unused images', function (): void {
     Storage::fake();
     $day = now()->format('Y-m-d');
@@ -46,4 +64,39 @@ it('cleans up unused images', function (): void {
     Storage::disk()->assertExists($path1);
     Storage::disk()->assertExists($path2);
     Storage::disk()->assertMissing($path3);
+});
+
+it('keeps an image a mobile post referenced by its stored path', function (): void {
+    Storage::fake();
+    $day = now()->format('Y-m-d');
+
+    $path = UploadedFile::fake()->image('image.jpg')->store("images/{$day}");
+
+    Question::factory()->create([
+        'content' => "![Image]({$path})",
+        'answer' => null,
+        'created_at' => now()->subMinutes(10),
+    ]);
+
+    CleanUnusedUploadedImages::dispatchSync();
+
+    Storage::disk()->assertExists($path);
+});
+
+it('extracts every reference verbatim from content and answer', function (): void {
+    $questions = Question::factory()->create([
+        'content' => '![a](images/2026-09-29/a.jpg) ![b](images/2026-09-29/b.jpg)',
+        'answer' => '![c](images/2026-09-29/c.jpg)',
+        'created_at' => now(),
+    ]);
+
+    $extracted = (new CleanUnusedUploadedImages)->extractImagesFrom(
+        new Illuminate\Database\Eloquent\Collection([$questions])
+    );
+
+    expect($extracted)->toBe([
+        'images/2026-09-29/a.jpg',
+        'images/2026-09-29/b.jpg',
+        'images/2026-09-29/c.jpg',
+    ]);
 });

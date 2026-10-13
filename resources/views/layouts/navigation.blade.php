@@ -3,15 +3,14 @@
 
     $desktopItemClasses = 'inline-flex w-full items-center gap-3 rounded-md p-2 text-sm/6 font-semibold transition duration-150 ease-in-out focus:outline-none';
     $desktopIdleClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
-    $desktopActiveClasses = 'bg-slate-950 text-white dark:bg-[#1a2438]';
+    $desktopActiveClasses = 'bg-pink-500 text-white';
     $mobileItemClasses = 'inline-flex flex-1 items-center justify-center rounded-md px-3 py-3 text-sm font-medium transition duration-150 ease-in-out focus:outline-none';
     $mobileIdleClasses = 'text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
-    $mobileActiveClasses = 'bg-slate-950 text-white dark:bg-[#1a2438]';
+    $mobileActiveClasses = 'bg-pink-500 text-white';
     $profileIsActive = auth()->check() && request()->routeIs('profile.show') && request()->route('username')?->is(auth()->user());
+    $hasMultipleAccounts = auth()->check() && count(App\Services\Accounts::all()) > 1;
     $menuLinkClasses = 'flex items-center gap-2 rounded-md px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-[#11192b] dark:hover:text-white';
     $menuContentClasses = 'space-y-2 rounded-2xl border border-slate-200/80 bg-white/95 p-2 text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:text-slate-300 dark:shadow-black/30';
-    $themeSwitchPanelClasses = 'rounded-2xl border border-slate-200/70 bg-slate-50 p-2 dark:border-slate-800/40 dark:bg-[#0b1324]';
-    $themeSwitchButtonClasses = 'flex flex-1 items-center justify-center rounded-xl border border-slate-200/70 px-4 py-2 text-slate-500 transition dark:border-slate-800/50 dark:text-slate-300';
 @endphp
 
 <nav class="w-full lg:h-screen">
@@ -73,6 +72,16 @@
                         <x-heroicon-o-cog-6-tooth class="h-5 w-5" />
                         <span>Settings</span>
                     </a>
+
+                    <a
+                        title="Source code"
+                        href="https://github.com/pinkary-project/pinkary.com"
+                        target="_blank"
+                        class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
+                    >
+                        <x-heroicon-o-code-bracket class="h-5 w-5" />
+                        <span>Source code</span>
+                    </a>
                 @else
                     <a
                         title="Feed"
@@ -92,6 +101,16 @@
                     >
                         <x-heroicon-o-information-circle class="h-5 w-5" />
                         <span>About</span>
+                    </a>
+
+                    <a
+                        title="Source code"
+                        href="https://github.com/pinkary-project/pinkary.com"
+                        target="_blank"
+                        class="{{ $desktopItemClasses }} {{ $desktopIdleClasses }}"
+                    >
+                        <x-heroicon-o-code-bracket class="h-5 w-5" />
+                        <span>Source code</span>
                     </a>
 
                     <a
@@ -115,118 +134,122 @@
                     </a>
                 @endauth
             </div>
+
+            @guest
+                <div class="mt-6">
+                    <x-theme-toggle />
+                </div>
+            @endguest
         </div>
 
         @auth
-            <div class="border-t border-slate-200/70 py-6 dark:border-slate-800/40">
-                <div class="flex items-center gap-2">
-                    <a
-                        href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
-                        class="flex min-w-0 flex-1 items-center gap-3 rounded-md p-2 transition hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white"
-                        wire:navigate
-                    >
-                        <img
-                            src="{{ auth()->user()->avatar_url }}"
-                            alt="{{ auth()->user()->username }}"
-                            class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0"
-                        />
+            <div class="py-6">
+                <button
+                    x-data
+                    type="button"
+                    x-on:click="$dispatch('open-modal', 'post-create')"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-pink-500 py-2.5 text-sm font-semibold text-white shadow-sm shadow-pink-500/20 transition hover:bg-pink-600 focus:outline-none active:scale-[0.98]"
+                    title="Post"
+                >
+                    <x-icons.compose class="size-4" />
+                    <span>{{ __('Post') }}</span>
+                </button>
 
-                        <div class="min-w-0">
-                            <p class="truncate text-sm font-semibold text-slate-950 dark:text-white">
-                                {{ auth()->user()->name }}
-                            </p>
+                <div class="mt-4 border-t border-slate-200/70 pt-4 dark:border-slate-800/40">
+                    <div class="flex items-center gap-2">
+                        <a
+                            href="{{ route('profile.show', ['username' => auth()->user()->username]) }}"
+                            class="flex min-w-0 flex-1 items-center gap-3 rounded-md p-2 transition hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white"
+                            wire:navigate
+                        >
+                            <img
+                                src="{{ auth()->user()->avatar_url }}"
+                                alt="{{ auth()->user()->username }}"
+                                class="{{ auth()->user()->is_company_verified ? 'rounded-md' : 'rounded-full' }} h-10 w-10 shrink-0"
+                            />
 
-                            <p class="truncate text-xs text-slate-400">{{ '@'.auth()->user()->username }}</p>
-                        </div>
-                    </a>
+                            <div class="min-w-0">
+                                <p class="truncate text-sm font-semibold text-slate-950 dark:text-white">
+                                    {{ auth()->user()->name }}
+                                </p>
 
-                    <x-dropdown
-                        align="right"
-                        width="60"
-                        dropdown-classes="bottom-full"
-                        :content-classes="$menuContentClasses"
-                    >
-                        <x-slot name="trigger">
-                            <button
-                                type="button"
-                                class="inline-flex size-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-[#11192b] hover:text-white"
-                            >
-                                <x-heroicon-o-ellipsis-horizontal class="size-5" />
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
-                                <div class="flex w-full flex-row justify-between gap-2">
-                                    <button
-                                        type="button"
-                                        class="{{ $themeSwitchButtonClasses }}"
-                                        x-bind:class="
-                                            theme == 'light'
-                                                ? 'border-pink-500 bg-pink-500 text-white'
-                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                                        "
-                                        @click="setTheme('light')"
-                                    >
-                                        <x-heroicon-o-sun class="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="{{ $themeSwitchButtonClasses }}"
-                                        x-bind:class="
-                                            theme == 'dark'
-                                                ? 'border-pink-500 bg-pink-500 text-white'
-                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                                        "
-                                        @click="setTheme('dark')"
-                                    >
-                                        <x-heroicon-o-moon class="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="{{ $themeSwitchButtonClasses }}"
-                                        x-bind:class="
-                                            theme == 'system'
-                                                ? 'border-pink-500 bg-pink-500 text-white'
-                                                : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                                        "
-                                        @click="setTheme('system')"
-                                    >
-                                        <x-heroicon-o-computer-desktop class="h-4 w-4" />
-                                    </button>
-                                </div>
+                                <p class="truncate text-xs text-slate-400">{{ '@'.auth()->user()->username }}</p>
                             </div>
+                        </a>
 
-                            <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
-
-                            <x-dropdown-link
-                                :navigate="false"
-                                href="https://github.com/pinkary-project/pinkary.com"
-                                target="_blank"
-                            >
-                                {{ __('Source code') }}
-                            </x-dropdown-link>
-
-                            <form method="POST" action="{{ route('logout') }}" x-data>
-                                @csrf
-
-                                <x-dropdown-button
-                                    onclick="
-                                        event.preventDefault();
-                                        this.closest('form').submit();
-                                    "
+                        <x-dropdown
+                            align="right"
+                            width="60"
+                            dropdown-classes="bottom-full"
+                            :content-classes="$menuContentClasses"
+                        >
+                            <x-slot name="trigger">
+                                <button
+                                    type="button"
+                                    class="inline-flex size-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-pink-50 hover:text-pink-500 dark:hover:bg-[#11192b] dark:hover:text-pink-400"
                                 >
-                                    {{ __('Log Out') }}
-                                </x-dropdown-button>
-                            </form>
-                        </x-slot>
-                    </x-dropdown>
+                                    <x-heroicon-o-ellipsis-horizontal class="size-5" />
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <x-theme-toggle />
+
+                                <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
+
+                                <x-switch-account />
+
+                                <div class="space-y-1 border-t border-slate-200/70 pt-2 dark:border-slate-800/40">
+                                    @if ($hasMultipleAccounts)
+                                        <form method="POST" action="{{ route('logout') }}" x-data>
+                                            @csrf
+
+                                            <x-dropdown-button
+                                                onclick="
+                                                    event.preventDefault();
+                                                    this.closest('form').submit();
+                                                "
+                                            >
+                                                {{ __('Log out of @:username', ['username' => auth()->user()->username]) }}
+                                            </x-dropdown-button>
+                                        </form>
+
+                                        <form method="POST" action="{{ route('accounts.logout-all') }}" x-data>
+                                            @csrf
+
+                                            <x-dropdown-button
+                                                onclick="
+                                                    event.preventDefault();
+                                                    this.closest('form').submit();
+                                                "
+                                            >
+                                                {{ __('Log out of all accounts') }}
+                                            </x-dropdown-button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('logout') }}" x-data>
+                                            @csrf
+
+                                            <x-dropdown-button
+                                                onclick="
+                                                    event.preventDefault();
+                                                    this.closest('form').submit();
+                                                "
+                                            >
+                                                {{ __('Log Out') }}
+                                            </x-dropdown-button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                 </div>
             </div>
-        @endif
+        @endauth
     </div>
 
-    <div class="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-60 mx-auto flex w-[min(calc(100%-1.5rem),32rem)] items-center gap-2 rounded-md border border-slate-200/70 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur lg:hidden dark:border-slate-800/80 dark:bg-[#050d1b]/95 dark:shadow-black/30">
+    <div class="fixed inset-x-0 -bottom-px z-50 flex items-center justify-around border-t border-slate-200/70 bg-white px-3 py-2 pb-[max(0.65rem,env(safe-area-inset-bottom))] lg:hidden dark:border-slate-800/80 dark:bg-[#07101f]">
         @auth
             <a
                 title="Home"
@@ -303,46 +326,7 @@
             </x-slot>
 
             <x-slot name="content">
-                <div x-data="themeSwitch()" class="{{ $themeSwitchPanelClasses }}">
-                    <div class="flex w-full flex-row justify-between gap-2">
-                        <button
-                            type="button"
-                            class="{{ $themeSwitchButtonClasses }}"
-                            x-bind:class="
-                                theme == 'light'
-                                    ? 'border-pink-500 bg-pink-500 text-white'
-                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                            "
-                            @click="setTheme('light')"
-                        >
-                            <x-heroicon-o-sun class="h-4 w-4" />
-                        </button>
-                        <button
-                            type="button"
-                            class="{{ $themeSwitchButtonClasses }}"
-                            x-bind:class="
-                                theme == 'dark'
-                                    ? 'border-pink-500 bg-pink-500 text-white'
-                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                            "
-                            @click="setTheme('dark')"
-                        >
-                            <x-heroicon-o-moon class="h-4 w-4" />
-                        </button>
-                        <button
-                            type="button"
-                            class="{{ $themeSwitchButtonClasses }}"
-                            x-bind:class="
-                                theme == 'system'
-                                    ? 'border-pink-500 bg-pink-500 text-white'
-                                    : 'hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-[#11192b] dark:hover:text-white'
-                            "
-                            @click="setTheme('system')"
-                        >
-                            <x-heroicon-o-computer-desktop class="h-4 w-4" />
-                        </button>
-                    </div>
-                </div>
+                <x-theme-toggle />
 
                 <x-dropdown-link :href="route('about')"> {{ __('About') }} </x-dropdown-link>
 
@@ -357,18 +341,50 @@
                 @auth
                     <x-dropdown-link :href="route('profile.edit')"> {{ __('Settings') }} </x-dropdown-link>
 
-                    <form method="POST" action="{{ route('logout') }}" x-data>
-                        @csrf
+                    <x-switch-account />
 
-                        <x-dropdown-button
-                            onclick="
-                                event.preventDefault();
-                                this.closest('form').submit();
-                            "
-                        >
-                            {{ __('Log Out') }}
-                        </x-dropdown-button>
-                    </form>
+                    <div class="space-y-1 border-t border-slate-200/70 pt-2 dark:border-slate-800/40">
+                        @if ($hasMultipleAccounts)
+                            <form method="POST" action="{{ route('logout') }}" x-data>
+                                @csrf
+
+                                <x-dropdown-button
+                                    onclick="
+                                        event.preventDefault();
+                                        this.closest('form').submit();
+                                    "
+                                >
+                                    {{ __('Log out of @:username', ['username' => auth()->user()->username]) }}
+                                </x-dropdown-button>
+                            </form>
+
+                            <form method="POST" action="{{ route('accounts.logout-all') }}" x-data>
+                                @csrf
+
+                                <x-dropdown-button
+                                    onclick="
+                                        event.preventDefault();
+                                        this.closest('form').submit();
+                                    "
+                                >
+                                    {{ __('Log out of all accounts') }}
+                                </x-dropdown-button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('logout') }}" x-data>
+                                @csrf
+
+                                <x-dropdown-button
+                                    onclick="
+                                        event.preventDefault();
+                                        this.closest('form').submit();
+                                    "
+                                >
+                                    {{ __('Log Out') }}
+                                </x-dropdown-button>
+                            </form>
+                        @endif
+                    </div>
                 @endauth
             </x-slot>
         </x-dropdown>

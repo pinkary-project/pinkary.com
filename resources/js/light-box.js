@@ -29,8 +29,8 @@ const lightBox = () => ({
             this.$dispatch('open-modal', 'image-lightbox')
         });
 
-        window.addEventListener('modal-closed', (e) => {
-            if (e.detail === 'image-lightbox') {
+        this.$watch('show', (visible) => {
+            if (!visible) {
                 this.open = false;
                 this.currentIndex = 0;
                 this.images = [];
@@ -43,11 +43,19 @@ const lightBox = () => ({
     },
 
     nextImage() {
+        if (!this.canScrollImages()) {
+            return;
+        }
+
         this.currentIndex = (this.currentIndex + 1) % this.images.length;
         this.updateImageSrc()
     },
 
     prevImage() {
+        if (!this.canScrollImages()) {
+            return;
+        }
+
         this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
         this.updateImageSrc()
     },
@@ -85,13 +93,19 @@ const lightBox = () => ({
         let yDown = null;
 
         document.addEventListener('touchstart', (e) => {
+            if (!this.open || !this.canScrollImages()) {
+                xDown = null;
+                yDown = null;
+                return;
+            }
+
             const firstTouch = e.touches[0];
             xDown = firstTouch.clientX;
             yDown = firstTouch.clientY;
         });
 
         document.addEventListener('touchmove', (e) => {
-            if (!xDown || !yDown) {
+            if (!this.open || !this.canScrollImages() || xDown === null || yDown === null) {
                 return;
             }
 

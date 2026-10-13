@@ -3,15 +3,29 @@
 declare(strict_types=1);
 
 use App\Services\MetaData;
+use App\Services\SafeUrlFetcher;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\RejectedPromise;
 use GuzzleHttp\Psr7\Exception\MalformedUriException;
+use GuzzleHttp\Psr7\Request as Psr7Request;
+use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+
+function metaDataWithFakeDns(string $url, ?Closure $resolveHost = null): MetaData
+{
+    return new MetaData(
+        $url,
+        new SafeUrlFetcher($resolveHost ?? static fn (string $host): array => ['93.184.216.34']),
+    );
+}
 
 mutates(MetaData::class);
 
@@ -40,9 +54,10 @@ it('returns the cached meta data if it exists', function (): void {
                 </head>
             </html>
         ', 200),
+        'https://laravel.com/img/og-image.jpg' => Http::response(''),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
@@ -82,7 +97,7 @@ it('gets the youtube oembed data', function (): void {
         ], 200),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
@@ -93,7 +108,9 @@ it('gets the youtube oembed data', function (): void {
 
 it('shows preview card if the tweet has an image or video', function (): void {
     $url = 'https://x.com/enunomaduro/status/1845794776886493291';
-    $imagePath = storage_path('app/'.UploadedFile::fake()->image('image.jpg', 1000, 600)->store('images'));
+    $image = UploadedFile::fake()->image('image.jpg', 1000, 600);
+    $imageContents = file_get_contents($image->getRealPath());
+    $imagePath = 'https://images.example/image.jpg';
     $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
 
     Http::fake([
@@ -106,10 +123,11 @@ it('shows preview card if the tweet has an image or video', function (): void {
                 </head>
             </html>
         ', 200),
+        $imagePath => Http::response($imageContents, 200),
         '*' => Http::response(null, 200),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
@@ -151,7 +169,7 @@ it('gets the vimdeo oembed data', function (): void {
         ], 200),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect(Cache::get($cacheKey))->toBe($data)
@@ -166,7 +184,7 @@ it('returns an empty collection if the HTTP request fails', function (): void {
         $url => Http::response('', 404),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect($data->isEmpty())->toBeTrue();
@@ -179,7 +197,7 @@ it('returns an empty collection if a ConnectionException is thrown', function ()
         $url => fn ($request): RejectedPromise => new RejectedPromise(new ConnectionException('Connection error')),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect($data->isEmpty())->toBeTrue();
@@ -201,7 +219,7 @@ it('returns an empty collection if a ConnectionException is thrown', function ()
         'www.youtube.com/oembed?url=*' => fn ($request): RejectedPromise => new RejectedPromise(new ConnectionException('Connection error')),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect($data->has('html'))->toBeFalse();
@@ -209,7 +227,9 @@ it('returns an empty collection if a ConnectionException is thrown', function ()
 
 it('removes the image from meta data if the image is too small', function (): void {
     $url = 'https://laravel.com';
-    $imagePath = UploadedFile::fake()->image('image.jpg', 100, 100)->store('images');
+    $image = UploadedFile::fake()->image('image.jpg', 100, 100);
+    $imageContents = file_get_contents($image->getRealPath());
+    $imagePath = 'https://images.example/small.jpg';
 
     Http::fake([
         $url => Http::response('
@@ -224,9 +244,10 @@ it('removes the image from meta data if the image is too small', function (): vo
                 </head>
             </html>
         '),
+        $imagePath => Http::response($imageContents, 200),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect($data->has('image'))->toBeFalse();
@@ -234,7 +255,7 @@ it('removes the image from meta data if the image is too small', function (): vo
 
 it('removes the image from meta data if the image file does not exist', function (): void {
     $url = 'https://laravel.com';
-    $imagePath = 'images/image.jpg';
+    $imagePath = 'https://images.example/missing.jpg';
 
     Http::fake([
         $url => Http::response('
@@ -249,12 +270,30 @@ it('removes the image from meta data if the image file does not exist', function
                 </head>
             </html>
         '),
+        $imagePath => Http::response('', 404),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect($data->has('image'))->toBeFalse();
+});
+
+it('does not fetch a private open graph image URL', function (): void {
+    $url = 'https://public.example/post';
+    $requests = [];
+
+    Http::fake([$url => function (Request $request) use (&$requests): mixed {
+        $requests[] = $request->url();
+
+        return Http::response('<meta property="og:image" content="http://127.0.0.1/internal.png">', 200);
+    }]);
+    Http::preventStrayRequests();
+
+    $data = metaDataWithFakeDns($url)->fetch();
+
+    expect($data->has('image'))->toBeFalse()
+        ->and($requests)->toBe([$url]);
 });
 
 it('has constants for the preview card dimensions', function (): void {
@@ -274,15 +313,15 @@ it('handles all exceptions', function (Exception $exception): void {
         $url => fn ($request): RejectedPromise => new RejectedPromise($exception),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect($data->isEmpty())->toBeTrue();
 })->with([
-    new ConnectionException('Connection error'),
-    new MalformedUriException('Malformed URI'),
-    new HttpClientException('Not Found'),
-    new TransferException('Transfer error'),
+    'connection' => fn (): Exception => new ConnectionException('Connection error'),
+    'malformed uri' => fn (): Exception => new MalformedUriException('Malformed URI'),
+    'http client' => fn (): Exception => new HttpClientException('Not Found'),
+    'transfer' => fn (): Exception => new TransferException('Transfer error', new Psr7Request('GET', 'https://laravel.com')),
 ]);
 
 it('handles empty content', function (): void {
@@ -292,8 +331,127 @@ it('handles empty content', function (): void {
         $url => Http::response('', 200),
     ]);
 
-    $service = new MetaData($url);
+    $service = metaDataWithFakeDns($url);
     $data = $service->fetch();
 
     expect($data->isEmpty())->toBeTrue();
+});
+
+it('bounds page, image and twitter requests with a short timeout', function (): void {
+    $url = 'https://x.com/example/status/123';
+    $image = UploadedFile::fake()->image('timeout.jpg', 1000, 600);
+    $imageContents = file_get_contents($image->getRealPath());
+    $imagePath = 'https://images.example/timeout.jpg';
+
+    $html = '
+        <html>
+            <head>
+                <meta property="og:site_name" content="X (formerly Twitter)">
+                <meta property="og:url" content="'.$url.'">
+                <meta property="og:image" content="'.$imagePath.'">
+            </head>
+        </html>
+    ';
+
+    /** @var array<int, mixed> $timeouts */
+    $timeouts = [];
+
+    Http::fake([
+        $url => function (Request $request, array $options) use (&$timeouts, $html): mixed {
+            $timeouts[] = $options['timeout'] ?? null;
+
+            return Http::response($html, 200);
+        },
+        $imagePath => function (Request $request, array $options) use (&$timeouts, $imageContents): mixed {
+            $timeouts[] = $options['timeout'] ?? null;
+
+            return Http::response($imageContents, 200);
+        },
+        '*' => function (Request $request, array $options) use (&$timeouts): mixed {
+            $timeouts[] = $options['timeout'] ?? null;
+
+            return Http::response(null, 200);
+        },
+    ]);
+    Http::preventStrayRequests();
+
+    $data = metaDataWithFakeDns($url)->fetch();
+
+    expect($data->get('image'))->toBe($imagePath)
+        ->and($timeouts)->not->toBeEmpty()
+        ->and($timeouts)->each->toBe(3);
+});
+
+it('bounds oembed requests with a short timeout', function (): void {
+    $url = 'https://youtu.be/dQw4w9WgXcQ';
+
+    /** @var array<int, mixed> $timeouts */
+    $timeouts = [];
+
+    Http::fake([
+        'www.youtube.com/oembed?url=*' => function (Request $request, array $options) use (&$timeouts): mixed {
+            $timeouts[] = $options['timeout'] ?? null;
+
+            return Http::response(['title' => 'Some video', 'type' => 'video'], 200);
+        },
+    ]);
+    Http::preventStrayRequests();
+
+    $data = metaDataWithFakeDns($url)->fetch();
+
+    expect($data->get('title'))->toBe('Some video')
+        ->and($timeouts)->not->toBeEmpty()
+        ->and($timeouts)->each->toBe(3);
+});
+
+it('checks image size with one safe image request', function (): void {
+    $image = UploadedFile::fake()->image('image.jpg', 1000, 600);
+    $imageContents = file_get_contents($image->getRealPath());
+    $imageUrl = 'https://images.example/image.jpg';
+    $requests = [];
+
+    Http::fake([$imageUrl => function (Request $request) use (&$requests, $imageContents): mixed {
+        $requests[] = $request;
+
+        return Http::response($imageContents, 200);
+    }]);
+    Http::preventStrayRequests();
+
+    $service = metaDataWithFakeDns('https://example.com');
+    $suitable = $service->checkExistsAndSize($imageUrl);
+
+    expect($suitable)->toBeTrue()
+        ->and($requests)->toHaveCount(1)
+        ->and($requests[0]->method())->toBe('GET');
+});
+
+it('serves repeated previews from memo with a single store hit', function (): void {
+    $url = 'https://example.com/memoized-preview';
+
+    Event::fake([
+        CacheHit::class,
+        CacheMissed::class,
+    ]);
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta property="og:title" content="Memoized preview">
+                </head>
+            </html>
+        ', 200),
+    ]);
+    Http::preventStrayRequests();
+
+    $first = metaDataWithFakeDns($url)->fetch();
+    $second = metaDataWithFakeDns($url)->fetch();
+    $third = metaDataWithFakeDns($url)->fetch();
+
+    expect($second->toArray())->toBe($first->toArray())
+        ->and($third->toArray())->toBe($first->toArray())
+        ->and($first->get('title'))->toBe('Memoized preview');
+
+    Event::assertDispatched(CacheMissed::class, 1);
+    Event::assertDispatched(CacheHit::class, 1);
 });

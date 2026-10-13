@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Autocomplete\Types;
 
 use App\Models\Hashtag;
+use App\Models\Scopes\WhereNotModerated;
 use App\Services\Autocomplete\Result;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -37,7 +39,9 @@ final readonly class Hashtags extends Type
     public function search(?string $query): Collection
     {
         return Hashtag::query()
-            ->withCount('questions')
+            ->withCount(['questions' => function (Builder $query): void {
+                $query->whereNotNull('answer')->tap(new WhereNotModerated);
+            }])
             ->where(DB::raw('LOWER(name)'), 'like', mb_strtolower("$query%"))
             ->orderByDesc('questions_count')
             ->limit(50)
@@ -48,6 +52,9 @@ final readonly class Hashtags extends Type
                 id: $hashtag->id,
                 replacement: "#{$hashtag->name}",
                 view: 'components.autocomplete.hashtag-item',
+                payload: [
+                    'questions_count' => $hashtag->questions_count ?? 0,
+                ],
             ));
     }
 }

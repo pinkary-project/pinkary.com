@@ -15,3 +15,10 @@ arch('http helpers')
         App\Jobs\IncrementViews::class,
         'App\Services\Autocomplete\Types',
     ]);
+
+arch('actions')
+    ->expect('App\Actions')
+    ->toHaveMethod('handle')
+    ->toBeFinal()
+    ->toBeReadonly()
+    ->toExtendNothing();

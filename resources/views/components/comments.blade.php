@@ -14,7 +14,9 @@
         @foreach ($question->children as $comment)
             @break($loop->depth > 5)
             @php
-                $showThreadContinuation = ! $loop->last || $comment->children->isNotEmpty();
+                $showThreadContinuation = $depth === 0
+                    ? $comment->children->isNotEmpty()
+                    : (! $loop->last || $comment->children->isNotEmpty());
             @endphp
 
             <div @class([
