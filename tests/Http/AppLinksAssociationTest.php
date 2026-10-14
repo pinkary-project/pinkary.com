@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 test('Android app links are unavailable until a signing fingerprint is configured', function (): void {
-    config()->set('services.app_links.android_sha256_fingerprints', null);
+    config()->set('services.app_links.android_sha256_fingerprints');
 
     $this->get(route('app-links.android'))
         ->assertStatus(503)
@@ -29,7 +29,7 @@ test('Android app links return the configured package and signing fingerprints',
 });
 
 test('Apple app links are unavailable until the app identifiers are configured', function (): void {
-    config()->set('services.app_links.ios_team_id', null);
+    config()->set('services.app_links.ios_team_id');
 
     $this->get(route('app-links.apple'))
         ->assertStatus(503)
