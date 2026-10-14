@@ -17,6 +17,9 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
      */
     private const string ALLOWABLE_ATTACHED_CHARACTERS = '{([<!,.?;:>)]}';
 
+    /**
+     * The maximum width of the text displayed for a link.
+     */
     private const int MAX_DISPLAYED_TEXT_LENGTH = 50;
 
     /**
@@ -145,13 +148,11 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             return $token;
         }
 
-        $humanUrl = Str::limit(
+        $humanUrl = $this->displayedText(
             Str::of($trimmedToken)
                 ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
                 ->rtrim('/')
-                ->toString(),
-            self::MAX_DISPLAYED_TEXT_LENGTH,
-            '...'
+                ->toString()
         );
 
         $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
@@ -171,6 +172,24 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         $trailing = $this->getCharacters($token, 'trailing');
 
         return $leading.$linkHtml.$trailing;
+    }
+
+    /**
+     * Shorten the text of a link so long urls do not make a post look spammy.
+     *
+     * The cut may land inside an escaped entity such as "&amp;", which would
+     * render as literal text, so any partial entity is dropped before the
+     * ellipsis is appended.
+     */
+    private function displayedText(string $url): string
+    {
+        $trimmed = Str::limit($url, self::MAX_DISPLAYED_TEXT_LENGTH, '');
+
+        if ($trimmed === $url) {
+            return $url;
+        }
+
+        return Str::replaceMatches('/&[#a-zA-Z0-9]*$/', '', $trimmed).'...';
     }
 
     /**
