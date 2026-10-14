@@ -7,9 +7,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
-final class AppLinksAssociationController
+/**
+ * Serves Android's Digital Asset Links statement.
+ */
+final readonly class AndroidAppLinksAssociationController
 {
-    public function android(): JsonResponse
+    /**
+     * Return the app association when its signing certificate is configured.
+     */
+    public function __invoke(): JsonResponse
     {
         $packageName = config('services.app_links.android_package');
         $fingerprintValue = config('services.app_links.android_sha256_fingerprints');
@@ -32,28 +38,5 @@ final class AppLinksAssociationController
                 'sha256_cert_fingerprints' => array_map(Str::upper(...), $fingerprints),
             ],
         ]])->header('Cache-Control', 'public, max-age=300');
-    }
-
-    public function apple(): JsonResponse
-    {
-        $teamId = config('services.app_links.ios_team_id');
-        $bundleId = config('services.app_links.ios_bundle_id');
-
-        if (! is_string($teamId) || preg_match('/\A[A-Z0-9]{10}\z/', $teamId) !== 1
-            || ! is_string($bundleId) || preg_match('/\A[A-Za-z0-9.-]+\z/', $bundleId) !== 1) {
-            return response()->json([], 503);
-        }
-
-        return response()->json([
-            'applinks' => [
-                'apps' => [],
-                'details' => [[
-                    'appID' => $teamId.'.'.$bundleId,
-                    'components' => [
-                        ['/' => '/@*'],
-                    ],
-                ]],
-            ],
-        ])->header('Cache-Control', 'public, max-age=300');
     }
 }
