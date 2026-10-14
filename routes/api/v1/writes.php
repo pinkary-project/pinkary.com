@@ -25,6 +25,10 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
                 ->name('questions.answer.update')
                 ->whereUuid('question');
 
+            Route::post('questions/{question}/report', [QuestionController::class, 'report'])
+                ->name('questions.report')
+                ->whereUuid('question');
+
             Route::post('questions/{question}/pin', [QuestionPinController::class, 'store'])
                 ->name('questions.pin')
                 ->whereUuid('question');
