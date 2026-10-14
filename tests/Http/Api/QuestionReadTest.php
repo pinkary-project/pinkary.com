@@ -169,8 +169,9 @@ it('returns null content source for a shared update', function (): void {
         'content' => '__UPDATE__',
         'answer' => 'An original update.',
     ]);
+    $headers = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
 
-    $this->actingAs($owner)->getJson(route('api.v1.questions.show', $question))
+    $this->getJson(route('api.v1.questions.show', $question), $headers)
         ->assertOk()
         ->assertJsonPath('data.content_source', null)
         ->assertJsonPath('data.answer_source', 'An original update.');
@@ -185,8 +186,9 @@ it('returns the unanswered anonymous question source only to its recipient', fun
         'answer_created_at' => null,
         'anonymously' => true,
     ]);
+    $headers = ['Authorization' => 'Bearer '.$recipient->createToken('test')->plainTextToken];
 
-    $this->actingAs($recipient)->getJson(route('api.v1.questions.show', $question))
+    $this->getJson(route('api.v1.questions.show', $question), $headers)
         ->assertOk()
         ->assertJsonPath('data.content_source', "A question\nwith a newline?")
         ->assertJsonPath('data.answer_source', null)

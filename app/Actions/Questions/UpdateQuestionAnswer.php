@@ -9,6 +9,7 @@ use App\Queries\Feeds\FeedQuestion;
 
 final readonly class UpdateQuestionAnswer
 {
+    /** Create a new action instance. */
     public function __construct(
         private UpdateQuestion $updateQuestion,
     ) {}
