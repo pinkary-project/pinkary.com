@@ -7,14 +7,16 @@ use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\QuestionViewBatchController;
 use App\Http\Controllers\Api\QuestionViewController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserDirectoryController;
+use App\Http\Controllers\Api\UserRecommendationsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->as('api.v1.')->group(function (): void {
     Route::middleware(['optional.sanctum', 'throttle:60,1,read'])->group(function (): void {
-        Route::get('users/directory', [UserController::class, 'directory'])
+        Route::get('users/directory', UserDirectoryController::class)
             ->name('users.directory');
 
-        Route::get('users/recommendations', [UserController::class, 'recommendations'])
+        Route::get('users/recommendations', UserRecommendationsController::class)
             ->name('users.recommendations');
 
         Route::get('questions/{question}', [QuestionController::class, 'show'])
