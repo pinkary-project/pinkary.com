@@ -17,6 +17,8 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
      */
     private const string ALLOWABLE_ATTACHED_CHARACTERS = '{([<!,.?;:>)]}';
 
+    private const int MAX_DISPLAYED_TEXT_LENGTH = 50;
+
     /**
      * Regex to check for the presence of images in the content
      * (Checks both Markdown and parsed images)
@@ -143,10 +145,14 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             return $token;
         }
 
-        $humanUrl = Str::of($trimmedToken)
-            ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
-            ->rtrim('/')
-            ->toString();
+        $humanUrl = Str::limit(
+            Str::of($trimmedToken)
+                ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
+                ->rtrim('/')
+                ->toString(),
+            self::MAX_DISPLAYED_TEXT_LENGTH,
+            '...'
+        );
 
         $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
 
