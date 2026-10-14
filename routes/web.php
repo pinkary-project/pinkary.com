@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountLogoutAllController;
 use App\Http\Controllers\AccountRemoveController;
+use App\Http\Controllers\AppLinksAssociationController;
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\ChannelController;
@@ -22,6 +23,11 @@ use App\Http\Middleware\EnsureVerifiedEmailsForSignInUsers;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/error-access-denied', 'errors.access-denied')->name('error.access-denied');
+
+Route::get('/.well-known/assetlinks.json', [AppLinksAssociationController::class, 'android'])
+    ->name('app-links.android');
+Route::get('/.well-known/apple-app-site-association', [AppLinksAssociationController::class, 'apple'])
+    ->name('app-links.apple');
 
 Route::middleware('block.bots')->group(function () {
     Route::view('/about', 'about')->name('about');
