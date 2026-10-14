@@ -13,6 +13,7 @@ final readonly class DeleteUser
      */
     public function handle(User $user): void
     {
+        $user->tokens()->delete();
         $user->purge();
     }
 }
