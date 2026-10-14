@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\Account\AccountController;
 use App\Http\Controllers\Api\Account\AvatarController;
 use App\Http\Controllers\Api\Account\EmailVerificationController;
+use App\Http\Controllers\Api\Account\GitHubController;
 use App\Http\Controllers\Api\Account\PasswordController;
 use App\Http\Controllers\Api\Account\TwoFactorController;
 use App\Http\Controllers\Api\Account\TwoFactorRecoveryCodeController;
@@ -62,6 +63,18 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
             Route::put('two-factor/recovery-codes', [TwoFactorRecoveryCodeController::class, 'update'])
                 ->middleware('throttle:6,1')
                 ->name('two-factor.recovery-codes.update');
+
+            Route::get('github', [GitHubController::class, 'show'])
+                ->name('github.show');
+            Route::post('github/handoff', [GitHubController::class, 'store'])
+                ->middleware('throttle:5,1')
+                ->name('github.handoff.store');
+            Route::get('github/handoff/{handoffId}', [GitHubController::class, 'showHandoff'])
+                ->middleware('throttle:30,1')
+                ->name('github.handoff.show');
+            Route::delete('github', [GitHubController::class, 'destroy'])
+                ->middleware('throttle:6,1')
+                ->name('github.destroy');
 
             Route::delete('/', [AccountController::class, 'destroy'])
                 ->middleware('throttle:6,1')

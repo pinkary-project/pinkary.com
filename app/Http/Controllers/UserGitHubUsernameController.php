@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Users\CompleteMobileGitHubHandoff;
+use App\Actions\Users\FailMobileGitHubHandoff;
 use App\Actions\Users\UpdateUserGitHubUsername;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final readonly class UserGitHubUsernameController
 {
@@ -28,9 +32,24 @@ final readonly class UserGitHubUsernameController
      * Handles the GitHub connection update.
      */
     public function update(
-        #[CurrentUser] User $user,
+        Request $request,
+        MobileGitHubHandoffController $mobileGitHubHandoff,
         UpdateUserGitHubUsername $updateUserGitHubUsername,
-    ): RedirectResponse {
+        CompleteMobileGitHubHandoff $completeHandoff,
+        FailMobileGitHubHandoff $failHandoff,
+    ): SymfonyResponse {
+        $handoffId = $request->session()->get('mobile.github.handoff_id');
+
+        if (is_string($handoffId)) {
+            return $mobileGitHubHandoff->complete($request, $handoffId, $completeHandoff, $failHandoff);
+        }
+
+        $user = $request->user();
+
+        if (! ($user instanceof User)) {
+            return to_route('login');
+        }
+
         $githubUser = Socialite::driver('github')->user();
 
         try {
