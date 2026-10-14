@@ -54,7 +54,7 @@ final readonly class QuestionCommentController
         $validated = $request->validated();
         /** @var list<string> $pollOptions */
         $pollOptions = $validated['poll_options'] ?? [];
-        $pollDuration = (int) ($validated['poll_duration'] ?? 1);
+        $pollDuration = $request->integer('poll_duration', 1);
 
         $ensureCanPublish->handle($user);
 
