@@ -68,6 +68,9 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
             Route::apiResource('notifications', NotificationController::class)
                 ->only(['index', 'destroy']);
 
+            Route::post('notifications/ignore', [NotificationController::class, 'ignore'])
+                ->name('notifications.ignore');
+
             Route::post('notifications/read', [NotificationReadController::class, 'store'])
                 ->name('notifications.read');
         });
