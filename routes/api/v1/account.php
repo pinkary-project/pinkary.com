@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\Account\AccountController;
+use App\Http\Controllers\Api\Account\AvatarController;
 use App\Http\Controllers\Api\Account\EmailVerificationController;
 use App\Http\Controllers\Api\Account\PasswordController;
 use App\Http\Controllers\Api\Account\TwoFactorController;
@@ -22,6 +23,15 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         Route::post('password/reset', [PasswordController::class, 'reset'])
             ->middleware('throttle:6,1')
             ->name('password.reset');
+
+        Route::middleware(['auth:sanctum', 'verified'])->group(function (): void {
+            Route::post('avatar/refresh', [AvatarController::class, 'refresh'])
+                ->middleware('throttle:10,1')
+                ->name('avatar.refresh');
+            Route::delete('avatar', [AvatarController::class, 'destroy'])
+                ->middleware('throttle:10,1')
+                ->name('avatar.destroy');
+        });
 
         Route::middleware('auth:sanctum')->group(function (): void {
             Route::get('email-verification', [EmailVerificationController::class, 'show'])
