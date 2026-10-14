@@ -117,11 +117,11 @@ test('links with ports in the url', function (string $content, string $parsed): 
     ],
     [
         'content' => 'https://example.com:8080/?utm_source=twitter&utm_medium=social',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social">example.com:8080/?utm_source=twitter&utm_medium=social</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social">example.com:8080/?utm_source=twitter&utm_medium=so...</a>',
     ],
     [
         'content' => 'https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com:8080/?utm_source=twitter&utm_medium=so...</a>',
     ],
     [
         'content' => 'https://example.com:8080/@nunomaduro',
@@ -210,7 +210,30 @@ test('links with query params', function (string $content, string $parsed): void
     ],
     [
         'content' => 'https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com/?utm_source=twitter&utm_medium=social&...</a>',
+    ],
+]);
+
+test('long links display a truncated text while the href keeps the full url', function (string $content, string $parsed): void {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'https://example.com/blog/how-to-truncate-long-articles',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/blog/how-to-truncate-long-articles">example.com/blog/how-to-truncate-long-articles</a>',
+    ],
+    [
+        'content' => 'https://example.com/blog/how-to-truncate-long-articles-in',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/blog/how-to-truncate-long-articles-in">example.com/blog/how-to-truncate-long-articles-in</a>',
+    ],
+    [
+        'content' => 'https://example.com/blog/how-to-truncate-long-articles-in-a-post',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/blog/how-to-truncate-long-articles-in-a-post">example.com/blog/how-to-truncate-long-articles-in-...</a>',
+    ],
+    [
+        'content' => '(https://example.com/subscribe?utm_campaign=newsletter&utm_medium=email&utm_source=site).',
+        'parsed' => '(<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/subscribe?utm_campaign=newsletter&utm_medium=email&utm_source=site">example.com/subscribe?utm_campaign=newsletter&utm_...</a>).',
     ],
 ]);
 
