@@ -12,10 +12,13 @@ final class AppLinksAssociationController
     public function android(): JsonResponse
     {
         $packageName = config('services.app_links.android_package');
-        $fingerprints = array_values(array_filter(
-            array_map(trim(...), explode(',', (string) config('services.app_links.android_sha256_fingerprints'))),
-            fn (string $fingerprint): bool => preg_match('/\A(?:[A-Fa-f0-9]{2}:){31}[A-Fa-f0-9]{2}\z/', $fingerprint) === 1,
-        ));
+        $fingerprintValue = config('services.app_links.android_sha256_fingerprints');
+        $fingerprints = is_string($fingerprintValue)
+            ? array_values(array_filter(
+                array_map(trim(...), explode(',', $fingerprintValue)),
+                fn (string $fingerprint): bool => preg_match('/\A(?:[A-Fa-f0-9]{2}:){31}[A-Fa-f0-9]{2}\z/', $fingerprint) === 1,
+            ))
+            : [];
 
         if (! is_string($packageName) || $packageName === '' || $fingerprints === []) {
             return response()->json([], 503);
