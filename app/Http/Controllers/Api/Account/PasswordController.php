@@ -65,6 +65,8 @@ final readonly class PasswordController
                 'remember_token' => Str::random(60),
             ])->save();
 
+            $user->tokens()->delete();
+
             event(new PasswordReset($user));
         });
 
