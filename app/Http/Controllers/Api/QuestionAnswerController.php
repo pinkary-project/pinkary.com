@@ -26,7 +26,7 @@ final readonly class QuestionAnswerController
         $user = $request->user();
         $validated = $request->validated();
         $updateChannel = array_key_exists('channel_id', $validated);
-        $channelId = isset($validated['channel_id']) ? (int) $validated['channel_id'] : null;
+        $channelId = isset($validated['channel_id']) ? $request->integer('channel_id') : null;
 
         if ($updateChannel) {
             abort_unless($question->isSharedUpdate() && $question->parent_id === null, 422, 'A channel can only be changed on a root post.');
