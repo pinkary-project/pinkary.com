@@ -53,7 +53,7 @@ final readonly class ChannelController
 
         $viewerId = $viewer?->id;
         $query = (new FeedQuestion)(
-            (new ChannelQuestionsFeed($channel))->builder()->orderByDesc('questions.id'),
+            new ChannelQuestionsFeed($channel)->builder()->orderByDesc('questions.id'),
             $viewerId,
         );
 
