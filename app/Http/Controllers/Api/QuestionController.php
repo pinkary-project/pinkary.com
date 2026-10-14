@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Questions\CreateQuestionToUser;
 use App\Actions\Questions\CreateThread;
 use App\Actions\Questions\DeleteQuestion;
-use App\Actions\Questions\UpdateQuestionStatus;
 use App\Http\Requests\Api\StoreQuestionRequest;
 use App\Http\Resources\QuestionResource;
 use App\Models\Question;
@@ -70,18 +69,6 @@ final readonly class QuestionController
         Gate::authorize('delete', $question);
 
         $deleteQuestion->handle($question);
-
-        return response()->noContent();
-    }
-
-    /** Report a received unanswered question. */
-    public function report(Question $question, UpdateQuestionStatus $updateQuestionStatus): Response
-    {
-        Gate::authorize('update', $question);
-
-        abort_if($question->answer !== null, 422, 'Only unanswered questions can be reported.');
-
-        $updateQuestionStatus->handle($question, reported: true);
 
         return response()->noContent();
     }
