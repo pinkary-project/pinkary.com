@@ -77,6 +77,9 @@ Alpine.data('themeSwitch', themeSwitch);
 import { poll } from './poll.js';
 Alpine.data('poll', poll);
 
+import { formattingToolbar } from './formatting-toolbar.js';
+Alpine.data('formattingToolbar', formattingToolbar);
+
 import { questionComposer } from './question-composer.js';
 Alpine.data('questionComposer', questionComposer);
 
