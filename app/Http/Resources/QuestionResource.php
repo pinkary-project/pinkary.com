@@ -28,12 +28,16 @@ final class QuestionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $canUpdate = $request->user()?->can('update', $this->resource) ?? false;
+
         return [
             'id' => $this->resource->id,
             'pinned' => (bool) $this->resource->pinned,
             'is_update' => $this->resource->isSharedUpdate(),
             'content' => $this->resource->isSharedUpdate() ? null : $this->resource->sharable_content,
             'answer' => $this->resource->sharable_answer,
+            'content_source' => $this->when($canUpdate, fn (): mixed => $this->resource->isSharedUpdate() ? null : $this->resource->getRawOriginal('content')),
+            'answer_source' => $this->when($canUpdate, fn (): mixed => $this->resource->getRawOriginal('answer')),
             'content_html' => $this->resource->isSharedUpdate() ? null : $this->resource->content,
             'answer_html' => $this->resource->answer,
             'anonymously' => (bool) $this->resource->anonymously,

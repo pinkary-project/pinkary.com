@@ -9,8 +9,12 @@ use App\Queries\Feeds\FeedQuestion;
 
 final readonly class UpdateQuestionAnswer
 {
+    public function __construct(
+        private UpdateQuestion $updateQuestion,
+    ) {}
+
     /** Update or provide the answer to a question within the 24h window. */
-    public function handle(Question $question, string $answer, int $userId): Question
+    public function handle(Question $question, string $answer, int $userId, bool $updateChannel = false, ?int $channelId = null): Question
     {
         if ($question->answer_created_at !== null && $question->answer_created_at->diffInHours(now()) > 24) {
             abort(422, 'Answer cannot be edited after 24 hours.');
@@ -24,7 +28,17 @@ final readonly class UpdateQuestionAnswer
             $attributes['answer_updated_at'] = now();
         }
 
-        $question->update($attributes);
+        if ($updateChannel) {
+            $attributes['channel_id'] = $channelId;
+        }
+
+        $this->updateQuestion->handle(
+            $question,
+            $attributes,
+            $updateChannel,
+            $question->channel_id,
+            clearLikes: false,
+        );
 
         if ($question->wasChanged('answer') && array_key_exists('answer_updated_at', $attributes)) {
             $question->likes()->delete();
