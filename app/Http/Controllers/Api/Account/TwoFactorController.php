@@ -38,10 +38,15 @@ final readonly class TwoFactorController
         abort_if($user->hasEnabledTwoFactorAuthentication(), 409, 'Two-factor authentication is already enabled.');
 
         $enable($user);
+        $secret = $user->two_factor_secret;
+
+        if (! is_string($secret)) {
+            abort(409, 'Two-factor setup could not be started.');
+        }
 
         return $this->noStore(response()->json([
             'pending_confirmation' => true,
-            'secret' => Fortify::currentEncrypter()->decrypt($user->two_factor_secret),
+            'secret' => Fortify::currentEncrypter()->decrypt($secret),
             'qr_code_url' => $user->twoFactorQrCodeUrl(),
             'qr_code_svg' => $user->twoFactorQrCodeSvg(),
         ]));
@@ -53,7 +58,7 @@ final readonly class TwoFactorController
         #[CurrentUser] User $user,
         ConfirmTwoFactorAuthentication $confirm,
     ): JsonResponse {
-        $validated = $request->validate([
+        $request->validate([
             'current_password' => ['required', 'current_password:sanctum'],
             'code' => ['required', 'digits:6'],
         ]);
@@ -61,7 +66,7 @@ final readonly class TwoFactorController
         abort_if($user->two_factor_secret === null, 409, 'Two-factor setup has not been started.');
         abort_if($user->hasEnabledTwoFactorAuthentication(), 409, 'Two-factor authentication is already enabled.');
 
-        $confirm($user, $validated['code']);
+        $confirm($user, $request->string('code')->toString());
 
         return $this->noStore(response()->json([
             'enabled' => true,
@@ -81,7 +86,7 @@ final readonly class TwoFactorController
 
         if (
             $user->two_factor_secret !== null
-            || $user->two_factor_recovery_codes !== null
+            || $user->two_factor_recovery_codes !== []
             || $user->two_factor_confirmed_at !== null
         ) {
             $disable($user);

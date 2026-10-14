@@ -10,7 +10,6 @@ use App\Actions\Users\StartMobileGitHubHandoff;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -74,20 +73,28 @@ final readonly class MobileGitHubHandoffController
 
         $request->session()->forget('mobile.github.handoff_id');
 
-        try {
-            $validated = Validator::validate([
-                'github_username' => $githubUser->getNickname(),
-            ], [
-                'github_username' => ['required', 'string', 'max:255'],
-            ]);
-        } catch (ValidationException) {
+        $githubUsername = $githubUser->getNickname();
+
+        if (! is_string($githubUsername) || $githubUsername === '') {
+            $failHandoff->handle($handoffId);
+
+            return $this->browserMessage('GitHub did not provide a usable account name. Return to Pinkary Mobile.', 422);
+        }
+
+        $validator = Validator::make([
+            'github_username' => $githubUsername,
+        ], [
+            'github_username' => ['required', 'string', 'max:255'],
+        ]);
+
+        if ($validator->fails()) {
             $failHandoff->handle($handoffId);
 
             return $this->browserMessage('GitHub did not provide a usable account name. Return to Pinkary Mobile.', 422);
         }
 
         try {
-            $completed = $completeHandoff->handle($handoffId, $validated['github_username']);
+            $completed = $completeHandoff->handle($handoffId, $githubUsername);
         } catch (Throwable $exception) {
             $failHandoff->handle($handoffId);
             report($exception);

@@ -72,7 +72,13 @@ final readonly class GitHubController
         abort_if($handoff === null, 404);
 
         $status = $handoff->status;
-        $expiresAt = CarbonImmutable::parse($handoff->expires_at);
+        $expiresAtValue = $handoff->expires_at;
+
+        if (! is_string($expiresAtValue)) {
+            abort(500, 'The GitHub handoff expiry is invalid.');
+        }
+
+        $expiresAt = CarbonImmutable::parse($expiresAtValue);
 
         if ($expiresAt->isPast() && in_array($status, ['pending', 'started', 'processing'], true)) {
             $status = 'expired';

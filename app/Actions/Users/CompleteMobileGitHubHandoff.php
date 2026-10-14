@@ -30,13 +30,27 @@ final readonly class CompleteMobileGitHubHandoff
                 return null;
             }
 
-            if (CarbonImmutable::parse($handoff->expires_at)->isPast()) {
+            $expiresAt = $handoff->expires_at;
+
+            if (! is_string($expiresAt) || CarbonImmutable::parse($expiresAt)->isPast()) {
                 $this->setStatus($handoffId, 'expired');
 
                 return null;
             }
 
-            $user = User::query()->lockForUpdate()->find($handoff->user_id);
+            $handoffUserId = $handoff->user_id;
+
+            if (is_string($handoffUserId) && ctype_digit($handoffUserId)) {
+                $handoffUserId = (int) $handoffUserId;
+            }
+
+            if (! is_int($handoffUserId)) {
+                $this->setStatus($handoffId, 'failed');
+
+                return null;
+            }
+
+            $user = User::query()->lockForUpdate()->find($handoffUserId);
 
             if ($user === null) {
                 $this->setStatus($handoffId, 'failed');

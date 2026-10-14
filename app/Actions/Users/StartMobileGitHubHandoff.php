@@ -22,7 +22,9 @@ final readonly class StartMobileGitHubHandoff
                 return false;
             }
 
-            if (CarbonImmutable::parse($handoff->expires_at)->isPast()) {
+            $expiresAt = $handoff->expires_at;
+
+            if (! is_string($expiresAt) || CarbonImmutable::parse($expiresAt)->isPast()) {
                 DB::table('mobile_github_handoffs')->where('id', $handoffId)->update([
                     'status' => 'expired',
                     'updated_at' => now(),
@@ -31,7 +33,9 @@ final readonly class StartMobileGitHubHandoff
                 return false;
             }
 
-            if (! hash_equals($handoff->token_hash, hash('sha256', $token))) {
+            $tokenHash = $handoff->token_hash;
+
+            if (! is_string($tokenHash) || ! hash_equals($tokenHash, hash('sha256', $token))) {
                 return false;
             }
 

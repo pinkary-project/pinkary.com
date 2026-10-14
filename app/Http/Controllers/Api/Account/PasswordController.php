@@ -15,19 +15,20 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
+use UnexpectedValueException;
 
 final readonly class PasswordController
 {
     /** Change the authenticated user's password. */
     public function update(Request $request, #[CurrentUser] User $user): Response
     {
-        $validated = $request->validate([
+        $request->validate([
             'current_password' => ['required', 'current_password:sanctum'],
             'password' => ['required', PasswordRule::defaults(), 'confirmed'],
         ]);
 
         $user->update([
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($request->string('password')->toString()),
         ]);
 
         return response()->noContent();
@@ -36,12 +37,12 @@ final readonly class PasswordController
     /** Request a reset link without revealing whether the email is registered. */
     public function recovery(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'email' => ['required', 'email'],
         ]);
 
         Password::sendResetLink([
-            'email' => $validated['email'],
+            'email' => $request->string('email')->toString(),
         ]);
 
         return response()->json([
@@ -52,14 +53,21 @@ final readonly class PasswordController
     /** Reset a password using a valid password broker token. */
     public function reset(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'token' => ['required', 'string'],
             'email' => ['required', 'email'],
             'password' => ['required', PasswordRule::defaults(), 'confirmed'],
             'password_confirmation' => ['required', 'string'],
         ]);
 
-        $status = Password::reset($validated, function (User $user, string $password): void {
+        $credentials = [
+            'token' => $request->string('token')->toString(),
+            'email' => $request->string('email')->toString(),
+            'password' => $request->string('password')->toString(),
+            'password_confirmation' => $request->string('password_confirmation')->toString(),
+        ];
+
+        $status = Password::reset($credentials, function (User $user, string $password): void {
             $user->forceFill([
                 'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
@@ -69,6 +77,10 @@ final readonly class PasswordController
 
             event(new PasswordReset($user));
         });
+
+        if (! is_string($status)) {
+            throw new UnexpectedValueException('The password broker returned an invalid status.');
+        }
 
         if ($status !== Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([
