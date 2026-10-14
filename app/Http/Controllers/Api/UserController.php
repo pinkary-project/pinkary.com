@@ -48,6 +48,15 @@ final readonly class UserController
     /** Return the existing contextual people-to-follow ranking in pages. */
     public function recommendations(Request $request, PeopleToFollowRecommendations $recommendations): AnonymousResourceCollection
     {
+        /**
+         * @var array{
+         *     context?: 'generic'|'profile'|'question',
+         *     context_user_id?: int|numeric-string,
+         *     context_question_id?: string,
+         *     per_page?: int|numeric-string,
+         *     page?: int|numeric-string
+         * } $validated
+         */
         $validated = $request->validate([
             'context' => ['sometimes', 'string', Rule::in(['generic', 'profile', 'question'])],
             'context_user_id' => ['required_if:context,profile', 'prohibited_unless:context,profile', 'integer', 'min:1', 'exists:users,id'],
@@ -56,9 +65,9 @@ final readonly class UserController
             'page' => ['sometimes', 'integer', 'min:1'],
         ]);
 
-        $context = (string) ($validated['context'] ?? 'generic');
+        $context = $validated['context'] ?? 'generic';
         $contextUserId = isset($validated['context_user_id']) ? (int) $validated['context_user_id'] : null;
-        $contextQuestionId = isset($validated['context_question_id']) ? (string) $validated['context_question_id'] : null;
+        $contextQuestionId = $validated['context_question_id'] ?? null;
         $viewerId = $request->user()?->id;
 
         if (is_string($contextQuestionId)) {
@@ -87,6 +96,7 @@ final readonly class UserController
             )->modelKeys(),
         );
 
+        /** @var list<int> $eligibleIds */
         $eligibleIds = User::query()
             ->whereKey($recommendedIds)
             ->whereNotNull('email_verified_at')
