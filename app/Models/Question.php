@@ -400,13 +400,21 @@ final class Question extends Model implements Viewable
     /**
      * @return \Illuminate\Support\Collection<int, string>
      */
-    public function ancestorIds(int $limit = 10): \Illuminate\Support\Collection
+    public function ancestorIds(): \Illuminate\Support\Collection
     {
         $ids = [];
+        $seen = [$this->id => true];
         $parentId = $this->parent_id;
+        $rootId = $this->root_id;
 
-        while (is_string($parentId) && count($ids) < $limit) {
+        while (is_string($parentId) && ! isset($seen[$parentId])) {
+            $seen[$parentId] = true;
             $ids[] = $parentId;
+
+            if ($parentId === $rootId) {
+                break;
+            }
+
             $parentId = self::query()->whereKey($parentId)->value('parent_id');
         }
 
