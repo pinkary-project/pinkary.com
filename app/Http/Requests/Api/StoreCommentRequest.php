@@ -24,7 +24,12 @@ final class StoreCommentRequest extends FormRequest
      */
     public function rules(MobileCaptcha $captcha): array
     {
-        $rules = ['content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters]];
+        $rules = [
+            'content' => ['required', 'string', 'min:1', 'max:1000', new NoBlankCharacters],
+            'poll_options' => ['sometimes', 'array', 'min:2', 'max:4'],
+            'poll_options.*' => ['required', 'string', 'min:1', 'max:40'],
+            'poll_duration' => ['required_with:poll_options', 'integer', 'min:1', 'max:7'],
+        ];
         /** @var User|null $user */
         $user = $this->user();
 
