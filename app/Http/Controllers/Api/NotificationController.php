@@ -64,6 +64,7 @@ final readonly class NotificationController
     /** Ignore received questions and delete notifications up to the given time. */
     public function ignore(Request $request, UpdateQuestionStatus $updateQuestionStatus): Response
     {
+        /** @var array{until_datetime: string} $validated */
         $validated = $request->validate([
             'until_datetime' => ['required', 'date'],
         ]);
