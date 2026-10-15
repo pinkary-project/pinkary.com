@@ -22,6 +22,7 @@ final class UpdateAnswerRequest extends FormRequest
     {
         return [
             'answer' => ['required', 'string', 'max:1000', new NoBlankCharacters],
+            'channel_id' => ['sometimes', 'nullable', 'integer', 'exists:channels,id'],
         ];
     }
 
