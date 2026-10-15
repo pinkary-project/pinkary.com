@@ -195,6 +195,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         $humanUrl = $this->displayedText(
             Str::of($trimmedToken)
                 ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
+                ->before('?')
                 ->rtrim('/')
                 ->toString()
         );
