@@ -63,14 +63,6 @@ final readonly class ParsableContent
         return $fingerprints[implode(',', $this->providers)] ??= $this->computeFingerprint();
     }
 
-    /**
-     * Build the fingerprint from the current source of the parse pipeline.
-     *
-     * This must never be persisted: the value changes whenever a provider
-     * file does, while any cache key derived from the provider list stays
-     * the same, so a stored copy would be served until it expired and
-     * previously parsed content would never be marked stale.
-     */
     private function computeFingerprint(): string
     {
         $hashes = [];
