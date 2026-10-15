@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 use App\Models\Question;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
 
 test('guests receive verified generic recommendations in pages', function (): void {
-    Cache::flush();
-
     $recommendedUsers = User::factory(6)
         ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://github.com/{$user->username}"])
         ->create(['is_verified' => true]);
@@ -44,8 +41,6 @@ test('guests receive verified generic recommendations in pages', function (): vo
 });
 
 test('authenticated recommendations exclude the viewer, users they follow, and unverified accounts', function (): void {
-    Cache::flush();
-
     $viewer = User::factory()
         ->hasLinks(1, fn (array $attributes, User $user): array => ['url' => "https://github.com/{$user->username}"])
         ->create(['is_verified' => true]);
@@ -80,8 +75,6 @@ test('authenticated recommendations exclude the viewer, users they follow, and u
 });
 
 test('profile recommendations use recent interactions and the default page size', function (): void {
-    Cache::flush();
-
     $profile = User::factory()->create();
     $olderInteraction = User::factory()->create();
     $newerInteraction = User::factory()->create();
@@ -110,8 +103,6 @@ test('profile recommendations use recent interactions and the default page size'
 });
 
 test('question recommendations include users from a question that guests can view', function (): void {
-    Cache::flush();
-
     $author = User::factory()->create();
     $recipient = User::factory()->create();
     $question = Question::factory()->create([
@@ -130,8 +121,6 @@ test('question recommendations include users from a question that guests can vie
 });
 
 test('question recommendations return forbidden for a question the guest cannot view', function (): void {
-    Cache::flush();
-
     $question = Question::factory()->create([
         'answer' => null,
         'answer_created_at' => null,
