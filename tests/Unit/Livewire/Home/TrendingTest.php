@@ -41,6 +41,7 @@ test('do not renders trending questions', function (): void {
     Question::factory()->create([
         'content' => $questionContent,
         'answer' => 'No',
+        'answer_created_at' => now()->subDays(8),
         'from_id' => $user->id,
         'to_id' => $user->id,
     ]);

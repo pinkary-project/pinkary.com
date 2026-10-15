@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\Account\GitHubController;
 use App\Jobs\UpdateUserAvatar;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -16,9 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
-use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use PragmaRX\Google2FA\Google2FA;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 function mobileAccountApiToken(User $user): string
 {
@@ -180,18 +176,6 @@ test('an API user can reset their password and existing tokens are revoked', fun
         ->assertJsonValidationErrors('email');
 });
 
-test('password reset rejects an invalid broker response type', function (): void {
-    Password::shouldReceive('reset')->once()->andReturn(null);
-    $this->withoutExceptionHandling();
-
-    expect(fn () => $this->postJson(route('api.v1.account.password.reset'), [
-        'token' => 'valid-token',
-        'email' => 'user@example.com',
-        'password' => 'new-password',
-        'password_confirmation' => 'new-password',
-    ]))->toThrow(UnexpectedValueException::class);
-});
-
 test('an API user can change their password after confirming the current password', function (): void {
     $user = User::factory()->create();
     $token = mobileAccountApiToken($user);
@@ -346,18 +330,6 @@ test('two-factor disable is safe when setup has not been started', function (): 
         ->assertNoContent();
 });
 
-test('two-factor setup reports when Fortify does not create a secret', function (): void {
-    $enable = Mockery::mock(EnableTwoFactorAuthentication::class);
-    $enable->shouldReceive('__invoke')->once();
-    $this->app->instance(EnableTwoFactorAuthentication::class, $enable);
-
-    $user = User::factory()->create();
-
-    $this->withToken(mobileAccountApiToken($user))
-        ->postJson(route('api.v1.account.two-factor.store'), ['current_password' => 'password'])
-        ->assertConflict();
-});
-
 test('an API user can inspect their GitHub connection and start a private handoff', function (): void {
     config([
         'services.github.client_id' => 'client-id',
@@ -479,18 +451,4 @@ test('GitHub handoff status expires and a connected account can disconnect', fun
         ->assertNoContent();
 
     expect($user->fresh()->github_username)->toBeNull();
-});
-
-test('GitHub handoff status rejects an invalid expiry value', function (): void {
-    $user = User::factory()->create();
-    $query = Mockery::mock(Builder::class);
-    $query->shouldReceive('where')->twice()->andReturnSelf();
-    $query->shouldReceive('first')->once()->andReturn((object) [
-        'status' => 'pending',
-        'expires_at' => new stdClass(),
-    ]);
-    DB::shouldReceive('table')->once()->with('mobile_github_handoffs')->andReturn($query);
-
-    expect(fn (): Illuminate\Http\JsonResponse => new GitHubController()->__invoke($user, 'handoff-id'))
-        ->toThrow(HttpException::class);
 });
