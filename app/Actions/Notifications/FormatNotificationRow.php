@@ -24,6 +24,7 @@ final readonly class FormatNotificationRow
     /** @var HtmlSanitizer Sanitizes HTML in notification snippets. */
     private HtmlSanitizer $htmlSanitizer;
 
+    /** Configure the sanitizer used for notification snippets. */
     public function __construct()
     {
         $this->htmlSanitizer = new HtmlSanitizer(
