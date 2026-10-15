@@ -51,6 +51,10 @@ final readonly class QuestionCommentController
 
         /** @var User $user */
         $user = $request->user();
+        $validated = $request->validated();
+        /** @var list<string> $pollOptions */
+        $pollOptions = $validated['poll_options'] ?? [];
+        $pollDuration = $request->integer('poll_duration', 1);
 
         $ensureCanPublish->handle($user);
 
@@ -62,7 +66,8 @@ final readonly class QuestionCommentController
             'answer_created_at' => now(),
             'parent_id' => $question->id,
             'root_id' => $question->root_id ?? $question->id,
-        ]], [], [], null)[0];
+            'poll_expires_at' => $pollOptions !== [] ? now()->addDays($pollDuration) : null,
+        ]], $pollOptions, [], null)[0];
 
         $thread = $threaded->get(Question::query()->findOrFail($comment->id), $user->id);
 
