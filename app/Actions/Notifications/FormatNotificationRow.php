@@ -21,6 +21,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 final readonly class FormatNotificationRow
 {
+    /** @var HtmlSanitizer Sanitizes HTML in notification snippets. */
     private HtmlSanitizer $htmlSanitizer;
 
     public function __construct()
