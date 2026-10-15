@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\ChannelQuestionsController;
 use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\HashtagQuestionController;
 use App\Http\Controllers\Api\SearchController;
@@ -14,6 +15,9 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
         ->name('feed.index');
 
     Route::middleware(['optional.sanctum', 'throttle:60,1,read'])->group(function (): void {
+        Route::get('channels/{channel:slug}/questions', ChannelQuestionsController::class)
+            ->name('channels.questions.index');
+
         Route::get('hashtags/{hashtag}/questions', [HashtagQuestionController::class, 'index'])
             ->whereNumber('hashtag')
             ->name('hashtags.questions.index');
