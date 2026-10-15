@@ -91,6 +91,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         return [$leadingCharacters, $url, $trailingCharacters];
     }
 
+    /** Trim outer punctuation while keeping balanced URL delimiters. */
     private function trimTrailingCharacters(string $token): string
     {
         while ($token !== '') {
