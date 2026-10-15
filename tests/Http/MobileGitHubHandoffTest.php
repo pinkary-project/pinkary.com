@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -202,7 +203,7 @@ test('a GitHub provider failure marks the handoff failed', function (): void {
     $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $id, 'status' => 'failed']);
 });
 
-test('the callback rejects missing and oversized GitHub usernames', function (): void {
+test('the callback rejects a missing GitHub username', function (): void {
     $user = User::factory()->create();
     $missing = createMobileHandoffRecord($user, 'started');
     Socialite::shouldReceive('driver->user->getNickname')->andReturn(null);
@@ -212,15 +213,20 @@ test('the callback rejects missing and oversized GitHub usernames', function ():
         ->assertStatus(422)
         ->assertSeeText('GitHub did not provide a usable account name. Return to Pinkary Mobile.');
 
-    $oversized = createMobileHandoffRecord($user, 'started');
+    $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $missing, 'status' => 'failed']);
+});
+
+test('the callback rejects an oversized GitHub username', function (): void {
+    $user = User::factory()->create();
+    $handoffId = createMobileHandoffRecord($user, 'started');
     Socialite::shouldReceive('driver->user->getNickname')->andReturn(str_repeat('a', 256));
 
-    $this->withSession(['mobile.github.handoff_id' => $oversized])
+    $this->withSession(['mobile.github.handoff_id' => $handoffId])
         ->get(route('profile.connect.github.update'))
-        ->assertStatus(422);
+        ->assertStatus(422)
+        ->assertSeeText('GitHub did not provide a usable account name. Return to Pinkary Mobile.');
 
-    $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $missing, 'status' => 'failed']);
-    $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $oversized, 'status' => 'failed']);
+    $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $handoffId, 'status' => 'failed']);
 });
 
 test('an ineligible handoff returns a conflict to the browser', function (): void {
@@ -233,6 +239,31 @@ test('an ineligible handoff returns a conflict to the browser', function (): voi
         ->assertConflict()
         ->assertSeeText('GitHub connection expired or is no longer eligible. Return to Pinkary Mobile.');
 
+    $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $id, 'status' => 'failed']);
+});
+
+test('an account update failure returns an error and fails the handoff', function (): void {
+    $user = User::factory()->create(['github_username' => null]);
+    $id = createMobileHandoffRecord($user, 'started');
+    Socialite::shouldReceive('driver->user->getNickname')->andReturn('github-account');
+    $event = 'eloquent.updating: '.User::class;
+
+    Event::listen($event, function (User $updatingUser): void {
+        if ($updatingUser->isDirty('github_username')) {
+            throw new RuntimeException('Could not update the GitHub username.');
+        }
+    });
+
+    try {
+        $this->withSession(['mobile.github.handoff_id' => $id])
+            ->get(route('profile.connect.github.update'))
+            ->assertStatus(500)
+            ->assertSeeText('GitHub connection could not be completed. Return to Pinkary Mobile.');
+    } finally {
+        Event::forget($event);
+    }
+
+    expect($user->fresh()->github_username)->toBeNull();
     $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $id, 'status' => 'failed']);
 });
 
