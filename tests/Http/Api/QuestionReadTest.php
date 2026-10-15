@@ -67,6 +67,35 @@ it('includes a thread post ancestors oldest first', function (): void {
         ->assertJsonPath('data.thread.root_id', $root->id);
 });
 
+it('includes every ancestor in a deeply nested thread', function (): void {
+    $user = User::factory()->create();
+    $root = Question::factory()->create(['to_id' => $user->id]);
+    $ancestors = [$root];
+    $parent = $root;
+
+    for ($depth = 0; $depth < 11; $depth++) {
+        $parent = Question::factory()->create([
+            'to_id' => $user->id,
+            'root_id' => $root->id,
+            'parent_id' => $parent->id,
+        ]);
+        $ancestors[] = $parent;
+    }
+
+    $leaf = Question::factory()->create([
+        'to_id' => $user->id,
+        'root_id' => $root->id,
+        'parent_id' => $parent->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get("/api/v1/questions/{$leaf->id}")
+        ->assertOk()
+        ->assertJsonCount(count($ancestors), 'thread')
+        ->assertJsonPath('thread.0.id', $root->id)
+        ->assertJsonPath('thread.11.id', $parent->id);
+});
+
 it('lists a post comments oldest first', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
@@ -87,6 +116,28 @@ it('lists a post comments oldest first', function (): void {
     $response->assertOk()
         ->assertJsonPath('data.0.id', $older->id)
         ->assertJsonPath('data.1.id', $newer->id);
+});
+
+it('includes root and parent context when listing nested replies', function (): void {
+    $user = User::factory()->create();
+    $root = Question::factory()->create(['to_id' => $user->id]);
+    $parent = Question::factory()->create([
+        'to_id' => $user->id,
+        'root_id' => $root->id,
+        'parent_id' => $root->id,
+    ]);
+    $reply = Question::factory()->create([
+        'to_id' => $user->id,
+        'root_id' => $root->id,
+        'parent_id' => $parent->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get("/api/v1/questions/{$parent->id}/comments")
+        ->assertOk()
+        ->assertJsonPath('data.0.id', $reply->id)
+        ->assertJsonPath('data.0.thread.posts.0.id', $root->id)
+        ->assertJsonPath('data.0.thread.posts.1.id', $parent->id);
 });
 
 it('refuses to list the comments of an unanswered post to a guest', function (): void {
