@@ -9,12 +9,13 @@ use App\Http\Resources\QuestionResource;
 use App\Models\User;
 use App\Queries\Feeds\BookmarkedQuestionsFeed;
 use App\Queries\Feeds\FeedQuestion;
+use App\Queries\Feeds\FeedThread;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final readonly class BookmarkController
 {
     /** List the signed-in user's bookmarked posts. */
-    public function index(PaginatedRequest $request): AnonymousResourceCollection
+    public function index(PaginatedRequest $request, FeedThread $feedThread): AnonymousResourceCollection
     {
         /** @var User $user */
         $user = $request->user();
@@ -24,6 +25,6 @@ final readonly class BookmarkController
             $user->id,
         )->simplePaginate($request->perPage());
 
-        return QuestionResource::collection($paginator);
+        return QuestionResource::collection($feedThread->attachTo($paginator, $user->id));
     }
 }

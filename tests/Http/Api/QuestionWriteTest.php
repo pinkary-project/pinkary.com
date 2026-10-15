@@ -141,6 +141,23 @@ test('an authenticated user can comment on a question', function (): void {
         ->and($comment->root_id)->toBe($question->id);
 });
 
+test('a nested comment response includes its thread ancestors', function (): void {
+    $user = User::factory()->create();
+    $root = Question::factory()->create();
+    $parent = Question::factory()->create([
+        'root_id' => $root->id,
+        'parent_id' => $root->id,
+    ]);
+    $headers = ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken];
+
+    $this->postJson(route('api.v1.questions.comments.store', $parent), [
+        'content' => 'A nested reply.',
+    ], $headers)
+        ->assertCreated()
+        ->assertJsonPath('data.thread.posts.0.id', $root->id)
+        ->assertJsonPath('data.thread.posts.1.id', $parent->id);
+});
+
 test('commenting validates its input', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create();
