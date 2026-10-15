@@ -19,6 +19,8 @@ test('a guest cannot read notifications', function (): void {
 });
 
 test('a user can ignore received questions and remove notifications up to a timestamp', function (): void {
+    $this->freezeTime();
+
     $user = User::factory()->create();
     $sender = User::factory()->create();
     $oldQuestion = Question::factory()->create([
@@ -28,8 +30,9 @@ test('a user can ignore received questions and remove notifications up to a time
         'answer_created_at' => null,
         'is_ignored' => false,
     ]);
-    $user->notify(new QuestionCreated($oldQuestion));
-    $oldQuestionNotification = $user->notifications()->firstOrFail();
+    $oldQuestionNotification = $user->notifications()
+        ->where('data->question_id', $oldQuestion->id)
+        ->firstOrFail();
     $oldQuestionNotification->update(['created_at' => now()->subDay()]);
 
     $user->notify(new UserFollowed(User::factory()->create()));
@@ -43,7 +46,6 @@ test('a user can ignore received questions and remove notifications up to a time
         'answer_created_at' => null,
         'is_ignored' => false,
     ]);
-    $user->notify(new QuestionCreated($recentQuestion));
     $recentQuestionNotification = $user->notifications()
         ->where('data->question_id', $recentQuestion->id)
         ->firstOrFail();
