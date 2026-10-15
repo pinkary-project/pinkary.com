@@ -13,6 +13,7 @@ use Throwable;
 
 final readonly class CompleteMobileGitHubHandoff
 {
+    /** Create the action with the GitHub username updater. */
     public function __construct(
         private UpdateUserGitHubUsername $updateUserGitHubUsername,
     ) {}

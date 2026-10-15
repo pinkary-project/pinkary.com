@@ -74,7 +74,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         ->name('profile.avatar.destroy');
 });
 
-Route::get('/mobile/github/handoff/{handoff}/{token}', [MobileGitHubHandoffController::class, 'start'])
+Route::get('/mobile/github/handoff/{handoff}/{token}', MobileGitHubHandoffController::class)
     ->middleware('throttle:10,1')
     ->name('mobile.github.handoff.start');
 

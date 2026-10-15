@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->as('api.v1.')->group(function (): void {
     Route::prefix('account')->as('account.')->group(function (): void {
-        Route::get('email-verification/{user}/{hash}', [EmailVerificationController::class, 'complete'])
-            ->middleware(['signed:relative', 'throttle:6,1'])
-            ->name('email-verification.complete');
-
         Route::post('password/recovery', [PasswordController::class, 'recovery'])
             ->middleware('throttle:6,1')
             ->name('password.recovery');
