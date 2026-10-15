@@ -27,11 +27,19 @@ function metaDataWithFakeDns(string $url, ?Closure $resolveHost = null): MetaDat
     );
 }
 
+/**
+ * Mirrors the versioned cache key, so bumping the version surfaces here.
+ */
+function previewCacheKey(string $url): string
+{
+    return Str::of($url)->slug()->prepend('preview_v1_')->value();
+}
+
 mutates(MetaData::class);
 
 it('returns the cached meta data if it exists', function (): void {
     $url = 'https://laravel.com';
-    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+    $cacheKey = previewCacheKey($url);
     $cachedData = collect([
         'title' => 'Laravel - The PHP Framework For Web Artisans',
         'description' => 'Laravel is a PHP web application framework with expressive, elegant syntax. We’ve already laid the foundation — freeing you to create without sweating the small things.',
@@ -66,7 +74,7 @@ it('returns the cached meta data if it exists', function (): void {
 
 it('gets the youtube oembed data', function (): void {
     $url = 'https://youtu.be/emMYyeBfYlM';
-    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+    $cacheKey = previewCacheKey($url);
 
     Http::fake([
         $url => Http::response('
@@ -111,7 +119,7 @@ it('shows preview card if the tweet has an image or video', function (): void {
     $image = UploadedFile::fake()->image('image.jpg', 1000, 600);
     $imageContents = file_get_contents($image->getRealPath());
     $imagePath = 'https://images.example/image.jpg';
-    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+    $cacheKey = previewCacheKey($url);
 
     Http::fake([
         $url => Http::response('
@@ -138,7 +146,7 @@ it('shows preview card if the tweet has an image or video', function (): void {
 
 it('gets the vimdeo oembed data', function (): void {
     $url = 'https://vimeo.com/76979871';
-    $cacheKey = Str::of($url)->slug()->prepend('preview_')->value();
+    $cacheKey = previewCacheKey($url);
 
     Http::fake([
         $url => Http::response('
@@ -454,4 +462,28 @@ it('serves repeated previews from memo with a single store hit', function (): vo
 
     Event::assertDispatched(CacheMissed::class, 1);
     Event::assertDispatched(CacheHit::class, 1);
+});
+
+it('does not reuse a preview cached under an older cache version', function (): void {
+    $url = 'https://example.com/versioned-preview';
+    $legacyKey = Str::of($url)->slug()->prepend('preview_')->value();
+
+    Cache::put($legacyKey, collect(['title' => 'Stale preview']), now()->addYear());
+
+    Http::fake([
+        $url => Http::response('
+            <html>
+                <head>
+                    <meta property="og:title" content="Fresh preview">
+                </head>
+            </html>
+        ', 200),
+    ]);
+    Http::preventStrayRequests();
+
+    $data = metaDataWithFakeDns($url)->fetch();
+
+    expect($data->get('title'))->toBe('Fresh preview')
+        ->and(Cache::get(previewCacheKey($url))?->get('title'))->toBe('Fresh preview')
+        ->and(Cache::get($legacyKey)?->get('title'))->toBe('Stale preview');
 });
