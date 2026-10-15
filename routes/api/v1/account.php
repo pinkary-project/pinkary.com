@@ -13,16 +13,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->as('api.v1.')->group(function (): void {
     Route::prefix('account')->as('account.')->group(function (): void {
-        Route::post('password/recovery', [PasswordController::class, 'recovery'])
+        Route::post('password/recovery', [PasswordController::class, 'store'])
             ->middleware('throttle:6,1')
             ->name('password.recovery');
 
-        Route::post('password/reset', [PasswordController::class, 'reset'])
+        Route::post('password/reset', PasswordController::class)
             ->middleware('throttle:6,1')
             ->name('password.reset');
 
         Route::middleware(['auth:sanctum', 'verified'])->group(function (): void {
-            Route::post('avatar/refresh', [AvatarController::class, 'refresh'])
+            Route::post('avatar/refresh', AvatarController::class)
                 ->middleware('throttle:10,1')
                 ->name('avatar.refresh');
             Route::delete('avatar', [AvatarController::class, 'destroy'])
@@ -46,7 +46,7 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
             Route::post('two-factor', [TwoFactorController::class, 'store'])
                 ->middleware('throttle:6,1')
                 ->name('two-factor.store');
-            Route::post('two-factor/confirm', [TwoFactorController::class, 'confirm'])
+            Route::post('two-factor/confirm', TwoFactorController::class)
                 ->middleware('throttle:6,1')
                 ->name('two-factor.confirm');
             Route::delete('two-factor', [TwoFactorController::class, 'destroy'])
@@ -65,7 +65,7 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
             Route::post('github/handoff', [GitHubController::class, 'store'])
                 ->middleware('throttle:5,1')
                 ->name('github.handoff.store');
-            Route::get('github/handoff/{handoffId}', [GitHubController::class, 'showHandoff'])
+            Route::get('github/handoff/{handoffId}', GitHubController::class)
                 ->middleware('throttle:30,1')
                 ->name('github.handoff.show');
             Route::delete('github', [GitHubController::class, 'destroy'])
@@ -75,7 +75,7 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
             Route::delete('/', [AccountController::class, 'destroy'])
                 ->middleware('throttle:6,1')
                 ->name('destroy');
-            Route::delete('tokens', [AccountController::class, 'revokeTokens'])
+            Route::delete('tokens', AccountController::class)
                 ->middleware('throttle:6,1')
                 ->name('tokens.destroy');
         });

@@ -16,6 +16,28 @@ use Laravel\Fortify\Fortify;
 
 final readonly class TwoFactorController
 {
+    /** Confirm the authenticator code and return the initial recovery codes. */
+    public function __invoke(
+        Request $request,
+        #[CurrentUser] User $user,
+        ConfirmTwoFactorAuthentication $confirm,
+    ): JsonResponse {
+        $request->validate([
+            'current_password' => ['required', 'current_password:sanctum'],
+            'code' => ['required', 'digits:6'],
+        ]);
+
+        abort_if($user->two_factor_secret === null, 409, 'Two-factor setup has not been started.');
+        abort_if($user->hasEnabledTwoFactorAuthentication(), 409, 'Two-factor authentication is already enabled.');
+
+        $confirm($user, $request->string('code')->toString());
+
+        return $this->noStore(response()->json([
+            'enabled' => true,
+            'recovery_codes' => $user->refresh()->recoveryCodes(),
+        ]));
+    }
+
     /** Return the authenticated user's two-factor status. */
     public function show(#[CurrentUser] User $user): JsonResponse
     {
@@ -49,28 +71,6 @@ final readonly class TwoFactorController
             'secret' => Fortify::currentEncrypter()->decrypt($secret),
             'qr_code_url' => $user->twoFactorQrCodeUrl(),
             'qr_code_svg' => $user->twoFactorQrCodeSvg(),
-        ]));
-    }
-
-    /** Confirm the authenticator code and return the initial recovery codes. */
-    public function confirm(
-        Request $request,
-        #[CurrentUser] User $user,
-        ConfirmTwoFactorAuthentication $confirm,
-    ): JsonResponse {
-        $request->validate([
-            'current_password' => ['required', 'current_password:sanctum'],
-            'code' => ['required', 'digits:6'],
-        ]);
-
-        abort_if($user->two_factor_secret === null, 409, 'Two-factor setup has not been started.');
-        abort_if($user->hasEnabledTwoFactorAuthentication(), 409, 'Two-factor authentication is already enabled.');
-
-        $confirm($user, $request->string('code')->toString());
-
-        return $this->noStore(response()->json([
-            'enabled' => true,
-            'recovery_codes' => $user->refresh()->recoveryCodes(),
         ]));
     }
 

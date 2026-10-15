@@ -12,6 +12,18 @@ use Illuminate\Http\Response;
 
 final readonly class AccountController
 {
+    /** Revoke every personal access token after confirming the current password. */
+    public function __invoke(Request $request, #[CurrentUser] User $user): Response
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password:sanctum'],
+        ]);
+
+        $user->tokens()->delete();
+
+        return response()->noContent();
+    }
+
     /** Permanently delete the account after confirming the current password. */
     public function destroy(
         Request $request,
@@ -23,18 +35,6 @@ final readonly class AccountController
         ]);
 
         $deleteUser->handle($user);
-
-        return response()->noContent();
-    }
-
-    /** Revoke every personal access token after confirming the current password. */
-    public function revokeTokens(Request $request, #[CurrentUser] User $user): Response
-    {
-        $request->validate([
-            'current_password' => ['required', 'current_password:sanctum'],
-        ]);
-
-        $user->tokens()->delete();
 
         return response()->noContent();
     }

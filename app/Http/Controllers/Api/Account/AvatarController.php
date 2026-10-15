@@ -13,7 +13,7 @@ use Illuminate\Container\Attributes\CurrentUser;
 final readonly class AvatarController
 {
     /** Refetch the avatar selected by the account's GitHub or Gravatar policy. */
-    public function refresh(#[CurrentUser] User $user, UserProfileQuery $userProfileQuery): UserResource
+    public function __invoke(#[CurrentUser] User $user, UserProfileQuery $userProfileQuery): UserResource
     {
         return $this->update($user, $userProfileQuery);
     }

@@ -15,6 +15,37 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class GitHubController
 {
+    /** Return handoff status only to the account that started it. */
+    public function __invoke(#[CurrentUser] User $user, string $handoffId): JsonResponse
+    {
+        $handoff = DB::table('mobile_github_handoffs')
+            ->where('id', $handoffId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        abort_if($handoff === null, 404);
+
+        $status = $handoff->status;
+        $expiresAtValue = $handoff->expires_at;
+
+        if (! is_string($expiresAtValue)) {
+            abort(500, 'The GitHub handoff expiry is invalid.');
+        }
+
+        $expiresAt = CarbonImmutable::parse($expiresAtValue);
+
+        if ($expiresAt->isPast() && in_array($status, ['pending', 'started', 'processing'], true)) {
+            $status = 'expired';
+        }
+
+        return response()->json([
+            'id' => $handoff->id,
+            'status' => $status,
+            'github_username' => $status === 'completed' ? $handoff->github_username : null,
+            'expires_at' => $expiresAt->toIso8601String(),
+        ])->header('Cache-Control', 'private, no-store');
+    }
+
     /** Return the current GitHub connection and account eligibility. */
     public function show(#[CurrentUser] User $user): JsonResponse
     {
@@ -59,37 +90,6 @@ final readonly class GitHubController
             'expires_at' => $handoff['expires_at']->toIso8601String(),
             'expires_in' => CreateMobileGitHubHandoff::TTL_MINUTES * 60,
         ], 201)->header('Cache-Control', 'private, no-store');
-    }
-
-    /** Return handoff status only to the account that started it. */
-    public function showHandoff(#[CurrentUser] User $user, string $handoffId): JsonResponse
-    {
-        $handoff = DB::table('mobile_github_handoffs')
-            ->where('id', $handoffId)
-            ->where('user_id', $user->id)
-            ->first();
-
-        abort_if($handoff === null, 404);
-
-        $status = $handoff->status;
-        $expiresAtValue = $handoff->expires_at;
-
-        if (! is_string($expiresAtValue)) {
-            abort(500, 'The GitHub handoff expiry is invalid.');
-        }
-
-        $expiresAt = CarbonImmutable::parse($expiresAtValue);
-
-        if ($expiresAt->isPast() && in_array($status, ['pending', 'started', 'processing'], true)) {
-            $status = 'expired';
-        }
-
-        return response()->json([
-            'id' => $handoff->id,
-            'status' => $status,
-            'github_username' => $status === 'completed' ? $handoff->github_username : null,
-            'expires_at' => $expiresAt->toIso8601String(),
-        ])->header('Cache-Control', 'private, no-store');
     }
 
     /** Disconnect the GitHub username using the existing account update action. */

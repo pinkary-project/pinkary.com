@@ -9,6 +9,9 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 final class VerifyEmailLinkRequest extends EmailVerificationRequest
 {
+    /**
+     * Account resolved from the signed verification link.
+     */
     private ?User $verificationUser = null;
 
     /**

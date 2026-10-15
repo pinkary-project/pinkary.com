@@ -19,39 +19,8 @@ use UnexpectedValueException;
 
 final readonly class PasswordController
 {
-    /** Change the authenticated user's password. */
-    public function update(Request $request, #[CurrentUser] User $user): Response
-    {
-        $request->validate([
-            'current_password' => ['required', 'current_password:sanctum'],
-            'password' => ['required', PasswordRule::defaults(), 'confirmed'],
-        ]);
-
-        $user->update([
-            'password' => Hash::make($request->string('password')->toString()),
-        ]);
-
-        return response()->noContent();
-    }
-
-    /** Request a reset link without revealing whether the email is registered. */
-    public function recovery(Request $request): JsonResponse
-    {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
-
-        Password::sendResetLink([
-            'email' => $request->string('email')->toString(),
-        ]);
-
-        return response()->json([
-            'message' => 'If an account exists for that email, a password reset link has been sent.',
-        ], 202);
-    }
-
     /** Reset a password using a valid password broker token. */
-    public function reset(Request $request): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
         $request->validate([
             'token' => ['required', 'string'],
@@ -91,5 +60,36 @@ final readonly class PasswordController
         return response()->json([
             'message' => __($status),
         ]);
+    }
+
+    /** Change the authenticated user's password. */
+    public function update(Request $request, #[CurrentUser] User $user): Response
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password:sanctum'],
+            'password' => ['required', PasswordRule::defaults(), 'confirmed'],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($request->string('password')->toString()),
+        ]);
+
+        return response()->noContent();
+    }
+
+    /** Request a reset link without revealing whether the email is registered. */
+    public function store(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        Password::sendResetLink([
+            'email' => $request->string('email')->toString(),
+        ]);
+
+        return response()->json([
+            'message' => 'If an account exists for that email, a password reset link has been sent.',
+        ], 202);
     }
 }
