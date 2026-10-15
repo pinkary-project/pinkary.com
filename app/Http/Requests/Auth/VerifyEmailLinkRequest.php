@@ -16,7 +16,7 @@ final class VerifyEmailLinkRequest extends EmailVerificationRequest
      */
     public function authorize(): bool
     {
-        $user = User::query()->find($this->route('id'));
+        $user = User::query()->whereKey((string) $this->route('id'))->first();
 
         if ($user === null) {
             return false;
