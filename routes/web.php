@@ -10,6 +10,7 @@ use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MobileGitHubHandoffController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QuestionController;
@@ -73,6 +74,14 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         ->name('profile.avatar.destroy');
 });
 
+Route::get('/mobile/github/handoff/{handoff}/{token}', MobileGitHubHandoffController::class)
+    ->middleware('throttle:10,1')
+    ->name('mobile.github.handoff.start');
+
+Route::get('/profile/connect/github/update', [UserGitHubUsernameController::class, 'update'])
+    ->middleware('throttle:20,1')
+    ->name('profile.connect.github.update');
+
 Route::middleware('auth')->group(function () {
     Route::get('/qr-code', QrCodeController::class)->name('qr-code.image');
 
@@ -83,10 +92,6 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/profile/connect/github')->group(function () {
         Route::get('/', [UserGitHubUsernameController::class, 'index'])
             ->name('profile.connect.github');
-
-        Route::get('/update', [
-            UserGitHubUsernameController::class, 'update',
-        ])->name('profile.connect.github.update');
 
         Route::delete('/', [
             UserGitHubUsernameController::class, 'destroy',
