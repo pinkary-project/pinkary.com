@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 final readonly class DiscoverableUsersQuery
 {
+    /** @param int|null $viewerId The authenticated user's ID, if available. */
     public function __construct(private ?int $viewerId) {}
 
     /** @return Builder<User> */
