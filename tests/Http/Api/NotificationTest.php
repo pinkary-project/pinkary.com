@@ -6,12 +6,135 @@ use App\Models\Question;
 use App\Models\Repost;
 use App\Models\User;
 use App\Notifications\QuestionAnswered;
+use App\Notifications\QuestionCreated;
+use App\Notifications\QuestionReposted;
 use App\Notifications\UserFollowed;
 use App\Notifications\UserMentioned;
+use Illuminate\Support\Str;
 
 test('a guest cannot read notifications', function (): void {
     $this->getJson(route('api.v1.notifications.index'))->assertUnauthorized();
     $this->postJson(route('api.v1.notifications.read'))->assertUnauthorized();
+    $this->postJson(route('api.v1.notifications.ignore'))->assertUnauthorized();
+});
+
+test('a user can ignore received questions and remove notifications up to a timestamp', function (): void {
+    $user = User::factory()->create();
+    $sender = User::factory()->create();
+    $oldQuestion = Question::factory()->create([
+        'from_id' => $sender->id,
+        'to_id' => $user->id,
+        'answer' => null,
+        'answer_created_at' => null,
+        'is_ignored' => false,
+    ]);
+    $user->notify(new QuestionCreated($oldQuestion));
+    $oldQuestionNotification = $user->notifications()->firstOrFail();
+    $oldQuestionNotification->update(['created_at' => now()->subDay()]);
+
+    $user->notify(new UserFollowed(User::factory()->create()));
+    $oldFollowNotification = $user->notifications()->where('type', UserFollowed::class)->firstOrFail();
+    $oldFollowNotification->update(['created_at' => now()->subDay()]);
+
+    $recentQuestion = Question::factory()->create([
+        'from_id' => $sender->id,
+        'to_id' => $user->id,
+        'answer' => null,
+        'answer_created_at' => null,
+        'is_ignored' => false,
+    ]);
+    $user->notify(new QuestionCreated($recentQuestion));
+    $recentQuestionNotification = $user->notifications()
+        ->where('data->question_id', $recentQuestion->id)
+        ->firstOrFail();
+    $recentQuestionNotification->update(['created_at' => now()->addMinute()]);
+
+    $this->postJson(route('api.v1.notifications.ignore'), [
+        'until_datetime' => now()->toIso8601String(),
+    ], ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken])
+        ->assertNoContent();
+
+    expect($oldQuestion->fresh()->is_ignored)->toBeTrue()
+        ->and($recentQuestion->fresh()->is_ignored)->toBeFalse()
+        ->and($user->notifications()->count())->toBe(1)
+        ->and($user->notifications()->first()->id)->toBe($recentQuestionNotification->id);
+});
+
+test('a new question notification names the person who asked it', function (): void {
+    $recipient = User::factory()->create();
+    $asker = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $question = Question::factory()->create([
+        'from_id' => $asker->id,
+        'to_id' => $recipient->id,
+        'answer' => null,
+        'answer_created_at' => null,
+        'anonymously' => false,
+    ]);
+    $recipient->notify(new QuestionCreated($question));
+
+    $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$recipient->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->assertJsonPath('data.0.actor.username', 'ada')
+        ->assertJsonPath('data.0.action', 'asked you:')
+        ->assertJsonPath('data.0.is_pending_question', true);
+});
+
+test('a comment notification identifies the parent post or comment', function (): void {
+    $recipient = User::factory()->create();
+    $commenter = User::factory()->create(['name' => 'Ada Lovelace', 'username' => 'ada']);
+    $update = Question::factory()->sharedUpdate()->create([
+        'from_id' => $recipient->id,
+        'to_id' => $recipient->id,
+    ]);
+    $comment = Question::factory()->create([
+        'from_id' => $commenter->id,
+        'to_id' => $recipient->id,
+        'parent_id' => $update->id,
+        'root_id' => $update->id,
+        'answer' => 'A comment on the update.',
+        'answer_created_at' => now(),
+    ]);
+    $nestedComment = Question::factory()->create([
+        'from_id' => $commenter->id,
+        'to_id' => $recipient->id,
+        'parent_id' => $comment->id,
+        'root_id' => $update->id,
+        'answer' => 'A reply to the comment.',
+        'answer_created_at' => now(),
+    ]);
+    $recipient->notify(new QuestionAnswered($comment));
+    $recipient->notify(new QuestionAnswered($nestedComment));
+
+    $rows = $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$recipient->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->json('data');
+
+    expect(collect($rows)->pluck('action'))
+        ->toContain('commented on your Update:', 'commented on your comment:')
+        ->and(collect($rows)->pluck('actor.username')->unique()->values()->all())->toBe(['ada']);
+});
+
+test('unsupported or incomplete notifications are skipped', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->create();
+
+    foreach ([
+        ['type' => 'UnknownNotification', 'data' => []],
+        ['type' => UserFollowed::class, 'data' => ['follower_id' => 'invalid']],
+        ['type' => UserFollowed::class, 'data' => ['follower_id' => PHP_INT_MAX]],
+        ['type' => QuestionCreated::class, 'data' => []],
+        ['type' => QuestionReposted::class, 'data' => ['question_id' => $question->id, 'repost_id' => PHP_INT_MAX]],
+    ] as $notification) {
+        $user->notifications()->create([
+            'id' => (string) Str::uuid(),
+            ...$notification,
+        ]);
+    }
+
+    $this->getJson(route('api.v1.notifications.index'), ['Authorization' => 'Bearer '.$user->createToken('test')->plainTextToken])
+        ->assertOk()
+        ->assertJsonCount(0, 'data')
+        ->assertJsonPath('meta.total_count', 5);
 });
 
 test('question rows carry actor, action, snippet, and target', function (): void {
