@@ -63,6 +63,7 @@ final readonly class ParsableContent
         return $fingerprints[implode(',', $this->providers)] ??= $this->computeFingerprint();
     }
 
+    /** Builds the fingerprint from the source of the parse pipeline. */
     private function computeFingerprint(): string
     {
         $hashes = [];
