@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\BookmarkController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\NotificationIgnoreController;
 use App\Http\Controllers\Api\NotificationReadController;
 use App\Http\Controllers\Api\QuestionBookmarkController;
 use App\Http\Controllers\Api\QuestionLikeController;
@@ -67,6 +68,9 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
 
             Route::apiResource('notifications', NotificationController::class)
                 ->only(['index', 'destroy']);
+
+            Route::post('notifications/ignore', NotificationIgnoreController::class)
+                ->name('notifications.ignore');
 
             Route::post('notifications/read', [NotificationReadController::class, 'store'])
                 ->name('notifications.read');
