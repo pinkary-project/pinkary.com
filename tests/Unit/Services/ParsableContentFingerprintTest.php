@@ -34,19 +34,19 @@ test('the fingerprint matches the current source of the parse pipeline', functio
     $hashes = [];
 
     foreach ([...$providers, App\Services\MetaData::class, ParsableContent::class] as $class) {
-        $hashes[] = md5_file((new ReflectionClass($class))->getFileName());
+        $hashes[] = md5_file(new ReflectionClass($class)->getFileName());
     }
 
     $hashes[] = md5_file(resource_path('views/components/link-preview-card.blade.php'));
 
-    expect((new ParsableContent($providers))->fingerprint())
+    expect(new ParsableContent($providers)->fingerprint())
         ->toBe(hash('sha256', (string) json_encode($hashes)));
 });
 
 test('the fingerprint is not written to the cache store', function () use ($providers): void {
     $key = 'parsable-fingerprint-'.hash('sha256', implode(',', $providers));
 
-    (new ParsableContent($providers))->fingerprint();
+    new ParsableContent($providers)->fingerprint();
 
     expect(Cache::get($key))->toBeNull();
 });
