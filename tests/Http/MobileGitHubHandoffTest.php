@@ -332,6 +332,62 @@ test('completion rejects a username already connected to another account', funct
     $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $id, 'status' => 'failed']);
 });
 
+test('completion fails when another account connects the GitHub username during the handoff', function (): void {
+    $user = User::factory()->create(['github_username' => null]);
+    $id = createMobileHandoffRecord($user, 'started');
+    $event = 'eloquent.updating: '.User::class;
+
+    Event::listen($event, function (User $updatingUser) use ($user): void {
+        if ($updatingUser->is($user) && $updatingUser->isDirty('github_username')) {
+            User::factory()->create(['github_username' => $updatingUser->github_username]);
+        }
+    });
+
+    try {
+        $completed = app(CompleteMobileGitHubHandoff::class)->handle($id, 'github-account');
+    } finally {
+        Event::forget($event);
+    }
+
+    expect($completed)->toBeFalse()
+        ->and($user->fresh()->github_username)->toBeNull();
+
+    $this->assertDatabaseHas('mobile_github_handoffs', ['id' => $id, 'status' => 'failed']);
+    $this->assertDatabaseHas('users', ['github_username' => 'github-account']);
+});
+
+test('completion succeeds when a post-update sync fails after the username is saved', function (): void {
+    fakeGitHubSponsorshipLookup();
+    Bus::fake([UpdateUserAvatar::class]);
+
+    $user = User::factory()->create(['github_username' => null]);
+    $id = createMobileHandoffRecord($user, 'started');
+    $event = 'eloquent.updated: '.User::class;
+
+    Event::listen($event, function (User $updatedUser) use ($user): void {
+        if ($updatedUser->is($user) && $updatedUser->wasChanged('github_username')) {
+            throw new RuntimeException('The post-update sync failed.');
+        }
+    });
+
+    try {
+        $completed = app(CompleteMobileGitHubHandoff::class)->handle($id, 'github-account');
+    } finally {
+        Event::forget($event);
+    }
+
+    expect($completed)->toBeTrue()
+        ->and($user->fresh()->github_username)->toBe('github-account');
+
+    $this->assertDatabaseHas('mobile_github_handoffs', [
+        'id' => $id,
+        'status' => 'completed',
+        'github_username' => 'github-account',
+    ]);
+
+    Bus::assertDispatched(UpdateUserAvatar::class);
+});
+
 test('completion fails if the bound account no longer exists', function (): void {
     $user = User::factory()->create();
     $id = createMobileHandoffRecord($user, 'started');

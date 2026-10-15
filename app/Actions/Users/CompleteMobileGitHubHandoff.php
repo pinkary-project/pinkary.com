@@ -39,19 +39,7 @@ final readonly class CompleteMobileGitHubHandoff
                 return null;
             }
 
-            $handoffUserId = $handoff->user_id;
-
-            if (is_string($handoffUserId) && ctype_digit($handoffUserId)) {
-                $handoffUserId = (int) $handoffUserId;
-            }
-
-            if (! is_int($handoffUserId)) {
-                $this->setStatus($handoffId, 'failed');
-
-                return null;
-            }
-
-            $user = User::query()->lockForUpdate()->find($handoffUserId);
+            $user = User::query()->lockForUpdate()->whereKey($handoff->user_id)->first();
 
             if ($user === null) {
                 $this->setStatus($handoffId, 'failed');
