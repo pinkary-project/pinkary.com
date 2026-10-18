@@ -28,12 +28,26 @@ final readonly class CreateQuestion
         array $threadPollOptions,
         ?int $channelId,
     ): array {
+        $requiresApproval = false;
+
+        foreach ($payloads as $payload) {
+            if (($payload['to_id'] ?? null) === $user->id && ($payload['content'] ?? null) === '__UPDATE__') {
+                $requiresApproval = $user->followers()->doesntExist();
+
+                break;
+            }
+        }
+
         /** @var array<int, Question> $questions */
-        $questions = DB::transaction(function () use ($user, $payloads): array {
+        $questions = DB::transaction(function () use ($user, $payloads, $requiresApproval): array {
             /** @var array<int, Question> $created */
             $created = [];
 
             foreach ($payloads as $index => $payload) {
+                $payload['requires_approval'] = $requiresApproval
+                    && ($payload['to_id'] ?? null) === $user->id
+                    && ($payload['content'] ?? null) === '__UPDATE__';
+
                 if ($payload['to_id'] !== $user->id && empty($payload['parent_id'])) {
                     Gate::forUser($user)->authorize('askQuestion', User::query()->findOrFail($payload['to_id']));
                 }

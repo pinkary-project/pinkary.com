@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Queries\Feeds;
 
 use App\Models\Question;
+use App\Models\Scopes\WhereNotModerated;
 use Illuminate\Database\Eloquent\Builder;
 
 final readonly class BookmarkedQuestionsFeed
@@ -21,6 +22,7 @@ final readonly class BookmarkedQuestionsFeed
             ->select('questions.id')
             ->join('bookmarks', 'bookmarks.question_id', '=', 'questions.id')
             ->where('bookmarks.user_id', $this->userId)
+            ->tap(new WhereNotModerated)
             ->orderByDesc('bookmarks.created_at');
     }
 }

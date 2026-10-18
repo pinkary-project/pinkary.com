@@ -66,7 +66,8 @@ final readonly class UserQuestionsFeed
             ->where('reposts.user_id', $this->user->id)
             ->whereNotNull('questions.answer')
             ->where('questions.is_ignored', false)
-            ->where('questions.is_reported', false);
+            ->where('questions.is_reported', false)
+            ->where('questions.requires_approval', false);
 
         $builder = new FeedItems()->merge($questions, $reposts)
             ->withExists([

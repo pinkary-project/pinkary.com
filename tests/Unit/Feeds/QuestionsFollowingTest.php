@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Queries\Feeds\QuestionsFollowingFeed;
+use App\Queries\Feeds\UserQuestionsFeed;
 use Illuminate\Database\Eloquent\Builder;
 
 it('render questions with right conditions', function (): void {
@@ -98,6 +100,30 @@ it('do not render reported questions', function (): void {
     $builder = new QuestionsFollowingFeed($followerUser)->builder();
 
     expect($builder->where('is_reported', false)->count())->toBe(1);
+});
+
+it('does not show posts awaiting approval when they have been reposted', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->sharedUpdate()->create(['requires_approval' => true]);
+
+    Repost::withoutEvents(fn () => Repost::factory()->create([
+        'user_id' => $user->id,
+        'question_id' => $question->id,
+    ]));
+
+    expect(new QuestionsFollowingFeed($user)->builder()->count())->toBe(0);
+});
+
+it('does not show posts awaiting approval on the reposting user profile', function (): void {
+    $user = User::factory()->create();
+    $question = Question::factory()->sharedUpdate()->create(['requires_approval' => true]);
+
+    Repost::withoutEvents(fn () => Repost::factory()->create([
+        'user_id' => $user->id,
+        'question_id' => $question->id,
+    ]));
+
+    expect(new UserQuestionsFeed($user, $user->id)->builder()->count())->toBe(0);
 });
 
 it('does not show the comments if it\'s on non following user\'s post', function (): void {

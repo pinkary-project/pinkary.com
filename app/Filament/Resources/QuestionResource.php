@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Actions\Questions\ApproveQuestion;
 use App\Actions\Questions\UpdateQuestionStatus;
 use App\Filament\Resources\QuestionResource\Pages;
 use App\Models\Question;
@@ -11,6 +12,7 @@ use App\Models\User;
 use BackedEnum;
 use Blade;
 use Filament\Actions\Action;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\Column;
@@ -18,6 +20,8 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
+
+use function Filament\Support\original_request;
 
 final class QuestionResource extends Resource
 {
@@ -51,6 +55,12 @@ final class QuestionResource extends Resource
                     ->tooltip(fn (Question $record): ?string => str($record->content)->length() > 40 ? $record->content : null)
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('answer')
+                    ->label('Answer / post')
+                    ->formatStateUsing(fn (?string $state): string => html_entity_decode(strip_tags($state ?? '')))
+                    ->limit(60)
+                    ->tooltip(fn (Question $record): ?string => str($record->answer)->length() > 60 ? $record->answer : null)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('from.name')
                     ->formatStateUsing(self::resolveUserAvatarOnQuestionColumn(...))
                     ->searchable()
@@ -64,12 +74,26 @@ final class QuestionResource extends Resource
                 Tables\Columns\IconColumn::make('is_ignored')
                     ->color($trueStateMeansRedElseGray)
                     ->boolean(),
+                Tables\Columns\IconColumn::make('requires_approval')
+                    ->label('Needs approval')
+                    ->color(fn (bool $state): string => $state ? 'warning' : 'gray')
+                    ->boolean(),
             ])
             ->filters([
                 TernaryFilter::make('is_reported'),
                 TernaryFilter::make('is_ignored'),
+                TernaryFilter::make('requires_approval')->label('Needs approval'),
             ])
             ->actions([
+                Action::make('approve')
+                    ->label('Approve')
+                    ->color('success')
+                    ->icon('heroicon-o-check')
+                    ->action(function (Question $record, ApproveQuestion $approveQuestion): void {
+                        $approveQuestion->handle($record);
+                    })
+                    ->visible(fn (Question $record): bool => $record->requires_approval)
+                    ->requiresConfirmation(),
                 Action::make('ignore')
                     ->color('gray')
                     ->action(function (Question $record, UpdateQuestionStatus $updateQuestionStatus): void {
@@ -85,6 +109,41 @@ final class QuestionResource extends Resource
                     ]))
                     ->openUrlInNewTab(),
             ]);
+    }
+
+    /**
+     * @return array<NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        $navigationItems = parent::getNavigationItems();
+        $indexRouteName = self::getRouteBaseName().'.index';
+        $activeRoutePattern = self::getNavigationItemActiveRoutePattern();
+        $filterParameters = [
+            'filters' => [
+                'requires_approval' => [
+                    'value' => '1',
+                ],
+            ],
+        ];
+        $isUnapprovedQuestionsPage = fn (): bool => original_request()->routeIs($indexRouteName)
+            && original_request()->query('filters.requires_approval.value') === '1';
+
+        if (isset($navigationItems[0])) {
+            $navigationItems[0]->isActiveWhen(fn (): bool => original_request()->routeIs($activeRoutePattern)
+                && ! $isUnapprovedQuestionsPage());
+        }
+
+        $navigationItems[] = NavigationItem::make('Unapproved questions')
+            ->key(self::class.'.unapproved')
+            ->group(self::getNavigationGroup())
+            ->parentItem(self::getNavigationParentItem())
+            ->icon('heroicon-o-clock')
+            ->isActiveWhen($isUnapprovedQuestionsPage)
+            ->badge(fn (): string => (string) Question::query()->where('requires_approval', true)->count(), color: 'warning')
+            ->url(self::getUrl('index', $filterParameters));
+
+        return $navigationItems;
     }
 
     /**

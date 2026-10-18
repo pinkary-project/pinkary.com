@@ -129,9 +129,11 @@ final class Edit extends Component
             $this->dispatch('close-modal', "question.edit.answer.{$question->id}");
         }
 
-        $message = $question->isSharedUpdate()
-            ? 'Post updated.'
-            : ($originalAnswer === null ? 'Question answered.' : 'Answer updated.');
+        $message = $question->requires_approval
+            ? __('Your post is waiting for admin approval.')
+            : ($question->isSharedUpdate()
+                ? 'Post updated.'
+                : ($originalAnswer === null ? 'Question answered.' : 'Answer updated.'));
 
         $this->dispatch('notification.created', message: $message);
         $this->dispatch('question.updated');

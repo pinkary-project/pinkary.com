@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Filament\Resources\QuestionResource;
 use App\Models\Question;
 use App\Models\User;
+use Filament\Navigation\NavigationItem;
 use Livewire\Livewire;
 
 it('can be listed', function (): void {
@@ -59,4 +60,50 @@ it('can delete question', function (): void {
 
     expect($question->refresh()->is_ignored)->toBeTrue()
         ->and($anotherQuestion->refresh()->is_ignored)->toBeFalse();
+});
+
+it('can filter posts awaiting approval', function (): void {
+    $pending = Question::factory()->sharedUpdate()->create(['requires_approval' => true]);
+    $approved = Question::factory()->sharedUpdate()->create(['requires_approval' => false]);
+
+    Livewire::test(QuestionResource\Pages\Index::class)
+        ->assertCanSeeTableRecords([$pending, $approved])
+        ->filterTable('requires_approval')
+        ->assertCanSeeTableRecords([$pending])
+        ->assertCanNotSeeTableRecords([$approved]);
+});
+
+it('links to unapproved questions with a matching count and filter', function (): void {
+    $pending = Question::factory()->sharedUpdate()->count(2)->create(['requires_approval' => true]);
+    $approved = Question::factory()->sharedUpdate()->create(['requires_approval' => false]);
+    $filterParameters = [
+        'filters' => [
+            'requires_approval' => [
+                'value' => '1',
+            ],
+        ],
+    ];
+    $navigationItem = collect(QuestionResource::getNavigationItems())
+        ->first(fn (NavigationItem $item): bool => $item->getLabel() === 'Unapproved questions');
+
+    expect($navigationItem)->not->toBeNull()
+        ->and($navigationItem->getBadge())->toBe('2')
+        ->and($navigationItem->getUrl())->toBe(QuestionResource::getUrl('index', $filterParameters));
+
+    Livewire::withQueryParams($filterParameters)
+        ->test(QuestionResource\Pages\Index::class)
+        ->assertCanSeeTableRecords($pending)
+        ->assertCanNotSeeTableRecords([$approved]);
+});
+
+it('allows an admin to approve a pending post', function (): void {
+    $admin = User::factory()->create(['email' => 'enunomaduro@gmail.com']);
+    $question = Question::factory()->sharedUpdate()->create(['requires_approval' => true]);
+
+    Livewire::actingAs($admin)
+        ->test(QuestionResource\Pages\Index::class)
+        ->assertTableActionVisible('approve', $question)
+        ->callTableAction('approve', $question);
+
+    expect($question->refresh()->requires_approval)->toBeFalse();
 });

@@ -38,6 +38,7 @@ final class QuestionResource extends JsonResource
             'answer' => $this->resource->sharable_answer,
             'content_source' => $this->when($canUpdate, fn (): mixed => $this->resource->isSharedUpdate() ? null : $this->resource->getRawOriginal('content')),
             'answer_source' => $this->when($canUpdate, fn (): mixed => $this->resource->getRawOriginal('answer')),
+            'requires_approval' => $this->when($canUpdate, fn (): bool => $this->resource->requires_approval),
             'content_html' => $this->resource->isSharedUpdate() ? null : $this->resource->content,
             'answer_html' => $this->resource->answer,
             'anonymously' => (bool) $this->resource->anonymously,

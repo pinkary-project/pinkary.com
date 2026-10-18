@@ -125,6 +125,12 @@ test('followers', function (): void {
         ->and($user->followers->first()->id)->toBe($target->id);
 });
 
+test('factory can create a user with followers', function (): void {
+    $user = User::factory()->hasFollowers(2)->create();
+
+    expect($user->followers)->toHaveCount(2);
+});
+
 test('purge does not block email from self-deletion', function (): void {
     $user = User::factory()->create();
 

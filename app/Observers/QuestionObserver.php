@@ -25,18 +25,8 @@ final readonly class QuestionObserver
      */
     public function created(Question $question): void
     {
-        if ($question->isSharedUpdate()) {
-            if ($question->parent_id !== null) {
-                $question->loadMissing('parent.to');
-                if ($question->parent?->to_id !== $question->to_id) {
-                    $question->parent?->to->notify(new QuestionCreated($question));
-                }
-            }
-
-            $question->mentions()->each->notify(new UserMentioned($question));
-        } else {
-            $question->loadMissing('to');
-            $question->to->notify(new QuestionCreated($question));
+        if (! $question->requires_approval) {
+            $this->notifyCreated($question);
         }
 
         $this->updateQuestionHashtags->handle($question);
@@ -55,6 +45,14 @@ final readonly class QuestionObserver
             return;
         }
 
+        if ($question->wasChanged('requires_approval') && ! $question->requires_approval) {
+            if ($question->isSharedUpdate()) {
+                $this->notifyCreated($question);
+            } elseif ($question->answer !== null) {
+                $this->notifyAnswered($question);
+            }
+        }
+
         if ($question->answer !== null) {
             $question->to->notifications()->whereJsonContains('data->question_id', $question->id)->delete();
         }
@@ -67,12 +65,11 @@ final readonly class QuestionObserver
             return;
         }
 
-        if ($question->from->id === $question->to->id) {
+        if ($question->requires_approval) {
             return;
         }
 
-        $question->from->notify(new QuestionAnswered($question));
-        $question->mentions()->each->notify(new UserMentioned($question));
+        $this->notifyAnswered($question);
     }
 
     /**
@@ -96,5 +93,40 @@ final readonly class QuestionObserver
         $question->descendants->each->delete();
 
         $question->hashtags()->detach();
+    }
+
+    /**
+     * Notify the question author and mentioned users that the question was answered.
+     */
+    private function notifyAnswered(Question $question): void
+    {
+        if ($question->from->id === $question->to->id) {
+            return;
+        }
+
+        $question->from->notify(new QuestionAnswered($question));
+        $question->mentions()->each->notify(new UserMentioned($question));
+    }
+
+    /**
+     * Notify the recipient and mentioned users that the question was created.
+     */
+    private function notifyCreated(Question $question): void
+    {
+        if ($question->isSharedUpdate()) {
+            if ($question->parent_id !== null) {
+                $question->loadMissing('parent.to');
+                if ($question->parent?->to_id !== $question->to_id) {
+                    $question->parent?->to->notify(new QuestionCreated($question));
+                }
+            }
+
+            $question->mentions()->each->notify(new UserMentioned($question));
+
+            return;
+        }
+
+        $question->loadMissing('to');
+        $question->to->notify(new QuestionCreated($question));
     }
 }

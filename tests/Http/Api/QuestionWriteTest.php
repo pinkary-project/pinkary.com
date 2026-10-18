@@ -21,7 +21,8 @@ test('an authenticated user can publish a shared update', function (): void {
         'Authorization' => 'Bearer '.$token,
     ])->assertCreated()
         ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.answer', 'Hello, Pinkary.');
+        ->assertJsonPath('data.0.answer', 'Hello, Pinkary.')
+        ->assertJsonPath('data.0.requires_approval', true);
 
     $question = Question::sole();
 
@@ -29,7 +30,23 @@ test('an authenticated user can publish a shared update', function (): void {
         ->and($question->to_id)->toBe($user->id)
         ->and($question->content)->toBe('__UPDATE__')
         ->and($question->answer)->toBe('Hello, Pinkary.')
-        ->and($question->answer_created_at)->not->toBeNull();
+        ->and($question->answer_created_at)->not->toBeNull()
+        ->and($question->requires_approval)->toBeTrue();
+});
+
+test('an authenticated user with a follower can publish immediately', function (): void {
+    $user = User::factory()->create();
+    $user->followers()->attach(User::factory()->create());
+    $token = $user->createToken('test')->plainTextToken;
+
+    $this->postJson(route('api.v1.questions.store'), [
+        'content' => 'Ready for the feed.',
+    ], [
+        'Authorization' => 'Bearer '.$token,
+    ])->assertCreated()
+        ->assertJsonPath('data.0.requires_approval', false);
+
+    expect(Question::sole()->requires_approval)->toBeFalse();
 });
 
 test('thread follow-ups are chained to the main post', function (): void {
@@ -130,7 +147,8 @@ test('an authenticated user can comment on a question', function (): void {
         ->assertJsonPath('data.answer', 'Great update!')
         ->assertJsonPath('data.content', null)
         ->assertJsonPath('data.from.id', $user->id)
-        ->assertJsonPath('data.to.id', $user->id);
+        ->assertJsonPath('data.to.id', $user->id)
+        ->assertJsonPath('data.requires_approval', true);
 
     $comment = Question::query()->where('parent_id', $question->id)->sole();
 
@@ -138,7 +156,8 @@ test('an authenticated user can comment on a question', function (): void {
         ->and($comment->from_id)->toBe($user->id)
         ->and($comment->to_id)->toBe($user->id)
         ->and($comment->parent_id)->toBe($question->id)
-        ->and($comment->root_id)->toBe($question->id);
+        ->and($comment->root_id)->toBe($question->id)
+        ->and($comment->requires_approval)->toBeTrue();
 });
 
 test('a nested comment response includes its thread ancestors', function (): void {
@@ -431,11 +450,13 @@ test('a user can answer or update an answer within 24 hours', function (): void 
     $this->putJson(route('api.v1.questions.answer.update', $question), [
         'answer' => 'First answer.',
     ], $ownerHeaders)->assertOk()
-        ->assertJsonPath('data.answer', 'First answer.');
+        ->assertJsonPath('data.answer', 'First answer.')
+        ->assertJsonPath('data.requires_approval', true);
 
     $question->refresh();
     expect($question->answer)->toBe('First answer.')
-        ->and($question->answer_created_at)->not->toBeNull();
+        ->and($question->answer_created_at)->not->toBeNull()
+        ->and($question->requires_approval)->toBeTrue();
 
     auth()->forgetGuards();
 

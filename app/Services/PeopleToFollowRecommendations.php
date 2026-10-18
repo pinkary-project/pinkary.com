@@ -334,7 +334,7 @@ final readonly class PeopleToFollowRecommendations
                     ->orWhere('url', 'like', '%://x.com%');
             })
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
-                $query->whereNotNull('answer');
+                $query->whereNotNull('answer')->where('requires_approval', false);
             }])
             ->orderByDesc('answered_questions_count');
     }

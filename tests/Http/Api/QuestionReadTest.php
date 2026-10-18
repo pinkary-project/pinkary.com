@@ -43,6 +43,26 @@ it('refuses to show an unanswered post to a guest', function (): void {
         ->assertForbidden();
 });
 
+it('hides a post awaiting approval from other viewers', function (): void {
+    $author = User::factory()->create();
+    $question = Question::factory()->sharedUpdate()->create([
+        'from_id' => $author->id,
+        'to_id' => $author->id,
+        'requires_approval' => true,
+    ]);
+
+    $this->getJson("/api/v1/questions/{$question->id}")->assertForbidden();
+
+    $this->actingAs(User::factory()->create())
+        ->getJson("/api/v1/questions/{$question->id}")
+        ->assertForbidden();
+
+    $this->actingAs($author)
+        ->getJson("/api/v1/questions/{$question->id}")
+        ->assertOk()
+        ->assertJsonPath('data.requires_approval', true);
+});
+
 it('includes a thread post ancestors oldest first', function (): void {
     $user = User::factory()->create();
     $root = Question::factory()->create(['to_id' => $user->id]);

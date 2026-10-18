@@ -8,7 +8,7 @@ use App\Models\Question;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Restrict the query to questions that have not been ignored or reported.
+ * Restrict the query to questions that are visible to the public.
  *
  * @template TModel of Question
  */
@@ -19,6 +19,9 @@ final class WhereNotModerated
      */
     public function __invoke(Builder $query): void
     {
-        $query->where('is_ignored', false)->where('is_reported', false);
+        $query
+            ->where('is_ignored', false)
+            ->where('is_reported', false)
+            ->where('requires_approval', false);
     }
 }

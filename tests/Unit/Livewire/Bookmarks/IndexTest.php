@@ -42,6 +42,21 @@ test('displays bookmarks', function (): void {
         ]);
 });
 
+test('does not display posts awaiting approval', function (): void {
+    $user = User::factory()->create();
+    $author = User::factory()->create();
+    $question = Question::factory()->sharedUpdate()->create([
+        'from_id' => $author->id,
+        'to_id' => $author->id,
+        'answer' => 'Pending post content',
+        'requires_approval' => true,
+    ]);
+
+    Bookmark::factory()->for($user)->for($question)->create();
+
+    Livewire::actingAs($user)->test(Index::class)->assertDontSee('Pending post content');
+});
+
 test('refresh', function (): void {
     $user = User::factory()->create();
 

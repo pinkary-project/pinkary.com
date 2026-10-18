@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Actions\Questions\ApproveQuestion;
+use App\Actions\Questions\CreateQuestion;
+use App\Actions\Questions\UpdateQuestion;
 use App\Models\Question;
 use App\Models\User;
+use App\Notifications\QuestionAnswered;
 use App\Notifications\QuestionCreated;
 use App\Notifications\UserMentioned;
 use Illuminate\Support\Facades\Notification;
@@ -56,6 +60,51 @@ test('send mentioned notification if shared update', function (): void {
 
         return true;
     });
+});
+
+test('a pending post sends mention notifications only after approval', function (): void {
+    Notification::fake();
+
+    $author = User::factory()->create();
+    $mentionedUser = User::factory()->create(['username' => 'johndoe']);
+    $question = app(CreateQuestion::class)->handle($author, [[
+        'to_id' => $author->id,
+        'content' => '__UPDATE__',
+        'answer' => 'A post for @johndoe',
+        'answer_created_at' => now(),
+    ]], [], [], null)[0];
+
+    Notification::assertNotSentTo($mentionedUser, UserMentioned::class);
+
+    $this->actingAs(User::factory()->create(['email' => 'enunomaduro@gmail.com']));
+    app(ApproveQuestion::class)->handle($question);
+
+    Notification::assertSentTo($mentionedUser, UserMentioned::class);
+});
+
+test('a pending answer notifies the asker only after approval', function (): void {
+    Notification::fake();
+
+    $asker = User::factory()->create();
+    $answerer = User::factory()->create();
+    $question = Question::factory()->create([
+        'from_id' => $asker->id,
+        'to_id' => $answerer->id,
+        'answer' => null,
+        'answer_created_at' => null,
+    ]);
+
+    app(UpdateQuestion::class)->handle($question, [
+        'answer' => 'A public answer',
+        'answer_created_at' => now(),
+    ], false, null, false);
+
+    Notification::assertNotSentTo($asker, QuestionAnswered::class);
+
+    $this->actingAs(User::factory()->create(['email' => 'enunomaduro@gmail.com']));
+    app(ApproveQuestion::class)->handle($question);
+
+    Notification::assertSentTo($asker, QuestionAnswered::class);
 });
 
 test('send comment notification', function (): void {

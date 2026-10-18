@@ -69,4 +69,16 @@ final class UserFactory extends Factory
             'email' => 'enunomaduro@gmail.com',
         ]);
     }
+
+    /**
+     * Indicate that the user has followers.
+     */
+    public function hasFollowers(int $count = 1): static
+    {
+        return $this->afterCreating(function (User $user) use ($count): void {
+            $followers = User::factory()->count($count)->create();
+
+            $user->followers()->attach($followers->modelKeys());
+        });
+    }
 }

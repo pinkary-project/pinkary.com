@@ -18,7 +18,7 @@ final readonly class FeedQuestion
     {
         return $query
             // Select the cached parse to avoid HTTP fetches and row updates during reads.
-            ->addSelect('questions.id', 'questions.from_id', 'questions.to_id', 'questions.content', 'questions.answer', 'questions.parsed', 'questions.anonymously', 'questions.views', 'questions.created_at', 'questions.answer_created_at', 'questions.answer_updated_at', 'questions.parent_id', 'questions.root_id', 'questions.channel_id', 'questions.poll_expires_at', 'questions.pinned')
+            ->addSelect('questions.id', 'questions.from_id', 'questions.to_id', 'questions.content', 'questions.answer', 'questions.parsed', 'questions.anonymously', 'questions.views', 'questions.created_at', 'questions.answer_created_at', 'questions.answer_updated_at', 'questions.parent_id', 'questions.root_id', 'questions.channel_id', 'questions.poll_expires_at', 'questions.pinned', 'questions.requires_approval')
             ->with([
                 'from:id,name,username,avatar,is_verified,is_company_verified',
                 'to:id,name,username,avatar,is_verified,is_company_verified',

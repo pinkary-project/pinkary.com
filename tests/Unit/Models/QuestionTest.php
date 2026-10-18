@@ -35,7 +35,8 @@ test('to array', function (): void {
         'poll_expires_at',
         'channel_id',
         'quoted_question_id',
-    )->toHaveCount(19);
+        'requires_approval',
+    )->toHaveCount(20);
 });
 
 test('content', function (): void {

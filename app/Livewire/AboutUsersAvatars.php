@@ -19,7 +19,7 @@ final class AboutUsersAvatars extends Component
         $users = User::query()
             ->with('links')
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
-                $query->whereNotNull('answer');
+                $query->whereNotNull('answer')->where('requires_approval', false);
             }])
             ->orderBy('answered_questions_count', 'desc')
             ->limit(14)
