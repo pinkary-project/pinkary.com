@@ -86,6 +86,17 @@ final class Question extends Model implements Viewable
     }
 
     /**
+     * Determine if raw question attributes represent a shared update.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public static function isSharedUpdateAttributes(array $attributes): bool
+    {
+        return ($attributes['from_id'] ?? null) === ($attributes['to_id'] ?? null)
+            && ($attributes['content'] ?? null) === '__UPDATE__';
+    }
+
+    /**
      * The attributes that should be cast.
      */
     public function getContentAttribute(?string $value): ?string
@@ -299,7 +310,7 @@ final class Question extends Model implements Viewable
      */
     public function isSharedUpdate(): bool
     {
-        return $this->from_id === $this->to_id && $this->content === '__UPDATE__';
+        return self::isSharedUpdateAttributes($this->getAttributes());
     }
 
     /**

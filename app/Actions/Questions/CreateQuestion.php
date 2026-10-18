@@ -28,25 +28,26 @@ final readonly class CreateQuestion
         array $threadPollOptions,
         ?int $channelId,
     ): array {
-        $requiresApproval = false;
+        /** @var array<int, bool> $sharedUpdates */
+        $sharedUpdates = [];
 
-        foreach ($payloads as $payload) {
-            if (($payload['to_id'] ?? null) === $user->id && ($payload['content'] ?? null) === '__UPDATE__') {
-                $requiresApproval = $user->followers()->doesntExist();
-
-                break;
-            }
+        foreach ($payloads as $index => $payload) {
+            $sharedUpdates[$index] = Question::isSharedUpdateAttributes([
+                ...$payload,
+                'from_id' => $user->id,
+            ]);
         }
 
+        $requiresApproval = in_array(true, $sharedUpdates, true)
+            && $user->followers()->doesntExist();
+
         /** @var array<int, Question> $questions */
-        $questions = DB::transaction(function () use ($user, $payloads, $requiresApproval): array {
+        $questions = DB::transaction(function () use ($user, $payloads, $sharedUpdates, $requiresApproval): array {
             /** @var array<int, Question> $created */
             $created = [];
 
             foreach ($payloads as $index => $payload) {
-                $payload['requires_approval'] = $requiresApproval
-                    && ($payload['to_id'] ?? null) === $user->id
-                    && ($payload['content'] ?? null) === '__UPDATE__';
+                $payload['requires_approval'] = $requiresApproval && $sharedUpdates[$index];
 
                 if ($payload['to_id'] !== $user->id && empty($payload['parent_id'])) {
                     Gate::forUser($user)->authorize('askQuestion', User::query()->findOrFail($payload['to_id']));
