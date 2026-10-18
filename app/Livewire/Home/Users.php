@@ -51,7 +51,7 @@ final class Users extends Component
             ->with('links')
             ->whereAny(['name', 'username'], 'like', "%{$this->query}%")
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
-                $query->whereNotNull('answer');
+                $query->whereNotNull('answer')->where('requires_approval', false);
             }])
             ->orderBy('answered_questions_count', 'desc')
             ->orderBy('id')
@@ -110,7 +110,7 @@ final class Users extends Component
             })
             ->whereNotIn('id', $except->pluck('id'))
             ->withCount(['questionsReceived as answered_questions_count' => function (Builder $query): void {
-                $query->whereNotNull('answer');
+                $query->whereNotNull('answer')->where('requires_approval', false);
             }])
             ->orderBy('answered_questions_count', 'desc')
             ->orderBy('id')

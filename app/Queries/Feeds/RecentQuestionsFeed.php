@@ -70,7 +70,8 @@ final readonly class RecentQuestionsFeed
             ->selectRaw('reposts.id as repost_id, reposts.user_id as reposted_by_id, reposts.created_at as feed_at')
             ->whereNotNull('questions.answer')
             ->where('questions.is_ignored', false)
-            ->where('questions.is_reported', false);
+            ->where('questions.is_reported', false)
+            ->where('questions.requires_approval', false);
 
         return new FeedItems()->merge($questions, $reposts)
             ->with('root.to:username,id', 'root:id,to_id', 'parent:id,parent_id')

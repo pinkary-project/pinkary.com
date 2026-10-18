@@ -23,6 +23,11 @@ final readonly class UpdateQuestion
         ?int $previousChannelId,
         bool $clearLikes,
     ): array {
+        if ($question->answer === null && isset($attributes['answer'])) {
+            $question->loadMissing('to');
+            $attributes['requires_approval'] = $question->to->followers()->doesntExist();
+        }
+
         $question->update($attributes);
 
         $previousChannel = null;

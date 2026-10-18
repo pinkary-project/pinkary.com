@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Like;
 use App\Models\Question;
+use App\Models\Repost;
 use App\Models\User;
 use App\Queries\Feeds\RecentQuestionsFeed;
 use Illuminate\Database\Eloquent\Builder;
@@ -56,6 +57,24 @@ it('do not render reported questions', function (): void {
     $builder = new RecentQuestionsFeed()->builder();
 
     expect($builder->count())->toBe(0);
+});
+
+it('does not render posts awaiting approval', function (): void {
+    Question::factory()->sharedUpdate()->create([
+        'requires_approval' => true,
+    ]);
+
+    expect((new RecentQuestionsFeed)->builder()->count())->toBe(0);
+});
+
+it('does not render posts awaiting approval when they have been reposted', function (): void {
+    $question = Question::factory()->sharedUpdate()->create([
+        'requires_approval' => true,
+    ]);
+
+    Repost::withoutEvents(fn () => Repost::factory()->create(['question_id' => $question->id]));
+
+    expect((new RecentQuestionsFeed)->builder()->count())->toBe(0);
 });
 
 it('builder returns Eloquent\Builder instance', function (): void {

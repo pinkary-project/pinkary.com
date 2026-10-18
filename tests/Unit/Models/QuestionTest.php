@@ -35,7 +35,8 @@ test('to array', function (): void {
         'poll_expires_at',
         'channel_id',
         'quoted_question_id',
-    )->toHaveCount(19);
+        'requires_approval',
+    )->toHaveCount(20);
 });
 
 test('content', function (): void {
@@ -48,6 +49,24 @@ test('content', function (): void {
     ])->fresh();
 
     expect($question->content)->toBe('Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>, how are you? <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>');
+});
+
+test('identifies shared updates from raw question attributes', function (): void {
+    $user = User::factory()->create();
+
+    $sharedUpdate = Question::factory()->create([
+        'from_id' => $user->id,
+        'to_id' => $user->id,
+        'content' => '__UPDATE__',
+    ]);
+
+    $question = Question::factory()->create([
+        'from_id' => $user->id,
+        'content' => 'A question',
+    ]);
+
+    expect($sharedUpdate->isSharedUpdate())->toBeTrue()
+        ->and($question->isSharedUpdate())->toBeFalse();
 });
 
 test('relations', function (): void {

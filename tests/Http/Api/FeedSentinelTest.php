@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 
 test('the feed never leaks the shared update sentinel', function (): void {
-    $user = User::factory()->create();
+    $user = User::factory()->hasFollowers()->create();
 
     $this->postJson(route('api.v1.questions.store'), [
         'content' => 'Hello, Pinkary.',
@@ -20,7 +20,7 @@ test('the feed never leaks the shared update sentinel', function (): void {
 });
 
 test('a profile never leaks the shared update sentinel', function (): void {
-    $user = User::factory()->create();
+    $user = User::factory()->hasFollowers()->create();
 
     $this->postJson(route('api.v1.questions.store'), [
         'content' => 'Hello, Pinkary.',

@@ -72,6 +72,7 @@ final readonly class QuestionsFollowingFeed
             ->whereNotNull('questions.answer')
             ->where('questions.is_ignored', false)
             ->where('questions.is_reported', false)
+            ->where('questions.requires_approval', false)
             ->where(function (Builder $query): void {
                 $query
                     ->where('reposts.user_id', $this->user->id)

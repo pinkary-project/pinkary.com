@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property CarbonImmutable|null $poll_expires_at
  * @property bool $is_reported
  * @property bool $is_ignored
+ * @property bool $requires_approval
  * @property int $views
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
@@ -79,8 +80,20 @@ final class Question extends Model implements Viewable
             self::query()
                 ->whereIn('id', $ids)
                 ->whereNotNull('answer')
+                ->where('requires_approval', false)
                 ->increment('views');
         });
+    }
+
+    /**
+     * Determine if raw question attributes represent a shared update.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public static function isSharedUpdateAttributes(array $attributes): bool
+    {
+        return ($attributes['from_id'] ?? null) === ($attributes['to_id'] ?? null)
+            && ($attributes['content'] ?? null) === '__UPDATE__';
     }
 
     /**
@@ -161,6 +174,7 @@ final class Question extends Model implements Viewable
             'updated_at' => 'datetime',
             'pinned' => 'boolean',
             'is_ignored' => 'boolean',
+            'requires_approval' => 'boolean',
             'poll_expires_at' => 'datetime',
             'views' => 'integer',
             'channel_id' => 'integer',
@@ -296,7 +310,7 @@ final class Question extends Model implements Viewable
      */
     public function isSharedUpdate(): bool
     {
-        return $this->from_id === $this->to_id && $this->content === '__UPDATE__';
+        return self::isSharedUpdateAttributes($this->getAttributes());
     }
 
     /**

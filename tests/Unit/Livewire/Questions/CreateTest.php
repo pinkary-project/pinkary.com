@@ -254,8 +254,23 @@ test('store rate limit', function (): void {
     ]);
 });
 
+test('a public post from a user without followers waits for approval', function (): void {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(Create::class, ['toId' => $user->id])
+        ->set('content', 'A public post')
+        ->call('store')
+        ->assertDispatched('notification.created', message: 'Your post is waiting for admin approval.');
+
+    $post = Question::query()->sole();
+
+    expect($post->requires_approval)->toBeTrue()
+        ->and($post->answer)->toBe('A public post');
+});
+
 test('store comment', function (): void {
-    $userA = User::factory()->create();
+    $userA = User::factory()->hasFollowers()->create();
 
     $question = Question::factory()->create();
 
@@ -284,7 +299,7 @@ test('store comment', function (): void {
 });
 
 test('store comment on a comment', function (): void {
-    $userA = User::factory()->create();
+    $userA = User::factory()->hasFollowers()->create();
 
     $question = Question::factory()->create();
 
@@ -321,7 +336,7 @@ test('store comment on a comment', function (): void {
 });
 
 test('stores a thread with multiple posts', function (): void {
-    $user = User::factory()->create();
+    $user = User::factory()->hasFollowers()->create();
 
     expect(Question::count())->toBe(0);
 
@@ -441,7 +456,7 @@ test('ignores extra thread posts when asking another user', function (): void {
 });
 
 test('ignores extra thread posts when commenting on a question', function (): void {
-    $user = User::factory()->create();
+    $user = User::factory()->hasFollowers()->create();
     $question = Question::factory()->create();
 
     /** @var Testable $component */
@@ -548,7 +563,7 @@ test('a thread fitting the remaining daily quota is allowed', function (): void 
 });
 
 test('a poll can be included in a thread', function (): void {
-    $user = User::factory()->create();
+    $user = User::factory()->hasFollowers()->create();
 
     /** @var Testable $component */
     $component = Livewire::actingAs($user)->test(Create::class, [

@@ -534,14 +534,16 @@ final class Create extends Component
         $this->dispatch('question.created');
         $this->dispatch('close-modal', 'post-create');
 
-        $message = match (true) {
-            $threadPosts->isNotEmpty() => 'Thread sent.',
-            filled($this->parentId) => 'Comment sent.',
-            $this->isSharingUpdate => 'Update sent.',
-            default => 'Question sent.'
-        };
+        $message = $question->requires_approval
+            ? __('Your post is waiting for admin approval.')
+            : match (true) {
+                $threadPosts->isNotEmpty() => 'Thread sent.',
+                filled($this->parentId) => 'Comment sent.',
+                $this->isSharingUpdate => 'Update sent.',
+                default => 'Question sent.'
+            };
 
-        if ($this->isSharingUpdate) {
+        if ($this->isSharingUpdate && ! $question->requires_approval) {
             $this->dispatch('notification.created', message: $message, url: route('questions.show', [
                 'username' => $question->to->username,
                 'question' => $question,

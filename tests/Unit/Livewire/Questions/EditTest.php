@@ -38,6 +38,17 @@ test('update', function (): void {
     expect($this->question->fresh()->answer)->toBe('Hello World');
 });
 
+test('a new answer from a user without followers waits for approval', function (): void {
+    Livewire::test(Edit::class, [
+        'questionId' => $this->question->id,
+    ])
+        ->set('answer', 'A public answer')
+        ->call('update')
+        ->assertDispatched('notification.created', message: 'Your post is waiting for admin approval.');
+
+    expect($this->question->fresh()->requires_approval)->toBeTrue();
+});
+
 test('cannot update with an answer longer than 1000 characters', function (): void {
     Livewire::test(Edit::class, [
         'questionId' => $this->question->id,

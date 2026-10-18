@@ -18,6 +18,10 @@ final readonly class QuestionPolicy
             return false;
         }
 
+        if ($question->requires_approval && ! ($user?->isAdmin() ?? false) && $user?->id !== $question->to_id) {
+            return false;
+        }
+
         return $question->answer || $question->to_id === $user?->id;
     }
 
@@ -58,6 +62,16 @@ final readonly class QuestionPolicy
     public function repost(User $user, Question $question): bool
     {
         return $question->answer !== null
+            && ! $question->is_ignored
+            && ! $question->is_reported
+            && ! $question->requires_approval;
+    }
+
+    /** Determine whether the user can approve the question for public display. */
+    public function approve(User $user, Question $question): bool
+    {
+        return $user->isAdmin()
+            && $question->requires_approval
             && ! $question->is_ignored
             && ! $question->is_reported;
     }
