@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Actions\Questions\ApproveQuestion;
 use App\Filament\Resources\QuestionResource;
 use App\Models\Question;
 use App\Models\User;
 use Filament\Navigation\NavigationItem;
+use Illuminate\Auth\Access\AuthorizationException;
 use Livewire\Livewire;
 
 it('can be listed', function (): void {
@@ -94,6 +96,60 @@ it('links to unapproved questions with a matching count and filter', function ()
         ->test(QuestionResource\Pages\Index::class)
         ->assertCanSeeTableRecords($pending)
         ->assertCanNotSeeTableRecords([$approved]);
+});
+
+it('counts and filters only posts that can be approved', function (): void {
+    $actionable = Question::factory()->sharedUpdate()->create(['requires_approval' => true]);
+    $ignored = Question::factory()->sharedUpdate()->create([
+        'requires_approval' => true,
+        'is_ignored' => true,
+    ]);
+    $reported = Question::factory()->sharedUpdate()->create([
+        'requires_approval' => true,
+        'is_reported' => true,
+    ]);
+    $approved = Question::factory()->sharedUpdate()->create(['requires_approval' => false]);
+    $filterParameters = [
+        'filters' => [
+            'requires_approval' => [
+                'value' => '1',
+            ],
+        ],
+    ];
+    $navigationItem = collect(QuestionResource::getNavigationItems())
+        ->first(fn (NavigationItem $item): bool => $item->getLabel() === 'Unapproved questions');
+
+    expect($navigationItem)->not->toBeNull()
+        ->and($navigationItem->getBadge())->toBe('1');
+
+    Livewire::withQueryParams($filterParameters)
+        ->test(QuestionResource\Pages\Index::class)
+        ->assertCanSeeTableRecords([$actionable])
+        ->assertCanNotSeeTableRecords([$ignored, $reported, $approved]);
+});
+
+it('does not offer approval for ignored or reported posts and rejects direct approval', function (): void {
+    $admin = User::factory()->create(['email' => 'enunomaduro@gmail.com']);
+    $ignored = Question::factory()->sharedUpdate()->create([
+        'requires_approval' => true,
+        'is_ignored' => true,
+    ]);
+    $reported = Question::factory()->sharedUpdate()->create([
+        'requires_approval' => true,
+        'is_reported' => true,
+    ]);
+
+    Livewire::actingAs($admin)
+        ->test(QuestionResource\Pages\Index::class)
+        ->assertTableActionHidden('approve', $ignored)
+        ->assertTableActionHidden('approve', $reported);
+
+    expect(fn () => app(ApproveQuestion::class)->handle($ignored))
+        ->toThrow(AuthorizationException::class)
+        ->and(fn () => app(ApproveQuestion::class)->handle($reported))
+        ->toThrow(AuthorizationException::class)
+        ->and($ignored->refresh()->requires_approval)->toBeTrue()
+        ->and($reported->refresh()->requires_approval)->toBeTrue();
 });
 
 it('allows an admin to approve a pending post', function (): void {

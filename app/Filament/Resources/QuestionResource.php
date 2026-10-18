@@ -19,6 +19,7 @@ use Filament\Tables\Columns\Column;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
 use function Filament\Support\original_request;
@@ -82,7 +83,16 @@ final class QuestionResource extends Resource
             ->filters([
                 TernaryFilter::make('is_reported'),
                 TernaryFilter::make('is_ignored'),
-                TernaryFilter::make('requires_approval')->label('Needs approval'),
+                TernaryFilter::make('requires_approval')
+                    ->label('Needs approval')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query
+                            ->where('requires_approval', true)
+                            ->where('is_ignored', false)
+                            ->where('is_reported', false),
+                        false: fn (Builder $query): Builder => $query->where('requires_approval', false),
+                        blank: fn (Builder $query): Builder => $query,
+                    ),
             ])
             ->actions([
                 Action::make('approve')
@@ -92,7 +102,9 @@ final class QuestionResource extends Resource
                     ->action(function (Question $record, ApproveQuestion $approveQuestion): void {
                         $approveQuestion->handle($record);
                     })
-                    ->visible(fn (Question $record): bool => $record->requires_approval)
+                    ->visible(fn (Question $record): bool => $record->requires_approval
+                        && ! $record->is_ignored
+                        && ! $record->is_reported)
                     ->requiresConfirmation(),
                 Action::make('ignore')
                     ->color('gray')
@@ -140,7 +152,11 @@ final class QuestionResource extends Resource
             ->parentItem(self::getNavigationParentItem())
             ->icon('heroicon-o-clock')
             ->isActiveWhen($isUnapprovedQuestionsPage)
-            ->badge(fn (): string => (string) Question::query()->where('requires_approval', true)->count(), color: 'warning')
+            ->badge(fn (): string => (string) Question::query()
+                ->where('requires_approval', true)
+                ->where('is_ignored', false)
+                ->where('is_reported', false)
+                ->count(), color: 'warning')
             ->url(self::getUrl('index', $filterParameters));
 
         return $navigationItems;
