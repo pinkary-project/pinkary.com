@@ -18,6 +18,11 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     private const string ALLOWABLE_ATTACHED_CHARACTERS = '{([<!,.?;:>)]}';
 
     /**
+     * The maximum width of the text displayed for a link.
+     */
+    private const int MAX_DISPLAYED_TEXT_LENGTH = 50;
+
+    /**
      * Regex to check for the presence of images in the content
      * (Checks both Markdown and parsed images)
      */
@@ -37,11 +42,9 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         }
 
         if ($this->imagesExist($content)) {
-            $shouldShowPreview = false;
             $previewMetadata = null;
             $previewIndex = null;
         } else {
-            $shouldShowPreview = true;
             [$previewIndex, $previewMetadata] = $this->findFirstValidPreview($tokens);
         }
 
@@ -49,7 +52,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             fn (string $token, int $index): string => $this
                 ->parseToken(
                     token: $token,
-                    showPreview: ($index === $previewIndex && $shouldShowPreview),
+                    showPreview: $index === $previewIndex,
                     metadata: $previewMetadata
                 ),
             $tokens,
@@ -72,7 +75,51 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
      */
     private function trimToken(string $token): string
     {
-        return mb_trim($token, self::ALLOWABLE_ATTACHED_CHARACTERS);
+        return $this->splitToken($token)[1];
+    }
+
+    /**
+     * @return array{string, string, string}
+     */
+    private function splitToken(string $token): array
+    {
+        $withoutLeadingCharacters = mb_ltrim($token, self::ALLOWABLE_ATTACHED_CHARACTERS);
+        $leadingCharacters = mb_substr($token, 0, mb_strlen($token) - mb_strlen($withoutLeadingCharacters));
+        $url = $this->trimTrailingCharacters($withoutLeadingCharacters);
+        $trailingCharacters = mb_substr($withoutLeadingCharacters, mb_strlen($url));
+
+        return [$leadingCharacters, $url, $trailingCharacters];
+    }
+
+    /** Trim outer punctuation while keeping balanced URL delimiters. */
+    private function trimTrailingCharacters(string $token): string
+    {
+        while ($token !== '') {
+            $lastCharacter = mb_substr($token, -1);
+
+            if ($lastCharacter === '.' && preg_match('/\.{3,}$/', $token) === 1) {
+                break;
+            }
+
+            $openingCharacter = match ($lastCharacter) {
+                ')' => '(',
+                ']' => '[',
+                '}' => '{',
+                default => null,
+            };
+
+            if ($openingCharacter !== null && mb_substr_count($token, $openingCharacter) >= mb_substr_count($token, $lastCharacter)) {
+                break;
+            }
+
+            if (! str_contains(self::ALLOWABLE_ATTACHED_CHARACTERS, $lastCharacter)) {
+                break;
+            }
+
+            $token = mb_substr($token, 0, -1);
+        }
+
+        return $token;
     }
 
     /**
@@ -133,7 +180,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         bool $showPreview = false,
         ?Collection $metadata = null
     ): string {
-        $trimmedToken = $this->trimToken($token);
+        [$leading, $trimmedToken, $trailing] = $this->splitToken($token);
 
         if ($trimmedToken === '' || $trimmedToken === '0') {
             return $token;
@@ -145,10 +192,12 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             return $token;
         }
 
-        $humanUrl = Str::of($trimmedToken)
-            ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
-            ->rtrim('/')
-            ->toString();
+        $humanUrl = $this->displayedText(
+            Str::of($trimmedToken)
+                ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
+                ->rtrim('/')
+                ->toString()
+        );
 
         $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" rel=\"noopener noreferrer\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
 
@@ -163,29 +212,26 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
             $linkHtml .= $trimmedPreviewCard;
         }
 
-        $leading = $this->getCharacters($token, 'leading');
-        $trailing = $this->getCharacters($token, 'trailing');
-
         return $leading.$linkHtml.$trailing;
     }
 
     /**
-     * Extract leading or trailing punctuation/characters from a token.
+     * Shorten the text of a link so long urls do not make a post look spammy.
+     *
+     * The cut may land inside an escaped entity such as "&amp;", which would
+     * render as literal text, so any partial entity is dropped before the
+     * ellipsis is appended.
      */
-    private function getCharacters(string $token, string $direction): string
+    private function displayedText(string $url): string
     {
-        $allowableCharacters = preg_quote(self::ALLOWABLE_ATTACHED_CHARACTERS, '/');
-        $pattern = match ($direction) {
-            'leading' => "/^([{$allowableCharacters}]+)/",
-            'trailing' => "/([{$allowableCharacters}]+)$/",
-            default => '',
-        };
-
-        if (preg_match($pattern, $token, $matches)) {
-            return $matches[1];
+        if (mb_strlen($url) <= self::MAX_DISPLAYED_TEXT_LENGTH) {
+            return $url;
         }
 
-        return '';
+        $trimmed = Str::limit($url, self::MAX_DISPLAYED_TEXT_LENGTH - 3, '');
+        $trimmed = Str::replaceMatches('/(?:&[#a-zA-Z0-9]*|%(?:[a-fA-F0-9])?)$/', '', $trimmed);
+
+        return $trimmed.'...';
     }
 
     /**
@@ -215,7 +261,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         }
 
         return (bool) preg_match(
-            '/((https?:\/\/)?((localhost)|((?:\d{1,3}\.){3}\d{1,3})|[\w\-._@:%+~#=]{1,256}(\.[a-zA-Z]{2,})+)(:\d+)?(\/[\w\-._@:%+~#=\/]*)?(\?[\w\-._@:%+~#=\/&]*)?)/i',
+            '/((https?:\/\/)?((localhost)|((?:\d{1,3}\.){3}\d{1,3})|[\w\-._@:%+~#=]{1,256}(\.[a-zA-Z]{2,})+)(:\d+)?(\/[\w\-._@:%+~#=\/()]*)?(\?[\w\-._@:%+~#=\/&()]*)?)/i',
             $token
         );
     }

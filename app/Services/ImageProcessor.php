@@ -9,6 +9,7 @@ use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers;
+use Intervention\Image\Encoders\FileExtensionEncoder;
 use Intervention\Image\ImageManager;
 
 final readonly class ImageProcessor
@@ -45,17 +46,17 @@ final readonly class ImageProcessor
         }
 
         $resizedImage = $this->manager()
-            ->read($image)
+            ->decodeSplFileInfo($image)
             ->scaleDown(750, 750);
 
         $imagePath .= '/'.$image->hashName();
 
         $stored = $this->disk()->put(
             $imagePath,
-            $resizedImage->encodeByExtension(
+            $resizedImage->encode(new FileExtensionEncoder(
                 $image->extension(),
                 quality: 80,
-            )->toFilePointer(),
+            ))->toStream(),
             ['visibility' => 'public'],
         );
 

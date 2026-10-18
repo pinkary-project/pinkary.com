@@ -32,6 +32,11 @@ final readonly class MetaData
     private const int HTTP_TIMEOUT_SECONDS = 3;
 
     /**
+     * Bump when the meta-data extraction changes, so cached previews are rebuilt.
+     */
+    private const int PREVIEW_CACHE_VERSION = 1;
+
+    /**
      * The oEmbed endpoints keyed by their supported hosts.
      *
      * @var array<string, list<string>>
@@ -55,7 +60,7 @@ final readonly class MetaData
     {
         /** @var Collection<string, string> $cachedData */
         $cachedData = Cache::memo()->remember(
-            Str::of($this->url)->slug()->prepend('preview_')->value(),
+            Str::of($this->url)->slug()->prepend('preview_v'.self::PREVIEW_CACHE_VERSION.'_')->value(),
             now()->addYear(),
             fn (): Collection => $this->getData()
         );
@@ -68,12 +73,11 @@ final readonly class MetaData
      */
     public function ensureCorrectSize(string $value): string
     {
-        if (! Str::contains($value, 'iframe')) {
+        if (! str_contains($value, 'iframe')) {
             return $value;
         }
 
         $doc = new DOMDocument();
-        // @phpstan-ignore argument.type
         @$doc->loadHTML($value);
         $iframe = $doc->getElementsByTagName('iframe')->item(0);
 
@@ -149,7 +153,7 @@ final readonly class MetaData
             // Laravel Http Client, Guzzle, and PSR-7
         }
 
-        return $data->filter(fn (mixed $value): bool => is_string($value) && $value !== '');
+        return $data;
     }
 
     /**

@@ -13,6 +13,7 @@ use App\Models\Question;
 use App\Models\Scopes\WhereNotModerated;
 use App\Models\User;
 use App\Queries\Feeds\FeedQuestion;
+use App\Queries\Feeds\FeedThread;
 use App\Queries\Questions\ThreadedQuestionQuery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\Gate;
 final readonly class QuestionCommentController
 {
     /** List a post's comments. */
-    public function index(PaginatedRequest $request, Question $question): AnonymousResourceCollection
+    public function index(PaginatedRequest $request, Question $question, FeedThread $feedThread): AnonymousResourceCollection
     {
         Gate::authorize('view', $question);
 
@@ -36,7 +37,7 @@ final readonly class QuestionCommentController
             $request->user()?->id,
         )->simplePaginate($perPage);
 
-        return QuestionResource::collection($comments);
+        return QuestionResource::collection($feedThread->attachTo($comments, $request->user()?->id));
     }
 
     /** Comment on a post. */
@@ -51,6 +52,10 @@ final readonly class QuestionCommentController
 
         /** @var User $user */
         $user = $request->user();
+        $validated = $request->validated();
+        /** @var list<string> $pollOptions */
+        $pollOptions = $validated['poll_options'] ?? [];
+        $pollDuration = $request->integer('poll_duration', 1);
 
         $ensureCanPublish->handle($user);
 
@@ -62,9 +67,11 @@ final readonly class QuestionCommentController
             'answer_created_at' => now(),
             'parent_id' => $question->id,
             'root_id' => $question->root_id ?? $question->id,
-        ]], [], [], null)[0];
+            'poll_expires_at' => $pollOptions !== [] ? now()->addDays($pollDuration) : null,
+        ]], $pollOptions, [], null)[0];
 
         $thread = $threaded->get(Question::query()->findOrFail($comment->id), $user->id);
+        $thread['question']->setRelation('threadChain', $thread['ancestors']);
 
         return new QuestionResource($thread['question'])->response()->setStatusCode(201);
     }

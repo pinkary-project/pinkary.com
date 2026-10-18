@@ -145,11 +145,11 @@ test('links with ports in the url', function (string $content, string $parsed): 
     ],
     [
         'content' => 'https://example.com:8080/?utm_source=twitter&utm_medium=social',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com:8080/?utm_source=twitter&utm_medium=social">example.com:8080/?utm_source=twitter&utm_medium=social</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social">example.com:8080/?utm_source=twitter&utm_medium...</a>',
     ],
     [
         'content' => 'https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com:8080/?utm_source=twitter&utm_medium...</a>',
     ],
     [
         'content' => 'https://example.com:8080/@nunomaduro',
@@ -238,7 +238,113 @@ test('links with query params', function (string $content, string $parsed): void
     ],
     [
         'content' => 'https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example">example.com/?utm_source=twitter&utm_medium=soci...</a>',
+    ],
+]);
+
+test('long links display a truncated text while the href keeps the full url', function (string $content, string $parsed): void {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    [
+        'content' => 'https://example.com/blog/how-to-truncate-long-articles',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/blog/how-to-truncate-long-articles">example.com/blog/how-to-truncate-long-articles</a>',
+    ],
+    [
+        'content' => 'https://example.com/blog/how-to-truncate-long-articles-in',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/blog/how-to-truncate-long-articles-in">example.com/blog/how-to-truncate-long-articles-in</a>',
+    ],
+    [
+        'content' => 'https://example.com/blog/how-to-truncate-long-articles-in-a-post',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/blog/how-to-truncate-long-articles-in-a-post">example.com/blog/how-to-truncate-long-articles-...</a>',
+    ],
+    [
+        'content' => '(https://example.com/subscribe?utm_campaign=newsletter&utm_medium=email&utm_source=site).',
+        'parsed' => '(<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/subscribe?utm_campaign=newsletter&utm_medium=email&utm_source=site">example.com/subscribe?utm_campaign=newsletter...</a>).',
+    ],
+]);
+
+test('truncated link text includes its ellipsis within the limit and keeps percent escapes intact', function (int $pathLength): void {
+    $url = 'https://example.com/'.str_repeat('a', $pathLength).'%2Frest...';
+    $displayedUrl = 'example.com/'.str_repeat('a', $pathLength).'...';
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+    $parsed = $provider->parse($url);
+
+    expect($parsed)
+        ->toContain('href="'.$url.'"')
+        ->and($parsed)->toContain('>'.$displayedUrl.'</a>')
+        ->and(mb_strlen($displayedUrl))->toBeLessThanOrEqual(50)
+        ->and($displayedUrl)->not->toContain('%');
+})->with([34, 33]);
+
+test('link URLs keep balanced closing parentheses and a trailing ellipsis', function (string $content, string $url, string $displayedUrl, string $prefix, string $suffix): void {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+    $parsed = $provider->parse($content);
+
+    expect($parsed)
+        ->toContain('href="'.$url.'"')
+        ->and($parsed)->toContain('>'.$displayedUrl.'</a>')
+        ->and($parsed)->toStartWith($prefix)
+        ->and($parsed)->toEndWith($suffix);
+})->with([
+    'balanced parentheses belong to the URL' => [
+        'content' => 'https://example.com/path(one)',
+        'url' => 'https://example.com/path(one)',
+        'displayedUrl' => 'example.com/path(one)',
+        'prefix' => '<a',
+        'suffix' => '</a>',
+    ],
+    'a path ending in an ellipsis belongs to the URL' => [
+        'content' => 'https://example.com/path...',
+        'url' => 'https://example.com/path...',
+        'displayedUrl' => 'example.com/path...',
+        'prefix' => '<a',
+        'suffix' => '</a>',
+    ],
+    'outer punctuation stays outside a parenthesized URL' => [
+        'content' => '(https://example.com/path(one)).',
+        'url' => 'https://example.com/path(one)',
+        'displayedUrl' => 'example.com/path(one)',
+        'prefix' => '(',
+        'suffix' => '</a>).',
+    ],
+]);
+
+test('links separated by a line break remain clickable', function (): void {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+    $parsed = $provider->parse('https://example.com/first<br>https://example.com/second');
+
+    expect($parsed)
+        ->toContain('href="https://example.com/first"')
+        ->and($parsed)->toContain('href="https://example.com/second"')
+        ->and($parsed)->toContain('</a><br><a');
+});
+
+test('truncated link text never ends with a partial html entity', function (string $content, string $parsed): void {
+    $provider = new App\Services\ParsableContentProviders\LinkProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    'cut right before the entity' => [
+        'content' => 'https://example.com/'.str_repeat('a', 34).'?x=1&amp;b=2',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/'.str_repeat('a', 34).'?x=1&amp;b=2">example.com/'.str_repeat('a', 34).'?...</a>',
+    ],
+    'cut inside the entity' => [
+        'content' => 'https://example.com/'.str_repeat('a', 33).'?x=1&amp;b=2',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/'.str_repeat('a', 33).'?x=1&amp;b=2">example.com/'.str_repeat('a', 33).'?x...</a>',
+    ],
+    'cut inside a numeric entity' => [
+        'content' => 'https://example.com/'.str_repeat('a', 31).'?q=1&#039;b=2',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/'.str_repeat('a', 31).'?q=1&#039;b=2">example.com/'.str_repeat('a', 31).'?q=1...</a>',
+    ],
+    'a complete entity before the cut is kept' => [
+        'content' => 'https://example.com/?x=1&amp;b=2/'.str_repeat('d', 40),
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?x=1&amp;b=2/'.str_repeat('d', 40).'">example.com/?x=1&amp;b=2/'.str_repeat('d', 22).'...</a>',
+    ],
+    'a complete entity on an untruncated link is kept' => [
+        'content' => 'https://example.com/?x=1&amp;b=2',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?x=1&amp;b=2">example.com/?x=1&amp;b=2</a>',
     ],
 ]);
 

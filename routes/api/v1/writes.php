@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\QuestionCommentController;
 use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\QuestionIgnoreController;
 use App\Http\Controllers\Api\QuestionPinController;
+use App\Http\Controllers\Api\QuestionReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->as('api.v1.')->group(function (): void {
@@ -23,6 +24,10 @@ Route::prefix('v1')->as('api.v1.')->group(function (): void {
 
             Route::put('questions/{question}/answer', [QuestionAnswerController::class, 'update'])
                 ->name('questions.answer.update')
+                ->whereUuid('question');
+
+            Route::post('questions/{question}/report', QuestionReportController::class)
+                ->name('questions.report')
                 ->whereUuid('question');
 
             Route::post('questions/{question}/pin', [QuestionPinController::class, 'store'])

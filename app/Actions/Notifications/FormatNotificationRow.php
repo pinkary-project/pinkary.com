@@ -16,9 +16,42 @@ use App\Support\AbsoluteUrl;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Collection;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 final readonly class FormatNotificationRow
 {
+    /** @var HtmlSanitizer Sanitizes HTML in notification snippets. */
+    private HtmlSanitizer $htmlSanitizer;
+
+    /** Configure the sanitizer used for notification snippets. */
+    public function __construct()
+    {
+        $this->htmlSanitizer = new HtmlSanitizer(
+            (new HtmlSanitizerConfig)
+                ->allowElement('a', ['href', 'rel', 'target', 'title'])
+                ->allowElement('br')
+                ->allowElement('code')
+                ->allowElement('del')
+                ->allowElement('em')
+                ->allowElement('img', ['alt', 'src'])
+                ->allowElement('li')
+                ->allowElement('ol')
+                ->allowElement('p')
+                ->allowElement('pre')
+                ->allowElement('s')
+                ->allowElement('span')
+                ->allowElement('strong')
+                ->allowElement('ul')
+                ->allowRelativeLinks()
+                ->allowLinkSchemes(['http', 'https', 'mailto'])
+                ->allowMediaSchemes(['http', 'https'])
+                ->dropElement('div')
+                ->forceAttribute('a', 'rel', 'noopener noreferrer')
+                ->withMaxInputLength(30_000),
+        );
+    }
+
     /**
      * @param  Collection<string, Question>  $questions
      * @param  Collection<int, User>  $followers
@@ -50,6 +83,7 @@ final readonly class FormatNotificationRow
             'type' => class_basename($notification->type),
             'read' => $notification->read_at !== null,
             'created_at' => $notification->created_at?->toIso8601String(),
+            'is_pending_question' => false,
             ...$row,
         ];
     }
@@ -76,6 +110,7 @@ final readonly class FormatNotificationRow
             'actor' => $this->actor($follower, $request),
             'action' => 'followed you',
             'snippet' => null,
+            'snippet_html' => null,
             'target' => ['kind' => 'user', 'username' => $follower->username],
         ];
     }
@@ -101,7 +136,7 @@ final readonly class FormatNotificationRow
             'action' => $question->parent_id !== null
                 ? 'mentioned you in a comment:'
                 : 'mentioned you in '.($question->isSharedUpdate() ? 'an update:' : 'a question:'),
-            'snippet' => $this->snippet($question),
+            ...$this->snippetContent($question),
             'target' => ['kind' => 'question', 'id' => $question->id],
         ];
     }
@@ -141,7 +176,12 @@ final readonly class FormatNotificationRow
         return [
             'actor' => $actor ? $this->actor($actor, $request) : null,
             'action' => $action,
-            'snippet' => $this->snippet($question),
+            ...$this->snippetContent($question),
+            'is_pending_question' => ! $isComment
+                && $question->to_id === $viewer->id
+                && $question->answer === null
+                && ! $question->is_ignored
+                && ! $question->is_reported,
             'target' => ['kind' => 'question', 'id' => $question->id],
         ];
     }
@@ -164,7 +204,7 @@ final readonly class FormatNotificationRow
         return [
             'actor' => $this->actor($repost->user, $request),
             'action' => 'reposted your '.($question->isSharedUpdate() ? 'post:' : 'question:'),
-            'snippet' => $this->snippet($question),
+            ...$this->snippetContent($question),
             'target' => ['kind' => 'question', 'id' => $question->id],
         ];
     }
@@ -202,13 +242,19 @@ final readonly class FormatNotificationRow
         ];
     }
 
-    /** The post's text with markup stripped, or null when it has none. */
-    private function snippet(Question $question): ?string
+    /**
+     * @return array{snippet: ?string, snippet_html: ?string}
+     */
+    private function snippetContent(Question $question): array
     {
-        $html = $question->content === '__UPDATE__' ? $question->answer : $question->content;
+        $html = $question->isSharedUpdate() ? $question->answer : $question->content;
+        $safeHtml = is_string($html) ? $this->htmlSanitizer->sanitize($html) : '';
 
-        $text = mb_trim(html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8'));
+        $text = mb_trim(html_entity_decode(strip_tags($safeHtml), ENT_QUOTES, 'UTF-8'));
 
-        return $text === '' ? null : $text;
+        return [
+            'snippet' => $text === '' ? null : $text,
+            'snippet_html' => $safeHtml === '' ? null : $safeHtml,
+        ];
     }
 }

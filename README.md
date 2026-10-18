@@ -20,8 +20,8 @@ Pinkary is a regular Laravel application built on Laravel 13 and uses Livewire v
 
 In terms of local development, you can use the following requirements:
 
-- PHP 8.4 - with MySQL, GD, and other common extensions.
-- Node.js 22 or more recent.
+- PHP 8.5 - with MySQL, GD, and other common extensions.
+- Node.js 26 or more recent.
 
 If you have these requirements, you can start by cloning the repository and installing the dependencies:
 

@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Requests\Auth\VerifyEmailLinkRequest;
 use Illuminate\Http\RedirectResponse;
 
 final readonly class VerifyEmailController
 {
     /**
-     * Mark the authenticated user's email address as verified.
+     * Mark the email address in the signed verification link as verified.
      */
-    public function __invoke(EmailVerificationRequest $request, #[CurrentUser] User $user): RedirectResponse
+    public function __invoke(VerifyEmailLinkRequest $request): RedirectResponse
     {
+        $user = $request->verificationUser();
+
         if ($user->hasVerifiedEmail()) {
             session()->flash('flash-message', 'Your email is already verified.');
 
@@ -27,10 +26,7 @@ final readonly class VerifyEmailController
         }
 
         session()->flash('flash-message', 'Your email has been verified.');
-
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
+        $request->fulfill();
 
         return to_route('profile.show', [
             'username' => $user->username,

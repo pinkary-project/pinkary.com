@@ -49,7 +49,10 @@ final readonly class NotificationController
         return response()->json([
             'data' => $items,
             'links' => ['next' => $paginator->nextPageUrl()],
-            'meta' => ['unread_count' => $user->unreadNotifications()->count()],
+            'meta' => [
+                'unread_count' => $user->unreadNotifications()->count(),
+                'total_count' => $user->notifications()->count(),
+            ],
         ]);
     }
 

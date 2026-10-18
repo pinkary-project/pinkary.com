@@ -13,7 +13,6 @@ use App\Services\ParsableContentProviders\ImageProviderParsable;
 use App\Services\ParsableContentProviders\LinkProviderParsable;
 use App\Services\ParsableContentProviders\MentionProviderParsable;
 use App\Services\ParsableContentProviders\StripProviderParsable;
-use Illuminate\Support\Facades\Cache;
 use ReflectionClass;
 
 final readonly class ParsableContent
@@ -60,36 +59,34 @@ final readonly class ParsableContent
      */
     public function fingerprint(): string
     {
-        $key = implode(',', $this->providers);
+        /** @var array<string, string> $fingerprints */
+        static $fingerprints = [];
 
-        /** @var string $fingerprint */
-        $fingerprint = Cache::memo()->remember(
-            'parsable-fingerprint-'.hash('sha256', $key),
-            now()->addYear(),
-            function (): string {
-                $hashes = [];
+        return $fingerprints[implode(',', $this->providers)] ??= $this->computeFingerprint();
+    }
 
-                /** @var list<class-string> $classes */
-                $classes = [...$this->providers, MetaData::class, self::class];
+    /** Builds the fingerprint from the source of the parse pipeline. */
+    private function computeFingerprint(): string
+    {
+        $hashes = [];
 
-                foreach ($classes as $class) {
-                    $file = new ReflectionClass($class)->getFileName();
+        /** @var list<class-string> $classes */
+        $classes = [...$this->providers, MetaData::class, self::class];
 
-                    if (is_string($file)) {
-                        $hashes[] = md5_file($file);
-                    }
-                }
+        foreach ($classes as $class) {
+            $file = new ReflectionClass($class)->getFileName();
 
-                $blade = md5_file(resource_path('views/components/link-preview-card.blade.php'));
-
-                if (is_string($blade)) {
-                    $hashes[] = $blade;
-                }
-
-                return hash('sha256', (string) json_encode($hashes));
+            if (is_string($file)) {
+                $hashes[] = md5_file($file);
             }
-        );
+        }
 
-        return $fingerprint;
+        $blade = md5_file(resource_path('views/components/link-preview-card.blade.php'));
+
+        if (is_string($blade)) {
+            $hashes[] = $blade;
+        }
+
+        return hash('sha256', (string) json_encode($hashes));
     }
 }

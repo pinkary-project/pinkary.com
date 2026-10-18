@@ -27,7 +27,7 @@ final class QuestionOverview extends BaseWidget
             ->first();
 
         /** @var array<string, int> $counts */
-        $counts = $counts !== null ? $counts->attributesToArray() : ['total' => 0, 'reported' => 0, 'ignored' => 0];
+        $counts = $counts?->attributesToArray() ?? ['total' => 0, 'reported' => 0, 'ignored' => 0];
 
         return [
             Stat::make('Total Questions', $counts['total']),

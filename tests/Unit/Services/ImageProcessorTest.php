@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Services\ImageProcessor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\ImageManager;
 
 beforeEach(function (): void {
@@ -20,7 +21,7 @@ it('resizes and stores non-gif images', function (): void {
 
     Storage::disk()->assertExists($path);
 
-    $processedImage = ImageManager::imagick()->read(Storage::disk()->path($path));
+    $processedImage = ImageManager::usingDriver(Driver::class)->decodePath(Storage::disk()->path($path));
 
     expect($processedImage->width())->toBeLessThanOrEqual(750)
         ->and($processedImage->height())->toBeLessThanOrEqual(750);
@@ -35,7 +36,7 @@ it('stores gifs without resizing them', function (): void {
 
     Storage::disk()->assertExists($path);
 
-    $processedImage = ImageManager::imagick()->read(Storage::disk()->path($path));
+    $processedImage = ImageManager::usingDriver(Driver::class)->decodePath(Storage::disk()->path($path));
 
     expect($processedImage->width())->toBe(1200)
         ->and($processedImage->height())->toBe(1200);

@@ -38,23 +38,23 @@ jobs:
           fetch-depth: 0
 
       - name: Cache Composer Dependencies
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-composer-${{ hashFiles('composer.lock') }}
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           extensions: json, dom, curl, libxml, mbstring, zip, imagick, intl, bcmath, pdo, pdo_mysql, mysql
           tools: composer:v2
           coverage: xdebug
 
       - name: Set up Node & NPM
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '22.x'
+          node-version: '26.x'
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --no-progress --ansi
@@ -65,7 +65,7 @@ jobs:
         run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -94,7 +94,7 @@ jobs:
         run: echo "path=$(vendor/bin/pest --baseline)" >> "$GITHUB_OUTPUT"
 
       - name: Upload TIA baseline
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: pest-tia-baseline
           path: ${{ steps.baseline.outputs.path }}

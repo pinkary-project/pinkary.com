@@ -67,6 +67,35 @@ it('includes a thread post ancestors oldest first', function (): void {
         ->assertJsonPath('data.thread.root_id', $root->id);
 });
 
+it('includes every ancestor in a deeply nested thread', function (): void {
+    $user = User::factory()->create();
+    $root = Question::factory()->create(['to_id' => $user->id]);
+    $ancestors = [$root];
+    $parent = $root;
+
+    for ($depth = 0; $depth < 11; $depth++) {
+        $parent = Question::factory()->create([
+            'to_id' => $user->id,
+            'root_id' => $root->id,
+            'parent_id' => $parent->id,
+        ]);
+        $ancestors[] = $parent;
+    }
+
+    $leaf = Question::factory()->create([
+        'to_id' => $user->id,
+        'root_id' => $root->id,
+        'parent_id' => $parent->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get("/api/v1/questions/{$leaf->id}")
+        ->assertOk()
+        ->assertJsonCount(count($ancestors), 'thread')
+        ->assertJsonPath('thread.0.id', $root->id)
+        ->assertJsonPath('thread.11.id', $parent->id);
+});
+
 it('lists a post comments oldest first', function (): void {
     $user = User::factory()->create();
     $question = Question::factory()->create(['to_id' => $user->id]);
@@ -87,6 +116,28 @@ it('lists a post comments oldest first', function (): void {
     $response->assertOk()
         ->assertJsonPath('data.0.id', $older->id)
         ->assertJsonPath('data.1.id', $newer->id);
+});
+
+it('includes root and parent context when listing nested replies', function (): void {
+    $user = User::factory()->create();
+    $root = Question::factory()->create(['to_id' => $user->id]);
+    $parent = Question::factory()->create([
+        'to_id' => $user->id,
+        'root_id' => $root->id,
+        'parent_id' => $root->id,
+    ]);
+    $reply = Question::factory()->create([
+        'to_id' => $user->id,
+        'root_id' => $root->id,
+        'parent_id' => $parent->id,
+    ]);
+
+    $this->actingAs($user)
+        ->get("/api/v1/questions/{$parent->id}/comments")
+        ->assertOk()
+        ->assertJsonPath('data.0.id', $reply->id)
+        ->assertJsonPath('data.0.thread.posts.0.id', $root->id)
+        ->assertJsonPath('data.0.thread.posts.1.id', $parent->id);
 });
 
 it('refuses to list the comments of an unanswered post to a guest', function (): void {
@@ -112,4 +163,85 @@ it('exposes a public profile to a guest', function (): void {
 it('returns not found for a missing profile', function (): void {
     $this->get('/api/v1/users/nobody-here')
         ->assertNotFound();
+});
+
+it('returns original sources to the recipient and preserves formatting when saved', function (): void {
+    $owner = User::factory()->create();
+    $content = "First line\n\nSecond line";
+    $answer = <<<'MARKDOWN'
+        First line
+
+        ![Photo](images/original.png)
+
+        ```php
+        return "hello";
+        ```
+
+        Last line
+        MARKDOWN;
+    $question = Question::factory()->create([
+        'to_id' => $owner->id,
+        'content' => $content,
+        'answer' => $answer,
+        'answer_created_at' => now(),
+    ]);
+    $headers = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+
+    $response = $this->getJson(route('api.v1.questions.show', $question), $headers)
+        ->assertOk()
+        ->assertJsonPath('data.content_source', $content)
+        ->assertJsonPath('data.answer_source', $answer);
+
+    $this->putJson(route('api.v1.questions.answer.update', $question), [
+        'answer' => $response->json('data.answer_source'),
+    ], $headers)->assertOk()
+        ->assertJsonPath('data.answer_source', $answer);
+
+    $this->assertDatabaseHas('questions', ['id' => $question->id, 'answer' => $answer]);
+});
+
+it('omits editing sources for guests and other viewers', function (bool $authenticated): void {
+    $question = Question::factory()->create();
+    $headers = $authenticated
+        ? ['Authorization' => 'Bearer '.User::factory()->create()->createToken('test')->plainTextToken]
+        : [];
+
+    $this->getJson(route('api.v1.questions.show', $question), $headers)
+        ->assertOk()
+        ->assertJsonMissingPath('data.content_source')
+        ->assertJsonMissingPath('data.answer_source');
+})->with(['guest' => false, 'other viewer' => true]);
+
+it('returns null content source for a shared update', function (): void {
+    $owner = User::factory()->create();
+    $question = Question::factory()->create([
+        'from_id' => $owner->id,
+        'to_id' => $owner->id,
+        'content' => '__UPDATE__',
+        'answer' => 'An original update.',
+    ]);
+    $headers = ['Authorization' => 'Bearer '.$owner->createToken('test')->plainTextToken];
+
+    $this->getJson(route('api.v1.questions.show', $question), $headers)
+        ->assertOk()
+        ->assertJsonPath('data.content_source', null)
+        ->assertJsonPath('data.answer_source', 'An original update.');
+});
+
+it('returns the unanswered anonymous question source only to its recipient', function (): void {
+    $recipient = User::factory()->create();
+    $question = Question::factory()->create([
+        'to_id' => $recipient->id,
+        'content' => "A question\nwith a newline?",
+        'answer' => null,
+        'answer_created_at' => null,
+        'anonymously' => true,
+    ]);
+    $headers = ['Authorization' => 'Bearer '.$recipient->createToken('test')->plainTextToken];
+
+    $this->getJson(route('api.v1.questions.show', $question), $headers)
+        ->assertOk()
+        ->assertJsonPath('data.content_source', "A question\nwith a newline?")
+        ->assertJsonPath('data.answer_source', null)
+        ->assertJsonPath('data.from', null);
 });

@@ -47,6 +47,41 @@ test('email can be verified', function (): void {
     $response->assertSessionHas('flash-message', 'Your email has been verified.');
 });
 
+test('email can be verified from the signed link without a browser login', function (): void {
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+    ]);
+
+    Event::fake();
+
+    $verificationUrl = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
+    );
+
+    $response = $this->get($verificationUrl);
+
+    Event::assertDispatched(Verified::class);
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+    $response->assertRedirect(route('profile.show', [
+        'username' => $user->username,
+    ], absolute: false));
+});
+
+test('email cannot be verified from an unsigned link without a browser login', function (): void {
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+    ]);
+
+    $this->get(route('verification.verify', [
+        'id' => $user->id,
+        'hash' => sha1($user->getEmailForVerification()),
+    ], absolute: false))->assertForbidden();
+
+    expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
+});
+
 test('email is not verified with invalid hash', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => null,

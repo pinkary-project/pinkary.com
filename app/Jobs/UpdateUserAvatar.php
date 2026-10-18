@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers;
+use Intervention\Image\Format;
 use Intervention\Image\ImageManager;
 use Throwable;
 
@@ -111,8 +112,8 @@ final class UpdateUserAvatar implements ShouldQueue
 
         $avatar = 'avatars/'.hash('sha256', random_int(0, PHP_INT_MAX).'@'.$user->id).'.png';
 
-        $image = $this->resizer()->read($contents)
-            ->coverDown(200, 200)->toPng()->toFilePointer();
+        $image = $this->resizer()->decodeBinary($contents)
+            ->coverDown(200, 200)->encodeUsingFormat(Format::PNG)->toStream();
 
         $disk->put($avatar, $image, ['visibility' => 'public']);
 
