@@ -199,7 +199,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
                 ->toString()
         );
 
-        $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
+        $linkHtml = "<a data-navigate-ignore=\"true\" class=\"text-blue-500 hover:underline hover:text-blue-700 cursor-pointer\" target=\"_blank\" rel=\"noopener noreferrer\" href=\"{$trimmedToken}\">{$humanUrl}</a>";
 
         if ($showPreview && $metadata?->isNotEmpty()) {
             $trimmedPreviewCard = mb_trim(

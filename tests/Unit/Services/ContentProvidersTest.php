@@ -10,6 +10,34 @@ beforeEach(function (): void {
     ]);
 });
 
+test('text formatting', function (string $content, string $parsed): void {
+    $provider = new App\Services\ParsableContentProviders\FormattingProviderParsable();
+
+    expect($provider->parse($content))->toBe($parsed);
+})->with([
+    ['**bold**', '<strong>bold</strong>'],
+    ['*italic*', '<em>italic</em>'],
+    ['&gt; quoted text', '<blockquote class="border-l-4 border-slate-300 pl-3 text-slate-600 dark:border-slate-600 dark:text-slate-300">quoted text</blockquote>'],
+    ['[Laravel](https://laravel.com)', '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://laravel.com">Laravel</a>'],
+]);
+
+test('formatting keeps unsafe and unsupported links as text', function (): void {
+    $provider = new App\Services\ParsableContentProviders\FormattingProviderParsable();
+
+    expect($provider->parse('[unsafe](javascript:alert(1))'))
+        ->toBe('[unsafe](javascript:alert(1))');
+});
+
+test('formatting ignores generated html elements', function (): void {
+    $provider = new App\Services\ParsableContentProviders\FormattingProviderParsable();
+
+    expect($provider->parse('<pre><code>**not bold**</code></pre> **bold**'))
+        ->toBe('<pre><code>**not bold**</code></pre> <strong>bold</strong>');
+
+    expect($provider->parse('<img src="x.png"> **bold** <pre><code>y</code></pre>'))
+        ->toBe('<img src="x.png"> <strong>bold</strong> <pre><code>y</code></pre>');
+});
+
 test('brs', function (string $content, string $parsed): void {
     $provider = new App\Services\ParsableContentProviders\BrProviderParsable();
 
@@ -32,35 +60,35 @@ test('links', function (string $content, string $parsed): void {
 })->with([
     [
         'content' => 'http://example.com/',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://example.com/">example.com</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="http://example.com/">example.com</a>',
     ],
     [
         'content' => 'https://example.com/',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/">example.com</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com/">example.com</a>',
     ],
     [
         'content' => 'https://example.media/',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.media/">example.media</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.media/">example.media</a>',
     ],
     [
         'content' => 'https://example.co.uk/',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.co.uk/">example.co.uk</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.co.uk/">example.co.uk</a>',
     ],
     [
         'content' => 'Hello https://example.com',
-        'parsed' => 'Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>',
+        'parsed' => 'Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>',
     ],
     [
         'content' => 'Hello https://example.com, how are you?',
-        'parsed' => 'Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>, how are you?',
+        'parsed' => 'Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>, how are you?',
     ],
     [
         'content' => 'Hello https://example.com, how are you? https://example.com',
-        'parsed' => 'Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>, how are you? <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>',
+        'parsed' => 'Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>, how are you? <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>',
     ],
     [
         'content' => 'You can check in this link: https://example.com. Or you can check in this other link: https://example.media.',
-        'parsed' => 'You can check in this link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>. Or you can check in this other link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.media">example.media</a>.',
+        'parsed' => 'You can check in this link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>. Or you can check in this other link: <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.media">example.media</a>.',
     ],
 ]);
 
@@ -71,19 +99,19 @@ test('links with mail', function (string $content, string $parsed): void {
 })->with([
     [
         'content' => 'javier@example.com',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:javier@example.com">javier@example.com</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="mailto:javier@example.com">javier@example.com</a>',
     ],
     [
         'content' => 'Hello my email is javier@example.com',
-        'parsed' => 'Hello my email is <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:javier@example.com">javier@example.com</a>',
+        'parsed' => 'Hello my email is <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="mailto:javier@example.com">javier@example.com</a>',
     ],
     [
         'content' => 'Hello my email is javier@example.com, and my site is https://example.com',
-        'parsed' => 'Hello my email is <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:javier@example.com">javier@example.com</a>, and my site is <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>',
+        'parsed' => 'Hello my email is <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="mailto:javier@example.com">javier@example.com</a>, and my site is <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>',
     ],
     [
         'content' => 'Hello my emails are javier@example.com, contact@example.com and support@example.com.',
-        'parsed' => 'Hello my emails are <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:javier@example.com">javier@example.com</a>, <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:contact@example.com">contact@example.com</a> and <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="mailto:support@example.com">support@example.com</a>.',
+        'parsed' => 'Hello my emails are <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="mailto:javier@example.com">javier@example.com</a>, <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="mailto:contact@example.com">contact@example.com</a> and <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="mailto:support@example.com">support@example.com</a>.',
     ],
 ]);
 
@@ -105,15 +133,15 @@ test('links with ports in the url', function (string $content, string $parsed): 
 })->with([
     [
         'content' => 'https://example.com:8080',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080">example.com:8080</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com:8080">example.com:8080</a>',
     ],
     [
         'content' => 'https://example.com:8080/',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/">example.com:8080</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com:8080/">example.com:8080</a>',
     ],
     [
         'content' => 'https://example.com:8080/?utm_source=twitter',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/?utm_source=twitter">example.com:8080/?utm_source=twitter</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com:8080/?utm_source=twitter">example.com:8080/?utm_source=twitter</a>',
     ],
     [
         'content' => 'https://example.com:8080/?utm_source=twitter&utm_medium=social',
@@ -125,7 +153,7 @@ test('links with ports in the url', function (string $content, string $parsed): 
     ],
     [
         'content' => 'https://example.com:8080/@nunomaduro',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com:8080/@nunomaduro">example.com:8080/@nunomaduro</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com:8080/@nunomaduro">example.com:8080/@nunomaduro</a>',
     ],
 ]);
 
@@ -136,19 +164,19 @@ test('links with localhost or ip addresses', function (string $content, string $
 })->with([
     [
         'content' => 'http://localhost',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://localhost">localhost</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="http://localhost">localhost</a>',
     ],
     [
         'content' => 'http://localhost/@nunomaduro',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://localhost/@nunomaduro">localhost/@nunomaduro</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="http://localhost/@nunomaduro">localhost/@nunomaduro</a>',
     ],
     [
         'content' => 'http://127.0.0.1',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://127.0.0.1">127.0.0.1</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="http://127.0.0.1">127.0.0.1</a>',
     ],
     [
         'content' => 'http://127.0.0.1/@nunomaduro',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="http://127.0.0.1/@nunomaduro">127.0.0.1/@nunomaduro</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="http://127.0.0.1/@nunomaduro">127.0.0.1/@nunomaduro</a>',
     ],
 ]);
 
@@ -202,11 +230,11 @@ test('links with query params', function (string $content, string $parsed): void
 })->with([
     [
         'content' => 'https://example.com/?utm_source=twitter',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter">example.com/?utm_source=twitter</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com/?utm_source=twitter">example.com/?utm_source=twitter</a>',
     ],
     [
         'content' => 'https://example.com/?utm_source=twitter&utm_medium=social',
-        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com/?utm_source=twitter&utm_medium=social">example.com/?utm_source=twitter&utm_medium=social</a>',
+        'parsed' => '<a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com/?utm_source=twitter&utm_medium=social">example.com/?utm_source=twitter&utm_medium=social</a>',
     ],
     [
         'content' => 'https://example.com/?utm_source=twitter&utm_medium=social&utm_campaign=example',
@@ -344,7 +372,7 @@ test('links within <pre> and <code> blocks are ignored', function (string $conte
                     $url = <span class="hljs-string">'https://example.com/route?param=1'</span>
                 </code>
             </pre>
-            <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://linkoutsidecodeblock.com">linkoutsidecodeblock.com</a>
+            <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://linkoutsidecodeblock.com">linkoutsidecodeblock.com</a>
             CODE,
     ],
 ]);
@@ -379,7 +407,7 @@ test('only http or https urls are converted to links', function (string $content
 })->with([
     [
         'content' => 'example.com will not be a link but https://example.com will',
-        'parsed' => 'example.com will not be a link but <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a> will',
+        'parsed' => 'example.com will not be a link but <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a> will',
     ],
     [
         'content' => 'www.example.com',

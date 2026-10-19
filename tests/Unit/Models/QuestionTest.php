@@ -48,7 +48,7 @@ test('content', function (): void {
         'content' => 'Hello https://example.com, how are you? https://example.com',
     ])->fresh();
 
-    expect($question->content)->toBe('Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>, how are you? <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" href="https://example.com">example.com</a>');
+    expect($question->content)->toBe('Hello <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>, how are you? <a data-navigate-ignore="true" class="text-blue-500 hover:underline hover:text-blue-700 cursor-pointer" target="_blank" rel="noopener noreferrer" href="https://example.com">example.com</a>');
 });
 
 test('identifies shared updates from raw question attributes', function (): void {

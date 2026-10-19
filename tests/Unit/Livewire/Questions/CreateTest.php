@@ -27,6 +27,23 @@ test('render', function (): void {
     $component->assertOk()->assertSee('Ask a question...');
 });
 
+test('renders the formatting toolbar wired to the content textarea', function (): void {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(Create::class, [
+        'toId' => $user->id,
+    ]);
+
+    $component->assertOk()
+        ->assertSeeHtml('...formattingToolbar()')
+        ->assertSeeHtml('x-ref="content"')
+        ->assertSeeHtml('aria-label="Text formatting"')
+        ->assertSeeHtml('x-on:click="format($event, &#039;**&#039;)"')
+        ->assertSeeHtml('x-on:click="format($event, &#039;*&#039;)"')
+        ->assertSeeHtml('x-on:click="quote($event)"')
+        ->assertSeeHtml('x-on:click="link($event)"');
+});
+
 test('refreshes when link settings changes', function (): void {
     $user = User::factory()->create();
 
