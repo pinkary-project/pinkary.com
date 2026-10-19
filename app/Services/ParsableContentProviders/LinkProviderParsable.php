@@ -20,7 +20,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
     /**
      * The maximum width of the text displayed for a link.
      */
-    private const int MAX_DISPLAYED_TEXT_LENGTH = 50;
+    private const int MAX_DISPLAYED_TEXT_LENGTH = 30;
 
     /**
      * Regex to check for the presence of images in the content
@@ -195,6 +195,7 @@ final readonly class LinkProviderParsable implements ParsableContentProvider
         $humanUrl = $this->displayedText(
             Str::of($trimmedToken)
                 ->replaceMatches('/^(https?:\/\/|mailto:)/', '')
+                ->before('?')
                 ->rtrim('/')
                 ->toString()
         );
