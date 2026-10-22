@@ -120,6 +120,33 @@ test('reported question is not visible', function (): void {
     $response->assertStatus(403);
 });
 
+test('admins can view reported and ignored questions', function (): void {
+    $admin = User::factory()->create(['email' => 'mrpunyapal@gmail.com']);
+
+    $question = Question::factory()->create([
+        'is_reported' => true,
+        'answer' => 'This is the answer',
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('questions.show', [
+            'username' => $question->to->username,
+            'question' => $question->id,
+        ]))
+        ->assertOk()
+        ->assertSee($question->content);
+
+    $question->update(['is_reported' => false, 'is_ignored' => true]);
+
+    $this->actingAs($admin)
+        ->get(route('questions.show', [
+            'username' => $question->to->username,
+            'question' => $question->id,
+        ]))
+        ->assertOk()
+        ->assertSee($question->content);
+});
+
 test('question without answer is not visible for other users', function (): void {
     $user = User::factory()->create();
 

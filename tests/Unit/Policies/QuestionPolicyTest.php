@@ -36,6 +36,19 @@ test('only the author and admins can view posts awaiting approval', function ():
         ->and($admin->can('view', $question))->toBeTrue();
 });
 
+test('admins can view ignored, reported, and unanswered posts', function (): void {
+    $admin = User::factory()->create(['email' => 'enunomaduro@gmail.com']);
+    $question = Question::factory()->create(['answer' => null]);
+
+    expect($admin->can('view', $question))->toBeTrue();
+
+    $question->update(['is_ignored' => true]);
+    expect($admin->can('view', $question))->toBeTrue();
+
+    $question->update(['is_ignored' => false, 'is_reported' => true]);
+    expect($admin->can('view', $question))->toBeTrue();
+});
+
 test('only admins can approve an unmoderated pending post', function (): void {
     $question = Question::factory()->sharedUpdate()->create([
         'requires_approval' => true,

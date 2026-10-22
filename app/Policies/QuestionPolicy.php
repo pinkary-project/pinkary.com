@@ -14,11 +14,15 @@ final readonly class QuestionPolicy
      */
     public function view(?User $user, Question $question): bool
     {
+        if ($user?->isAdmin() ?? false) {
+            return true;
+        }
+
         if ($question->is_ignored || $question->is_reported) {
             return false;
         }
 
-        if ($question->requires_approval && ! ($user?->isAdmin() ?? false) && $user?->id !== $question->to_id) {
+        if ($question->requires_approval && $user?->id !== $question->to_id) {
             return false;
         }
 
