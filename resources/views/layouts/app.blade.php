@@ -12,6 +12,8 @@
         : (request()->routeIs('hashtag.show') ? '#'.request()->route('hashtag') : '');
 @endphp
 <body class="bg-slate-100 font-sans text-slate-950 antialiased dark:bg-[#060c18] dark:text-slate-50">
+    <x-sunset-announcement />
+
     @persist('flash-messages')
         <livewire:flash-messages.show />
     @endpersist

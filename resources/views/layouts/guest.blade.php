@@ -4,6 +4,8 @@
     @include('layouts.components.head')
 </head>
 <body class="bg-slate-100 font-sans text-slate-950 antialiased dark:bg-[#060c18] dark:text-slate-200">
+    <x-sunset-announcement />
+
     <livewire:flash-messages.show />
 
     <div class="flex min-h-screen flex-col">

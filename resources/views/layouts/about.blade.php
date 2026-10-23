@@ -7,6 +7,8 @@
     class="bg-slate-100 bg-center bg-repeat font-sans text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-50"
     style="background-image: url({{ asset('/img/dots.svg') }})"
 >
+    <x-sunset-announcement />
+
     <livewire:flash-messages.show />
 
     <div class="flex min-h-screen flex-col">
