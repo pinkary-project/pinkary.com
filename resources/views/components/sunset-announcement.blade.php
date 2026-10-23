@@ -5,5 +5,11 @@
     <p class="mx-auto max-w-7xl">
         <strong class="font-semibold text-slate-950 dark:text-white">Pinkary will shut down on December 1, 2026.</strong>
         You can continue using the site until then.
+        <a
+            href="https://nunomaduro.com/posts/sunsetting-pinkary"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-semibold text-pink-600 underline underline-offset-2 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300"
+        >Read more</a>
     </p>
 </div>
