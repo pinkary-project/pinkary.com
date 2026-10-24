@@ -10,6 +10,7 @@ use App\Enums\UserQuestionPreference;
 use App\Models\User;
 use App\Rules\NoBlankCharacters;
 use App\Rules\NoEmailAlias;
+use App\Rules\SafeRedirectUrl;
 use App\Rules\UnauthorizedEmailProviders;
 use App\Rules\Username;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -42,6 +43,7 @@ final class UserUpdateRequest extends FormRequest
             'mail_preference_time' => [Rule::enum(UserMailPreference::class)],
             'default_feed' => [Rule::enum(UserDefaultFeed::class)],
             'bio' => ['nullable', 'string', 'max:255'],
+            'redirect_url' => ['nullable', 'string', 'max:2048', new SafeRedirectUrl],
             'prefers_anonymous_questions' => ['required', 'boolean'],
             'question_preference' => [Rule::enum(UserQuestionPreference::class)],
         ];

@@ -148,6 +148,8 @@ Pinkary is Hosted on Laravel Cloud with MySQL as the primary database and S3-com
 
 The only service we use is [Mailcoach](https://mailcoach.app) to manage the send emails. Besides that, MySQL is used as database driver, sessions driver, queue driver, cache driver, etc.
 
+Before the December 1, 2026 shutdown, users can set an HTTPS destination for their profile. See [docs/profile-redirects.md](docs/profile-redirects.md) for the export command and Cloudflare Bulk Redirects deployment steps.
+
 ---
 
 Pinkary is an open-sourced software licensed under the **[GNU Affero General Public License](LICENSE.md)**
