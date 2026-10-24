@@ -33,6 +33,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $avatar
  * @property string $avatar_url
  * @property string|null $bio
+ * @property string|null $redirect_url
  * @property HtmlString $parsed_bio
  * @property CarbonImmutable $created_at
  * @property string $email
