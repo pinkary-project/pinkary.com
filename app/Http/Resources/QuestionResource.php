@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Support\AbsoluteUrl;
 use DOMDocument;
 use DOMElement;
+use DOMNode;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
@@ -190,7 +191,7 @@ final class QuestionResource extends JsonResource
             $ancestor = $img->parentNode;
             $inPreview = false;
 
-            while ($ancestor) {
+            while ($ancestor instanceof DOMNode) {
                 if ($ancestor->nodeName === 'div' && $ancestor instanceof DOMElement && $ancestor->getAttribute('id') === 'link-preview-card') {
                     $inPreview = true;
 
