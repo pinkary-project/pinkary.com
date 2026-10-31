@@ -153,6 +153,49 @@
             <x-input-error class="mt-2" :messages="$errors->get('question_preference')" />
         </div>
 
+        <div
+            class="border-t border-slate-200/70 pt-6 dark:border-slate-800/30"
+            x-data="{
+                redirectUrl: @js(old('redirect_url', $user->redirect_url ?? '')),
+                noDestination: @js(__('No destination yet')),
+            }"
+        >
+            <h3 class="text-base font-medium text-slate-700 dark:text-slate-300">{{ __('Profile redirect') }}</h3>
+
+            <p class="mt-1 text-sm text-slate-500">
+                {{ __('Pinkary shuts down on :date. After that, your profile URL will permanently redirect to this HTTPS destination. Leave the field empty to remove the redirect.', ['date' => $sunsetDate]) }}
+            </p>
+
+            <div class="mt-4">
+                <x-input-label for="redirect_url" :value="__('Destination URL')" />
+                <x-text-input
+                    id="redirect_url"
+                    name="redirect_url"
+                    type="url"
+                    class="mt-1 block w-full"
+                    x-model="redirectUrl"
+                    :value="old('redirect_url', $user->redirect_url)"
+                    placeholder="https://example.com"
+                    autocomplete="url"
+                    maxlength="2048"
+                    aria-describedby="redirect-url-preview"
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('redirect_url')" />
+            </div>
+
+            <p id="redirect-url-preview" class="mt-2 text-sm text-slate-500">
+                {{ __('Preview:') }}
+                <span class="font-medium text-slate-700 dark:text-slate-300">
+                    {{ route('profile.show', ['username' => $user->username]) }}
+                </span>
+                <span aria-hidden="true">&rarr;</span>
+                <span
+                    class="font-medium break-all text-slate-700 dark:text-slate-300"
+                    x-text="redirectUrl || noDestination"
+                >{{ old('redirect_url', $user->redirect_url) ?: __('No destination yet') }}</span>
+            </p>
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
         </div>
