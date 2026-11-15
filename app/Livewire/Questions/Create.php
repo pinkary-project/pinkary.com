@@ -775,7 +775,9 @@ final class Create extends Component
 
         collect($this->getSessionImages())
             ->reject(fn (string $path): bool => str_contains($publishedContent, $path))
-            ->each(fn (string $path): ?bool => $this->deleteImage($path, $imageProcessor));
+            ->each(function (string $path) use ($imageProcessor): void {
+                $this->deleteImage($path, $imageProcessor);
+            });
 
         session()->forget('images.'.$this->draftKey());
     }

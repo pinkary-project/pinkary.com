@@ -36,7 +36,7 @@ test('verified only rule fails for unverified user', function (): void {
 
     $rule = new VerifiedOnly();
 
-    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+    $fail = fn (string $errorMessage): never => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('verified', true, $fail);
 })->throws(InvalidArgumentException::class, 'This action is only available to verified users. Get verified in your profile settings.');
@@ -44,7 +44,7 @@ test('verified only rule fails for unverified user', function (): void {
 test('verified fails for guest', function (): void {
     $rule = new VerifiedOnly();
 
-    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+    $fail = fn (string $errorMessage): never => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('verified', true, $fail);
 })->throws(InvalidArgumentException::class, 'This action is only available to verified users. Get verified in your profile settings.');

@@ -20,7 +20,7 @@ test('username validation passes for valid usernames', function (string $usernam
 test('username validation fails for invalid usernames', function (string $username): void {
     $rule = new Username();
 
-    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+    $fail = fn (string $errorMessage): never => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('username', $username, $fail);
 })->with([
@@ -39,7 +39,7 @@ test('username validation fails for reserved usernames', function (): void {
 
     $reservedUsername = 'admin'; // Example of a reserved username
 
-    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+    $fail = fn (string $errorMessage): never => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('username', $reservedUsername, $fail);
 })->throws(InvalidArgumentException::class, 'The :attribute is reserved.');
@@ -49,7 +49,7 @@ test('username validation fails for existing usernames', function (): void {
 
     $rule = new Username();
 
-    $fail = fn (string $errorMessage) => throw new InvalidArgumentException($errorMessage);
+    $fail = fn (string $errorMessage): never => throw new InvalidArgumentException($errorMessage);
 
     $rule->validate('username', 'existingUser', $fail);
 })->throws(InvalidArgumentException::class, 'The :attribute has already been taken.');
