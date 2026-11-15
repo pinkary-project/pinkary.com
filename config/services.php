@@ -50,4 +50,11 @@ return [
         'secret' => env('TURNSTILE_SECRET_KEY'),
         'hostname' => env('TURNSTILE_HOSTNAME'),
     ],
+
+    'app_links' => [
+        'android_package' => env('PINKARY_ANDROID_APP_ID', 'org.pinkaryproject.mobile'),
+        'android_sha256_fingerprints' => env('PINKARY_ANDROID_SHA256_FINGERPRINTS'),
+        'ios_team_id' => env('PINKARY_IOS_TEAM_ID'),
+        'ios_bundle_id' => env('PINKARY_IOS_BUNDLE_ID', 'org.pinkaryproject.mobile'),
+    ],
 ];
