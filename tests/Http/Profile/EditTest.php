@@ -22,6 +22,8 @@ test('auth', function (): void {
     $response->assertSee([
         'Profile Information',
         "Update your account's profile information and email address.",
+        'Profile redirect',
+        'No destination yet',
         'Update Password',
         'Ensure your account is using a long, random password to stay secure.',
         'Delete Account',
@@ -630,4 +632,170 @@ test('user can update profile while keeping their email', function (): void {
 
     $response->assertSessionHasNoErrors();
     expect($user->fresh()->name)->toBe('Updated Name');
+});
+
+test('profile form shows the redirect setting and preview', function (): void {
+    $user = User::factory()->create([
+        'username' => 'testuser',
+        'redirect_url' => 'https://alice.dev',
+    ]);
+
+    $this->actingAs($user)->get(route('profile.edit'))
+        ->assertOk()
+        ->assertSee('Profile redirect')
+        ->assertSee('Destination URL')
+        ->assertSee('Pinkary shuts down on December 1, 2026.')
+        ->assertSeeHtml('name="redirect_url"')
+        ->assertSeeHtml('value="https://alice.dev"')
+        ->assertSee(route('profile.show', ['username' => 'testuser']));
+});
+
+test('user can save update and remove a profile redirect', function (): void {
+    $user = User::factory()->create(['username' => 'testuser']);
+
+    $payload = [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+    ];
+
+    $this->actingAs($user)->patch(route('profile.update'), [
+        ...$payload,
+        'redirect_url' => 'https://alice.dev',
+    ])->assertSessionHasNoErrors()->assertRedirect(route('profile.edit'));
+
+    expect($user->refresh()->redirect_url)->toBe('https://alice.dev');
+
+    $this->get(route('profile.show', ['username' => $user->username]))
+        ->assertOk()
+        ->assertSee($user->name);
+
+    $this->actingAs($user)->patch(route('profile.update'), [
+        ...$payload,
+        'redirect_url' => 'https://bob.dev',
+    ])->assertSessionHasNoErrors();
+
+    expect($user->refresh()->redirect_url)->toBe('https://bob.dev');
+
+    $this->actingAs($user)->patch(route('profile.update'), [
+        ...$payload,
+        'redirect_url' => '',
+    ])->assertSessionHasNoErrors();
+
+    expect($user->refresh()->redirect_url)->toBeNull();
+});
+
+test('profile updates preserve an omitted redirect', function (): void {
+    $user = User::factory()->create([
+        'username' => 'testuser',
+        'redirect_url' => 'https://alice.dev',
+    ]);
+
+    $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+    ])->assertSessionHasNoErrors();
+
+    expect($user->refresh()->redirect_url)->toBe('https://alice.dev');
+});
+
+test('profile redirects reject unsafe destinations', function (string $redirectUrl): void {
+    config()->set('app.url', 'https://pinkary.com');
+
+    $user = User::factory()->create([
+        'username' => 'testuser',
+        'redirect_url' => 'https://existing.dev',
+    ]);
+
+    $this->actingAs($user)->from(route('profile.edit'))->patch(route('profile.update'), [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+        'redirect_url' => $redirectUrl,
+    ])->assertRedirect(route('profile.edit'))
+        ->assertSessionHasErrors('redirect_url');
+
+    expect($user->refresh()->redirect_url)->toBe('https://existing.dev');
+})->with([
+    'http' => ['http://alice.dev'],
+    'javascript' => ['javascript:alert(1)'],
+    'data' => ['data:text/html,hello'],
+    'ftp' => ['ftp://alice.dev'],
+    'invalid' => ['not a url'],
+    'credentials' => ['https://user:password@alice.dev'],
+    'same Pinkary host' => ['https://pinkary.com/@testuser'],
+    'Pinkary subdomain' => ['https://www.pinkary.com/@testuser'],
+    'IDN-encoded Pinkary host' => ['https://ⓟⓘⓝⓚⓐⓡⓨ.com/@testuser'],
+    'too long' => ['https://alice.dev/'.str_repeat('a', 2048)],
+]);
+
+test('profile redirects cannot point back to Pinkary', function (): void {
+    config()->set('app.url', 'https://pinkary.com');
+
+    $user = User::factory()->create(['username' => 'testuser']);
+
+    $this->actingAs($user)->from(route('profile.edit'))->patch(route('profile.update'), [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+        'redirect_url' => 'https://pinkary.com/@testuser',
+    ])->assertSessionHasErrors([
+        'redirect_url' => 'The redirect destination cannot point to Pinkary.',
+    ]);
+
+    expect($user->refresh()->redirect_url)->toBeNull();
+});
+
+test('guests cannot update profile redirects', function (): void {
+    $user = User::factory()->create(['redirect_url' => 'https://alice.dev']);
+
+    $this->patch(route('profile.update'), [
+        'redirect_url' => 'https://evil.dev',
+    ])->assertRedirect(route('login'));
+
+    expect($user->refresh()->redirect_url)->toBe('https://alice.dev');
+});
+
+test('users cannot redirect another profile', function (): void {
+    $user = User::factory()->create(['username' => 'testuser']);
+    $other = User::factory()->create([
+        'username' => 'otheruser',
+        'redirect_url' => 'https://other.dev',
+    ]);
+
+    $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+        'redirect_url' => 'https://alice.dev',
+        'user_id' => $other->id,
+    ])->assertSessionHasNoErrors();
+
+    expect($user->refresh()->redirect_url)->toBe('https://alice.dev')
+        ->and($other->refresh()->redirect_url)->toBe('https://other.dev');
+});
+
+test('profile form retains the submitted redirect after validation fails', function (): void {
+    $user = User::factory()->create(['username' => 'testuser']);
+
+    $this->actingAs($user)->from(route('profile.edit'))->patch(route('profile.update'), [
+        'name' => '',
+        'username' => $user->username,
+        'email' => $user->email,
+        'prefers_anonymous_questions' => $user->prefers_anonymous_questions,
+        'redirect_url' => 'https://alice.dev',
+    ])->assertSessionHasErrors('name');
+
+    $this->get(route('profile.edit'))
+        ->assertOk()
+        ->assertSee('https://alice.dev')
+        ->assertSee(route('profile.show', ['username' => 'testuser']));
+
+    expect($user->refresh()->redirect_url)->toBeNull();
 });

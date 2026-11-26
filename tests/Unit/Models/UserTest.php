@@ -13,6 +13,7 @@ test('to array', function (): void {
         'name',
         'username',
         'bio',
+        'redirect_url',
         'email',
         'email_verified_at',
         'created_at',
@@ -33,7 +34,7 @@ test('to array', function (): void {
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
         'default_feed',
-    )->toHaveCount(24);
+    )->toHaveCount(25);
 });
 
 test('is verified', function (): void {
